@@ -1,0 +1,47 @@
+﻿<style>
+    .box-data.active {
+        background-color: var(--light-blue);
+        border: 1px solid var(--bs-blue) !important;
+        box-shadow: 0 0 5px var(--bs-blue);
+    }
+</style>
+<div ng-controller="ProfileCtrl">
+    <partial name="Employee/_PartialServicePersonal" />
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-9 pt-3">
+                <div class="">
+                    @* Employee *@
+                    <partial name="Employee/_PartialServiceEmployee" />
+                    @* Location *@
+                    <partial name="Employee/_PartialServiceAddress" />
+                    @* Education *@
+                    <partial name="Employee/_PartialServiceEducation" />
+                    @* Traning *@
+                    <partial name="Employee/_PartialServiceTraning" />
+                    @* JobExperience*@
+                    <partial name="Employee/_PartialServiceJobExperience" />
+                </div>
+            </div>
+            @* Summary *@
+            <div class="col-sm-3 ">
+                <div class="sticky-top pt-3">
+                    <partial name="Employee/_PartialProfileSummary" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ProfileCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.edit_stage = '';
+
+        //Personal
+        $scope.Init = function () {
+            $scope.userId = $scope.$parent.userId
+            //$scope.InitPersonal();
+        }
+        $scope.Init();
+
+    });
+</script>

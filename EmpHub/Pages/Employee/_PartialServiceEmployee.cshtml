@@ -1,0 +1,364 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<div ng-controller="ServiceEmployeeCtrl" id="tab_employee">
+    @* View *@
+    <div class="bg-white rounded-5 p-4 mb-3 ">
+        <div class="d-flex align-items-center mb-4">
+            <div class="fw-bolder flex-fill text-secondary fs-5">
+                ข้อมูลพนักงาน
+            </div>
+        </div>
+        <div ng-show="iData.status != undefinded">
+            <div class="row">
+                <div class="col-sm-4 mb-3">
+                    <div class="text-gray">
+                        รหัสพนักงาน
+                    </div>
+                    <div class="fw-bolder ">{{ iData.employeeCode }}</div>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-gray">
+                        ประเภท
+                    </div>
+                    <div class="fw-bolder ">{{ iData.employeeDesc }}</div>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-gray">
+                        วันที่เริ่มงาน
+                    </div>
+                    <div class="fw-bolder ">{{ iData.join_date }}</div>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-gray">
+                        ตำแหน่ง
+                    </div>
+                    <div class="fw-bolder ">{{ iData.positionDesc }}</div>
+                </div>
+                <div class="col-sm-8 mb-3">
+                    <div class="text-gray">
+                        ฝ่าย/ส่วนงาน
+                    </div>
+                    <div class="fw-bolder ">{{ iData.departmentDesc }}</div>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-gray">
+                        อีเมล์บริษัท
+                    </div>
+                    <div class="fw-bolder ">{{ iData.email }}</div>
+                </div>
+                <div class="col-sm-8 mb-3">
+                    <div class="text-gray">
+                        เบอร์ติดต่อภายใน
+                    </div>
+                    <div class="fw-bolder">{{ iData.ext != '' ? iData.ext : '-' }}</div>
+                </div>
+                <div class="col-sm-12 mb-3">
+                    <div class="text-gray">
+                        หัวหน้างาน
+                    </div>
+                    <div>
+                        <div class="fw-bolder ">{{ iData.supervisorName }}</div>
+                        <div>{{ iData.supervisorPosition }}</div>
+                        <div>{{ iData.supervisorDepartment }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="pt-2 d-flex align-items-center">
+                <div class="btn btn-secondary-invert" ng-click="Edit()">
+                    <i class="bi bi-pen"></i> แก้ไข
+                </div>
+                <div ng-show="iData.status == 'Pending'" class="ms-3 text-warning bg-light-gray rounded-3 flex-fill p-2">
+                    รออนุมัติการปรับปรุงข้อมูล
+                    <div class="badge bg-danger select" ng-click="Cancel()">
+                        <i class="bi bi-x"></i> ยกเลิก
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div ng-show="iData.status == undefinded">
+            <div class="row">
+                <div class="col-sm-12 mb-3 text-gray">
+                    เพิ่มรายละเอียดการเป็นพนักงานของคุณ
+                </div>
+            </div>
+            <div class="pt-2 d-flex align-items-center">
+                <div class="btn btn-secondary-invert" ng-click="New()">
+                    <i class="bi bi-plus-lg"></i> เพิ่มข้อมูลพนักงาน
+                </div>
+            </div>
+        </div>
+    </div>
+    @* Dialog *@
+    <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="employeeOff" aria-labelledby="offcanvasLabel" style="width:600px;">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title text-secondary fw-bolder" id="offcanvasLabel">ข้อมูลพนักงาน</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="row">
+                <div class="col-sm-4 mb-3">
+                    <div class="fw-bolder">รหัสพนักงาน</div>
+                    <input ng-model="iEdit.employeeCode" class="form-control" maxlength="6" />
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="fw-bolder">ประเภท</div>
+                     <select ng-model="iEdit.employeeType" class="form-select" ng-options="x.code as x.desc_th for x in lEmployeeType"></select>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="fw-bolder">วันที่เริ่มงาน</div>
+                    <input class="form-control icon-calendar date"
+                           ng-model="iEdit.join_date_select"
+                           ng-model-options="{ updateOn: 'blur' }"
+                           moment-picker="iEdit.join_date_select"
+                           locale="th"
+                           format="DD/MM/YYYY"
+                           min-view="month"
+                           max-view="month" required />
+                </div>
+                <div class="col-sm-12 mb-3">
+                    <div class="fw-bolder">ตำแหน่ง</div>
+                    <select ng-model="iEdit.positionCode" class="form-select" ng-options="x.code as x.desc_th for x in lPosition"></select>
+                </div>
+                <div class="col-sm-12 mb-3">
+                    <div class="fw-bolder">ฝ่าย/ส่วนงาน</div>
+                    <select ng-model="iEdit.departmentCode" class="form-select" ng-options="x.code as x.desc_th for x in lDepartment"></select>
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <div class="fw-bolder">อีเมล์</div>
+                    <input ng-model="iEdit.email" class="form-control" />
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <div class="fw-bolder">เบอร์ติดต่อภายใน</div>
+                    <input ng-model="iEdit.ext" class="form-control ext" maxlength="10" />
+                </div>
+                <div class="col-sm-12 mb-3">
+                    <div class="fw-bolder">หัวหน้งาน</div>
+                    <input ng-model="iEdit.supervisorName" class="form-select bg-light-blue" data-bs-toggle="modal" data-bs-target="#supervisorModal" readonly />
+                </div>
+            </div>
+            <div class="pt-3">
+                <div class="btn btn-secondary" ng-click="Save()">
+                    บันทึก
+                </div>
+                <div class="btn btn-link" data-bs-dismiss="offcanvas">
+                    ยกเลิก
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    @* Modal *@
+    <div id="supervisorModal" class="modal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div>
+                        <div class="mb-2">
+                            <input ng-model="filter_name" class="form-control" />
+                            <div class="list-group list-group-flush overflow-auto" style="max-height: 400px;">
+                                <div class="list-group-item list-group-item-action d-flex align-items-center justify-content-between" ng-repeat="x in lEmployee | filter : filter_name">
+                                    <div>
+                                        <div class="fw-bolder text-secondary">
+                                            {{ x.firstname_th + ' ' + x.lastname_th }} <span ng-show="x.nickname != ''">({{ x.nickname }})</span>
+                                        </div>
+                                        <div class="fw-bolder text-secondary">
+                                            {{ x.firstname + ' ' + x.lastname }}
+                                        </div>
+                                        <small class="text-dark">
+                                            {{ x.positionDesc }} {{ x.departmentDesc }}
+                                        </small>
+                                    </div>
+                                    <div>
+                                        <button ng-click="SelectSupervisor(x)" class="btn btn-circle">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <button class="btn btn-light" data-bs-dismiss="modal" aria-label="Close">
+                                ปิด
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(".date").mask("00/00/0000");
+    $(".ext").mask("0000");
+    app.controller('ServiceEmployeeCtrl', function ($scope, $http, $timeout, $filter) {
+
+        $scope.lEmployeeType = [
+            {code:'permanent',desc_th:'พนักงานประจำ'}
+            ,{code:'contract',desc_th:'พนักงานสัญญาจ้าง'}
+        ]
+        
+        $scope.LoadMaster = function () {
+            if(!$scope.lDepartment){
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                    , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , dataType: 'json'
+                    , cache: false
+                    , data: JSON.stringify({
+                        groupName: 'departmentCode'
+                    })
+                    , success: function (result) {
+                        $timeout(function () {
+                            $scope.lDepartment = result;
+                        }, 0);
+                    }
+                    , error: AjaxError
+                });
+            }
+            if(!$scope.lPosition){
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                    , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , dataType: 'json'
+                    , cache: false
+                    , data: JSON.stringify({
+                        groupName: 'positionCode'
+                    })
+                    , success: function (result) {
+                        $timeout(function () {
+                            $scope.lPosition = result;
+                        }, 0);
+                    }
+                    , error: AjaxError
+                });
+            }
+            if(!$scope.lEmployee){
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Employee/DataList'
+                    , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , dataType: 'json'
+                    , cache: false
+                    , data: JSON.stringify({
+                        page: 1
+                        , row: 1000
+                    })
+                    , success: function (result) {
+                        $timeout(function () {
+                            $scope.lEmployee = result.data;
+                        }, 0);
+                    }
+                    , error: AjaxError
+                });
+            }
+        }
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceEmployee/Detail',
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.userId
+                    , create_by: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.iData = result;
+
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+
+        $scope.SelectSupervisor = function(x){
+            $scope.iEdit.supervisorId = x.userId;
+            $scope.iEdit.supervisorName = x.firstname_th + ' ' + x.lastname_th;
+            $scope.iEdit.supervisorPosition = x.positionDesc;
+            $scope.iEdit.supervisorDepartment = x.departmentDesc;
+            $("#supervisorModal").modal('hide');
+        }
+
+        $scope.InitEmployee = function () {
+            $scope.userId = $scope.$parent.userId
+            $scope.LoadData();
+        }
+        $scope.InitEmployee();
+
+        $scope.Edit = function () {
+            $scope.LoadMaster();
+
+            $("#employeeOff").offcanvas('show');
+            $scope.iEdit = {};
+            $scope.iEdit.employeeId = $scope.iData.employeeId;
+            $scope.iEdit.employeeCode = $scope.iData.employeeCode;
+            $scope.iEdit.employeeType = $scope.iData.employeeType;
+            $scope.iEdit.positionCode = $scope.iData.positionCode;
+            $scope.iEdit.departmentCode = $scope.iData.departmentCode;
+            $scope.iEdit.email = $scope.iData.email;
+            $scope.iEdit.ext = $scope.iData.ext;
+            $scope.iEdit.supervisorId = $scope.iData.supervisorId;
+            $scope.iEdit.supervisorName = $scope.iData.supervisorName;
+            $scope.iEdit.supervisorPosition = $scope.iData.supervisorPosition;
+            $scope.iEdit.supervisorDepartment = $scope.iData.supervisorDepartment;
+            $scope.iEdit.userId = $scope.userId;
+            $scope.iEdit.create_by = '@User.UserId()';
+
+            if ($scope.iData.join_date != '' && $scope.iData.join_date != undefined) {
+                var date = ConvertToDate($scope.iData.join_date);
+                $scope.iEdit.join_date_select = new moment(date);
+            }
+
+        }
+
+        $scope.Save = function () {
+            $("#employeeOff").offcanvas('hide');
+
+            if ($scope.iEdit.join_date_select) {
+                $scope.iEdit.join_date = $scope.iEdit.join_date_select.format("DD/MM/YYYY");
+            }
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceEmployee/Save',
+                type: "POST",
+                contentType: 'application/json',
+                cache: false,
+                data: JSON.stringify($scope.iEdit),
+                success: function () {
+                    $timeout(async function () {
+                        $scope.LoadData();
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+
+        $scope.Cancel = function () {
+                    alertConfirm("ท่านต้องการยกเลิกรายการ", "ยืนยันการยกเลิกการปรับปรุงข้อมูลพนักงาน", function () {
+                    $.ajax({
+                        url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceEmployee/Cancel',
+                        type: "POST",
+                        contentType: 'application/json',
+                        cache: false,
+                        data: JSON.stringify({
+                            userId: $scope.userId
+                            , update_by: '@User.UserId()'
+                        }),
+                        success: function () {
+                            $timeout(async function () {
+                                $scope.LoadData();
+                            }, 0);
+                        }, error: AjaxError
+                    });
+                });
+            }
+    });
+</script>

@@ -1,0 +1,89 @@
+﻿@* Modal Cancel *@
+<div class="modal fade" id="dlgCancel" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog" ng-init="cancel_reason = ''">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-secondary">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">ยกเลิกรายการ</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <input ng-model="cancel_reason" class="form-control" placeholder="กรุณาระบุเหตุผล" />
+                </div>
+                <div class="text-end">
+                    <button class="btn btn-danger" ng-click="Cancel()" ng-disabled="cancel_reason == ''">
+                        ยืนยันการยกเลิก
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@* Modal Reject *@
+<div class="modal fade" id="dlgReject" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog" ng-init="reject_reason = ''">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">ปฏิเสธรายการ</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <input ng-model="reject_reason" class="form-control" placeholder="กรุณาระบุเหตุผล" />
+                </div>
+                <div class="text-end">
+                    <button class="btn btn-danger" ng-click="Reject()" ng-disabled="reject_reason == ''">
+                        ยืนยันการปฏิเสธรายการ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@* Modal Assign *@
+<div class="modal fade" id="dlgAssign" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog" ng-init="assign_reason = ''">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Assign Reason</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    มอบหมายงานให้
+                    <select ng-model="workBy1" ng-options="x.userId as x.fullname for x in lWork" class="form-select"></select>
+                </div>
+                <div class="mb-3">
+                    หมายเหตุ
+                    <input ng-model="assign_reason" class="form-control" placeholder="กรุณาระบุเหตุผล" />
+                </div>
+                <div class="text-end">
+                    <button class="btn btn-primary" ng-click="Assign()" ng-disabled="assign_reason == ''">
+                        Confirm Assign
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@* Modal Work *@
+<div class="modal fade" id="dlgWork" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog" ng-init="work_reason = ''">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Work Reason</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <input ng-model="work_reason" class="form-control" placeholder="กรุณาระบุเหตุผล" />
+                </div>
+                <div class="text-end">
+                    <button class="btn btn-primary" ng-click="Work()" ng-disabled="work_reason == ''">
+                        Confirm Work
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,236 @@
+﻿@page
+@model EmpHub.Pages.Dashboard.IndexModel
+@{
+}
+<div ng-controller="DashboardCtrl">
+    <div class="fs-4 fw-bolder mb-3">
+        Dashboard
+    </div>
+    <div class="row">
+        <div class="col-sm-9">
+            @* Summary *@
+            <div class="row">
+                @* Total Employee *@
+                <div class="col-sm-4 mb-3">
+                    <div class="rounded-4 p-3" style="background-color:#e6ebfe;">
+                        <div class="d-flex">
+                            <div class="flex-fill">
+                                <div>Total</div>
+                                <div>Employees</div>
+                            </div>
+                            <div class="fw-bolder fs-4" style="color:#5374f9">
+                                2,247
+                            </div>
+                        </div>
+                        <div class="mt-2" style="width:50px; height:4px; background-color:#5374f9; border-radius:5px;"></div>
+                    </div>
+                </div>
+                @* New Joining *@
+                <div class="col-sm-4 mb-3">
+                    <div class="rounded-4 p-3" style="background-color:#d1f7ef">
+                        <div class="d-flex">
+                            <div class="flex-fill">
+                                <div>New</div>
+                                <div>Joining</div>
+                            </div>
+                            <div class="fw-bolder fs-4" style="color:#3cddbd">
+                                2
+                            </div>
+                        </div>
+                        <div class="mt-2" style="width:50px; height:4px; background-color:#3cddbd; border-radius:5px;"></div>
+                    </div>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="rounded-4 p-3" style="background-color:#fee6f3">
+                        <div class="d-flex">
+                            <div class="flex-fill">
+                                <div>Today's</div>
+                                <div>Attendance</div>
+                            </div>
+                            <div class="fw-bolder fs-4" style="color:#dd087a">
+                                93%
+                            </div>
+                        </div>
+                        <div class="mt-2" style="width:50px; height:4px; background-color:#dd087a; border-radius:5px;"></div>
+                    </div>
+                </div>
+            </div>
+            @* Chart *@
+            <div class="row">
+                <div class="col-sm-4 mb-3">
+                    <div class="bg-white p-3 rounded-4 h-100">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="fw-bolder flex-fill">
+                                Quick Data
+                            </div>
+                            <div class="">
+                                <select ng-model="quick_view_mode" class="from-select bg-soft-gray rounded-4 border-0 p-1" ng-options="x.value as x.key for x in lQuickView"></select>
+                            </div>
+                        </div>
+                        <div class="position-relative">
+                            <div class="position-absolute top-50 start-50 translate-middle fs-2 fw-bolder text-center pb-4">
+                                Total<br />
+                                167
+                            </div>
+                            <canvas id="chart_quick_data"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-8 mb-3">
+                    <div class="bg-white p-3 rounded-4 h-100">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="fw-bolder flex-fill">
+                                Reports
+                            </div>
+                            <div>
+                                <select ng-model="report_view_mode" class="from-select bg-soft-gray rounded-4 border-0 p-1" ng-options="x.value as x.key for x in lReportView"></select>
+                            </div>
+                        </div>
+                        <div>
+                            <canvas id="chart_report_data"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @* Request *@
+            <div class="bg-white p-3 rounded-4">
+                <div class="fw-bolder">
+                    Request Lastest
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            @* Calendar *@
+            <partial name="_PartialCalendar" />
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('DashboardCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.lQuickView = [
+            { key: 'Sex', value: 'Sex' }
+            , { key: 'Age', value: 'Age' }
+            , { key: 'Generation ', value: 'Generation' }
+            , { key: 'Status', value: 'Status' }
+            , { key: 'Educational', value: 'Educational' }
+        ];
+        $scope.quick_view_mode = $scope.lQuickView[0].value;
+
+        $scope.lReportView = [
+            { key: 'Leave Reports', value: 'Leave' }
+            , { key: 'Joining Reports', value: 'Joining' }
+            , { key: 'Position Reports', value: 'Position' }
+        ];
+        $scope.report_view_mode = $scope.lReportView[0].value;
+
+
+        var chart_quick_data = new Chart(
+            document.getElementById('chart_quick_data'),
+            {
+                type: 'pie',
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    aspectRatio: 1,
+                    borderRadius: 5,
+                    weight: 5,
+                    cutout: 85,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                generateLabels(chart) {
+                                    const data = chart.data;
+                                    if (data.labels.length && data.datasets.length) {
+                                        const { labels: { pointStyle } } = chart.legend.options;
+
+                                        return data.labels.map((label, i) => {
+                                            const meta = chart.getDatasetMeta(0);
+                                            const style = meta.controller.getStyle(i);
+
+                                            return {
+                                                text: `${label}: ${data['datasets'][0].data[i]} day`,
+                                                fillStyle: style.backgroundColor,
+                                                strokeStyle: style.borderColor,
+                                                lineWidth: style.borderWidth,
+                                                pointStyle: pointStyle,
+                                                hidden: !chart.getDataVisibility(i),
+
+                                                // Extra data used for toggling the correct item
+                                                index: i
+                                            };
+                                        });
+                                    }
+                                    return [];
+                                }
+                            },
+                            position: 'bottom'
+                        }
+                    },
+                }
+            }
+        );
+
+        var chart_report_data = new Chart(
+            document.getElementById('chart_report_data'),
+            {
+                type: 'line',
+                options: {
+                    responsive: true,
+                    aspectRatio: 2,
+                    borderRadius: 5,
+                    weight: 5,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            },
+                            position: 'bottom'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        },
+                    },
+                }
+            }
+        );
+
+
+        $scope.TestChart = function () {
+            chart_quick_data.data = {
+                labels: ['Male', 'Female'],
+                datasets: [{
+                    data: [69, 98],
+                    backgroundColor: ['rgb(54, 162, 235)', 'rgb(255, 99, 132)'],
+                }],
+            };
+            chart_quick_data.update();
+
+            chart_report_data.data = {
+                labels: ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
+                , datasets: [{
+                    label: 'Annual Leave',
+                    data: [20, 10, 5, 30]
+                }, {
+                    label: 'Business Leave',
+                    data: [10, 20, 15, 40]
+                }, {
+                    label: 'Sick Leave',
+                    data: [7, 20, 21, 10]
+                }, {
+                    label: 'Other Leave',
+                    data: [2, 4, 5, 8]
+                }],
+            };
+            chart_report_data.update();
+        }
+        $scope.TestChart();
+    });
+</script>

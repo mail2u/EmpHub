@@ -1,0 +1,71 @@
+﻿<style>
+    .list-group-item.alert{
+        font-weight: bold;
+        color:var(--tip-blue);
+        background-color:var(--light-blue);
+    }
+</style>
+<div ng-controller="NotifyCtrl">
+    <div class="box mb-3 position-relative">
+        <div class="d-flex justify-content-between">
+            <div>
+                <div class="fw-bolder">การแจ้งเตือน</div>
+                <small>คุณมี <span class="{{ total_unread > 0 ? 'text-blue' : 'text-gray' }}">{{ total_unread | number }} การแจ้งเตือนที่ยังไม่อ่าน</span></small>
+            </div>
+            <a href='@Url.Page("/Notify/Index")' class="btn btn-circle">
+                <i class="fas fa-arrow-right"></i>
+               @*  <div ng-show="total_unread > 0" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" title="{{ total_unread | number }} รายการใหม่">{{ total_unread | number }}</div> *@
+            </a>
+        </div>
+        <div ng-show="lData.length > 0" class="list-group list-group-flush mt-2 rounded-4">
+            <div ng-repeat="x in lData" class="list-group-item list-group-item-action select p-2 mb-0 {{ x.is_read == 1 ? 'alert' : '' }}" ng-click="ShowDetail(x)">
+                <div class="d-flex">
+                    <div class="me-2">
+                        <img src="~/Images/icon-user.png" width="40" />
+                    </div>
+                    <div class="flex-fill">
+                        <div ng-bind-html="x.detail"></div>
+                    </div>
+                    <div class="text-nowrap text-blue">
+                        {{ ShortDT(x.actionDate) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('NotifyCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.sysId = 'ITS';
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Notify/DataList',
+                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    page: 1
+                    , row: 7
+                    , userId: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.lData = result.data;
+                        $scope.total = result.total;
+                        $scope.total_unread = result.total_read;
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+        $scope.ShowDetail = function(x){
+            x.is_read = 0;
+            window.open(x.link, "_blank");
+        }
+    });
+</script>

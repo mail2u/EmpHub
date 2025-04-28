@@ -1,0 +1,44 @@
+﻿@using Microsoft.Extensions.Options
+@inject IOptionsMonitor<WebAPIModels> webAPI
+<div ng-controller="galleryCtrl">
+    <div id="galleryModal" class="modal fade">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-body p-1">
+                    <div id="carouselGalleryControls" class="carousel slide" data-interval="false">
+                        <div class="carousel-inner">
+                            <div ng-repeat="x in lGallery" ng-class="$index == index ? 'carousel-item active' : 'carousel-item'">
+                                <img class="d-block w-100" src="data:{{x.filetype}};base64,{{x.base64}}">
+                            </div>
+                        </div>
+                        <a ng-show="lGallery.length > 1" class="carousel-control-prev" href="#carouselGalleryControls" role="button" data-bs-slide="prev">
+                            <h1>
+                                <span class="fas fa-chevron-left text-dark" aria-hidden="true"></span>
+                                <span class="sr-only">Previous</span>
+                            </h1>
+                        </a>
+                        <a ng-show="lGallery.length > 1" class="carousel-control-next" href="#carouselGalleryControls" role="button" data-bs-slide="next">
+                            <h1>
+                                <span class="fas fa-chevron-right  text-dark" aria-hidden="true"></span>
+                                <span class="sr-only">Next</span>
+                            </h1>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('galleryCtrl', function ($scope, $timeout, $filter) {
+        $scope.$parent.ShowGallery = function (lGallery, index) {
+            $timeout(function () {
+                $scope.index = index;
+                $scope.lGallery = lGallery;
+                    console.log($scope.lGallery);
+                $("#galleryModal").modal('show');
+                $("#carouselGalleryControls").carousel(index).carousel('dispose');
+            }, 0);
+        }
+    });
+</script>

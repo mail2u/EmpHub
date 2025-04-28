@@ -1,0 +1,222 @@
+﻿@page
+@model EmpHub.Pages.Service.DetailModel
+@{
+}
+<div ng-controller="ServiceCtrl">
+    <div class="p-4 rounded-5 mb-3 {{ iData.status == 'Approve' ? 'bg-success' : iData.status == 'Reject' ? 'bg-danger' : 'bg-secondary' }}">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="text-gray">
+                        เลขบริการ
+                    </div>
+                    <div class="fw-bolder fs-4 text-white">
+                        {{ iData.serviceNo }}
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="text-gray">
+                        สถานะ
+                    </div>
+                    <div class="fw-bolder fs-4 text-white">
+                        {{ iData.statusDesc }}
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="text-gray">
+                        ความประสงค์
+                    </div>
+                    <div class="fw-bolder fs-5 text-white">
+                        {{ iData.categoryDesc }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="bg-white p-4 rounded-4">
+            <div class="row">
+                <div class="col-sm-3 mb-3">
+                    <div class="text-center p-3">
+                        <img src="~/Images/icon-user.png" class="rounded-pill mb-3" width="70%" />
+                    </div>
+                    <div class="mb-3">
+                        <div class="text-gray">
+                            ชื่อ-สกุล
+                        </div>
+                        <div class="fw-bolder text-secondary">
+                            {{ iData.userName }}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="text-gray">
+                            ตำแหน่ง
+                        </div>
+                        <div class="fw-bolder text-secondary">
+                            {{ iData.userPosition }}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="text-gray">
+                            ฝ่าย/ส่วนงาน
+                        </div>
+                        <div class="fw-bolder text-secondary">
+                            {{ iData.userDepartment }}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-9">
+                    <div ng-show="iData.categoryCode == 'changeAddress'">
+                        <partial name="_PartialServiceAddress" />
+                    </div>
+                    <div ng-show="iData.categoryCode == 'changeEducation'">
+                        <partial name="_PartialServiceEducation" />
+                    </div>
+                    <div ng-show="iData.categoryCode == 'changeEmployee'">
+                        <partial name="_PartialServiceEmployee" />
+                    </div>
+                    <div ng-show="iData.categoryCode == 'changeJobExperience'">
+                        <partial name="_PartialServiceJobExperience" />
+                    </div>
+                    <div ng-show="iData.categoryCode == 'changePersonal'">
+                        <partial name="_PartialServicePersonal" />
+                    </div>
+                    <div ng-show="iData.categoryCode == 'changeTraning'">
+                        <partial name="_PartialServiceTraning" />
+                    </div>
+                    <div class="d-flex pt-4">
+                        <div ng-show="iData.can_approve == 1" class="btn btn-secondary me-2" ng-click="Approve()">
+                            <i class="bi bi-check-lg"></i> อนุมัติ
+                        </div>
+                        <div ng-show="iData.can_approve == 1" class="btn btn-danger-invert me-2" ng-click="Reject()">
+                            <i class="bi bi-ban"></i> ปฏิเสธ
+                        </div>
+                        <div ng-show="iData.can_cancel == 1" class="btn btn-warning-invert me-2" ng-click="Cancel()">
+                            ยกเลิก
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ServiceCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.id = '@Model.id';
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Service/Detail',
+                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    id: $scope.id
+                    , userBy: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.iData = result;
+
+                        if ($scope.iData.categoryCode == 'changeAddress') {
+                            $scope.LoadAddress($scope.iData);
+                        }
+                        else if ($scope.iData.categoryCode == 'changeEducation') {
+                            $scope.LoadEducation($scope.iData);
+                        }
+                        else if ($scope.iData.categoryCode == 'changeEmployee') {
+                            $scope.LoadEmployee($scope.iData);
+                        }
+                        else if ($scope.iData.categoryCode == 'changeJobExperience') {
+                            $scope.LoadJobExperience($scope.iData);
+                        }
+                        else if ($scope.iData.categoryCode == 'changePersonal') {
+                            $scope.LoadPersonal($scope.iData);
+                        }
+                        else if ($scope.iData.categoryCode == 'changeTraning') {
+                            $scope.LoadTraning($scope.iData);
+                        }
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+
+        $scope.Approve = function () {
+            alertConfirm("อนุมัติ", "ยืนยันการอนุมัติรายการ", function () {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Service/Approve',
+                    headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify({
+                        id: $scope.id
+                        , userBy: '@User.UserId()'
+                    }),
+                    success: function (result) {
+                        $timeout(function () {
+                            alertSuccess("บันทึกรายการสำเร็จ", "", function () {
+                                window.close();
+                            });
+                        }, 0);
+                    },
+                    error: AjaxError
+                });
+            });
+        }
+
+        $scope.Reject = function () {
+            alertConfirm("ปฏิเสธ", "ยืนยันการปฏิเสธรายการ", function () {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Service/Reject',
+                    headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify({
+                        id: $scope.id
+                        , userBy: '@User.UserId()'
+                        , description : ''
+                    }),
+                    success: function (result) {
+                        $timeout(function () {
+                            alertSuccess("บันทึกรายการสำเร็จ", "", function () {
+                                window.close();
+                            });
+                        }, 0);
+                    },
+                    error: AjaxError
+                });
+            });
+        }
+
+        $scope.Cancel = function () {
+            alertConfirm("ยกเลิก", "ยืนยันการยกเลิกรายการ", function () {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Service/Cancel',
+                    headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify({
+                        id: $scope.id
+                        , userBy: '@User.UserId()'
+                    }),
+                    success: function (result) {
+                        $timeout(function () {
+                            alertSuccess("บันทึกรายการสำเร็จ", "", function () {
+                                window.close();
+                            });
+                        }, 0);
+                    },
+                    error: AjaxError
+                });
+            });
+        }
+    });
+</script>

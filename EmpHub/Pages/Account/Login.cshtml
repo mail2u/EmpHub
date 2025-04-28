@@ -1,0 +1,123 @@
+﻿@page
+@model EmpHub.Pages.Account.LoginModel
+@Html.AntiForgeryToken()
+@{
+    Layout = "_LayoutEmpty";
+
+}
+<style>
+    body {
+     /*    background-image: url("../Images/background-login.jpg");
+        background-size: cover;
+        background-position: center center; */
+        background-color: var(--light-orange);
+    }
+    .bg-login{
+        backdrop-filter: blur(5px);
+        border-radius:25px;
+        padding:15px;
+        background: rgba(255, 255, 255, 0.27);
+        height:100%;
+    }
+</style>
+@* Version *@
+<div class="position-fixed bottom-0 end-0 m-3">
+    @webInfo.CurrentValue.version
+</div>
+@* Login *@
+<div ng-controller="LoginCtrl" class="position-absolute top-50 start-50 translate-middle w-100">
+    <div class="row d-flex justify-content-center m-0">
+        <div class="col-sm-11 col-md-11 col-lg-10 col-xl-6">
+            <div class="d-flex align-items-center mb-3 justify-content-center">
+                @if (webInfo.CurrentValue.label.Contains("UAT"))
+                {
+                    <div>
+                        <img src="~/Images/UAT.png" height="50" />
+                    </div>
+                }
+                <div>
+                    <img src="~/Images/Logo-TIP.png" width="120" class="me-2" />
+                </div>
+                <div class="vr ms-1 me-3"></div>
+                <div>
+                    <img src="~/Images/banner-logo-EmpHub.png" width="120" />
+                </div>
+            </div>
+            <div class="bg-white rounded-4 p-4 border shadow-sm">
+                @* Form *@
+                <div class="">
+                    <form action='@Url.Page("/Account/Login")' method="post">
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(m => m.ReturnUrl)
+                        <div class="fw-bolder text-secondary text-center mb-2 fs-3">Human Resource Management</div>
+                        <div class="fs-4 text-light-gray text-center mb-4">ระบบจัดการข้อมูลพนักงานบริษัท ทิพยประกันภัย จำกัด (มหาชน)</div>
+                        <div class="d-sm-flex justify-content-center">
+                            <div class="w-100">
+                                <div class="fw-bolder fs-5 mb-3 text-center">เข้าสู่ระบบด้วย Digital ID
+                                </div>
+                                <div class="d-grid pt-4">
+                                    <a href='@Url.Page("/Index")' class="btn btn-light bg-white text-secondary fw-bolder py-2 px-3 d-flex justify-content-between align-items-center mb-3">
+                                        <div>
+                                            <img src="~/Images/icon-TIP.png" height="35" />
+                                        </div>
+                                        <div>
+                                            แอปพลิเคชัน TIPlife ID
+                                        </div>
+                                        <div></div>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="vr mx-4"></div>
+                            <div class="w-100">
+                                <div class="fw-bolder fs-5 mb-3 text-center">เข้าสู่ระบบด้วย User AD</div>
+                                <div class="text-light-gray">ชื่อผู้ใช้งาน</div>
+                                <input ng-model="username" class="form-control mb-3" name="username" placeholder="Username">
+                                <div class="text-light-gray">รหัสผ่าน</div>
+                                <input ng-model="password" class="form-control mb-4" name="password" placeholder="Password" type="password">
+                                <div class="d-grid">
+                                    <button class="btn btn-orange mb-3 fs-5" type="submit">
+                                        เข้าสู่ระบบ
+                                    </button>
+                                </div>
+                                <div class="text-danger m-2" style="min-height:40px">
+                                    @Model.errorMsg
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('LoginCtrl', function ($scope, $http, $timeout, $filter, $interval) {
+        $scope.face_username = getCookie("username") ?? '';
+
+        // $scope.GenerateToken = function () {
+        //     $.ajax({
+        //         url: 'APIFaceRec/Service/GenerateToken',
+        //         headers: { 'authorization': 'Bearer AccessToken()' },
+        //         headers: {
+        //             "Authorization": "Basic " + btoa("APIFaceRec_username:APIFaceRec_password")
+        //         },
+        //         type: "POST",
+        //         contentType: 'application/json',
+        //         dataType: 'json',
+        //         cache: false,
+        //         data: JSON.stringify({
+        //             mode: 'username'
+        //             , refNo: $scope.face_username
+        //         }),
+        //         success: function (data) {
+        //             location.href = data.url;
+        //         },
+        //         error: function () {
+        //             alertWarning("ไม่พบข้อมูลในระบบ", "กรุณาลงทะเบียนเพื่อเข้าใช้งาน", function () {
+        //                 location.href = 'https://tiplifeintranetuat.dhipayalife.co.th/eFaceRec/Register'
+        //             });
+        //         }
+        //     });
+        // }
+    });
+</script>

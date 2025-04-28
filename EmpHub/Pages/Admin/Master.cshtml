@@ -1,0 +1,251 @@
+﻿@page
+@model EmpHub.Pages.Admin.MasterModel
+@{
+    ViewData["Title"] = "ดูแลระบบ";
+}
+<style>
+</style>
+<div ng-controller="ManageCtrl">
+    <div class="bg-secondary p-2 rounded-4 mb-3">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="d-flex">
+                    <button class="btn btn-circle me-2" ng-click="ShowCreate()">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <select ng-model="iGroup" ng-options="s.value as s.key for s in lGroup" class="form-select me-2" style="width:200px;" ng-change="LoadData()"></select>
+                    <div class="flex-fill">
+                        <div class="position-relative">
+                            <input class="form-control me-2" ng-model="text_filter" placeholder="ค้นหา" ng-change="Paging()" />
+                            <div class="position-absolute top-50 end-0 translate-middle-y me-2">
+                                <i class="fas fa-search"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 text-end">
+                <span class="text-white">
+                    {{ total > 0 ? ((page - 1) * row) + 1 : 0 }} - {{ page * row < total ? page * row : total }} of {{ total }}
+                </span>
+                <button class="btn btn-circle" ng-click="SetPage(page - 1)" ng-disabled="page <= 1">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="btn btn-circle" ng-click="SetPage(page + 1)" ng-disabled="page * row > total">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="rounded-4 p-2 bg-white">
+        <div style="min-height: 460px;" class="position-relative">
+            <div class="overflow-auto">
+                <table class="table table-tip mb-0">
+                    <thead>
+                        <tr>
+                            @*  <th>Group</th> *@
+                            <th>Code</th>
+                            <th>Desc_TH</th>
+                            <th>Desc_EN</th>
+                            @*   <th>Condition_1</th>
+                            <th>Condition_2</th>
+                            <th>Condition_3</th>
+                            <th>Condition_4</th> *@
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="x in lData.slice(((page-1)*row), (page*row))">
+                            @*    <td>
+                            {{ x.groupName }}
+                            </td> *@
+                            <td>
+                                {{ x.code }}
+                            </td>
+                            <td>
+                                {{ x.desc_th }}
+                            </td>
+                            <td>
+                                {{ x.desc_en }}
+                            </td>
+                            <td>
+                                {{ x.condition_1 }}
+                            </td>
+                            @*  
+                            <td>
+                            {{ x.condition_2 }}
+                            </td>
+                            <td>
+                            {{ x.condition_3 }}
+                            </td>
+                            <td>
+                            {{ x.condition_4 }}
+                            </td> *@
+                            <td class="text-end">
+                                <button class="btn btn-circle" ng-click="ShowEdit(x)">
+                                    <i class="fas fa-pen"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div ng-show="lData.length == 0">
+                    <div class="text-gray fs-4 position-absolute top-50 start-50 translate-middle">
+                        ไม่พบข้อมูล
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @* Modify Modal *@
+    <div id="UpdateModal" class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">ข้อมูล Master</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <div>Group</div>
+                        <input ng-model="iData.groupName" class="form-control" readonly />
+                    </div>
+                    <div class="mb-3">
+                        <div>Code</div>
+                        <input ng-model="iData.code" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <div>Desc TH</div>
+                        <input ng-model="iData.desc_th" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <div>Desc EN</div>
+                        <input ng-model="iData.desc_en" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <div>Condition 1</div>
+                        <input ng-model="iData.condition_1" class="form-control" />
+                    </div>
+                    @*    
+                    <div class="mb-3">
+                    <div>Condition 2</div>
+                    <input ng-model="iData.condition_2" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                    <div>Condition 3</div>
+                    <input ng-model="iData.condition_3" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                    <div>Condition 4</div>
+                    <input ng-model="iData.condition_4" class="form-control" />
+                    </div> *@
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger-invert" ng-click="Delete()" ng-show="iData.id > 0">ลบข้อมูล</button>
+                    <button type="button" class="btn btn-primary" ng-click="Update()">บันทึกรายการ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ManageCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.page = 1
+        $scope.row = 10;
+        $scope.lGroup = [
+            { key: "ฝ่าย/ส่วนงาน", value: "departmentCode" }
+            , { key: "ตำแหน่ง", value: "positionCode" }
+            , { key: "ระดับการศึกษา", value: "educationCode" }
+            , { key: "ประเภท", value: "hrCategory" }
+        ];
+        $scope.iGroup = $scope.lGroup[0].value;
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: $scope.iGroup
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.tempData = result;
+                        $scope.Paging();
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+        $scope.Paging = function () {
+            $scope.lData = $filter('filter')($scope.tempData, $scope.text_filter);
+
+            $scope.total = $scope.lData.length;
+        }
+
+        $scope.SetPage = function (p) {
+            $scope.page = p;
+        }
+
+        $scope.ShowCreate = function () {
+            $scope.iData = { id: 0, groupName: $scope.iGroup };
+            $("#UpdateModal").modal('show');
+        }
+
+        $scope.ShowEdit = function (x) {
+            $scope.iData = x;
+            $("#UpdateModal").modal('show');
+        }
+
+        $scope.Update = function () {
+            var url = '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/Create';
+            $("#UpdateModal").modal('hide');
+
+            if ($scope.iData.id > 0) {
+                var url = '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/Update';
+            }
+
+            $.ajax({
+                url: url
+                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , cache: false
+                , data: JSON.stringify($scope.iData)
+                , success: function () {
+                    $timeout(function () {
+                        $scope.LoadData();
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+
+        $scope.Delete = function () {
+            $("#UpdateModal").modal('hide');
+
+            $("#btnOK_warning").unbind().click(function () {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/Delete'
+                    , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , cache: false
+                    , data: JSON.stringify($scope.iData)
+                    , success: function () {
+                        $timeout(function () {
+                            $scope.LoadData();
+                        }, 0);
+                    }
+                    , error: AjaxError
+                });
+            });
+            dlgWarning("ลบข้อมูล Master", "ต้องการยืนยันการทำรายการ");
+        }
+    });
+</script>

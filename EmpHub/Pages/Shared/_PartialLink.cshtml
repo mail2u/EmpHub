@@ -1,0 +1,167 @@
+﻿@{
+    String refId = Model as String;
+}
+<div ng-controller="LinkCtrl">
+    <div class="rounded-5 border shadow-sm p-2 bg-white mb-3" ng-show="lData.length > 0 || iData.can_link == 1">
+        <div class="fw-bolder rounded-4 p-2 bg-secondary text-white ps-3"><i class="bi bi-link-45deg"></i> การเชื่อมโยง</div>
+        <div class="p-2 pe-0 bg-white rounded-4">
+            <div ng-repeat="x in lData" ng-mouseover="x.is_focus = 1" ng-mouseleave="x.is_focus = 0">
+                <div class="bg-light-hover bg-light rounded p-2 mb-1" ng-click="OpenDetail(x)">
+                    <div class="d-flex justify-content-between">
+                        <div class="text-secondary mb-1 select">
+                            <b>{{ x.serviceNo }}</b>
+                        </div>
+                        <div ng-show="x.is_focus == 1 && iData.can_link == 1" ng-mouseover="x.is_action = 1" ng-mouseleave="x.is_action = 0">
+                            <button class="btn p-0 text-secondary me-2" title="แก้ไข" ng-click="ShowEdit(x)">
+                                <i class="bi bi-pen"></i>
+                            </button>
+                            <button class="btn p-0 text-danger" title="ลบ" ng-click="Delete(x)">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="select">
+                        {{ x.description }}
+                    </div>
+                </div>
+            </div>
+            <div class="btn btn-link" ng-click="ShowCreate()" ng-show="iData.can_link == 1">
+                เพิ่มรายการ
+            </div>
+        </div>
+    </div>
+    @* Modal *@
+    <div id="linkServiceModal" class="modal fade dialog-info" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered modal-md">
+            <div class="modal-content">
+                <div class="modal-header bg-secondary text-white">
+                    <div class="modal-title">เชื่อมโยงใบงาน</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-3">
+                    <div class="mb-2">
+                        <b>เลขใบงาน</b>
+                        <input ng-model="iLink.serviceNo" class="form-control" ng-readonly="iLink.refId != ''" />
+                    </div>
+                    <div class="mb-3">
+                        <b>รายละเอียด</b>
+                        <textarea ng-model="iLink.description" class="form-control" rows="4" maxlength="1000"></textarea>
+                        {{ iLink.description.length }}/1000
+                    </div>
+                    <div class="text-end">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close" ng-click="Save()">
+                            บันทึก
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('LinkCtrl', function ($scope, $http, $timeout, $filter, $interval) {
+
+        $scope.$parent.LoadLink = function (x) {
+            $scope.iData = x;
+            $scope.refId = $scope.iData.id;
+            $scope.LoadData();
+        }
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceLink/DataList',
+                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    id: $scope.refId
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.lData = result;
+                    }, 0);
+                }
+            });
+        }
+
+        $scope.ShowCreate = function () {
+            $scope.iLink = {
+                id: $scope.id
+                ,
+                refId: ''
+                ,
+                serviceNo: ''
+                ,
+                description: ''
+                ,
+                create_by: '@User.UserId()'
+            };
+            $("#linkServiceModal").modal('show');
+        }
+
+        $scope.ShowEdit = function (x) {
+            $scope.iLink = x;
+            $scope.iLink.update_by = '@User.UserId()';
+            $("#linkServiceModal").modal('show');
+        }
+
+        $scope.Save = function () {
+            $("#linkServiceModal").modal('hide');
+
+            var url = '@webAPI.CurrentValue.APIEmpHub/api/ServiceLink/Create';
+
+            if ($scope.iLink.refId != '') {
+                url = '@webAPI.CurrentValue.APIEmpHub/api/ServiceLink/Update';
+            }
+
+            $.ajax({
+                url: url,
+                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                type: "POST",
+                contentType: 'application/json',
+                cache: false,
+                data: JSON.stringify($scope.iLink),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.LoadData();
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+
+        $scope.Delete = function (x) {
+            alertConfirm("คุณต้องการลบการเชื่อมโยง", "ยืนยันการทำรายการ", function () {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceLink/Delete',
+                    headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify({
+                        id: x.id
+                        , refId: x.refId
+                        , update_by: '@User.UserId()'
+                    }),
+                    success: function (result) {
+                        $timeout(function () {
+                            $scope.LoadData();
+                        }, 0);
+                    }
+                });
+            });
+        }
+
+        $scope.OpenDetail = function (x) {
+            if (x.is_action != 1) {
+                if ($scope.refId == x.refId) {
+                    window.open('@Url.Page("/Service/Detail/")' + x.id, '_blank');
+                } else {
+                    window.open('@Url.Page("/Service/Detail/")' + x.refId, '_blank');
+                }
+            }
+        }
+    });
+</script>

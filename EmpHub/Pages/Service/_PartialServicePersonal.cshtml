@@ -1,0 +1,165 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<div ng-controller="ServicePersonalCtrl" class="mb-4">
+    @* View *@
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="fw-bolder text-orange">ข้อมูลที่ต้องการปรับปรุง</div>
+            <div class="p-3 bg-gray rounded-4 h-100">
+                <div class="row">
+                    <div class="col-sm-5 mb-3">
+                        <div class="text-gray">
+                            ชื่อ-สกุล (ภาษาไทย)
+                        </div>
+                        <div class="fw-bolder">{{ iData.firstname_th }} {{ iData.lastname_th }}</div>
+                    </div>
+                    <div class="col-sm-5 mb-3">
+                        <div class="text-gray">
+                            ชื่อ-สกุล (ภาษาอังกฤษ)
+                        </div>
+                        <div class="fw-bolder">{{ iData.firstname_en }} {{ iData.lastname_en }}</div>
+                    </div>
+                    <div class="col-sm-2 mb-3">
+                        <div class="text-gray">
+                            ชื่อเล่น
+                        </div>
+                        <div class="fw-bolder">{{ iData.nickname }}</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-5 mb-3">
+                        <div class="text-gray">
+                            เบอร์ติดต่อ
+                        </div>
+                        <div class="fw-bolder">{{ iData.phoneNo != '' ? iData.phoneNo : '-' }}</div>
+                    </div>
+                    <div class="col-sm-5 mb-3">
+                        <div class="text-gray">
+                            วันเกิด
+                        </div>
+                        <div class="fw-bolder">{{ iData.birth_date }}</div>
+                    </div>
+                    <div class="col-sm-2 mb-3">
+                        <div class="text-gray">
+                            เพศ
+                        </div>
+                        <div class="fw-bolder">{{ iData.sex == 'Male' ? 'ชาย' : iData.sex == 'Female' ? 'หญิง' : '-'  }}</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-5 mb-3">
+                        <div class="text-gray">
+                            อีเมล์
+                        </div>
+                        <div class="fw-bolder">{{ iData.email }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6" ng-show="status == 'Pending'">
+            <div class="fw-bolder text-orange">ข้อมูลในระบบ</div>
+            <div class="p-3 bg-gray rounded-4 h-100">
+                <div class="row">
+                    <div class="col-sm-5 mb-3">
+                        <div class="text-gray">
+                            ชื่อ-สกุล (ภาษาไทย)
+                        </div>
+                        <div class="fw-bolder text-decoration-line-through">{{ iUser.firstname_th }} {{ iUser.lastname_th }}</div>
+                    </div>
+                    <div class="col-sm-5 mb-3">
+                        <div class="text-gray">
+                            ชื่อ-สกุล (ภาษาอังกฤษ)
+                        </div>
+                        <div class="fw-bolder text-decoration-line-through">{{ iUser.firstname_en }} {{ iUser.lastname_en }}</div>
+                    </div>
+                    <div class="col-sm-2 mb-3">
+                        <div class="text-gray">
+                            ชื่อเล่น
+                        </div>
+                        <div class="fw-bolder text-decoration-line-through">{{ iUser.nickname }}</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-5 mb-3">
+                        <div class="text-gray">
+                            เบอร์ติดต่อ
+                        </div>
+                        <div class="fw-bolder">{{ iData.phoneNo != '' ? iData.phoneNo : '-' }}</div>
+                    </div>
+                    <div class="col-sm-5 mb-3">
+                        <div class="text-gray">
+                            วันเกิด
+                        </div>
+                        <div class="fw-bolder">{{ iData.birth_date }}</div>
+                    </div>
+                    <div class="col-sm-2 mb-3">
+                        <div class="text-gray">
+                            เพศ
+                        </div>
+                        <div class="fw-bolder">{{ iData.sex == 'Male' ? 'ชาย' : iData.sex == 'Female' ? 'หญิง' : '-'  }}</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-5 mb-3">
+                        <div class="text-gray">
+                            อีเมล์
+                        </div>
+                        <div class="fw-bolder">{{ iData.email }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ServicePersonalCtrl', function ($scope, $http, $timeout, $filter) {
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/ServicePersonal/DetailByRef',
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    refId: $scope.refId
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.iData = result;
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+
+        $scope.LoadUser = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserPersonal',
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.userId
+                    , create_by: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.iUser = result;
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+
+        $scope.$parent.LoadPersonal = function (x) {
+            $scope.refId = x.id;
+            $scope.userId = x.userId;
+            $scope.status = x.status;
+            $scope.LoadData();
+            $scope.LoadUser();
+        }
+        });
+</script>

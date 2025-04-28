@@ -1,0 +1,105 @@
+﻿<style>
+
+    .box {
+        margin-left: 0;
+    }
+
+    .box-cancel {
+        color: var(--bs-danger);
+        border-left: 2px solid var(--bs-danger) !important;
+    }
+
+    .box-current {
+        color: var(--bs-blue);
+        border-left: 2px solid var(--bs-blue) !important;
+    }
+
+    .box-complete {
+        border-left: 2px solid var(--tip-blue) !important;
+    }
+
+    .box-info {
+        color: var(--tip-blue);
+        border-left: 2px solid var(--tip-blue) !important;
+    }
+
+    .box-future {
+        color: var(--gray) !important;
+        border-left: 2px dashed var(--gray) !important;
+    }
+</style>
+<div ng-controller="TrackWorkCtrl">
+    <div class="rounded-5 border shadow-sm p-2 bg-white mb-3" ng-show="lData.length > 0">
+        <div class="fw-bolder rounded-4 p-2 bg-secondary text-white ps-3"><i class="bi bi-person-gear"></i> จัดการผู้ดำเนินการ</div>
+        <div class="p-2 pe-0 bg-white rounded-4">
+            <div ng-repeat="x in lData" ng-mouseover="x.is_focus = 1" ng-mouseleave="x.is_focus = 0">
+                <div class="bg-light-hover bg-light rounded p-2 mb-1" ng-click="OpenDetail(x)">
+                    <div class="d-flex justify-content-between">
+                        <div class="text-secondary mb-1">
+                            <div class="fw-bolder">{{ x.actionName }}</div>
+                            <div>{{ x.position }} {{ x.department }}</div>
+                        </div>
+                        <div ng-show="x.is_focus == 1 && x.can_delete == 1">
+                            <button class="btn p-0 text-danger" title="ลบ" ng-click="Delete(x)">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('TrackWorkCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.$parent.LoadTrackWork = function (refId) {
+            $scope.refId = refId;
+            $scope.LoadData();
+        }
+
+        $scope.LoadData = function(){
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceStep/WorkList',
+                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify({
+                    refId: $scope.refId
+                    , userId: '@User.UserId()'
+                }),
+                cache: false,
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.lData = result;
+                    }, 0);
+                }
+            });
+        }
+
+        $scope.Delete = function (x) {
+            alertConfirm("คุณต้องการลบผู้ดำเนินการ", "ยืนยันการทำรายการ", function () {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceStep/WorkDelete',
+                    headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify({
+                        stepId: x.stepId
+                        , refId: x.refId
+                        , stepIndex: x.stepIndex
+                        , actionBy: x.actionBy
+                        , update_by: '@User.UserId()'
+                    }),
+                    success: function (result) {
+                        $timeout(function () {
+                            $scope.LoadData();
+                            $scope.$parent.LoadTrack($scope.refId);
+                        }, 0);
+                    }
+                });
+            });
+        }
+    });
+</script>

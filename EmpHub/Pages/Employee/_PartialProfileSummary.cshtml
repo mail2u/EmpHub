@@ -1,0 +1,96 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<div ng-controller="ProfileSummaryCtrl">
+    <div class="bg-white rounded-4 p-4">
+        <div class="fw-bolder mb-2">ความสมบูรณ์ของประวัติ</div>
+        <div class="position-relative">
+            <canvas id="chart_summary"></canvas>
+            <div class="position-absolute top-50 start-50 translate-middle fs-1">
+                {{ totalPer | number : 0 }}%
+            </div>
+        </div>
+        <div>
+            <div class="d-flex mb-2" ng-repeat="x in lStatus">
+                <div class="me-2">
+                    <span ng-show="x.is_success == 0" class="fw-bolder text-orange">
+                        <i class="bi bi-x"></i>
+                    </span>
+                    <span ng-show="x.is_success == 1" class="fw-bolder text-green">
+                        <i class="bi bi-check2"></i>
+                    </span>
+                </div>
+                <div>
+                    <a href="{{x.link}}" class="text-decoration-none text-secondary">
+                        {{ x.title }} <span class="text-gray">{{ x.per }}%</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ProfileSummaryCtrl', function ($scope, $http, $timeout, $filter) {
+        var chart_summary = new Chart(
+            document.getElementById('chart_summary'),
+            {
+                type: 'pie',
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    aspectRatio: 1,
+                    borderRadius: 5,
+                    weight: 5,
+                    cutout: 85,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: false
+                        }
+                    },
+                }
+            }
+        );
+
+        $scope.InitChart = function () {
+            $scope.userId = $scope.$parent.userId;
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/ProfileSummary'
+                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , cache: false
+                , data: JSON.stringify({
+                    userId: $scope.userId
+                })
+                , cache: false
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lStatus = JSON.parse(result);
+
+                        var totalHave = $scope.lStatus.reduce((sum, item) => sum + item.per, 0);
+                        var totalDiff = 600 - totalHave;
+                        $scope.totalPer = (totalHave / 600) * 100;
+
+                        chart_summary.data = {
+                            labels: ['Success', 'Wait'],
+                            datasets: [{
+                                data: [totalHave, totalDiff],
+                                backgroundColor: ['#ff8900', 'rgb(222,222,222,0.2)'],
+                                borderWidth: 0
+                            }],
+                        };
+                        chart_summary.update();
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.InitChart();
+    });
+</script>

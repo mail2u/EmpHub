@@ -1,0 +1,28 @@
+﻿@page
+@model EmpHub.Pages.Account.ProfileModel
+@{
+    ViewData["Title"] = "Profile";
+}
+<style>
+    .bg-main {
+        min-height: 100%;
+    }
+
+    .btn-signature {
+        width: 200px;
+        height: 120px;
+        background-color: var(--light-gray);
+        border: 2px dashed var(--gray);
+        border-radius: 15px;
+        position: relative;
+        cursor: pointer;
+    }
+</style>
+<div ng-controller="DataCtrl">
+    <partial name="Employee/_PartialProfile" />
+</div>
+<script>
+    app.controller('DataCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.userId = '@User.UserId()';
+    });
+</script>

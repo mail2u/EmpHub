@@ -1,0 +1,177 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<div ng-controller="ServiceEmployeeCtrl" class="mb-4">
+    @* View *@
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="fw-bolder text-orange">ข้อมูลที่ต้องการปรับปรุง</div>
+            <div class="p-3 bg-gray rounded-4 h-100">
+                <div class="row">
+                    <div class="col-sm-4 mb-3">
+                        <div class="text-gray">
+                            รหัสพนักงาน
+                        </div>
+                        <div class="fw-bolder ">{{ iData.employeeCode }}</div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="text-gray">
+                            ประเภท
+                        </div>
+                        <div class="fw-bolder ">{{ iData.employeeDesc }}</div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="text-gray">
+                            วันที่เริ่มงาน
+                        </div>
+                        <div class="fw-bolder ">{{ iData.join_date }}</div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="text-gray">
+                            ตำแหน่ง
+                        </div>
+                        <div class="fw-bolder ">{{ iData.positionDesc }}</div>
+                    </div>
+                    <div class="col-sm-8 mb-3">
+                        <div class="text-gray">
+                            ฝ่าย/ส่วนงาน
+                        </div>
+                        <div class="fw-bolder ">{{ iData.departmentDesc }}</div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="text-gray">
+                            เบอร์ติดต่อภายใน
+                        </div>
+                        <div class="fw-bolder">{{ iData.ext != '' ? iData.ext : '-' }}</div>
+                    </div>
+                    <div class="col-sm-8 mb-3">
+                        <div class="text-gray">
+                            อีเมล์บริษัท
+                        </div>
+                        <div class="fw-bolder ">{{ iData.email }}</div>
+                    </div>
+                    <div class="col-sm-12 mb-3">
+                        <div class="text-gray">
+                            หัวหน้างาน
+                        </div>
+                        <div>
+                            <div class="fw-bolder ">{{ iData.supervisorName }}</div>
+                            <div>{{ iData.supervisorPosition }}</div>
+                            <div>{{ iData.supervisorDepartment }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6" ng-show="status == 'Pending'">
+            <div class="fw-bolder text-orange">ข้อมูลในระบบ</div>
+            <div class="p-3 bg-gray rounded-4 h-100">
+                <div class="row">
+                    <div class="col-sm-4 mb-3">
+                        <div class="text-gray">
+                            รหัสพนักงาน
+                        </div>
+                        <div class="fw-bolder text-decoration-line-through">{{ iUser.employeeCode }}</div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="text-gray">
+                            ประเภท
+                        </div>
+                        <div class="fw-bolder text-decoration-line-through">{{ iUser.employeeDesc }}</div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="text-gray">
+                            วันที่เริ่มงาน
+                        </div>
+                        <div class="fw-bolder text-decoration-line-through">{{ iUser.join_date }}</div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="text-gray">
+                            ตำแหน่ง
+                        </div>
+                        <div class="fw-bolder text-decoration-line-through">{{ iUser.positionDesc }}</div>
+                    </div>
+                    <div class="col-sm-8 mb-3">
+                        <div class="text-gray">
+                            ฝ่าย/ส่วนงาน
+                        </div>
+                        <div class="fw-bolder text-decoration-line-through">{{ iUser.departmentDesc }}</div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="text-gray">
+                            เบอร์ติดต่อภายใน
+                        </div>
+                        <div class="fw-bolder text-decoration-line-through">{{ iUser.ext != '' ? iUser.ext : '-' }}</div>
+                    </div>
+                    <div class="col-sm-8 mb-3">
+                        <div class="text-gray">
+                            อีเมล์บริษัท
+                        </div>
+                        <div class="fw-bolder text-decoration-line-through">{{ iUser.email }}</div>
+                    </div>
+                    <div class="col-sm-12 mb-3">
+                        <div class="text-gray">
+                            หัวหน้างาน
+                        </div>
+                        <div>
+                            <div class="fw-bolder text-decoration-line-through">{{ iUser.supervisorName }}</div>
+                            <div class="text-decoration-line-through">{{ iUser.supervisorPosition }}</div>
+                            <div class="text-decoration-line-through">{{ iUser.supervisorDepartment }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ServiceEmployeeCtrl', function ($scope, $http, $timeout, $filter) {
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceEmployee/DetailByRef',
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    refId: $scope.refId
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.iData = result;
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+
+        $scope.LoadUser = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserEmployee',
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.userId
+                    , create_by: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.iUser = result;
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+
+        $scope.$parent.LoadEmployee = function (x) {
+            $scope.refId = x.id;
+            $scope.userId = x.userId;
+            $scope.status = x.status;
+            $scope.LoadData();
+            $scope.LoadUser();
+        }
+    });
+</script>

@@ -1,0 +1,286 @@
+﻿@page
+@model EmpHub.Pages.Admin.InFuncModel
+@{
+    ViewData["Title"] = "ดูแลระบบ";
+}
+<style>
+</style>
+<div ng-controller="ManageCtrl" class="p-2">
+    <div class="mb-3">
+        <div class="fs-4"><i class="bi bi-ui-checks-grid"></i> กลุ่มสิทธิ์ฟังก์ชั่น</div>
+    </div>
+    <div class="row">
+        <div class="col-sm-3 mb-3" ng-repeat="r in lRole">
+            <div class="rounded-5 p-4 bg-white border shadow-sm mb-3 h-100" style="min-height:300px;">
+                <div class="d-flex">
+                    <div class="fw-bolder flex-fill">
+                        <i class="bi bi-people"></i> {{ r.title }}
+                    </div>
+                    <div>
+                        <div class="btn btn-circle text-danger" title="ลบกลุ่ม" ng-click="DeleteRole(r)">
+                            <i class="bi bi-x-circle"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-3 p-1">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex" ng-repeat="f in r.lFunc">
+                            <div class="flex-fill">
+                                {{ f.title }}
+                            </div>
+                            <div>
+                                <div ng-click="DeleteFunc(f,r)" class="btn p-0">
+                                    <i class="bi bi-trash"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item p-0">
+                            <div class="btn btn-link" ng-click="ShowAddFunc(r)">
+                                <i class="bi bi-plus-circle-fill"></i> เพิ่มฟังก์ชั่น
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3 mb-3">
+            <div class="rounded-5 p-4 btn btn-light-dash d-grid h-100" style="min-height:300px;" ng-click="ShowCreateRole()">
+                <div class="fw-bolder">
+                    เพิ่มกลุ่มสิทธิ์
+                </div>
+            </div>
+        </div>
+    </div>
+    @* Role Modal *@
+    <div id="AddRoleModal" class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">ข้อมูลกลุ่มสิทธิ์</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-2">
+                        <div class="fw-bolder">ชื่อกลุ่ม</div>
+                        <input ng-model="iRole.title" class="form-control" maxlength=50 />
+                    </div>
+                    <div class="btn btn-secondary" ng-click="SaveRole()" ng-disabled="iRole.title == ''">
+                        บันทึก
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @* Func Modal *@
+    <div id="AddFuncModal" class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">ข้อมูลฟังก์ชั่น</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-2">
+                        <div class="list-group list-group-flush overflow-auto">
+                            <div class="list-group-item d-flex align-items-center justify-content-between" ng-repeat="x in lFunc">
+                                <div>
+                                    {{ x.title }}
+                                </div>
+                                <div>
+                                    <button ng-click="CreateFunc(x)" class="btn btn-circle">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ManageCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.page = 1
+        $scope.row = 10;
+        $scope.roleId = '';
+        $scope.roleType = 'Function';
+
+        $scope.LoadRole = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Role/DataList'
+                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    roleType: $scope.roleType
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lRole = result;
+
+                        for (var i = 0; i < $scope.lRole.length; i++) {
+                            $scope.LoadFuncInRole($scope.lRole[i]);
+                        }
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadRole();
+
+        $scope.LoadFuncInRole = function (x) {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/FuncInRole/DataList'
+                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    roleId: x.roleId
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        x.lFunc = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+
+        $scope.LoadFunc = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Function/DataList'
+                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    userId: ''
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lFunc = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadFunc();
+
+        /* Func */
+        $scope.ShowAddFunc = function (r) {
+            $scope.iRole = r;
+            $("#AddFuncModal").modal('show');
+        }
+
+        $scope.CreateFunc = function (x) {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/FuncInRole/Create'
+                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , cache: false
+                , data: JSON.stringify({
+                    roleId: $scope.iRole.roleId
+                    , funcId: x.funcId
+                    , create_by: '@User.UserId()'
+                })
+                , success: function () {
+                    $timeout(function () {
+                        $scope.LoadFuncInRole($scope.iRole);
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+
+        $scope.DeleteFunc = function (x, r) {
+            alertConfirm("ลบฟังก์ชั่น", "ต้องการยืนยันการทำรายการ", () => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/FuncInRole/Delete'
+                    , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , cache: false
+                    , data: JSON.stringify({
+                        roleId: x.roleId
+                        , funcId: x.funcId
+                        , update_by: '@User.UserId()'
+                    })
+                    , success: function () {
+                        $timeout(function () {
+                            $scope.LoadFuncInRole(r);
+                        }, 0);
+                    }
+                    , error: AjaxError
+                });
+            });
+        }
+
+
+        /* Role */
+        $scope.ShowCreateRole = function () {
+            $scope.iRole = { roleId: '', roleType: $scope.roleType, title: '', create_by: '@User.UserId()' };
+            $("#AddRoleModal").modal('show');
+        }
+
+        $scope.ShowEditRole = function (x) {
+            $scope.iRole = x;
+            $scope.iRole.update_by = '@User.UserId()';
+
+            $("#AddRoleModal").modal('show');
+        }
+
+        $scope.SaveRole = function () {
+            $("#AddRoleModal").modal('hide');
+
+            var url = '@webAPI.CurrentValue.APIEmpHub/api/Role/Create';
+
+            if ($scope.iRole.roleId != '') {
+                url = '@webAPI.CurrentValue.APIEmpHub/api/Role/Updtae'
+            }
+            $.ajax({
+                url: url
+                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , cache: false
+                , data: JSON.stringify($scope.iRole)
+                , success: function () {
+                    $timeout(function () {
+                        $scope.LoadRole();
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+
+        $scope.DeleteRole = function (x) {
+            alertConfirm("ลบกลุ่มสิทธิ์", "ต้องการยืนยันการทำรายการ", () => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Role/Delete'
+                    , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , cache: false
+                    , data: JSON.stringify({
+                        roleId: x.roleId
+                        , update_by: '@User.UserId()'
+                    })
+                    , success: function () {
+                        $timeout(function () {
+                            $scope.LoadRole();
+                        }, 0);
+                    }
+                    , error: AjaxError
+                });
+            });
+        }
+
+    });
+</script>

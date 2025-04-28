@@ -1,0 +1,163 @@
+﻿@page
+@model EmpHub.Pages.Admin.IndexModel
+@{
+    ViewData["Title"] = "EmpHub";
+}
+<style>
+    .bg-main {
+        min-height: calc(100% - 70px);
+    }
+</style>
+<div class="p-2">
+    <div class="d-flex justify-content-between">
+        <div class="mb-3">
+            <div class="fs-4"><i class="bi bi-file-earmark-text"></i> ดูแลระบบ</div>
+        </div>
+    </div>
+    <div class="rounded-4 p-4 bg-white" style="min-height:400px;">
+        <div class="fs-4">การอนุมัติ</div>
+        <div class="row">
+            <div class="col-sm-6 col-lg-4">
+                <a href='@Url.Page("/Admin/Relation")?sysId=ITS' class="text-decoration-none">
+                    <div class="btn-icon d-flex">
+                        <img src="~/images/icon-settings.png" width="80" class="me-4" />
+                        <div>
+                            <div class="fw-bolder fs-5">Relation</div>
+                            <div>หัวหน้างานของผู้ใช้งาน</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-4 mb-3">
+                <a href='@Url.Page("/Admin/GroupUser")' class="text-decoration-none">
+                    <div class="btn-icon d-flex">
+                        <img src="~/images/icon-settings.png" width="80" class="me-4" />
+                        <div>
+                            <div class="fw-bolder fs-5">Group User</div>
+                            <div>รายชื่อกลุ่มผู้ใช้งาน</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-4 mb-3">
+                <a href='@Url.Page("/Admin/Process")' class="text-decoration-none">
+                    <div class="btn-icon d-flex">
+                        <img src="~/images/icon-settings.png" width="80" class="me-4" />
+                        <div>
+                            <div class="fw-bolder fs-5">Process</div>
+                            <div>เงื่อนไขและขั้นตอนการอนุมัติ</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="fs-4">สิทธิ์การใช้งานเมนู</div>
+        <div class="row">
+            <div class="col-sm-6 col-lg-4 mb-3">
+                <a href='@Url.Page("/Admin/InFunc")' class="text-decoration-none">
+                    <div class="btn-icon d-flex">
+                        <img src="~/images/icon-settings.png" width="80" class="me-4" />
+                        <div>
+                            <div class="fw-bolder fs-5">Role Function</div>
+                            <div>จัดการฟังก์ชั่นการทำงานลองแต่ละกลุ่มสิทธิ์</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-4 mb-3">
+                <a href='@Url.Page("/Admin/InRoleFunction")' class="text-decoration-none">
+                    <div class="btn-icon d-flex">
+                        <img src="~/images/icon-settings.png" width="80" class="me-4" />
+                        <div>
+                            <div class="fw-bolder fs-5">User In Role Function</div>
+                            <div>จัดการสิทธิ์ในการเข้าใช้งานระบบ</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="fs-4">หัวข้อและหมวดหมู่</div>
+        <div class="row">
+            <div class="col-sm-6 col-lg-4 mb-3">
+                <a href='@Url.Page("/Admin/Category")' class="text-decoration-none">
+                    <div class="btn-icon d-flex">
+                        <img src="~/images/icon-settings.png" width="80" class="me-4" />
+                        <div>
+                            <div class="fw-bolder fs-5">Category</div>
+                            <div>จัดการหมวดหลักและหมวดย่อย</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-4 mb-3">
+                <a href='@Url.Page("/Admin/InCategory")' class="text-decoration-none">
+                    <div class="btn-icon d-flex">
+                        <img src="~/images/icon-settings.png" width="80" class="me-4" />
+                        <div>
+                            <div class="fw-bolder fs-5">Role Category</div>
+                            <div>จัดการฟังก์ชั่นการทำงานลองแต่ละกลุ่มสิทธิ์</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-4 mb-3">
+                <a href='@Url.Page("/Admin/InRoleCategory")' class="text-decoration-none">
+                    <div class="btn-icon d-flex">
+                        <img src="~/images/icon-settings.png" width="80" class="me-4" />
+                        <div>
+                            <div class="fw-bolder fs-5">User in Role Category</div>
+                            <div>จัดการสิทธิ์ในการเข้าใช้งานระบบ</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="fs-4">อื่น ๆ</div>
+        <div class="row">
+            <div class="col-sm-6 col-lg-4 mb-3">
+                <a href='@Url.Page("/Admin/User")' class="text-decoration-none">
+                    <div class="btn-icon d-flex">
+                        <img src="~/images/icon-settings.png" width="80" class="me-4" />
+                        <div>
+                            <div class="fw-bolder fs-5">User</div>
+                            <div>ตรวจสอบประวัติการส่งเมล์</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-4 mb-3">
+                <a href='@Url.Page("/Admin/Mail")' class="text-decoration-none">
+                    <div class="btn-icon d-flex">
+                        <img src="~/images/icon-settings.png" width="80" class="me-4" />
+                        <div>
+                            <div class="fw-bolder fs-5">Mail</div>
+                            <div>ตรวจสอบประวัติการส่งเมล์</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-4">
+                <a href='@Url.Page("/Admin/Master")' class="text-decoration-none">
+                    <div class="btn-icon d-flex">
+                        <img src="~/images/icon-settings.png" width="80" class="me-4" />
+                        <div>
+                            <div class="fw-bolder fs-5">Master</div>
+                            <div>จัดการค่าต่าง ๆ ที่ใช้ในระบบ</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-4">
+                <a href='@Url.Page("/Admin/Document")' class="text-decoration-none">
+                    <div class="btn-icon d-flex">
+                        <img src="~/images/icon-settings.png" width="80" class="me-4" />
+                        <div>
+                            <div class="fw-bolder fs-5">คำถามที่พบบ่อย</div>
+                            <div>จัดการเอกสารที่ใช้ในการแก้ไขปัญหาที่พบบ่อย</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

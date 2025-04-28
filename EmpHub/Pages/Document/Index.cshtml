@@ -1,0 +1,108 @@
+﻿@page
+@model EmpHub.Pages.Document.IndexModel
+@{
+    ViewData["Title"] = "EmpHub";
+}
+<style>
+    .bg-main {
+        background-color: var(--light-blue);
+        min-height: calc(100% - 70px);
+    }
+</style>
+<div ng-controller="ManageCtrl" class="p-2">
+    <div class="mb-3">
+        <div class="fs-4"><i class="bi bi-question-lg"></i> คำถามที่พบบ่อย</div>
+    </div>
+    <div class="rounded-5 p-2 bg-white">
+        <div class="list-group list-group-flush rounded-4">
+            <div class="list-group-item list-group-item-action select" ng-repeat="x in lData" ng-click="SelectDetail(x)">
+                <div class="fs-5 fw-bolder">
+                    {{ x.title }}
+                </div>
+                <div>
+                    {{ x.detail }}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="offcanvas offcanvas-end" data-bs-backdrop="false" tabindex="-1" id="offcanvasPreviewPDF" aria-labelledby="offcanvasScrollingLabel" style="width:800px">
+        <div class="offcanvas-header">
+            <div class="offcanvas-title" id="offcanvasScrollingLabel">
+                <div class="fs-5 fw-bolder">{{ iData.title }}</div>
+                {{ iData.detail }}
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <embed ng-src="{{ pdfUrl }}" width="100%" height="100%" ng-show="pdfUrl != ''"></embed>
+            <div ng-show="pdfUrl == ''" class="h-100 w-100 d-flex align-items-center justify-content-center">
+                <div class="opacity-25 text-center">
+                    <img src="~/Images/empty.png" width="120" />
+                    <div class="fs-4">ไม่มีเอกสารประกอบ</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ManageCtrl', function ($scope, $http, $timeout, $filter, $sce) {
+        $scope.page = 1
+        $scope.row = 10;
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Document/DataList'
+                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    create_by: ''
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lData = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+        $scope.SelectDetail = function (x) {
+            $scope.iData = x;
+            $scope.LoadAttach($scope.iData);
+        }
+
+        /* Attach */
+        $scope.LoadAttach = function (x) {
+            $scope.iAttach = null;
+            $scope.pdfUrl = '';
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/File/DataList',
+                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    refId: x.docId
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        x.lAttach = result;
+                        $("#offcanvasPreviewPDF").offcanvas('show');
+
+                        if (x.lAttach.length > 0) {
+                            $scope.iAttach = x.lAttach[0];
+                            $scope.pdfUrl = $sce.trustAsResourceUrl('data:application/pdf;base64,' + $scope.iAttach.base64);
+                           
+                        }
+                    }, 0);
+                }
+            });
+        }
+    });
+</script>

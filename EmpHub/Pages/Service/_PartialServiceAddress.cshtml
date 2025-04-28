@@ -1,0 +1,145 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<div ng-controller="ServiceAddressCtrl" class="mb-4">
+    @* View *@
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="fw-bolder text-orange">ข้อมูลที่ต้องการปรับปรุง</div>
+            <div class="p-3 bg-gray rounded-4 h-100">
+                <div class="row">
+                    <div class="col-sm-8 mb-3">
+                        <div class="text-gray">
+                            บ้านเลขที่
+                        </div>
+                        <div class="fw-bolder">{{ iData.home }}</div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="text-gray">
+                            ถนน
+                        </div>
+                        <div class="fw-bolder">{{ iData.road }}</div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="text-gray">
+                            แขวง/ตำบล
+                        </div>
+                        <div class="fw-bolder">{{ iData.subDistrictName }}</div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="text-gray">
+                            เขต/อำเภอ
+                        </div>
+                        <div class="fw-bolder">{{ iData.districtName }}</div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="text-gray">
+                            จังหวัด
+                        </div>
+                        <div class="fw-bolder">{{ iData.provinceName }}</div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="text-gray">
+                            รหัสไปรษณีย์
+                        </div>
+                        <div class="fw-bolder">{{ iData.postcode }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6" ng-show="status == 'Pending'">
+            <div class="fw-bolder text-orange">ข้อมูลในระบบ</div>
+            <div class="p-3 bg-gray rounded-4 h-100">
+                <div class="row">
+                    <div class="col-sm-8 mb-3">
+                        <div class="text-gray">
+                            บ้านเลขที่
+                        </div>
+                        <div class="fw-bolder text-decoration-line-through">{{ iUser.home }}</div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="text-gray">
+                            ถนน
+                        </div>
+                        <div class="fw-bolder text-decoration-line-through">{{ iUser.road }}</div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="text-gray">
+                            แขวง/ตำบล
+                        </div>
+                        <div class="fw-bolder text-decoration-line-through">{{ iUser.subDistrictName }}</div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="text-gray">
+                            เขต/อำเภอ
+                        </div>
+                        <div class="fw-bolder text-decoration-line-through">{{ iUser.districtName }}</div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="text-gray">
+                            จังหวัด
+                        </div>
+                        <div class="fw-bolder text-decoration-line-through">{{ iUser.provinceName }}</div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="text-gray">
+                            รหัสไปรษณีย์
+                        </div>
+                        <div class="fw-bolder text-decoration-line-through">{{ iUser.postcode }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ServiceAddressCtrl', function ($scope, $http, $timeout, $filter) {
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceAddress/DetailByRef',
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    refId: $scope.refId
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.iData = result;
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+
+        $scope.LoadUser = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserAddress',
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.userId
+                    , create_by: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.iUser = result;
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+
+        $scope.$parent.LoadAddress = function (x) {
+            $scope.refId = x.id;
+            $scope.userId = x.userId;
+            $scope.status = x.status;
+            $scope.LoadData();
+            $scope.LoadUser();
+        }
+    });
+</script>

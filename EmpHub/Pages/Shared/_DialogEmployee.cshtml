@@ -1,0 +1,60 @@
+﻿@using Microsoft.Extensions.Options
+@inject IOptionsMonitor<WebAPIModels> webAPI;
+<div ng-controller="dlgEmpCtrl">
+    <!-- Dialog -->
+    <div id="dlgEmp" class="modal fade dialog-info" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="border-bottom:3px solid #98B9E6;">
+                    <h5 class="modal-title">รายชื่อพนักงาน</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body dialog-info-body p-2" style="border-top: 4px solid #E5EDF9;">
+                    <div class="position-relative mb-2">
+                        <input ng-model="find_emp" class="form-control" placeholder="พิมพ์ชื่อเพื่อค้นหา" />
+                        <div class="position-absolute top-50 end-0 translate-middle-y me-2">
+                            <i class="fas fa-search"></i>
+                        </div>
+                    </div>
+                    <div class="overflow-auto-y px-2" style="max-height: 400px;" ng-show="find_emp != ''">
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item list-group-item-action" ng-repeat="x in lUser | filter : find_emp | limitTo : 10" ng-click="SelectUser(x)">
+                                {{ x.firstname_th + ' ' + x.lastname_th }} <span ng-show="x.nickname != ''">(คุณ{{ x.nickname }})</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('dlgEmpCtrl', function ($scope, $http, $timeout, $filter, $interval) {
+        $scope.$parent.ShowDialogUser = function () {
+            $scope.find_emp = '';
+            $scope.LoadInitial();
+        }
+
+        $scope.LoadInitial = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/DataList',
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                success: function (result) {
+                    $timeout(function () {
+                        $("#dlgEmp").modal('show');
+                        $scope.lUser = result;
+                    }, 0);
+                }
+            });
+
+        }
+
+        $scope.SelectUser = function (x) {
+            $scope.$parent.SelectUser(x);
+            $("#dlgEmp").modal('hide');
+        }
+    });
+</script>

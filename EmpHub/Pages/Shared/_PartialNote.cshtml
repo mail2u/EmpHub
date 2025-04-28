@@ -1,0 +1,104 @@
+﻿
+<div ng-controller="NoteCtrl">
+   @*  <div class="rounded-4 p-2 bg-white mb-3">
+        <div class="d-flex justify-content-between">
+            <div class="fw-bolder p-2">บันทึกช่วยจำ</div>
+            <div class="btn btn-circle btn-circle-hover fw-bolder" ng-click="CreateNote()">
+                <i class="bi bi-clipboard-plus"></i>
+            </div>
+        </div>
+        <div class="" ng-repeat="x in lNote">
+            <textarea ng-model="x.detail" maxlength="1000" class="form-control" ng-mouseleave="UpdateNote(x)" on="auto_grow(this)" oninput="auto_grow(this)"></textarea>
+        </div>
+    </div> *@
+</div>
+<script>
+    app.controller('NoteCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.$parent.LoadNote = function (refId) {
+            $scope.id = refId;
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Note/DataList',
+                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify({
+                    refId: $scope.id
+                    , userId: '@User.UserId()'
+                }),
+                cache: false,
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.lNote = result;
+                    }, 0);
+                }
+            });
+        }
+
+        $scope.CreateNote = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Note/Create',
+                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    refId: $scope.id
+                    ,
+                    userId: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.$parent.LoadNote($scope.id);
+                    }, 0);
+                }
+            });
+        }
+
+        $scope.DeleteNote = function (x) {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Note/Delete',
+                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    noteId: x.noteId
+                    ,
+                    userId: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.$parent.LoadNote($scope.id);
+                    }, 0);
+                }
+            });
+        }
+
+
+        $scope.UpdateNote = function (x) {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Note/Update',
+                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    noteId: x.noteId
+                    ,
+                    userId: '@User.UserId()'
+                    ,
+                    detail: x.detail
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                    }, 0);
+                }
+            });
+        }
+    });
+</script>

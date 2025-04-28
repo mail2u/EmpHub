@@ -1,0 +1,13 @@
+﻿@page
+@model EmpHub.Pages.Employee.DetailModel
+@{
+    ViewData["Title"] = "EmpHub";
+}
+<div class="" ng-controller="DataCtrl">
+    <partial name="_PartialProfile" />
+</div>
+<script>
+    app.controller('DataCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.userId = '@Model.id';
+    });
+</script>

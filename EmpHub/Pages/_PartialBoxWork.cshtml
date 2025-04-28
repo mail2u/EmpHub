@@ -1,0 +1,141 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<div ng-controller="WorkCtrl" class="d-none d-sm-block">
+    <div class="box mb-3" style="min-height:500px;">
+        <div class="d-flex justify-content-between">
+            <div class="fw-bolder">
+                รายการรอดำเนินการ
+            </div>
+            <div>
+                <small>คุณมี <span class="{{ total > 0 ? 'text-blue' : 'text-gray' }}">{{ total | number }} รายการ</span></small>
+                <a href='@Url.Page("/Service/Work")' class="btn btn-circle">
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+        <div class="overflow-auto d-none d-lg-block">
+            <table class="table table-tip">
+                <tbody>
+                    <tr ng-repeat="x in lData" class="select {{ x.status == 'Complete' ? 'complete' : x.status.includes('Approve') ? 'approve' : x.status == 'Cancel' ? 'cancel' : x.status == 'Reject' ? 'reject' :x.is_not_read == 1 ? 'alert' : '' }}" ng-click="ShowDetail(x)">
+                        <td width="40px">
+                            <span ng-show="x.status == 'Request'" class="text-dark" title="แบบร่าง">
+                                <i class="bi bi-pen"></i>
+                            </span>
+                            <span ng-show="x.status == 'Cancel'" class="text-orange" title="ยกเลิก">
+                                <i class="bi bi-trash3"></i>
+                            </span>
+                            <span ng-show="x.status == 'Reject'" class="text-danger" title="ไม่">
+                                <i class="bi bi-x-circle"></i>
+                            </span>
+                            <span ng-show="x.status == 'Work'" class="text-orange" title="รอดำเนินการ">
+                                <i class="bi bi-clock"></i>
+                            </span>
+                            <span ng-show="x.status == 'Complete'" class="text-green" title="สำเร็จ">
+                                <i class="bi bi-check2-circle"></i>
+                            </span>
+                            <span ng-show="x.status == 'Change'" class="text-blue" title="เปลี่ยนประเภท">
+                                <i class="bi bi-arrow-repeat"></i>
+                            </span>
+                        </td>
+                        <td class="text-nowrap position-relative">
+                            <span ng-show="x.is_alert > 0" class="position-absolute top-50 start-0 translate-middle badge rounded-circle bg-danger p-1">
+                                <span class="visually-hidden">unread messages</span>
+                            </span>
+                            {{ x.serviceNo }}
+                        </td>
+                        <td class="text-nowrap" ng-click="ShowDetail(x)">
+                            {{ x.subCategoryDesc }}
+                        </td>
+                        <td>{{ x.title }}</td>
+                        <td class="text-end text-nowrap">{{ ShortDT(x.createDate) }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div ng-show="lData.length == 0">
+            <div class="position-absolute top-50 start-50 translate-middle opacity-75 text-center text-gray">
+                <img src="~/Images/empty.png" width="100" />
+                <div>
+                    ไม่พบรายการคำขอ
+                </div>
+            </div>
+        </div>
+        @* Mobile View *@
+        <div class="d-lg-none">
+            <div style="min-height: 470px;" class="position-relative">
+                <div ng-repeat="x in lData" class="p-2 rounded pb-1 mb-2 box-list {{ x.status == 'Complete' ? 'complete' : x.status == 'Cancel' ? 'cancel' : x.status == 'Reject' ? 'reject' :x.is_not_read == 1 ? 'alert' : 'request' }}" ng-click="ShowDetail(x)">
+                    <div class="d-flex justify-content-between mb-1">
+                        <div class="fw-bolder">
+                            <span class="text-green" ng-show="x.status == 'Complete'">
+                                <i class="bi bi-check-circle"></i>
+                            </span>
+                            <span class="text-danger" ng-show="x.status == 'Reject'">
+                                <i class="bi bi-x-circle"></i>
+                            </span>
+                            [{{ x.serviceNo != '' ? x.serviceNo : 'แบบร่าง' }}]
+                        </div>
+                        <div class="">{{ x.createDate }}</div>
+                    </div>
+                    <div class="fw-bolder">
+                        {{ x.subCategoryDesc }} {{ x.systemDesc }}
+                    </div>
+                    <div class="mb-2">
+                        {{ x.title }}
+                    </div>
+                </div>
+                <div ng-show="lData.length == 0">
+                    <div class="text-gray position-absolute top-50 start-50 translate-middle opacity-75 text-center">
+                        <img src="~/Images/empty.png" width="100" />
+                        <div>
+                            ไม่พบรายการคำขอ
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('WorkCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.sysId = 'ITS';
+
+        $scope.$parent.LoadBoxWork = function (page = 1) {
+            $scope.page = page;
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Service/WorkList',
+                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    sysId: $scope.sysId
+                    , userBy: '@User.UserId()'
+                    , page: 1
+                    , row: 10
+                    , status: 'Work'
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.lData = result.data;
+                        $scope.total = result.total;
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+
+        $scope.ShowDetail = function (x) {
+            x.is_not_read = 0;
+            window.open('@Url.Page("/Service/Detail")/' + x.id, '_blank');
+        }
+
+        $scope.init = function () {
+            $scope.$emit('BoxWorkLoaded');
+        };
+        $scope.init();
+    });
+</script>

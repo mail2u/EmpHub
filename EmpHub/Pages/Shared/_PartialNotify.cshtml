@@ -1,0 +1,80 @@
+﻿<style>
+    .list-group-item.read{
+        background-color:var(--light-blue);
+        font-weight:bolder;
+    }
+</style>
+<div ng-controller="NotifyCtrl">
+    <div class="dropstart">
+        <button class="btn btn-circle position-relative" data-bs-toggle="dropdown" ng-disabled="lData.length == 0">
+            <i class="fas fa-bell"></i>
+            <span ng-show="total_read > 0" class="position-absolute" style="top:-10px; right:-5px; z-index:100">
+                <span class="badge bg-danger">
+                {{ total_read | number }}
+                </span>
+            </span>
+        </button>
+        <div class="dropdown-menu p-0 shadow" style="margin-top: 50px; margin-right: -95px; width:400px;">
+            <div class="bg-gray text-center p-2 fw-bolder">
+                การแจ้งเตือน
+            </div>
+            <div class="p-1 rounded overflow-auto" style="max-height:400px">
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item list-group-item-action select {{ x.is_read == 1 ? 'read' : '' }}" ng-repeat="x in lData" ng-click="ShowDetail(x)">
+                        <div class="mb-2">
+                        {{ x.detail }}
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <small style="color:var(--tip-blue); font-size:14px;">โดย {{ x.actionBy }}</small>
+                            <small style="color:var(--dark-gray); font-size:14px;">{{ x.actionDate }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('NotifyCtrl', function ($scope, $http, $timeout, $filter, $interval) {
+        $scope.row = 20;
+        $scope.lData = [];
+
+        $scope.LoadData = function (page = 1) {
+            $scope.page = page;
+
+            //delay 2s
+            $timeout(function () {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Notify/DataList',
+                    headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        page: $scope.page
+                        , row: $scope.row
+                        , userId: '@User.UserId()'
+                    }),
+                    success: function (result) {
+                        $timeout(function () {
+                            var lData = result.data;
+
+                            for (var i = 0; i < lData.length; i++) {
+                                $scope.lData.splice($scope.lData.length, 0, lData[i]);
+                            }
+
+                            $scope.total = result.total;
+                            $scope.total_read = result.total_read;
+                        }, 0);
+                    }
+                });
+            }, 2000);
+        }
+        $scope.LoadData();
+
+        $scope.ShowDetail = function (x) {
+            window.open(x.link, '_blank');
+        }
+    });
+</script>

@@ -1,0 +1,171 @@
+﻿@page
+@model EmpHub.Pages.Admin.AuthenModel
+@{
+    ViewData["Title"] = "User Authen";
+}
+<div ng-controller="AuthenCtrl">
+    <div class="bg-gray rounded p-4 mb-3 fw-bolder">
+        <div>
+            ผู้ใช้งาน : {{ iData.firstname_th + ' ' + iData.lastname_th }}
+        </div>
+        <div>
+            ฝ่าย : {{ iData.departmentDesc }}
+        </div>
+    </div>
+    <div class="row d-flex justify-content-center">
+        <div class="col-lg-5">
+            <div class="bg-light rounded shadow-sm p-2 ">
+                <input ng-model="filter_role" class="form-control mb-3" placeholder="ค้นหา" />
+                <div class="overflow-auto" style="max-height: 500px">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item list-group-item-action d-flex justify-content-between" ng-repeat="x in lRole | filter : filter_role">
+                            <div>{{ x.title }} ({{ x.authenCode }})</div>
+                            <div>
+                                <input ng-model="x.is_active" type="checkbox" ng-click="ChengeRole(x)" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('AuthenCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.row = 10;
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/Detail'
+                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    userId: '@Model.refId'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.iData = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+        $scope.LoadRole = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Role/DataList'
+                    , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , dataType: 'json'
+                    , cache: false
+                    , data: JSON.stringify({
+                        userId: ''
+                    })
+                    , success: function (result) {
+                        $timeout(function () {
+                            $scope.lRole = result;
+
+                            resolve(true);
+                        }, 0);
+                    }
+                    , error: function () {
+                        resolve(false);
+                    }
+                });
+            });
+        }
+
+        $scope.LoadUserInRole = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/UserInRole/DataList'
+                    , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , dataType: 'json'
+                    , cache: false
+                    , data: JSON.stringify({
+                        userId: '@Model.refId'
+                    })
+                    , success: function (result) {
+                        $timeout(function () {
+                            $scope.lUser = result;
+                            resolve(true);
+                        }, 0);
+                    }
+                    , error: function () {
+                        resolve(false);
+                    }
+                });
+            });
+        }
+
+        $scope.Init = async function () {
+            await $scope.LoadRole();
+            await $scope.LoadUserInRole();
+
+            $timeout(function () {
+                for (var i = 0; i < $scope.lRole.length; i++) {
+                    $scope.lRole[i].is_active = $filter('filter')($scope.lUser, { roleId: $scope.lRole[i].roleId }).length > 0
+                }
+            }, 0);
+        }
+        $scope.Init();
+
+        $scope.ChengeRole = function (x) {
+            if (x.is_active != 1) {
+                $scope.CreateRole(x);
+            } else {
+                $scope.DeleteRole(x);
+            }
+        }
+
+        $scope.CreateRole = function (x) {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/UserInRole/Create'
+                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , cache: false
+                , data: JSON.stringify({
+                    roleId: x.roleId
+                    , userId: '@Model.refId'
+                    , create_by: '@User.UserId()'
+                })
+                , success: function () {
+                    $timeout(function () {
+                        x.is_active = true;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+
+        $scope.DeleteRole = function (x) {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/UserInRole/Delete'
+                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , cache: false
+                , data: JSON.stringify({
+                    roleId: x.roleId
+                    , userId: '@Model.refId'
+                    , update_by: '@User.UserId()'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        x.is_active = false;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+    });
+</script>

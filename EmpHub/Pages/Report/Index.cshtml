@@ -1,0 +1,87 @@
+﻿@page
+@model EmpHub.Pages.Report.IndexModel
+@{
+    ViewData["Title"] = "EmpHub";
+}
+<style>
+    .bg-main {
+        min-height: calc(100% - 70px);
+    }
+</style>
+<div ng-controller="ReportCtrl" class="p-2">
+    <div class="d-flex justify-content-between">
+        <div class="mb-3">
+            <div class="fs-4"><i class="bi bi-file-earmark-text"></i> รายงาน</div>
+        </div>
+    </div>
+    <div class="rounded-4 p-3 bg-white">
+        <div class="row">
+        @if (User.Authen().Contains("[ReportDepartment]"))
+        {
+            <div class="col-sm-6 col-lg-4 mb-3">
+                <a href='@Url.Page("/Report/Department")' class="text-decoration-none">
+                    <div class="btn-icon d-flex">
+                        <div>
+                            <img src="~/images/icon-search-file.png" width="40" class="me-4" />
+                        </div>
+                        <div>
+                            <div class="fw-bolder fs-5">ใบคำขอฝ่าย</div>
+                            <div>ค้นหาใบคำข้อภายในฝ่าย</div>
+                        </div>
+                    </div>
+                </a>
+            </div> 
+        }
+        @if (User.Authen().Contains("[ReportAll]"))
+        {
+            <div class="col-sm-6 col-lg-4 mb-3">
+                <a href='@Url.Page("/Report/All")' class="text-decoration-none">
+                    <div class="btn-icon d-flex">
+                        <div>
+                        <img src="~/images/icon-search-file.png" width="40" class="me-4" />
+                        </div>
+                        <div>
+                            <div class="fw-bolder fs-5">ใบคำขอทั้งหมด (ใหม่)</div>
+                            <div>ค้นหาใบคำข้อทุกรายการ</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-4 mb-3">
+                <a href='@Url.Page("/Report/Link")' class="text-decoration-none">
+                    <div class="btn-icon d-flex">
+                        <div>
+                        <img src="~/images/icon-search-file.png" width="40" class="me-4" />
+                        </div>
+                        <div>
+                            <div class="fw-bolder fs-5">การเชื่อมโยง</div>
+                            <div>ค้นหาทุกการเชื่อมโยง</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-4 mb-3">
+                <a href='@Url.Page("/Report/Tag")' class="text-decoration-none">
+                    <div class="btn-icon d-flex">
+                        <div>
+                        <img src="~/images/icon-search-file.png" width="40" class="me-4" />
+                        </div>
+                        <div>
+                            <div class="fw-bolder fs-5">การติดป้าย</div>
+                            <div>ค้นหาทุกการติดป้าย</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ReportCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.sysId = 'ITS';
+        $scope.is_not_read = 99;
+        $scope.createBy = '';
+
+    })
+</Script>

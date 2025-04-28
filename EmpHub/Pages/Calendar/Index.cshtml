@@ -1,0 +1,420 @@
+﻿@page
+@model EmpHub.Pages.Calendar.IndexModel
+@{
+}
+<style>
+    .bg-main {
+        padding-bottom: 300px !important;
+    }
+
+    .text-overflow {
+        overflow: hidden;
+        position: relative;
+    }
+
+        .text-overflow span {
+            position: absolute;
+            white-space: nowrap;
+            transform: translateX(0);
+            transition: 5s;
+        }
+
+        .text-overflow:hover span {
+            transform: translateX(calc(-100% + 250px));
+        }
+
+    .box-main, .box-detail {
+        transition: 0.5s;
+    }
+
+    .box-detail {
+        visibility: hidden;
+        width: 0px;
+    }
+
+        .box-detail.show {
+            visibility: visible;
+            min-width: 300px;
+            width: 300px;
+            margin-left: 15px;
+        }
+</style>
+<div ng-controller="calendarCtrl">
+@*     <div class="d-flex justify-content-between">
+        <div class="d-flex mb-3">
+            <div class="fs-4 fw-bolder">ปฏิทินบริษัท</div>
+        </div>
+    </div> *@
+    <div class="d-flex">
+        <div class="flex-fill box-main">
+            <partial name="_PartialCalendar" />
+        </div>
+    </div>
+    @* Off *@
+    <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="eventOff" aria-labelledby="offcanvasLabel" style="width:600px;">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title text-secondary fw-bolder" id="offcanvasLabel"> {{ iDay.dt }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="list-group list-group-flush">
+                <div class="list-group-item px-1" ng-repeat="e in lEvent">
+                    <div class="d-flex rounded-3 p-2 {{ e.type == 'Holiday' ? 'bg-light-blue' : 'bg-light-green' }}">
+                        <div class="me-2" style="width:60px;">
+                            <div class="badge bg-light-blue" ng-show="e.time_start != '' || e.time_end != ''">
+                                <div class="fs-6 text-blue">{{ e.time_start }}</div>
+                                <div class="mt-1">{{ e.time_end }}</div>
+                            </div>
+                        </div>
+                        <div class="flex-fill">
+                            <div class="fw-bolder">
+                                {{ e.type }}
+                            </div>
+                            <div class="">
+                                {{ e.note }}
+                            </div>
+                        </div>
+                        @if (User.Role().ToLower().Contains("[admin]"))
+                        {
+                            <div>
+                                <div class="btn btn-circle" ng-click="EditEvent(e)">
+                                    <i class="bi bi-pen"></i>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                @if (User.Role().ToLower().Contains("[admin]"))
+                {
+                    <div class="list-group-item px-1">
+                        <div class="btn btn-link" ng-click="CreateEvent()">
+                            <i class="bi bi-calendar2-plus"></i> เพิ่มกิจกรรม
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    @* Modify Modal *@
+    <div id="EventModal" class="modal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">กิจกรรม</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <div class="fw-bolder">วันที่</div>
+                        <input class="form-control icon-calendar target"
+                               ng-model="iEvent.dtSelect"
+                               ng-model-options="{ updateOn: 'blur' }"
+                               moment-picker="iEvent.dtSelect"
+                               locale="th"
+                               format="DD/MM/YYYY"
+                               min-view="month"
+                               max-view="month" required />
+                    </div>
+                    <div class="mb-3">
+                        <div class="fw-bolder">ช่วงเวลา</div>
+                        <div class="d-flex">
+                            <div>
+                                <input class="form-control icon-time target"
+                                       ng-model="iEvent.timeStartSelect"
+                                       ng-model-options="{ updateOn: 'blur' }"
+                                       moment-picker="iEvent.timeStartSelect"
+                                       format="H:mm"
+                                       min-view="hour"
+                                       max-view="minute"
+                                       max-date="iEvent.timeEndSelect" required />
+                            </div>
+                            <div class="mx-3">-</div>
+                            <div>
+                                <input class="form-control icon-time target"
+                                       ng-model="iEvent.timeEndSelect"
+                                       ng-model-options="{ updateOn: 'blur' }"
+                                       moment-picker="iEvent.timeEndSelect"
+                                       format="H:mm"
+                                       min-view="hour"
+                                       max-view="minute"
+                                       min-date="iEvent.timeStartSelect" required />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="fw-bolder">รายละเอียด</div>
+                        <textarea ng-model="iEvent.note" class="form-control" maxlength="200" rows="5"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <div class="fw-bolder">ประเภท</div>
+                        <select ng-model="iEvent.type" class="form-select" ng-options="x.value as x.key for x in lStatus"></select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" ng-disabled="iEvent.note == ''" ng-click="SaveEvent()">Save</button>
+                    <div class="btn btn-warning" ng-click="RemoveEvent(e)">
+                        Delete
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('calendarCtrl', function ($scope, $http, $timeout, $filter) {
+
+        //DDL
+        $scope.lMonth = [{ Key: 'มกราคม', Value: 1 }
+            , { Key: 'กุมภาพันธ์', Value: 2 }
+            , { Key: 'มีนาคม', Value: 3 }
+            , { Key: 'เมษายน', Value: 4 }
+            , { Key: 'พฤษภาคม', Value: 5 }
+            , { Key: 'มิถุนายน', Value: 6 }
+            , { Key: 'กรกฎาคม', Value: 7 }
+            , { Key: 'สิงหาคม', Value: 8 }
+            , { Key: 'กันยายน', Value: 9 }
+            , { Key: 'ตุลาคม', Value: 10 }
+            , { Key: 'พฤศจิกายน', Value: 11 }
+            , { Key: 'ธันวาคม', Value: 12 }];
+
+        $scope.lStatus = [
+            { value: 'Holiday', key: 'วันหยุดนักขัตฤกษ์' }
+            , { value: 'Activity', key: 'กิจกรรมบริษัท' }
+        ];
+
+        var today = new Date();
+        $scope.currMonth = today.getMonth() + 1;
+        $scope.currYear = today.getFullYear();
+        $scope.lYear = [];
+        $scope.minYear = 0;
+        $scope.maxYear = 0;
+
+        //Detail
+        $scope.curr_dt = '';
+        $scope.curr_title = '';
+        $scope.curr_note = '';
+        $scope.curr_is_active = 0;
+        $scope.curr_updateBy = '';
+        $scope.curr_updateDate = '';
+        $scope.curr_mode = 1;
+        $scope.btnBackShow = 1;
+        $scope.btnNextShow = 1;
+
+        //Prop
+        $scope.lData = [];
+
+        $scope.LoadData = function (year, month) {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Calendar/DataList',
+                type: 'POST',
+                cache: false,
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify({
+                    'year': year
+                    , 'month': month
+                    , userBy: '@User.UserId()'
+                }),
+                success: function (data) {
+                    $timeout(function () {
+                        $scope.lData = data;
+                        $scope.lData = $scope.lData.map(x => {
+                            x.total_holiday = x.lEvent.filter(i => i.eventType == 'Holiday').length;
+                            x.total_activity = x.lEvent.filter(i => i.eventType == 'Activity').length;
+                            x.total = x.lEvent.length;
+
+                            return x;
+                        });
+
+                        $scope.LoadMonth($scope.currMonth, $scope.currYear);
+                        $scope.GetYear($scope.lData);
+
+                        // if ($scope.iDay == null) {
+                        //     var today = $scope.lData.filter(x => x.is_now == 1)[0];
+                        //     if (today) {
+                        //         $scope.SelectDay(today);
+                        //     }
+                        // }
+                    }, 0);
+                }
+            });
+        }
+        $scope.LoadData($scope.currYear, $scope.currMonth);
+
+        $scope.LoadEvent = function (x) {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Calendar/EventList',
+                type: 'POST',
+                cache: false,
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify({
+                    'dt': x.dt
+                }),
+                success: function (data) {
+                    $timeout(function () {
+                        $scope.lEvent = data;
+                    }, 0);
+                }
+            });
+        }
+
+        $scope.LoadMonth = function (this_month, this_year) {
+            console.log(this_month);
+            console.log(this_year);
+            //week_of_year
+            var week = [...new Set($scope.lData.filter(x => x.month == this_month && x.year == this_year).map(x => { return x.week_of_year }))];
+            var min_week = Math.min(...week);
+            var max_week = Math.max(...week);
+            $scope.lWeek = [];
+
+            for (var i = min_week; i <= max_week; i++) {
+                var week = $scope.lData.filter(x => x.week_of_year == i && x.month == this_month && x.year == this_year);
+                $scope.lWeek.splice($scope.lWeek.length, 0, week);
+            }
+
+            //fill Start
+            var start_week = 0;
+            if ($scope.lWeek[start_week].length != 7) {
+                var diff = 7 - $scope.lWeek[start_week].length;
+                var month = this_month;
+                var year = this_year;
+
+                //previous month
+                if (month == 1) {
+                    year--;
+                    month = 12;
+                } else {
+                    month--;
+                }
+
+                var fill_date = $scope.lData.filter(x => x.month == month && x.year == year);
+                fill_date.sort(function (a, b) { return b.day - a.day });
+
+                for (var i = 0; i < diff; i++) {
+                    $scope.lWeek[start_week].splice(0, 0, fill_date[i]);
+                }
+            }
+            //fill end
+            var last_week = $scope.lWeek.length - 1;
+            if ($scope.lWeek[last_week].length != 7) {
+                var diff = 7 - $scope.lWeek[last_week].length;
+                var month = this_month;
+                var year = this_year;
+
+                //next month
+                if (month == 12) {
+                    year++;
+                    month = 1;
+                } else {
+                    month++;
+                }
+
+                var fill_date = $scope.lData.filter(x => x.month == month && x.year == year);
+                fill_date.sort(function (a, b) { return a.day - b.day });
+
+                for (var i = 0; i < diff; i++) {
+                    $scope.lWeek[last_week].splice($scope.lWeek[last_week].length, 0, fill_date[i]);
+                }
+            }
+
+            if ($scope.lWeek.length == 0) {
+                //$scope.LoadData(this_year);
+            }
+        }
+
+        $scope.GetYear = function (data) {
+            $scope.lYear = [...new Set($scope.lData.map(x => { return x.year }))];
+        }
+
+        $scope.PreviousMonth = function () {
+            if ($scope.currMonth == 1) {
+                $scope.currMonth = 12;
+                $scope.currYear--;
+            } else {
+                $scope.currMonth--;
+            }
+            $scope.LoadData($scope.currYear, $scope.currMonth);
+        }
+
+        $scope.NextMonth = function () {
+            if ($scope.currMonth == 12) {
+                $scope.currMonth = 1;
+                $scope.currYear++;
+            } else {
+                $scope.currMonth++;
+            }
+            $scope.LoadData($scope.currYear, $scope.currMonth);
+        }
+
+        $scope.SelectDay = function (x) {
+            $("#eventOff").offcanvas('show');
+            $scope.iDay = x;
+            $scope.LoadEvent($scope.iDay);
+        }
+
+        $scope.Unselect = function () {
+            $scope.iDay = null;
+        }
+
+        $scope.CreateEvent = function () {
+            $scope.iEvent = {
+                rn: 0
+                , dt: $scope.iDay.dt
+                , dtSelect: new moment(ConvertToDate($scope.iDay.dt))
+                , type: 'Activity'
+                , note: ''
+                , create_by: '@User.UserId()'
+            };
+            $("#EventModal").modal('show');
+        }
+
+        $scope.EditEvent = function (x) {
+            $scope.iEvent = x;
+            $scope.iEvent.dtSelect = new moment(ConvertToDate(x.dt));
+
+            if (x.time_start != '') {
+                $scope.iEvent.timeStartSelect = new moment(x.dt + 'T' + x.time_start, 'DD/MM/YYYYTHH:mm');
+            }
+            if (x.time_end != '') {
+                $scope.iEvent.timeEndSelect = new moment(x.dt + 'T' + x.time_end, 'DD/MM/YYYYTHH:mm');
+            }
+
+            $("#EventModal").modal('show');
+        }
+
+
+        $scope.SaveEvent = function (year, month) {
+            $("#EventModal").modal('hide');
+
+            var url = '@webAPI.CurrentValue.APIEmpHub/api/Calendar/Create';
+
+            if ($scope.iEvent.rn > 0) {
+                url = '@webAPI.CurrentValue.APIEmpHub/api/Calendar/Update';
+            }
+
+            $scope.iEvent.dt = $scope.iEvent.dtSelect.format("DD/MM/YYYY");
+
+            if ($scope.iEvent.timeStartSelect) {
+                $scope.iEvent.time_start = $scope.iEvent.timeStartSelect.format("H:mm");
+            }
+            if ($scope.iEvent.timeEndSelect) {
+                $scope.iEvent.time_end = $scope.iEvent.timeEndSelect.format("H:mm");
+            }
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                cache: false,
+                contentType: 'application/json',
+                data: JSON.stringify($scope.iEvent),
+                success: function () {
+                    $timeout(function () {
+                        $scope.LoadData($scope.currYear, $scope.currMonth);
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+    });
+</script>

@@ -1,0 +1,204 @@
+﻿@page
+@model EmpHub.Pages.Admin.MailModel
+@{
+    ViewData["Title"] = "ดูแลระบบ";
+}
+<style>
+</style>
+<div ng-controller="ManageCtrl" class="p-2">
+    <div class="mb-3">
+        <div class="fs-4"><i class="bi bi-envelope-paper"></i> การส่งเมล์</div>
+    </div>
+    <div class="rounded-4 border shadow-sm p-3 bg-white">
+        <div class="row">
+            <div class="col-sm-5">
+                <div class="d-flex">
+                    <input class="form-control me-1" ng-model="subject" my-enter="LoadData()" />
+                    <button class="btn btn-circle" ng-click="LoadData()">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-sm-7 text-end">
+                <span>
+                    {{ total > 0 ? ((page - 1) * row) + 1 : 0 }} - {{ page * row < total ? page * row : total }} of {{ total }}
+                </span>
+                <button class="btn btn-circle" ng-click="LoadData(page - 1)" ng-disabled="page <= 1">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="btn btn-circle" ng-click="LoadData(page + 1)" ng-disabled="page * row > total">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+        <hr class="m-1" />
+        <div style="min-height: 460px;" class="position-relative">
+            <div class="overflow-auto">
+                <table class="table table-tip mb-0">
+                    <thead>
+                        <tr>
+                            <th width="40"></th>
+                            <th class="text-nowrap">SysId</th>
+                            <th class="text-nowrap">Type</th>
+                            <th class="text-nowrap">Detail</th>
+                            <th class="text-nowrap">Create Date</th>
+                            <th class="text-nowrap">Send Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="x in lData">
+                            <td class="p-0">
+                                <button class="btn btn-circle p-0" ng-click="Resend(x)">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </td>
+                            <td ng-click="Detail(x)">
+                                {{ x.sysId }}
+                            </td>
+                            <td ng-click="Detail(x)">
+                                {{ x.mailType }}
+                            </td>
+                            <td ng-click="Detail(x)">
+                                <div class="fw-bolder">
+                                    {{ x.subject }}
+                                    <i ng-show="x.attachments != ''">
+                                        <i class="fas fa-paperclip"></i>
+                                    </i>
+                                </div>
+                                <div>
+                                    {{ x.mailTo }}
+                                </div>
+                                <div ng-show="x.errorMessage != ''" class="text-danger border rounded p-2 mt-2">
+                                    {{ x.errorMessage }}
+                                </div>
+                            </td>
+                            <td ng-click="Detail(x)">
+                                {{ x.requestDate }}
+                            </td>
+                            <td ng-click="Detail(x)">
+                                {{ x.sendDate }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div ng-show="lSignature.length == 0">
+                    <div class="text-gray fs-4 position-absolute top-50 start-50 translate-middle">
+                        ไม่พบข้อมูล
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @* Modify Modal *@
+    <div id="DetailModal" class="modal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-secondary text-white">
+                    <div class="modal-title ">Mail Info </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <div class="fw-bolder">ID</div>
+                        {{ iData.id }}
+                    </div>
+                    <div class="mb-3">
+                        <div class="fw-bolder">To</div>
+                        <div class="overflow-auto">
+                            {{ iData.mailTo }}
+                        </div>
+                    </div>
+                    <div class="mb-3" ng-show="iData.mailCC != ''">
+                        <div class="fw-bolder">CC</div>
+                        {{ iData.mailCC }}
+                    </div>
+                    <div class="mb-3">
+                        <div class="fw-bolder">Subject</div>
+                        <div class="overflow-auto">
+                            {{ iData.subject }}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="fw-bolder">Detail</div>
+                        <div id="code_preview" class="overflow-auto"></div>
+                    </div>
+                    <div class="mb-3" ng-show="iData.attachments != ''">
+                        <div class="fw-bolder">Attachments</div>
+                        {{ iData.attachments }}
+                    </div>
+                    <div class="mb-3">
+                        <div class="fw-bolder">Send Date</div>
+                        {{ iData.sendDate }}
+                    </div>
+                    <div class="mb-3 text-danger" ng-show="iData.errorMessage != ''">
+                        <div class="fw-bolder">Error</div>
+                        {{ iData.errorMessage }}
+                    </div>
+                    <div class="text-end mt-2">
+                        <button class="btn btn-light" ng-click="Resend(iData)">
+                            <i class="fas fa-paper-plane"></i> ส่งใหม่
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ManageCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.page = 1
+        $scope.row = 10;
+
+        $scope.LoadData = function (page = 1) {
+            $scope.page = page;
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Mail/DataList'
+                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    page: $scope.page
+                    , row: $scope.row
+                    , subject: $scope.subject
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lData = result.data;
+                        $scope.total = result.total;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+        $scope.Detail = function (x) {
+            $scope.iData = x;
+            $("#code_preview").html($scope.iData.body);
+            $("#DetailModal").modal('show');
+        }
+
+        $scope.Resend = function (x) {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Mail/Resend'
+                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , cache: false
+                , data: JSON.stringify({
+                    id: x.id
+                })
+                , success: function () {
+                    $timeout(function () {
+                        alertSuccess("ส่งเมล์สำเร็จ", "ดำเนินการส่งเมล์เรียบร้อยแล้ว");
+                        $scope.LoadData($scope.page);
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+    });
+</script>

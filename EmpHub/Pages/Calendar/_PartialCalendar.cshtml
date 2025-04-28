@@ -1,0 +1,109 @@
+﻿<style>
+    .col-1-of-7 {
+        flex: 0 0 auto;
+        width: 14.28%;
+        position: relative;
+    }
+
+    .Weekend, .Holiday {
+        color: var(--bs-red);
+    }
+
+    .Weekend > .border-bottom,
+    .Holiday > .border-bottom {
+        border-bottom-color: var(--bs-red) !important;
+    }
+
+    .box-day {
+        margin: 1px;
+        padding: 5px;
+        border-radius: 15px;
+        border: 2px solid var(--bs-white);
+    }
+
+    .box-day:hover {
+        border: 2px solid var(--bs-blue) !important;
+    }
+
+    .box-day.have {
+        background-color: var(--light-blue);
+        border: 2px solid var(--light-gray);
+    }
+
+    .text-New {
+        color: var(--bs-blue) !important;
+    }
+
+    .text-Approve {
+        color: var(--bs-green) !important;
+    }
+
+    .text-Reject {
+        color: var(--bs-red) !important;
+    }
+
+    .text-Cancel {
+        color: var(--dark-gray) !important;
+    }
+
+    .text-Error {
+        color: var(--bs-orange) !important;
+    }
+
+    .box-today {
+        border: 2px solid var(--orange);
+        background-color: var(--light-orange);
+    }
+
+    .box-Holiday {
+        background-color: var(--light-blue);
+    }
+
+    .box-Activity{
+        background-color: var(--light-green);
+    }
+</style>
+<div class="rounded-4 bg-white mb-2 p-2">
+    <div class="d-flex align-items-center bg-secondary p-2 rounded-4">
+        <button class="btn btn-circle" ng-click="PreviousMonth()">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <select ng-model="currMonth" ng-options="m.Value as m.Key for m in lMonth" class="form-control border-0 fw-bold fs-4 bg-secondary text-white select me-1" style="max-width:160px" ng-change="LoadData(currYear, currMonth)"></select>
+        <select ng-model="currYear" ng-options="y as y for y in lYear" class="form-control border-0 fw-bold fs-4 bg-secondary text-white select me-1" style="max-width:80px" ng-change="LoadData(currYear, currMonth)"></select>
+        <button class="btn btn-circle" ng-click="NextMonth()">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+    <div class="row p-3">
+        <div class="col-sm-12 mb-3">
+            <div class=" d-none d-sm-inline">
+                <div class="row mb-1 fw-bolder fs-5">
+                    <div class="col-1-of-7"><div class="Weekend">อาทิตย์</div></div>
+                    <div class="col-1-of-7"><div class="">จันทร์</div></div>
+                    <div class="col-1-of-7"><div class="">อังคาร</div></div>
+                    <div class="col-1-of-7"><div class="">พุธ</div></div>
+                    <div class="col-1-of-7"><div class="">พฤหัสบดี</div></div>
+                    <div class="col-1-of-7"><div class="">ศุกร์</div></div>
+                    <div class="col-1-of-7"><div class="Weekend">เสาร์</div></div>
+                </div>
+                <div class="row" ng-repeat="w in lWeek">
+                    <div class="col-1-of-7 p-0" ng-repeat="d in w" ng-click="SelectDay(d)">
+                        <div class="box-day {{ d.day_of_week == 1 || d.day_of_week == 7 ? 'Weekend' : '' }} {{ d.month == currMonth ? 'bg-gray' : '' }} {{ d.dt == iDay.dt ? 'box-today' : '' }} {{ d.status }} {{ d.dt == iDay.dt ? 'active' : '' }} {{ d.status }}">
+                            <div class="d-flex border-bottom border-2">
+                                <div class="fw-bolder fs-5 me-2">{{ d.day }}</div>
+                            </div>
+                            <div style="height:100px; overflow-x:clip !important;" class="overflow-auto mt-1">
+                                <div class="bg-light-blue rounded-3 p-2 mb-2 shadow-sm text-blue" ng-show="d.total_holiday > 0">
+                                    วันหยุดนักขัตฤกษ์
+                                </div>
+                                <div class="bg-light-green rounded-3 p-2 mb-2 shadow-sm text-green" ng-show="d.total_activity > 0">
+                                    กิจกรรมบริษัท
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

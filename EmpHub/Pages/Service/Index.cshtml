@@ -1,0 +1,221 @@
+﻿@page
+@model EmpHub.Pages.Service.IndexModel
+@{
+}
+
+<div ng-controller="ServiceCtrl">
+    <div class="d-md-flex bg-secondary rounded-4 p-2 mb-3">
+        <div class="overflow-auto flex-fill">
+            <div class="flex-fill d-flex flex-nowrap align-items-center">
+                <div class="btn btn-link-orange text-white text-nowrap {{ iStatus == '' ? 'active' : '' }}" ng-click="SelectStatus('')">
+                    ทั้งหมด <span class="badge bg-white text-secondary" ng-show="sum_all > 0">{{ sum_all | number }}</span>
+                </div> |
+                <div class="btn btn-link-orange text-white text-nowrap {{ iStatus == 'Pending' ? 'active' : '' }}" ng-click="SelectStatus('Pending')">
+                    <span ng-show="alert_request > 0" class="ms-1 badge rounded-circle bg-danger p-1">
+                        <span class="visually-hidden">unread messages</span>
+                    </span>
+                    รออนุมัติ <span class="badge bg-white text-secondary" ng-show="sum_request > 0">{{ sum_request | number }}</span>
+                </div>
+                <div class="btn btn-link-orange text-white text-nowrap {{ iStatus == 'Reject' ? 'active' : '' }}" ng-click="SelectStatus('Reject')">
+                    <span ng-show="alert_reject > 0" class="ms-1 badge rounded-circle bg-danger p-1">
+                        <span class="visually-hidden">unread messages</span>
+                    </span>
+                    ไม่อนุมัติ <span class="badge bg-white text-secondary" ng-show="sum_reject > 0">{{ sum_reject | number }}</span>
+                </div>
+                <div class="btn btn-link-orange text-white text-nowrap {{ iStatus == 'Approve' ? 'active' : '' }}" ng-click="SelectStatus('Approve')">
+                    <span ng-show="alert_approve > 0" class="ms-1 badge rounded-circle bg-danger p-1">
+                        <span class="visually-hidden">unread messages</span>
+                    </span>
+                    อนุมัติแล้ว <span class="badge bg-white text-secondary" ng-show="sum_approve > 0">{{ sum_approve | number }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="d-none d-sm-block">
+            <div class="btn btn-light" ng-click="Download()">
+                <i class="bi bi-download"></i> ดาวน์โหลด
+            </div>
+        </div>
+    </div>
+    <div class="rounded-4 p-2 bg-white">
+        <partial name="Service/_PartialNavBar" />
+        <div class="bg-white rounded p-1">
+            <partial name="_PartialRequestDataList"></partial>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ServiceCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.is_not_read = 99;
+        $scope.createBy = '';
+        $scope.iStatus = '';
+
+        $scope.row = 10;
+        $scope.lData = [];
+        
+        $scope.lRead = [
+            { key: 'ทั้งหมด', value: 99 }
+            , { key: 'ยังไม่ได้อ่าน', value: 1 }
+            , { key: 'อ่านแล้ว', value: 0 }
+        ];
+
+        $scope.LoadData = function(page = 1){
+            $scope.page = page;
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Service/RequestList',
+                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userBy: '@User.UserId()'
+                    , page: $scope.page
+                    , row: $scope.row
+                    , sortBy: $scope.sortBy
+                    , status: $scope.iStatus
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.lData = result.data;
+                        $scope.total = result.total;
+                    }, 0);
+                },
+                error: AjaxError
+            });
+            
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Service/RequestSummary', 
+                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userBy: '@User.UserId()'
+                    , search_title: $scope.search_title
+                    , search_detail: $scope.search_detail
+                    , search_create_by: $scope.search_create_by
+                    , search_create_date_start: $scope.search_create_date_start
+                    , search_create_date_end: $scope.search_create_date_end
+                    , search_comment: $scope.search_comment
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.sum_request = 0;
+                        $scope.sum_approve = 0;
+                        $scope.sum_reject = 0;
+                        
+                        $scope.alert_request = 0;
+                        $scope.alert_approve = 0;
+                        $scope.alert_reject = 0;
+
+                        var find = result.find(x => x.status == 'Pending');
+                        if (find) { 
+                            $scope.sum_request = find.total; 
+                            $scope.alert_request = find.alert_total; 
+                        }
+                        find = result.find(x => x.status == 'Approve');
+                        if (find) { 
+                            $scope.sum_approve = find.total; 
+                            $scope.alert_approve = find.alert_total; 
+                        }
+                        find = result.find(x => x.status == 'Reject');
+                        if (find) { 
+                            $scope.sum_reject = find.total; 
+                            $scope.alert_reject = find.alert_total; 
+                        }
+
+                        $scope.sum_all = $scope.sum_request
+                        + $scope.sum_approve
+                        + $scope.sum_reject
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+        $scope.SelectStatus = function (status) {
+            $scope.iStatus = status;
+            $scope.LoadData();
+        }
+
+        $scope.SetPage = function (page) {
+            $scope.LoadData(page);
+        }
+        
+        $scope.SetSort = function(sortBy){
+            if ($scope.sortBy != null && $scope.sortBy.indexOf(sortBy) > -1) {
+                if ($scope.sortBy.indexOf("-") > -1) {
+                    $scope.sortBy = sortBy;
+                }else{
+                    $scope.sortBy = '-' + sortBy;
+                }
+            }else{
+                $scope.sortBy = sortBy;
+            }
+            $scope.LoadData();
+        }
+
+        $scope.ShowDetail = function(x){
+            x.is_not_read = 0;
+            window.open('@Url.Page("Detail")/' + x.id, '_blank');
+        }
+        
+        window.parent.ReloadApprove = function () {
+            $scope.LoadData();
+        }
+        
+        $scope.Download = function(){
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Service/RequestList',
+                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    createBy: $scope.createBy
+                    , userBy: '@User.UserId()'
+                    , page: 1
+                    , row: $scope.total
+                    , sortBy: $scope.sortBy
+                    , status: $scope.iStatus
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        var lData = result.data;
+                        
+                        if (lData.length > 0) {
+                            var JSData = [[
+                                { 'text': 'เลขบริการ' }
+                                , { 'text': 'ความประสงค์' }
+                                , { 'text': 'สถานะ' }
+                                , { 'text': 'คำขอโดย' }
+                                , { 'text': 'วันที่ขอรับบริการ' }
+                                , { 'text': 'วันที่ดำเนินการ' }
+                            ]];
+
+                            for (var i = 0; i < lData.length; i++) {
+                                var iData = lData[i];
+
+                                JSData.splice(JSData.length, 0, [
+                                    { 'text': iData.serviceNo }
+                                    , { 'text': iData.categoryDesc }
+                                    , { 'text': iData.statusDesc }
+                                    , { 'text': iData.createName }
+                                    , { 'text': iData.createDate }
+                                    , { 'text': iData.actionDate }
+                                ]);
+                            }
+
+                            var dt = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+                            ExportFile(JSData, 'รายการคำขอ_' + dt);
+                        }
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+    })
+</Script>

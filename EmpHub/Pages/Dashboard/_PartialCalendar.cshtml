@@ -1,0 +1,304 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<style>
+    .col-1-of-7 {
+        flex: 0 0 auto;
+        width: 14.28%;
+        position: relative;
+    }
+
+    .Weekend, .Holiday {
+        color: var(--orange) !important;
+    }
+
+    .Weekend > .border-bottom,
+    .Holiday > .border-bottom {
+        border-bottom-color: var(--bs-gray) !important;
+    }
+
+    .accordion-collapse {
+        width: 300px;
+        z-index: 1000;
+        top: -1px;
+        left: -1px;
+        border: 1px solid var(--tip-blue);
+        position: absolute;
+        background-color: var(--bs-white);
+        box-shadow: var(--tip-blue) 5px 5px;
+    }
+
+    .accordion-collapse.accordion-end {
+        left: unset;
+        top: -1px;
+        right: -1px;
+    }
+
+    .a-day {
+        width: 27px;
+        height: 27px;
+        border-radius: 50%;
+    }
+
+    .box-today {
+        border:2px solid var(--bs-blue);
+    }
+
+    .box-pink {
+        color: #dd087a;
+        background-color: #fee6f3;
+    }
+
+    .box-blue{
+        color: #5374f9;
+        background-color: #e6ebfe;
+    }
+
+    .box-green {
+        color: #3cddbd;
+        background-color: #d1f7ef;
+    }
+</style>
+<div ng-controller="CalendarCtrl">
+    <div class="bg-white rounded-4 p-3">
+        <div class="d-flex">
+            <div class="flex-fill fw-bolder">
+                ปฏิทินบริษัท
+            </div>
+            <div>
+                <div class="dropdown">
+                    <div class="btn btn-circle" data-bs-toggle="dropdown">
+                        <i class="bi bi-three-dots"></i>
+                    </div>
+                    <div class="dropdown-menu p-1">
+                        <div class="list-group list-group-flush">
+                            <a href='@Url.Page("/Calendar/Index")' class="list-group-item select text-nowrap" target="_blank">
+                                <i class="bi bi-box-arrow-right me-2"></i> View Calendar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="bg-gray rounded-4 d-flex align-items-center mb-3">
+            <button class="btn btn-circle text-orange" ng-click="PreviousMonth()">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <div class="flex-fill text-center">
+                <span>{{ lMonth[currMonth].Key }}</span>
+                <span class="ms-2">{{ currYear }}</span>
+            </div>
+            <button class="btn btn-circle text-orange" ng-click="NextMonth()">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+        <div class="row mb-1 fw-bolder fs-5">
+            <div class="col-1-of-7 text-center"><div class="Weekend">SU</div></div>
+            <div class="col-1-of-7 text-center"><div class="">M</div></div>
+            <div class="col-1-of-7 text-center"><div class="">T</div></div>
+            <div class="col-1-of-7 text-center"><div class="">W</div></div>
+            <div class="col-1-of-7 text-center"><div class="">TH</div></div>
+            <div class="col-1-of-7 text-center"><div class="">F</div></div>
+            <div class="col-1-of-7 text-center"><div class="Weekend">S</div></div>
+        </div>
+        <div class="row" ng-repeat="w in lWeek">
+            <div class="col-1-of-7 py-2 box-day text-center {{ d.day_of_week == 1 || d.day_of_week == 7 ? 'Weekend' : '' }}" ng-repeat="d in w" data-bs-toggle="collapse" data-bs-target="#D{{ '' + d.year + d.month + d.day }}">
+                <div class="a-day {{ d.is_now == 1 ? 'box-today' : '' }} {{ d.total_holiday > 0 && d.total_activity > 0 ? 'box-pink' : d.total_holiday > 0 ? 'box-blue' : d.total_activity > 0 ? 'box-green' : ''  }}" ng-show="d.month == currMonth">
+                    {{ d.day }}
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div>
+            <div ng-repeat="e in lEvent" class="d-flex mb-3">
+                <div class="me-2">
+                    <div class="a-day text-center {{ e.eventType == 'Holiday' ? 'box-blue' : e.eventType == 'Activity' ? 'box-green' : ''  }}">
+                        {{ GetDay(e.dt) }}
+                    </div>
+                </div>
+                <div class="p-2 bg-light-gray rounded-3 w-100">
+                    {{ e.eventName }}
+                </div>
+            </div>
+            <div class="text-center text-dark opacity-50" ng-show="lEvent.length == 0">
+                ไม่มีกิจกรรม
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    app.controller('CalendarCtrl', function ($scope, $http, $timeout, $filter) {
+        //DDL
+        $scope.lMonth = [{ Key: '', Value: 0 }
+            , { Key: 'January', Value: 1 }
+            , { Key: 'February', Value: 2 }
+            , { Key: 'March', Value: 3 }
+            , { Key: 'April', Value: 4 }
+            , { Key: 'May', Value: 5 }
+            , { Key: 'June', Value: 6 }
+            , { Key: 'July', Value: 7 }
+            , { Key: 'August', Value: 8 }
+            , { Key: 'September', Value: 9 }
+            , { Key: 'October', Value: 10 }
+            , { Key: 'November', Value: 11 }
+            , { Key: 'December', Value: 12 }];
+
+        var today = new Date();
+        $scope.currMonth = today.getMonth() + 1;
+        $scope.currYear = today.getFullYear();
+        $scope.lYear = [];
+        $scope.minYear = 0;
+        $scope.maxYear = 0;
+
+        //Detail
+        $scope.curr_dt = '';
+        $scope.curr_title = '';
+        $scope.curr_note = '';
+        $scope.curr_is_active = 0;
+        $scope.curr_updateBy = '';
+        $scope.curr_updateDate = '';
+        $scope.curr_mode = 1;
+        $scope.btnBackShow = 1;
+        $scope.btnNextShow = 1;
+
+        //Prop
+        $scope.lData = [];
+
+        $scope.LoadData = function (year, month) {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Calendar/DataList',
+                type: 'POST',
+                cache: false,
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify({
+                    'year': year
+                    , 'month': month
+                    , userBy: '@User.UserId()'
+                }),
+                success: function (data) {
+                    $timeout(function () {
+                        $scope.lData = data;
+                        $scope.lData = $scope.lData.map(x => {
+                            x.total_holiday = x.lEvent.filter(i => i.eventType == 'Holiday').length;
+                            x.total_activity = x.lEvent.filter(i => i.eventType == 'Activity').length;
+                            x.total = x.lEvent.length;
+
+                            return x;
+                        });
+
+                        $scope.lEvent = $scope.lData.filter(x => x.month == month && x.year == year).reduce((acc, item) => acc.concat(item.lEvent), []);
+                        
+                        $scope.LoadMonth($scope.currMonth, $scope.currYear);
+                        $scope.GetYear($scope.lData);
+                    }, 0);
+                }
+            });
+        }
+
+        $scope.LoadCalendar = function () {
+            $scope.LoadData($scope.currYear, $scope.currMonth);
+        }
+        $scope.LoadCalendar();
+
+        $scope.GetDay = function(dt){
+            return ConvertToDate(dt).getDate();
+        }
+
+        $scope.LoadMonth = function (this_month, this_year) {
+            //week_of_year
+            var week = [...new Set($scope.lData.filter(x => x.month == this_month && x.year == this_year).map(x => { return x.week_of_year }))];
+            var min_week = Math.min(...week);
+            var max_week = Math.max(...week);
+            $scope.lWeek = [];
+
+            for (var i = min_week; i <= max_week; i++) {
+                var week = $scope.lData.filter(x => x.week_of_year == i && x.month == this_month && x.year == this_year);
+                $scope.lWeek.splice($scope.lWeek.length, 0, week);
+            }
+
+            //fill Start
+            var start_week = 0;
+            if ($scope.lWeek[start_week].length != 7) {
+                var diff = 7 - $scope.lWeek[start_week].length;
+                var month = this_month;
+                var year = this_year;
+
+                //previous month
+                if (month == 1) {
+                    year--;
+                    month = 12;
+                } else {
+                    month--;
+                }
+
+                var fill_date = $scope.lData.filter(x => x.month == month && x.year == year);
+                fill_date.sort(function (a, b) { return b.day - a.day });
+
+                for (var i = 0; i < diff; i++) {
+                    $scope.lWeek[start_week].splice(0, 0, fill_date[i]);
+                }
+            }
+            //fill end
+            var last_week = $scope.lWeek.length - 1;
+            if ($scope.lWeek[last_week].length != 7) {
+                var diff = 7 - $scope.lWeek[last_week].length;
+                var month = this_month;
+                var year = this_year;
+
+                //next month
+                if (month == 12) {
+                    year++;
+                    month = 1;
+                } else {
+                    month++;
+                }
+
+                var fill_date = $scope.lData.filter(x => x.month == month && x.year == year);
+                fill_date.sort(function (a, b) { return a.day - b.day });
+
+                for (var i = 0; i < diff; i++) {
+                    $scope.lWeek[last_week].splice($scope.lWeek[last_week].length, 0, fill_date[i]);
+                }
+            }
+        }
+
+        $scope.GetYear = function (data) {
+            $scope.lYear = [...new Set($scope.lData.map(x => { return x.year }))];
+        }
+
+        $scope.PreviousMonth = function () {
+            if ($scope.currMonth == 1) {
+                $scope.currMonth = 12;
+                $scope.currYear--;
+            } else {
+                $scope.currMonth--;
+            }
+            $scope.LoadData($scope.currYear, $scope.currMonth);
+        }
+
+        $scope.NextMonth = function () {
+            if ($scope.currMonth == 12) {
+                $scope.currMonth = 1;
+                $scope.currYear++;
+            } else {
+                $scope.currMonth++;
+            }
+            $scope.LoadData($scope.currYear, $scope.currMonth);
+        }
+
+        $scope.SelectDay = function (x) {
+            if (x.can_add == 1) {
+                window.open('@Url.Page("/StepUpload")?x=' + btoa(x.dt), '_self');
+            }
+        }
+
+        $scope.init = function () {
+            $scope.$emit('PageCalendarLoaded');
+        };
+        $scope.init();
+    });
+</script>

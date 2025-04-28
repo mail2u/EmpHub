@@ -1,0 +1,196 @@
+﻿<style>
+
+</style>
+<div ng-controller="ChangeCategoryCtrl">
+    @* Change Modal *@
+    <div id="changeCategoryModal" class="modal fade dialog-info" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-secondary text-white">
+                    <div class="modal-title ">เปลี่ยนประเภทใบงาน</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-3">
+                    <div class="mb-2">
+                        <div class="fw-bolder">
+                            ประเภท
+                        </div>
+                        <div>
+                            <select ng-model="iChange.categoryCode" class="form-select categoryCode" ng-options="x.categoryCode as x.categoryDesc for x in lCategory" ng-change="SelectCategory()"></select>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <div class="fw-bolder">
+                            มีความประสงค์
+                        </div>
+                        <div>
+                            <select ng-model="iChange.subCategoryCode" class="form-select subCategoryCode" ng-options="x.subCategoryCode as x.subCategoryDesc for x in lSubCategory" ng-change="SelectSubCategory()"></select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="fw-bolder">
+                            ระบุเหตุผล
+                        </div>
+                        <div>
+                            <textarea ng-model="iChange.changeDesc" class="form-select changeDesc" maxlength="200" rows="3"></textarea>
+                            {{ iChange.changeDesc.length }}/200
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <button class="btn btn-secondary" ng-click="Save()" ng-disabled="iChange.changeDesc == ''">
+                            บันทึกการเปลี่ยนแปลง
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ChangeCategoryCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.$parent.ShowChangeCategory = function (x) {
+            $scope.iData = x;
+            $scope.InitialData();
+            $("#changeCategoryModal").modal('show');
+
+        }
+
+        //Initial
+        $scope.LoadCategory = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Category/AuthenList'
+                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    userId: '@User.UserId()'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lCategory = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+
+        $scope.LoadSubCategory = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/SubCategory/AuthenList'
+                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    categoryCode: $scope.iChange.categoryCode
+                    , userId: '@User.UserId()'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lSubCategory = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+
+        $scope.LoadMaster = function (groupName) {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList',
+                    headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        groupName: groupName
+                    }),
+                    success: function (result) {
+                        $timeout(function () {
+                            resolve(result);
+                        }, 0);
+                    }, error: function () {
+                        resolve(null);
+                    }
+                });
+            });
+        }
+
+        $scope.InitialData = async function () {
+            $scope.iChange = {
+                refId: $scope.iData.id
+                , categoryCode: ''
+                , categoryDesc: ''
+                , subCategoryCode: ''
+                , subCategoryDesc: ''
+                , changeBy: '@User.UserId()'
+                , changeDesc: ''
+            };
+            $scope.lSystem = await $scope.LoadMaster('itsSystem');
+            $scope.LoadCategory();
+        }
+
+        //Event
+        $scope.SelectCategory = function () {
+            $scope.iChange.categoryDesc = $scope.lCategory.find(x => x.categoryCode == $scope.iChange.categoryCode).categoryDesc;
+            $scope.LoadSubCategory();
+        }
+
+        $scope.SelectSubCategory = function () {
+            $scope.iChange.subCategoryDesc = $scope.lSubCategory.find(x => x.subCategoryCode == $scope.iChange.subCategoryCode).subCategoryDesc;
+        }
+
+        //Save
+        $scope.Validate = function () {
+            var flag = true;
+
+            JS_Reset($(".categoryCode"));
+            JS_Reset($(".title"));
+            JS_Reset($(".changeDesc"));
+
+            if ($scope.iChange.categoryCode == '') {
+                JS_Require($(".categoryCode"));
+                flag = false;
+            }
+            if ($scope.iChange.subCategoryCode == '') {
+                JS_Require($(".subCategoryCode"));
+                flag = false;
+            }
+            if ($scope.iChange.changeDesc == '') {
+                JS_Require($(".changeDesc"));
+                flag = false;
+            }
+
+            return flag;
+        }
+
+        $scope.Save = function(){
+            if ($scope.Validate()) {
+                $("#changeCategoryModal").modal('hide');
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Service/ChangeCategory',
+                    headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    data: JSON.stringify($scope.iChange),
+                    cache: false,
+                    success: function (result) {
+                        $timeout(function () {
+                            $scope.$parent.LoadData();
+
+                            alertSuccess("บันทึกรายการสำเร็จ", "เลขที่อ้างอิงใหม่ : " + result.serviceNo, () => {
+                                window.open('@Url.Page("/Service/Detail/")' + result.id, '_blank');
+                            });
+                        }, 0);
+                    },
+                    error: AjaxError
+                });
+            }
+        }
+    });
+</script>

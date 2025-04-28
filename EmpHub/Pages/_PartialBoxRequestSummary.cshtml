@@ -1,0 +1,98 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<div ng-controller="RequestSummaryCtrl">
+    <div class="d-none d-sm-block">
+        <div class="row">
+            <div class="col-4">
+                <a href='@Url.Page("Service/Request")?status=Approve' class="text-decoration-none">
+                    <div class="rounded-5 bg-white px-3 py-2 mb-3">
+                        <div class="d-flex justify-content-between">
+                            <div class="d-flex align-items-center text-dark fw-bolder text-truncate">
+                                รออนุมัติ
+                            </div>
+                            <div class="icon-circle text-blue">
+                                <i class="bi bi-record-circle"></i>
+                            </div>
+                        </div>
+                        <div class="fs-1 fw-bolder text-secondary">{{ iApprove.total | number }}</div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-4">
+                <a href='@Url.Page("Service/Request")?status=Work' class="text-decoration-none">
+                    <div class="rounded-5 bg-white px-3 py-2 mb-3">
+                        <div class="d-flex justify-content-between">
+                            <div class="d-flex align-items-center text-dark fw-bolder text-truncate">
+                                รอดำเนินการ
+                            </div>
+                            <div class="icon-circle text-orange">
+                               <i class="bi bi-person-workspace"></i>
+                            </div>
+                        </div>
+                        <div class="fs-1 fw-bolder text-secondary">{{ iWork.total | number }}</div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-4">
+                <a href='@Url.Page("Service/Request")?status=Complete' class="text-decoration-none">
+                    <div class="rounded-5 bg-white px-3 py-2 mb-3">
+                        <div class="d-flex justify-content-between">
+                            <div class="d-flex align-items-center text-dark fw-bolder text-truncate">
+                                สำเร็จ
+                            </div>
+                            <div class="icon-circle text-green">
+                                <i class="bi bi-check2-circle"></i>
+                            </div>
+                        </div>
+                        <div class="fs-1 fw-bolder text-secondary">{{ iComplete.total | number }}</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="d-sm-none mb-3" ng-show="total > 0">
+        <canvas id="chart_request_summary"></canvas>
+    </div>
+</div>
+<script>
+    app.controller('RequestSummaryCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.sysId = 'ITS';
+
+        $scope.$parent.LoadBoxRequestSummary = function (page = 1) {
+            $scope.page = page;
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Service/RequestSummary',
+                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    sysId: $scope.sysId
+                    , userBy: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.iApprove = result.find(x => x.status == 'Approve');
+                        $scope.iWork = result.find(x => x.status == 'Work');
+                        $scope.iComplete = result.find(x => x.status == 'Complete');
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+
+        $scope.ShowDetail = function (x) {
+            x.is_not_read = 0;
+            window.open('@Url.Page("/Service/Detail")/' + x.id, '_blank');
+        }
+
+        $scope.init = function () {
+            $scope.$emit('BoxRequestSummaryLoaded');
+        };
+        $scope.init();
+    });
+</script>

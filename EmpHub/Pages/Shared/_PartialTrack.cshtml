@@ -1,0 +1,125 @@
+﻿<style>
+
+    .box {
+        margin-left: 0;
+    }
+
+    .box-cancel {
+        color: var(--bs-danger);
+        border-left: 2px solid var(--bs-danger) !important;
+    }
+
+    .box-current {
+        color: var(--bs-blue);
+        border-left: 2px solid var(--bs-blue) !important;
+    }
+
+    .box-complete {
+        border-left: 2px solid var(--tip-blue) !important;
+    }
+
+    .box-info {
+        color: var(--tip-blue);
+        border-left: 2px solid var(--tip-blue) !important;
+    }
+
+    .box-future {
+        color: var(--gray) !important;
+        border-left: 2px dashed var(--gray) !important;
+    }
+
+</style>
+<div ng-controller="TrackCtrl">
+    <div class="rounded-5 border shadow-sm p-2 bg-white mb-3">
+        <div class="fw-bolder rounded-4 p-2 bg-secondary text-white ps-3">ติดตามสถานะ</div>
+        <div class="p-3 pe-0 bg-white rounded-4">
+            <div ng-repeat="x in lTrack" class="ps-3 pe-2 mt-3 d-flex align-items-center position-relative box {{ x.is_action == 3 ? 'box-complete' : x.is_action == 2 ? 'box-current' : x.is_action == -2 ? 'box-cancel' : x.is_action == 1 ? 'box-info' : 'box-future' }}">
+                <span class="position-absolute stage" style="left:-9px; top:-20px;">
+                    <i class="bi bi-circle" ng-show="x.is_action == 3"></i>
+                    <i class="bi bi-record-circle" ng-show="x.is_action == 2"></i>
+                    <i class="bi bi-check2-circle text-green" ng-show="x.is_action == 1"></i>
+                    <i class="bi bi-circle" ng-show="x.is_action == 0"></i>
+                    <i class="bi bi-x-circle" ng-show="x.is_action == -2"></i>
+                </span>
+                <div class="">
+                    <div class="fw-bolder">{{ x.statusDesc }}</div>
+                    <div ng-show="x.actionName != ''" class=" small p-2">
+                        <div class="d-flex">
+                            <i class="bi bi-person-circle me-1"></i>
+                            <div>
+                                <div class="fw-bolder">{{ x.actionName }}</div>
+                                <div>{{ x.position }} {{ x.department }}</div>
+                            </div>
+                        </div>
+                        <div ng-show="x.actionDate != ''">
+                            <i class="bi bi-clock"></i> {{ x.actionDate }}
+                        </div>
+                        <div ng-show="x.description != ''">
+                            <i class="bi bi-pen"></i> {{ x.description }}
+                        </div>
+                    </div>
+                    <div ng-show="x.actionName == ''" class=" small p-2">
+                        <div ng-repeat="u in x.lUser" class="d-flex mb-2">
+                            <i class="bi bi-person-circle me-1"></i>
+                            <div>
+                                <div>{{ u.actionName }}</div>
+                                <div>{{ u.position }} {{ u.department }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('TrackCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.$parent.LoadTrack = function (refId) {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceStep/DataList',
+                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify({
+                    refId: refId
+                }),
+                cache: false,
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.lTrack = result;
+
+                        for (var i = 0; i < $scope.lTrack.length; i++){
+                            var iData = $scope.lTrack[i];
+                            iData.lUser = [];
+
+                            if (iData.actionName == '') {
+                                $scope.LoadUser(iData);
+                            }
+                        }
+                    }, 0);
+                }
+            });
+        }
+
+        $scope.LoadUser = function(x){
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceStep/ActionList',
+                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify({
+                    refId: x.refId
+                    , status: x.status
+                }),
+                cache: false,
+                success: function (result) {
+                    $timeout(function () {
+                        x.lUser = result;
+                    }, 0);
+                }
+            });
+        }
+    });
+</script>

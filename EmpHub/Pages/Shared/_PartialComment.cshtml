@@ -1,0 +1,388 @@
+﻿@{
+    String refId = Model as String;
+}
+<style>
+    .icon-profile {
+        display: inline-block;
+        font-size: 1em;
+        width: 2.5em;
+        height: 2.5em;
+        line-height: 2.5em;
+        text-align: center;
+        border-radius: 50%;
+        background: #C0CBDB;
+        vertical-align: middle;
+        color: #FFF;
+        font-weight: 600;
+        content: attr(title);
+    }
+
+    .simditor {
+        width: 100% !important;
+    }
+
+    .simditor.is-invalid {
+        border: 1px solid red;
+    }
+
+    .simditor .simditor-body, .simditor .simditor-body p, .simditor .simditor-body div, .editor-style p, .editor-style div {
+        color: #000 !important;
+        font-size: 27px !important;
+        font-family: THSarabun !important;
+        line-height: 34px !important;
+        margin: 0px !important;
+    }
+
+    .simditor .simditor-body {
+        min-height: 300px;
+        overflow: clip;
+    }
+
+    .simditor .simditor-body p {
+        color: #000 !important;
+    }
+
+    .simditor-placeholder {
+        position: absolute;
+        padding-top: 25px;
+        padding-left: 17px;
+        color: var(--gray);
+    }
+
+    .box-Comment{
+        background-color:var(--light-gray);
+    }
+
+    .box-Task {
+        background-color: var(--light-orange);
+    }
+
+    .box-comment-detail img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 5px;
+    }
+</style>
+<link rel="stylesheet" href="~/lib/simditor/simditor.css" />
+<script src="~/lib/simditor/module.js"></script>
+<script src="~/lib/simditor/hotkeys.js"></script>
+<script src="~/lib/simditor/uploader.js"></script>
+<script src="~/lib/simditor/simditor.js"></script>
+<div ng-controller="CommentCtrl">
+    <div class="mb-4 rounded p-2">
+        <div ng-repeat="x in lComment" class="">
+            <div class="rounded shadow-sm p-3 mb-3 box-{{ x.mode }}">
+                <div class="d-flex">
+                    <div class="flex-fill text-secondary">
+                        @*    <span class="icon-profile" title="{{ x.create_by }}">
+                        {{ x.create_by.split(' ')[0][0] + x.create_by.split(' ')[1][0] }}
+                        </span>  *@
+                        <div class="small fw-bolder">
+                            {{ x.create_by }}
+                        </div>
+                        <div class="small">
+                            {{ x.create_department }}
+                        </div>
+                    </div>
+                    <div class="text-end small">
+                        <div class="fw-bolder">{{ x.mode }}</div>
+                        <div class="">{{ x.create_date }}</div>
+                    </div>
+                </div>
+                <hr />
+                <p class="box-comment-detail mb-4" ng-bind-html="x.detail"></p>
+                <div>
+                    <div class="" ng-repeat="a in x.lAttach" title="{{ a.outputname }}">
+                        <a class="btn btn-link" href="@webAPI.CurrentValue.APIEmpHub/api/File/DownloadFile?refId={{ a.refId }}&id={{ a.id }}" target="_blank" title="Download">
+                            <div class="d-flex align-items-center w-100">
+                                <img width="20" src="data:image/png;base64,{{a.imageBase64}}">
+                                <span class="text-truncate mx-2 flex-grow-1 w-100" style="min-width: 0;">
+                                    {{a.outputname }}
+                                </span>
+                                <i class="bi bi-download"></i>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="text-end" ng-show="x.can_delete == 1">
+                    <div class="select text-danger small" ng-click="DeleteComment(x)">
+                        <i class="bi bi-trash"></i> ลบข้อความนี้
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="">
+            <div class="mb-3">
+                <textarea id="editor" class="form-control detail" rows="4" maxlength="4000" placeholder="ความคิดเห็น"></textarea>
+                <div class="badge bg-gray me-2 mt-2" ng-repeat="x in lAttachFile">
+                    {{ x.filename}} ({{ FileSizeDesc(x.filesize) }})
+                    <span class="select" ng-click="RemoveAttach($index)">
+                        <i class="fas fa-times text-danger"></i>
+                    </span>
+                </div>
+            </div>
+            <div class="d-flex">
+                <button ng-click="AddComment()" class="btn btn-secondary text-nowrap me-2">
+                    บันทึก
+                </button>
+                <label for="lFile" class="btn btn-light border select me-2">
+                    <i class="fas fa-paperclip"></i>
+                </label>
+                <input class="d-none" base-sixty-four-input id="lFile" type="file" ng-model="lFile" ng-change="AddAttach()" multiple>
+                @if (User.Authen().Contains("[Work]"))
+                {
+                    <div class="input-group">
+                        <span class="input-group-text">ประเภท</span>
+                        <select ng-model="mode" ng-options="x as x for x in lMode" class="form-select"></select>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(".simditor-body").bind('scroll', function () {
+        this.scrollTo(0, 0);
+    });
+    app.controller('CommentCtrl', function ($scope, $http, $timeout, $filter, $interval) {
+        $scope.row = 20;
+        $scope.lComment = [];
+        $scope.lFile = [];
+        $scope.lMode = ['Comment', 'Task'];
+        $scope.mode = $scope.lMode[0];
+
+        Simditor.locale = 'en-US';
+        var editor = new Simditor({
+            textarea: $('#editor')
+            , placeholder: 'กรุณากรอกรายละเอียดให้อยู่ในกรอบ'
+            , upload: {
+                url: '@Url.Page("/Service/UploadImage")', // URL สำหรับการอัปโหลดรูปภาพ
+                params: null,         // พารามิเตอร์เพิ่มเติม (ถ้ามี)
+                fileKey: 'file',      // ชื่อของไฟล์ที่จะอัปโหลด
+                connectionCount: 3,   // จำนวนการอัปโหลดพร้อมกัน
+                leaveConfirm: 'กำลังอัปโหลดไฟล์อยู่ หากคุณออก การอัปโหลดจะถูกยกเลิก' // ข้อความแจ้งเตือนเมื่อออกหน้า
+            }
+            , pasteImage: true
+            //optional options
+            , toolbar: [
+                'bold'
+                , 'italic'
+                , 'underline'
+                , 'strikethrough'
+                , 'fontScale'
+                , 'color'
+                , 'ol'
+                , 'ul'
+                , 'blockquote'
+                , 'code'
+                , 'link'
+                , 'image'
+                , 'alignment'
+                , 'indent'
+                , 'outdent'
+                , 'table'
+            ]
+        });
+
+        $scope.$parent.LoadComment = function (id) {
+            $scope.refId = id;
+            $scope.LoadData();
+        }
+
+        $scope.LoadData = function (page = 1) {
+            $scope.page = page;
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Comment/DataList',
+                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    refId: $scope.refId
+                    , userId: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.lComment = result.data;
+                        $scope.$parent.totalComment = result.total;
+
+                        for (var i = 0; i < $scope.lComment.length; i++) {
+                            $scope.LoadAttach($scope.lComment[i]);
+                        }
+
+                        $scope.lAttachFile = [];
+                        editor.setValue('');
+                    }, 0);
+                }
+            });
+        }
+
+        $scope.LoadAttach = function (x) {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/File/DataList',
+                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    refId: x.id
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        x.lAttach = result;
+                    }, 0);
+                }
+            });
+        }
+
+        /* Manage Attach File */
+        $scope.AddAttach = function () {
+            var is_file_size_over = 0;
+
+            for (var i = 0; i < $scope.lFile.length; i++) {
+                var find = $filter('filter')($scope.lAttachFile, { filename: $scope.lFile[i].filename }).length;
+
+                if (find == 0) {
+                    if ($scope.lFile[i].filesize <= 20971520) {
+                        $scope.lAttachFile.splice($scope.lAttachFile.length, 0, $scope.lFile[i]);
+                    } else {
+                        is_file_size_over = 1;
+                    }
+                }
+            }
+
+            if (is_file_size_over == 1) {
+                alertWarning("ปัญหาการแนบไฟล์", "พบบางไฟล์มีเกิน 20 MB");
+            }
+
+            $scope.lFile = [];
+        }
+
+        $scope.RemoveAttach = function (index) {
+            $scope.lAttachFile.splice(index, 1);
+        }
+
+        $scope.Validate = function () {
+            var flag = true;
+            JS_Reset($(".simditor"));
+
+            $scope.commentText = editor.getValue();
+
+            if ($scope.iData.detail == '') {
+                JS_Require($(".simditor"));
+                flag = false;
+            }
+
+            for (var i = 0; i < $scope.lAttachFile.length; i++) {
+                var filesize = $scope.lAttachFile[i].size / 1024 / 1024
+
+                if (filesize > 20) {
+                    $scope.lAttachFile[i].is_warning = 1;
+                    flag = false;
+                }
+            }
+
+            if (!flag) {
+                dlgWarning("ไม่สามารถทำรายการต่อได้", "พบไฟล์แนบเกิน 20 MB");
+            }
+
+            return flag;
+        }
+
+        $scope.FileSizeDesc = function(size){
+            return FileSizeDesc(size);
+        }
+
+        /* Action */
+        $scope.AddComment = function () {
+            if ($scope.Validate()) {
+                showPreloader();
+
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Comment/Create',
+                    headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        refId: $scope.refId
+                        ,
+                        mode: $scope.mode
+                        ,
+                        detail: $scope.commentText
+                        ,
+                        create_by: '@User.UserId()'
+                    }),
+                    success: function (result) {
+                        $timeout(async function () {
+                            var iComment = result;
+
+                            for (var i = 0; i < $scope.lAttachFile.length; i++) {
+                                $scope.lAttachFile[i].refId = iComment.id;
+                                $scope.lAttachFile[i].create_by = '@User.UserId()';
+                                $scope.lAttachFile[i].fileindex = i;
+
+                                await $scope.UpdateAttach($scope.lAttachFile[i]);
+                            }
+
+                            hidePreloader();
+                            $scope.LoadData();
+                        }, 0);
+                    },error: AjaxError
+                });
+            }
+        }
+
+        $scope.DeleteComment = function(x){
+            alertConfirm("ยืนยันการลบข้อมูล", "ท่านต้องการลบข้อความนี้", function () {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Comment/Delete',
+                    headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify({
+                        id: x.id
+                        , refId: x.refId
+                        , update_by: '@User.UserId()'
+                    }),
+                    success: function () {
+                        $timeout(function () {
+                            $scope.LoadData();
+                        }, 0);
+                    }
+                });
+            });
+        }
+
+        $scope.UpdateAttach = function (iAttach) {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/File/Create',
+                    headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify(iAttach),
+                    success: function (result) {
+                        $timeout(function () {
+                            resolve(true);
+                        }, 0);
+                    },
+                    error: function () {
+                        resolve(false);
+                    }
+                });
+            });
+        }
+
+        $scope.DownloadAll = function (refId) {
+            window.open('@webAPI.CurrentValue.APIEmpHub/api/File/DownloadFile?refId=' + refId, '_blank');
+        }
+    });
+</script>

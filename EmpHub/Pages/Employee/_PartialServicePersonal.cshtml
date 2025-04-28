@@ -1,0 +1,251 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<div ng-controller="ServicePersonalCtrl" id="tab_personal">
+    @* View *@
+    <div class="rounded-5 p-4 bg-secondary">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-2">
+                    <img src="~/Images/icon-user.png" class="rounded-pill" width="90%" />
+                </div>
+                <div class="col-sm-10">
+                    <div class="row">
+                        <div class="col-sm-5 mb-3">
+                            <div class="text-gray">
+                                ชื่อ-สกุล (ภาษาไทย)
+                            </div>
+                            <div class="fw-bolder text-white">{{ iData.firstname_th }} {{ iData.lastname_th }}</div>
+                        </div>
+                        <div class="col-sm-5 mb-3">
+                            <div class="text-gray">
+                                ชื่อ-สกุล (ภาษาอังกฤษ)
+                            </div>
+                            <div class="fw-bolder text-white">{{ iData.firstname_en }} {{ iData.lastname_en }}</div>
+                        </div>
+                        <div class="col-sm-2 mb-3">
+                            <div class="text-gray">
+                                ชื่อเล่น
+                            </div>
+                            <div class="fw-bolder text-white">{{ iData.nickname }}</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-5 mb-3">
+                            <div class="text-gray">
+                                เบอร์ติดต่อ
+                            </div>
+                            <div class="fw-bolder text-white">{{ iData.phoneNo != '' ? iData.phoneNo : '-' }}</div>
+                        </div>
+                        <div class="col-sm-5 mb-3">
+                            <div class="text-gray">
+                                วันเกิด
+                            </div>
+                            <div class="fw-bolder text-white">{{ iData.birth_date }}</div>
+                        </div>
+                        <div class="col-sm-2 mb-3">
+                            <div class="text-gray">
+                                เพศ
+                            </div>
+                            <div class="fw-bolder text-white">{{ iData.sex == 'Male' ? 'ชาย' : iData.sex == 'Female' ? 'หญิง' : '-'  }}</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-5 mb-3">
+                            <div class="text-gray">
+                                อีเมล์
+                            </div>
+                            <div class="fw-bolder text-white">{{ iData.email }}</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-5 d-flex align-items-center">
+                            <div class="btn btn-light bg-secondary text-white" ng-click="Edit()">
+                                <i class="bi bi-pen"></i> แก้ไข
+                            </div>
+                            <div ng-show="iData.status == 'Pending'" class="ms-3 text-warning">
+                                รออนุมัติการปรับปรุงข้อมูล
+                                <div class="badge bg-danger select" ng-click="Cancel()">
+                                    <i class="bi bi-x"></i> ยกเลิก
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @* Dialog *@
+    <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="personalOff" aria-labelledby="offcanvasLabel" style="width:600px;">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title text-secondary fw-bolder" id="offcanvasLabel">ข้อมูลส่วนบุคคล</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="row">
+                <div class="col-sm-6 mb-3">
+                    <div class="fw-bolder">ชื่อ</div>
+                    <input ng-model="iEdit.firstname_th" class="form-control" />
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <div class="fw-bolder">นามสกุล</div>
+                    <input ng-model="iEdit.lastname_th" class="form-control" />
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <div class="fw-bolder">Firstname</div>
+                    <input ng-model="iEdit.firstname_en" class="form-control" />
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <div class="fw-bolder">Lastname</div>
+                    <input ng-model="iEdit.lastname_en" class="form-control" />
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="fw-bolder">ชื่อเล่น</div>
+                    <input ng-model="iEdit.nickname" class="form-control" />
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="fw-bolder">วันเกิด (ค.ศ.)</div>
+                    <input class="form-control icon-calendar date"
+                           ng-model="iEdit.birth_date_select"
+                           ng-model-options="{ updateOn: 'blur' }"
+                           moment-picker="iEdit.birth_date_select"
+                           locale="th"
+                           format="DD/MM/YYYY"
+                           min-view="month"
+                           max-view="month" required />
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="fw-bolder">เพศ</div>
+                    <div class="d-flex align-items-center p-2">
+                        <div class="me-4">
+                            <input ng-model="iEdit.sex" type="radio" value="Male" id="ra_male" />
+                            <label for="ra_male">ชาย</label>
+                        </div>
+                        <div>
+                            <input ng-model="iEdit.sex" type="radio" value="Female" id="ra_female" />
+                            <label for="ra_female">หญิง</label>
+                        </div>
+                    </div>
+                </div>
+                @*  <div class="col-sm-4 mb-3">
+                <div class="fw-bolder">สถานะ</div>
+                <input ng-model="iEdit.maritalStatus" class="form-control" />
+                </div> *@
+                <div class="col-sm-6 mb-3">
+                    <div class="fw-bolder">เบอร์ติดต่อ</div>
+                    <input ng-model="iEdit.phoneNo" class="form-control phone" />
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <div class="fw-bolder">อีเมล์</div>
+                    <input ng-model="iEdit.email" class="form-control" />
+                </div>
+            </div>
+            <div class="pt-3">
+                <div class="btn btn-secondary" ng-click="Save()">
+                    บันทึก
+                </div>
+                <div class="btn btn-link" data-bs-dismiss="offcanvas">
+                    ยกเลิก
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(".date").mask("00/00/0000");
+    $(".phone").mask("000-000-0000");
+    app.controller('ServicePersonalCtrl', function ($scope, $http, $timeout, $filter) {
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/ServicePersonal/Detail',
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.userId
+                    , create_by: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.iData = result;
+
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+
+        $scope.InitPersonal = function () {
+            $scope.userId = $scope.$parent.userId
+            $scope.LoadData();
+        }
+        $scope.InitPersonal();
+
+        $scope.Edit = function () {
+            $("#personalOff").offcanvas('show');
+            $scope.iEdit = {};
+            $scope.iEdit.personalId = $scope.iData.personalId;
+            $scope.iEdit.firstname_th = $scope.iData.firstname_th;
+            $scope.iEdit.lastname_th = $scope.iData.lastname_th;
+            $scope.iEdit.firstname_en = $scope.iData.firstname_en;
+            $scope.iEdit.lastname_en = $scope.iData.lastname_en;
+            $scope.iEdit.nickname = $scope.iData.nickname;
+            $scope.iEdit.sex = $scope.iData.sex;
+            $scope.iEdit.maritalStatus = $scope.iData.maritalStatus;
+            $scope.iEdit.email = $scope.iData.email;
+            $scope.iEdit.phoneNo = $scope.iData.phoneNo;
+            $scope.iEdit.userId = $scope.userId;
+            $scope.iEdit.create_by = '@User.UserId()';
+
+            if ($scope.iData.birth_date != '' && $scope.iData.birth_date != undefined){
+                var date = ConvertToDate($scope.iData.birth_date);
+                $scope.iEdit.birth_date_select = new moment(date);
+            }
+
+        }
+
+        $scope.Save = function () {
+            $("#personalOff").offcanvas('hide');
+
+            if ($scope.iEdit.birth_date_select) {
+                $scope.iEdit.birth_date = $scope.iEdit.birth_date_select.format("DD/MM/YYYY");
+            }
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/ServicePersonal/Save',
+                type: "POST",
+                contentType: 'application/json',
+                cache: false,
+                data: JSON.stringify($scope.iEdit),
+                success: function () {
+                    $timeout(async function () {
+                        $scope.LoadData();
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+
+        $scope.Cancel = function () {
+                alertConfirm("ท่านต้องการยกเลิกรายการ", "ยืนยันการยกเลิกการปรับปรุงข้อมูลส่วนบุคคล", function () {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServicePersonal/Cancel',
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify({
+                        userId: $scope.userId
+                        , update_by: '@User.UserId()'
+                    }),
+                    success: function () {
+                        $timeout(async function () {
+                            $scope.LoadData();
+                        }, 0);
+                    }, error: AjaxError
+                });
+            });
+        }
+    });
+</script>

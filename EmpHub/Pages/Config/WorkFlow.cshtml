@@ -1,0 +1,355 @@
+﻿@page
+@model EmpHub.Pages.Config.WorkFlowModel
+@{
+    ViewData["Title"] = "ตั้งค่าระบบ";
+}
+<style>
+    .bg-main {
+        background-color: var(--light-blue);
+    }
+</style>
+<div ng-controller="FlowCtrl" class="p-2">
+    <div class="mb-3">
+        <div class="fs-4"><i class="bi bi-diagram-3"></i> สายการอนุมัติ</div>
+    </div>
+    <div class="rounded-5 p-3 bg-white">
+        <div class="text-center mb-3">
+            <div class="position-relative" style="width:400px;">
+                <input class="form-control me-2" ng-model="search_name" placeholder="ค้นหา" ng-change="Search()" />
+                <div class="position-absolute top-50 end-0 translate-middle-y me-2">
+                    <i class="fas fa-search"></i>
+                </div>
+            </div>
+        </div>
+        <div class="mb-2" ng-repeat="g in lDepartment | orderBy : 'desc_th'">
+            <div class="fs-4 fw-bolder" ng-show="userResult.length > 0">{{ g.desc_th }}</div>
+            <div class="my-2 mb-3 p-3 rounded-4 bg-light border" ng-repeat="d in lUser | filter : {'departmentCode':g.code} : true | orderBy : ['positionCode','firstname_th'] as userResult">
+                <div class="fw-bolder">{{ d.firstname_th + ' ' + d.lastname_th }} <span ng-show="d.nickname != ''">(คุณ{{d.nickname}})</span></div>
+                <div class="pb-2">{{ d.positionDesc }}</div>
+                <div class="pb-1">
+                    <div class="position-relative m-4">
+                        <div class="progress" role="progressbar" aria-label="Progress" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="height: 1px;">
+                            <div class="progress-bar" style="width: 0%"></div>
+                        </div>
+                        <div class="position-absolute top-0 start-0 translate-middle-y w-100">
+                            <div class="d-flex justify-content-between">
+                                <div ng-repeat="p in lProcess">
+                                    <div class="p-2 rounded border {{ x.fullname == 'SKIP' ? 'bg-dark-gray text-white' : 'bg-blue' }}" ng-repeat="x in lServiceRelation | filter : {'condition1':d.userId,'status': p.name} as result">
+                                        <i class="fas fa-user" ng-show="x.fullname != 'SKIP'"></i> {{ x.fullname }}
+                                        <button class="btn ms-1 p-0" ng-click="RemoveRelation(x)">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
+                                    <div class="btn btn-light-dash" ng-click="ShowRelation(d, p)" ng-show="result.length == 0">
+                                        {{ p.name }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @* Modal *@
+    <div id="RelationModal" class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div>
+                        <div class="mb-2">
+                            <input ng-model="filter_name" class="form-control" />
+                            <div class="list-group list-group-flush">
+                                <div class="list-group-item d-flex align-items-center justify-content-between" ng-repeat="x in tempUser | filter : filter_name | limitTo : 7">
+                                    <div>
+                                        {{ x.firstname_th + ' ' + x.lastname_th }} <span ng-show="x.nickname != ''">({{ x.nickname }})</span>
+                                    </div>
+                                    <div>
+                                        <button ng-click="AddRelation(x)" class="btn btn-circle">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <button class="btn btn-secondary" ng-click="AddRelation({userId:'SKIP', firstname:'SKIP', lastname:''})">
+                                Skip This
+                            </button>
+                            <button class="btn btn-light" data-bs-dismiss="modal" aria-label="Close">
+                                ปิด
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller("FlowCtrl", function ($scope, $http, $timeout, $filter) {
+        $scope.sysId = '@Model.sysId';
+        $scope.process_save_skip = 0;
+        $scope.lProcess = [{ name: 'Approve1' }];
+
+        $scope.LoadDepartment = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList', 
+                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                type: "POST",
+                cache: false,
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify({
+                    groupName: 'departmentCode'
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.lDepartment = result;
+                    }, 0);
+                }
+            });
+        }
+        $scope.LoadDepartment();
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/DataList', 
+                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                type: "POST",
+                dataType: 'json',
+                cache: false,
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.tempUser = result;
+                        $scope.Search();
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+        $scope.Search = function () {
+            $scope.lUser = $filter('filter')($scope.tempUser, $scope.search_name);
+        }
+
+        /* Relation */
+        $scope.LoadRelation = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceRelation/DataList', 
+                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    sysId: $scope.sysId
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.lServiceRelation = result;
+                    }, 0);
+                },
+                error: function () {
+                    return null;
+                }
+            });
+        }
+        $scope.LoadRelation();
+
+        $scope.ShowRelation = function (d, p) {
+            $scope.iUser = d;
+            $scope.iProcess = p;
+            $("#RelationModal").modal('show');
+        }
+
+        $scope.AddRelation = async function (x) {
+            await $scope.RemoveRelation(x);
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceRelation/Create', 
+                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                type: "POST",
+                contentType: 'application/json',
+                cache: false,
+                data: JSON.stringify({
+                    sysId: $scope.sysId
+                    , status: $scope.iProcess.name
+                    , userId: x.userId
+                    , fullname: x.firstname + ' ' + x.lastname
+                    , condition1: $scope.iUser.userId
+                    , create_by: '@User.UserId()'
+                }),
+                success: function () {
+                    $timeout(function () {
+                        $("#RelationModal").modal('hide');
+                        $scope.LoadRelation();
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+
+        $scope.RemoveRelation = function (x) {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceRelation/Delete', 
+                    headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify({
+                        rn: x.rn
+                        , update_by: '@User.UserId()'
+                    }),
+                    success: function () {
+                        $timeout(function () {
+                            $scope.LoadRelation();
+                            resolve(true);
+                        }, 0);
+                    },
+                    error: function () {
+                        resolve(false);
+                    }
+                });
+            });
+        }
+
+        /* Skip */
+        $scope.LoadMaster = function (groupName) {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList',
+                    headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                    type: "POST",
+                    cache: false,
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    data: JSON.stringify({
+                        groupName: groupName
+                    }),
+                    success: function (result) {
+                        $timeout(function () {
+                            resolve(result);
+                        }, 0);
+                    },
+                    error: function () {
+                        resolve(null);
+                    }
+                });
+            });
+        }
+
+        $scope.LoadCategory = async function () {
+            var lCategory = [];
+
+            if ($scope.sysId == 'ITS') {
+                lCategory = await $scope.LoadMaster('memoCategory');
+            } else if ($scope.sysId == 'ITS') {
+                lCategory = await $scope.LoadMaster('itsCategory');
+            }
+
+            var lSkip = await $scope.LoadSkip();
+
+            $scope.lCategory = lCategory.map(m => {
+                var find = lSkip.filter(x => x.categoryCode == m.code);
+
+                return {
+                    sysId: $scope.sysId
+                    ,
+                    categoryCode: m.code
+                    ,
+                    categoryDesc: m.desc_th
+                    ,
+                    lCondition: find
+                };
+            });
+        }
+        $scope.LoadCategory();
+
+        $scope.LoadSkip = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceSkip/DataList',
+                    headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                    type: "POST",
+                    cache: false,
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    data: JSON.stringify({
+                        sysId: $scope.sysId
+                    }),
+                    success: function (result) {
+                        $timeout(function () {
+                            resolve(result);
+                        }, 0);
+                    },
+                    error: function () {
+                        resolve(null);
+                    }
+                });
+            });
+        }
+
+        $scope.AddCondition = function(x){
+            x.lCondition.splice(x.lCondition.length, 0, {
+                period_from: 0
+                , period_to: 0
+                , skip_approve1: 0
+                , skip_approve2: 0
+                , skip_approve3: 0
+                , skip_approve4: 0
+                , skip_approve5: 0
+            });
+        }
+
+        $scope.RemoveCondition = function (x, index) {
+            x.lCondition.splice(index, 1);
+        }
+
+        $scope.SaveSkip = function () {
+            $scope.process_save_skip = 1;
+            var lCategory = [];
+
+            for (var i = 0; i < $scope.lCategory.length; i++) {
+                var iCategory = $scope.lCategory[i];
+
+                for (var j = 0; j < iCategory.lCondition.length; j++) {
+                    var iCondition = iCategory.lCondition[j];
+
+                    lCategory.splice(lCategory.length, 0, {
+                        sysId: iCategory.sysId
+                        , categoryCode: iCategory.categoryCode
+                        , period_from: parseInt(iCondition.period_from)
+                        , period_to: parseInt(iCondition.period_to)
+                        , skip_approve1: iCondition.skip_approve1
+                        , skip_approve2: iCondition.skip_approve2
+                        , skip_approve3: iCondition.skip_approve3
+                        , skip_approve4: iCondition.skip_approve4
+                        , skip_approve5: iCondition.skip_approve5
+                        , update_by: '@User.UserId()'
+                    });
+                }
+            }
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceSkip/BulkUpdate',
+                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                type: "POST",
+                cache: false,
+                contentType: 'application/json',
+                data: JSON.stringify(lCategory),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.process_save_skip = 2;
+
+                        $timeout(function () {
+                            $scope.process_save_skip = 0;
+                        }, 1500);
+                    }, 500);
+                },
+                error: AjaxError
+            });
+        }
+    });
+</script>

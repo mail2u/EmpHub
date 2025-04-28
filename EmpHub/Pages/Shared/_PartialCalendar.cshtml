@@ -1,0 +1,263 @@
+﻿@{
+    String refId = Model as String;
+}
+<div ng-controller="CalendarCtrl">
+    <div class="rounded-5 border shadow-sm p-2 bg-white mb-3">
+        <div class="fw-bolder rounded-4 p-2 bg-secondary text-white ps-3"><i class="bi bi-calendar2"></i> ตารางงาน</div>
+        <div class="p-2 pe-0 bg-white rounded-4">
+            <div ng-repeat="x in lData" ng-mouseover="x.is_focus = 1" ng-mouseleave="x.is_focus = 0">
+                <div class="bg-light-hover bg-light rounded p-2 mb-1" ng-click="OpenDetail(x)">
+                    <div class="d-flex">
+                        <div class="text-success flex-fill p-1">
+                            <i class="bi bi-clock"></i> {{ x.dt }} {{ x.time }}
+                        </div>
+                        <div ng-show="x.is_focus == 1 && x.can_delete == 1" ng-mouseover="x.is_action = 1" ng-mouseleave="x.is_action = 0">
+                            <button class="btn p-0 text-danger" title="ลบ" ng-click="RemoveCalendar(x)">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mb-1">
+                        {{ x.note }}
+                    </div>
+                    <div class="text-end text-secondary">
+                        <i class="bi bi-person-circle"></i> {{ x.userId }}
+                    </div>
+                </div>
+            </div>
+            <div class="btn btn-link" ng-click="ShowCreate()">
+                เพิ่มรายการ
+            </div>
+        </div>
+    </div>
+    @* Modal *@
+    <div id="AddCalendarModal" class="modal fade dialog-info" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-secondary text-white">
+                    <div class="modal-title ">ตารางงาน</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-3">
+                    <div class="mb-2">
+                        <div class="fw-bolder">
+                            ผู้ดำเนินการ
+                        </div>
+                        <div class="dropdown">
+                            <input ng-model="iData.userName" class="form-select bg-white userName" readonly data-bs-toggle="dropdown" />
+                            <div class="dropdown-menu px-2 shadow">
+                                <input ng-model="user_filter" class="form-control mb-2" placeholder="ค้นหา" />
+                                <div class="overflow-auto" style="height:400px;">
+                                    <div class="dropdown-item select" ng-repeat="x in lWorker | filter : user_filter" ng-click="SelectWorker(x)">
+                                        <div class="text-secondary fw-bolder">{{ x.userName }} <span ng-show="x.nickname != ''">(คุณ{{ x.nickname }})</span></div>
+                                        <div>{{ x.position }}</div>
+                                        <div>{{ x.department }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6 mb-2">
+                            <div class="fw-bolder">
+                                วันที่
+                            </div>
+                            <input class="form-control icon-calendar date"
+                                   ng-model="iData.dt"
+                                   ng-model-options="{ updateOn: 'blur' }"
+                                   moment-picker="iData.dt"
+                                   locale="th"
+                                   format="DD/MM/YYYY"
+                                   min-view="month"
+                                   max-view="month"
+                                   start-view="month"
+                                   placeholder="--/--/----" />
+                        </div>
+                        <div class="col-sm-6 mb-2">
+                            <div class="fw-bolder">
+                                เวลา
+                            </div>
+                            <input class="form-control icon-time time" ng-model="iData.time" placeholder="--:--" />
+                           @*  <input class="form-control icon-time time"
+                                   ng-model="iData.time"
+                                   ng-model-options="{ updateOn: 'blur' }"
+                                   moment-picker="iData.time"
+                                   locale="th"
+                                   format="HH:mm"
+                                   min-view="hour"
+                                   max-view="minute"
+                                   start-view="hour" 
+                                   /> *@
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="fw-bolder">
+                            รายละเอียด
+                        </div>
+                        <textarea ng-model="iData.note" rows="4" maxlength="200" class="form-control note"></textarea>
+                    </div>
+                    <div class="text-end">
+                        <button class="btn btn-secondary" ng-disabled="iData.userId == '' || iData.note == ''" ng-click="CreateCalendar()">
+                            บันทึก
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(".time").mask('00:00');
+    app.controller('CalendarCtrl', function ($scope, $http, $timeout, $filter, $interval) {
+
+        $scope.$parent.LoadCalendar = function (x) {
+            $scope.refId = x;
+            $scope.LoadData();
+        }
+
+        $scope.LoadWork = function () {
+            return new Promise((resolve) => {
+                if ($scope.lWorker == null) {
+                    $.ajax({
+                        url: '@webAPI.CurrentValue.APIEmpHub/api/Service/UserAllWork',
+                        headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                        type: "POST",
+                        contentType: 'application/json',
+                        cache: false,
+                        data: JSON.stringify({
+                            refId: $scope.refId
+                            , userBy: '@User.UserId()'
+                        }),
+                        success: function (result) {
+                            $timeout(function () {
+                                $scope.lWorker = result;
+                                resolve(true);
+                            }, 0);
+                        },
+                        error: AjaxError
+                    });
+                } else {
+                    resolve(true);
+                }
+            });
+        }
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceCalendar/DataList',
+                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    refId: $scope.refId
+                    , userId: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.lData = result;
+                    }, 0);
+                }
+            });
+        }
+
+        $scope.ShowCreate = async function () {
+            await $scope.LoadWork();
+
+            $scope.iData = {
+                refId: $scope.refId
+                , userId: ''
+                , dt: ''
+                , time: ''
+                , note: ''
+                , create_by: '@User.UserId()'
+            };
+
+            $("#AddCalendarModal").modal('show');
+        }
+
+        $scope.SelectWorker = function(x){
+            $scope.iData.userId = x.userBy;
+            $scope.iData.userName = x.userName;
+        }
+
+        $scope.Validate = function(){
+            var flag = true;
+
+            JS_Reset($(".userName"));
+            JS_Reset($(".date"));
+            JS_Reset($(".time"));
+            JS_Reset($(".note"));
+
+            if ($scope.iData.userId == ''){
+                flag = false;
+                JS_Require($(".userName"));
+            }
+            console.log($scope.iData.dt);
+            if ($scope.iData.dt == undefined || $scope.iData.dt == '') {
+                flag = false;
+                JS_Require($(".date"));
+            } else if (JS_ValidateDate($scope.iData.dt.format("DD/MM/YYYY")) == false) {
+                flag = false;
+                JS_Require($(".date"));
+            }
+            if ($scope.iData.time != '') {
+                if (JS_ValidateTime($scope.iData.time) == false) {
+                    flag = false;
+                    JS_Require($(".time"));
+                }
+            }
+            if ($scope.iData.note == '') {
+                flag = false;
+                JS_Require($(".note"));
+            }
+
+            return flag;
+        }
+
+        $scope.CreateCalendar = function () {
+            if ($scope.Validate()) {
+                $("#AddCalendarModal").modal('hide');
+
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceCalendar/Create',
+                    headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify($scope.iData),
+                    success: function (result) {
+                        $timeout(function () {
+                            $scope.LoadData();
+                        }, 0);
+                    },
+                    error: AjaxError
+                });
+            }
+        }
+
+        $scope.RemoveCalendar = function (x) {
+            alertConfirm("ยืนยันการลบรายการ", "ท่านต้องการลบตารางงานนี้", function () {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceCalendar/Delete',
+                    headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify({
+                        rn: x.rn
+                        , refId: x.refId
+                        , update_by: '@User.UserId()'
+                    }),
+                    success: function (result) {
+                        $timeout(function () {
+                            $scope.LoadData();
+                        }, 0);
+                    },
+                    error: AjaxError
+                });
+            });
+        }
+    });
+</script>

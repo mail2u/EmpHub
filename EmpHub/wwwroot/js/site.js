@@ -1,0 +1,255 @@
+﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+// for details on configuring this project to bundle and minify static web assets.
+
+// Write your JavaScript code.
+
+function showPreloader() {
+    $('#status').fadeIn();
+    $('#preloader').fadeIn();
+}
+
+function hidePreloader() {
+    //$('#img-pre').remove();
+    $('#status').fadeOut();
+    $('#preloader').fadeOut();
+}
+
+function ConvertToDate(dt) {
+    var dt = dt.split(' ')[0];
+    var parts = dt.split('/');
+    return new Date(parts[2], parts[1] - 1, parts[0]);
+}
+
+function ConvertToDate103(dt) {
+    var dd = dt.getDate();
+    var mm = dt.getMonth() + 1;
+    var yyyy = dt.getFullYear();
+
+    if (dd < 10) {
+        dd = '0' + dd;
+    }
+    if (mm < 10) {
+        mm = '0' + mm;
+    }
+
+    return dd + '/' + mm + '/' + yyyy;
+}
+
+function JS_ValidateMobile(text) {
+    var regex = /^\(?([0][1-9][0-9])\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+
+    if (text == "" || text == null || regex.test(text) == false) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+function JS_ValidateDate(text) {
+    var regex = /(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)\d\d/;
+
+    if (text == "" || text == null || regex.test(text) == false) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+function JS_ValidateTime(text) {
+    var regex = /^([01][0-9]|2[0-3]):[0-5][0-9]$/;
+
+    if (text == "" || text == null || regex.test(text) == false) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+function JS_Reset(inputbox) {
+    inputbox.removeClass("input-error");
+    inputbox.removeClass("is-invalid");
+    inputbox.removeClass("is-valid");
+}
+
+function JS_Require(inputbox) {
+    inputbox.addClass("input-error");
+    inputbox.addClass("is-invalid");
+}
+
+function AjaxError(jqXHR, error, errorThrown) {
+    hidePreloader();
+    Swal.fire({
+        title: "ระบบเกิดข้อผิดพลาด",
+        text: jqXHR.responseText,
+        icon: "error",
+        confirmButtonColor: '#1e3b92',
+    });
+}
+
+function alertSuccess(title, msg, fn) {
+    Swal.fire({
+        title: title,
+        text: msg,
+        icon: "success",
+        allowOutsideClick: false,
+        confirmButtonText: "ตกลง",
+        confirmButtonColor: '#1e3b92',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            if (fn) {
+                fn();
+            }
+        }
+    });
+}
+
+function alertConfirm(title, msg, fn) {
+    Swal.fire({
+        title: title,
+        text: msg,
+        icon: "warning",
+        confirmButtonText: "ตกลง",
+        confirmButtonColor: '#1e3b92',
+        cancelButtonText: "ปิด",
+        showCancelButton: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            if (fn) {
+                fn();
+            }
+        }
+    });
+}
+
+function alertWarning(title, msg, fn) {
+    Swal.fire({
+        title: title,
+        text: msg,
+        icon: "warning",
+        confirmButtonText: "ตกลง",
+        confirmButtonColor: '#1e3b92',
+    }).then((result) => {
+        if (fn) {
+            fn();
+        }
+    });
+}
+
+function dlgInfo(title, msg) {
+    var dialog = $("#dialog-info");
+    var dialog_title = $(".dialog-info-title");
+    var dialog_body = $(".dialog-info-body");
+
+    dialog.modal({ backdrop: 'static', keyboard: false })
+    dialog_title.html("");
+    dialog_body.html("");
+    dialog_title.html(title);
+    dialog_body.html(msg);
+    dialog.modal('show');
+}
+
+function dlgWarning(title, msg) {
+    var dialog = $("#dialog-warning");
+    var dialog_title = $(".dialog-warning-title");
+    var dialog_body = $(".dialog-warning-body");
+
+    dialog.modal({ backdrop: 'static', keyboard: false })
+    dialog_title.html("");
+    dialog_body.html("");
+    dialog_title.html(title);
+    dialog_body.html(msg);
+    dialog.modal('show');
+}
+
+function setCookie(cName, cValue, expDays) {
+    let date = new Date();
+    date.setTime(date.getTime() + (expDays * 24 * 60 * 60 * 1000));
+    const expires = "expires=" + date.toUTCString();
+    document.cookie = cName + "=" + cValue + "; " + expires + "; path=/";
+}
+
+function getCookie(name) {
+    const regex = new RegExp(`(^| )${name}=([^;]+)`)
+    const match = document.cookie.match(regex)
+    if (match) {
+        return match[2]
+    }
+}
+
+function getFileInfo(str) {
+    if (str == null) { return null; }
+
+    var file = str.split(';'); // data:image/png;base64,'
+
+    if (file.length != 2) { return null; }
+
+    var data = file[0];
+    var base64 = file[1];
+
+    return {
+        base64: base64.split(',')[1]
+        , filetype: data.split(':')[1]
+    };
+}
+
+function FileSizeDesc(totalSize) {
+    var code = ["bytes", "KB", "MB", "GB"];
+    var index = 0;
+
+    while (totalSize > 1024) {
+        totalSize = (totalSize / 1024.0);
+        index++;
+    }
+
+    if (totalSize > 0) {
+        return parseFloat(totalSize).toFixed(2) + ' ' + code[index];
+    } else {
+        return '0 ' + code[index];
+    }
+}
+
+function ExportFile(JSData, filename) {
+    if (JSData != null) {
+        var tableData = [
+            {
+                "sheetName": "Sheet1",
+                "data": JSData
+            }
+        ];
+
+        var rightNow = new Date();
+        var res = rightNow.toISOString().slice(0, 10).replace(/-/g, "");
+
+        var options = {
+            fileName: filename
+        };
+        Jhxlsx.export(tableData, options);
+    }
+}
+
+function auto_grow(element) {
+    element.style.height = "5px";
+    element.style.height = (element.scrollHeight + 10) + "px";
+}
+
+Date.prototype.addDays = function (days) {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() + days);
+    return date;
+}
+
+Date.prototype.addMonths = function (months) {
+    var n = this.getDate();
+    this.setDate(1);
+    this.setMonth(this.getMonth() + months);
+    this.setDate(Math.min(n, this.getDaysInMonth()));
+    return this;
+};
+
+Date.prototype.getDaysInMonth = function () {
+    return Date.getDaysInMonth(this.getFullYear(), this.getMonth());
+};
+
+Date.getDaysInMonth = function (year, month) {
+    return [31, (Date.isLeapYear(year) ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
+};

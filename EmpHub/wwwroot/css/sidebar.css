@@ -1,0 +1,115 @@
+﻿
+/* Sidebar */
+body{
+    display:flex!important;
+}
+
+.logo-brand{
+
+}
+
+.sd-menu{
+    position:fixed;
+    z-index:10;
+}
+
+.sd-container{
+    position:absolute;
+}
+
+.sd-menu,
+.sd-container {
+    transition: 0.5s;
+    height: 100%;
+}
+
+.sd-menu.active {
+    width: 240px;
+}
+
+.sd-menu.active ~ .sd-container {
+    padding-left: 240px;
+}
+
+.sd-menu.active > .logo-brand > .sb-label,
+.sd-menu.active > .list-group-item > .sb-label {
+    transition-delay: 0.1s;
+    visibility: unset;
+}
+
+.sd-menu.noactive {
+    width: 0px;
+    display:none;
+}
+
+.sd-menu.noactive ~ .sd-container {
+    padding-left: 0px;
+}
+
+.sd-menu.noactive > ul > li > a {
+    display: inline-block;
+}
+
+.sd-menu.noactive > .logo-brand > .sb-label,
+.sd-menu.noactive > .list-group-item > .sb-label {
+    visibility: hidden;
+}
+
+/* List */
+
+.sd-menu > .list-group-item, .menu > .list-group-item {
+    border: none;
+    background-color: transparent;
+    position: relative;
+    color: var(--tip-blue);
+}
+
+.sd-menu > .logo-brand > .sb-label,
+.sd-menu > .list-group-item > .sb-label, 
+.menu > .logo-brand > .sb-label,
+.menu > .list-group-item > .sb-label {
+    position: absolute;
+    white-space: nowrap;
+    padding-left: 5px;
+}
+
+.sd-menu > .list-group-item:hover, .menu > .list-group-item:hover {
+    cursor: pointer;
+    color: var(--tip-blue);
+    border-right: 4px solid var(--orange);
+}
+
+.sd-menu > .list-group-item.active, .menu > .list-group-item.active {
+    color: var(--bs-white);
+    background-color: var(--orange);
+    border-radius:8px;
+    margin:5px;
+    padding:5px 10px;
+}
+
+
+@media (min-width: 992px) {
+
+    .sd-menu.noactive {
+        width: 52px;
+        display: flex;
+    }
+
+    .sd-menu.noactive ~ .sd-container {
+        padding-left: 52px;
+    }
+
+}
+
+
+@media (max-width: 992px) {
+
+    .sd-menu.active, .sd-menu.noactive {
+        width: 0px;
+        display: none;
+    }
+
+    .sd-menu.active ~ .sd-container, .sd-menu.noactive ~ .sd-container {
+        padding-left: 0px;
+    }
+}
