@@ -11,8 +11,11 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Duende.IdentityModel;
 using EmpHub;
+using EmpHub.Extension;
 
 var builder = WebApplication.CreateBuilder(args);
+
+UserExtensions.Initialize(builder.Configuration);
 
 builder.Services.AddTransient<IClaimsTransformation, CustomClaimsTransformation>();
 
