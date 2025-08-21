@@ -2,6 +2,7 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
+    var token = User.AccessToken(Context);
 }
 <div ng-controller="ServicePersonalCtrl" id="tab_personal">
     @* View *@
@@ -14,61 +15,63 @@
                 <div class="col-sm-10">
                     <div class="row">
                         <div class="col-sm-5 mb-3">
-                            <div class="text-gray">
+                            <small class="text-gray">
                                 ชื่อ-สกุล (ภาษาไทย)
-                            </div>
+                            </small>
                             <div class="fw-bolder text-white">{{ iData.firstname_th }} {{ iData.lastname_th }}</div>
                         </div>
                         <div class="col-sm-5 mb-3">
-                            <div class="text-gray">
+                            <small class="text-gray">
                                 ชื่อ-สกุล (ภาษาอังกฤษ)
-                            </div>
+                            </small>
                             <div class="fw-bolder text-white">{{ iData.firstname_en }} {{ iData.lastname_en }}</div>
                         </div>
                         <div class="col-sm-2 mb-3">
-                            <div class="text-gray">
+                            <small class="text-gray">
                                 ชื่อเล่น
-                            </div>
-                            <div class="fw-bolder text-white">{{ iData.nickname }}</div>
+                            </small>
+                            <div class="fw-bolder text-white">{{ iData.nickname != '' ? iData.nickname : '-' }}</div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-5 mb-3">
-                            <div class="text-gray">
+                            <small class="text-gray">
                                 เบอร์ติดต่อ
-                            </div>
+                            </small>
                             <div class="fw-bolder text-white">{{ iData.phoneNo != '' ? iData.phoneNo : '-' }}</div>
                         </div>
                         <div class="col-sm-5 mb-3">
-                            <div class="text-gray">
+                            <small class="text-gray">
                                 วันเกิด
-                            </div>
-                            <div class="fw-bolder text-white">{{ iData.birth_date }}</div>
+                            </small>
+                            <div class="fw-bolder text-white">{{ iData.birth_date != '' ? iData.birth_date : '-' }}</div>
                         </div>
                         <div class="col-sm-2 mb-3">
-                            <div class="text-gray">
+                            <small class="text-gray">
                                 เพศ
-                            </div>
+                            </small>
                             <div class="fw-bolder text-white">{{ iData.sex == 'Male' ? 'ชาย' : iData.sex == 'Female' ? 'หญิง' : '-'  }}</div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-5 mb-3">
-                            <div class="text-gray">
+                            <small class="text-gray">
                                 อีเมล์
-                            </div>
-                            <div class="fw-bolder text-white">{{ iData.email }}</div>
+                            </small>
+                            <div class="fw-bolder text-white">{{ iData.email != '' ? iData.email : '-' }}</div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-5 d-flex align-items-center">
-                            <div class="btn btn-light bg-secondary text-white" ng-click="Edit()">
+                            <div class="btn bg-secondary text-white border-white" ng-click="Edit()">
                                 <i class="bi bi-pen"></i> แก้ไข
                             </div>
-                            <div ng-show="iData.status == 'Pending'" class="ms-3 text-warning">
-                                รออนุมัติการปรับปรุงข้อมูล
+                            <div ng-show="iData.status == 'Pending'" class="ms-3 d-flex bg-white bg-opacity-25 rounded p-2">
+                                <div class="me-2 text-warning">
+                                    รออนุมัติการปรับปรุงข้อมูล
+                                </div>
                                 <div class="badge bg-danger select" ng-click="Cancel()">
-                                    <i class="bi bi-x"></i> ยกเลิก
+                                    <i class="bi bi-x-circle"></i> ยกเลิก
                                 </div>
                             </div>
                         </div>
@@ -144,7 +147,7 @@
             </div>
             <div class="pt-3">
                 <div class="btn btn-secondary" ng-click="Save()">
-                    บันทึก
+                    <i class="bi bi-send"></i> ส่งปรับปรุงข้อมูล
                 </div>
                 <div class="btn btn-link" data-bs-dismiss="offcanvas">
                     ยกเลิก
@@ -161,6 +164,7 @@
         $scope.LoadData = function () {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/ServicePersonal/Detail',
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 dataType: 'json',
@@ -216,6 +220,7 @@
 
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/ServicePersonal/Save',
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 cache: false,
@@ -232,6 +237,7 @@
                 alertConfirm("ท่านต้องการยกเลิกรายการ", "ยืนยันการยกเลิกการปรับปรุงข้อมูลส่วนบุคคล", function () {
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/ServicePersonal/Cancel',
+                    headers: { 'authorization': 'Bearer @token' },
                     type: "POST",
                     contentType: 'application/json',
                     cache: false,

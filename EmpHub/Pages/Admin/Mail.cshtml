@@ -2,6 +2,7 @@
 @model EmpHub.Pages.Admin.MailModel
 @{
     ViewData["Title"] = "ดูแลระบบ";
+    var token = User.AccessToken(HttpContext);
 }
 <style>
 </style>
@@ -154,7 +155,7 @@
 
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/Mail/DataList'
-                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , headers: { 'authorization': 'Bearer @token' }
                 , type: 'post'
                 , contentType: 'application/json'
                 , dataType: 'json'
@@ -184,7 +185,7 @@
         $scope.Resend = function (x) {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/Mail/Resend'
-                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , headers: { 'authorization': 'Bearer @token' }
                 , type: 'post'
                 , contentType: 'application/json'
                 , cache: false

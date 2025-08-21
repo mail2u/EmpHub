@@ -1,6 +1,6 @@
-﻿<style>
-
-</style>
+﻿@{
+    var token = User.AccessToken(Context);
+}
 <div ng-controller="WorkCtrl">
     @* Work Modal *@
     <div id="workModal" class="modal fade dialog-info" tabindex="-1" role="dialog">
@@ -63,7 +63,7 @@
             $scope.save_template = 0;
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/Template/DataList',
-                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 cache: false,
@@ -87,7 +87,7 @@
         $scope.DeleteWorkTemplate = function (x) {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/Template/Delete',
-                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 cache: false,
@@ -108,7 +108,7 @@
         $scope.CreateWorkTemplate = function () {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/Template/Create',
-                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 cache: false,
@@ -135,7 +135,7 @@
             showPreloader();
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/Service/Work',
-                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 cache: false,

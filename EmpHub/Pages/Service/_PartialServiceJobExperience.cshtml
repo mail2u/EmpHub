@@ -2,45 +2,54 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
+    var token = User.AccessToken(Context);
 }
 <div ng-controller="ServiceJobExperienceCtrl" class="mb-4">
     <div class="row">
         <div class="col-sm-6">
-            <div class="fw-bolder text-orange">ข้อมูลที่ต้องการปรับปรุง</div>
-            <div class="p-3 bg-gray rounded-4 h-100">
+            <small class="text-orange">ข้อมูลที่ต้องการปรับปรุง</small>
+            <div class="p-3 bg-soft-orange rounded-4 h-100">
                 <div ng-show="lData.length > 0">
                     <div class="list-group list-group-flush">
-                        <div class="list-group-item bg-gray px-0" ng-repeat="x in lData">
-                            <div class="row">
-                                <div class="col-sm-6 mb-3">
-                                    <div class="text-gray">
-                                        บริษัท
-                                    </div>
-                                    <div class="fw-bolder">{{ x.company }}</div>
+                        <div class="list-group-item bg-soft-orange px-0 d-flex" ng-repeat="x in lData">
+                            <div style="width:20px" class="me-2 fw-bolder">
+                                {{ $index + 1 }}.
+                            </div>
+                            <div>
+                                <div>
+                                    <div class="badge badge-{{ x.mode }}">{{ x.mode }}</div>
                                 </div>
-                                <div class="col-sm-3 mb-3">
-                                    <div class="text-gray">
-                                        วันที่เริ่ม
+                                <div class="row">
+                                    <div class="col-sm-6 mb-3">
+                                        <small class="text-decoration-underline">
+                                            บริษัท
+                                        </small>
+                                        <div class="fw-bolder">{{ x.company != '' ? x.company : '-' }}</div>
                                     </div>
-                                    <div class="fw-bolder">{{ x.from_date | date:'MMM yyyy' }}</div>
-                                </div>
-                                <div class="col-sm-3 mb-3">
-                                    <div class="text-gray">
-                                        วันที่สิ้นสุด
+                                    <div class="col-sm-3 mb-3">
+                                        <small class="text-decoration-underline">
+                                            วันที่เริ่ม
+                                        </small>
+                                        <div class="fw-bolder">{{ x.fromDate != '' ? x.fromDate : '-' }}</div>
                                     </div>
-                                    <div class="fw-bolder">{{ x.end_date | date:'MMM yyyy' }}</div>
-                                </div>
-                                <div class="col-sm-8 mb-3">
-                                    <div class="text-gray">
-                                        ตำแหน่ง
+                                    <div class="col-sm-3 mb-3">
+                                        <small class="text-decoration-underline">
+                                            วันที่สิ้นสุด
+                                        </small>
+                                        <div class="fw-bolder">{{ x.endDate != '' ? x.endDate : '-' }}</div>
                                     </div>
-                                    <div class="fw-bolder">{{ x.position }}</div>
-                                </div>
-                                <div class="col-sm-12 mb-3">
-                                    <div class="text-gray">
-                                        รายละเอียดการทำงาน
+                                    <div class="col-sm-8 mb-3">
+                                        <small class="text-decoration-underline">
+                                            ตำแหน่ง
+                                        </small>
+                                        <div class="fw-bolder">{{ x.position != '' ? x.position : '-' }}</div>
                                     </div>
-                                    <div class="fw-bolder">{{ x.description }}</div>
+                                    <div class="col-sm-12 mb-3">
+                                        <small class="text-decoration-underline">
+                                            รายละเอียดการทำงาน
+                                        </small>
+                                        <div class="fw-bolder">{{ x.description != '' ? x.description : '-' }}</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -48,42 +57,45 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-6" ng-show="status == 'Pending'">
-            <div class="fw-bolder text-orange">ข้อมูลในระบบ</div>
-            <div class="p-3 bg-gray rounded-4 h-100">
+        <div class="col-sm-6" ng-show="status == 'Pending' && lUser.length > 0">
+            <small class="fw-bolder text-blue">ข้อมูลในระบบ</small>
+            <div class="p-3 bg-soft-blue rounded-4 h-100">
                 <div ng-show="lData.length > 0">
                     <div class="list-group list-group-flush">
-                        <div class="list-group-item bg-gray px-0" ng-repeat="x in lUser">
+                        <div class="list-group-item bg-soft-blue px-0 d-flex" ng-repeat="x in lUser">
+                            <div style="width:20px" class="me-2 fw-bolder">
+                                {{ $index + 1 }}.
+                            </div>
                             <div class="row">
                                 <div class="col-sm-6 mb-3">
-                                    <div class="text-gray">
+                                    <small class="text-decoration-underline">
                                         บริษัท
-                                    </div>
-                                    <div class="fw-bolder text-decoration-line-through">{{ x.company }}</div>
+                                    </small>
+                                    <div class="fw-bolder">{{ x.company != '' ? x.company : '-' }}</div>
                                 </div>
                                 <div class="col-sm-3 mb-3">
-                                    <div class="text-gray">
+                                    <small class="text-decoration-underline">
                                         วันที่เริ่ม
-                                    </div>
-                                    <div class="fw-bolder text-decoration-line-through">{{ x.from_date | date:'MMM yyyy' }}</div>
+                                    </small>
+                                    <div class="fw-bolder">{{ x.fromDate != '' ? x.fromDate : '-' }}</div>
                                 </div>
                                 <div class="col-sm-3 mb-3">
-                                    <div class="text-gray">
+                                    <small class="text-decoration-underline">
                                         วันที่สิ้นสุด
-                                    </div>
-                                    <div class="fw-bolder text-decoration-line-through">{{ x.end_date | date:'MMM yyyy' }}</div>
+                                    </small>
+                                    <div class="fw-bolder">{{ x.endDate != '' ? x.endDate : '-' }}</div>
                                 </div>
                                 <div class="col-sm-8 mb-3">
-                                    <div class="text-gray">
+                                    <small class="text-decoration-underline">
                                         ตำแหน่ง
-                                    </div>
-                                    <div class="fw-bolder text-decoration-line-through">{{ x.position }}</div>
+                                    </small>
+                                    <div class="fw-bolder">{{ x.position != '' ? x.position : '-' }}</div>
                                 </div>
                                 <div class="col-sm-12 mb-3">
-                                    <div class="text-gray">
+                                    <small class="text-decoration-underline">
                                         รายละเอียดการทำงาน
-                                    </div>
-                                    <div class="fw-bolder text-decoration-line-through">{{ x.description }}</div>
+                                    </small>
+                                    <div class="fw-bolder">{{ x.description != '' ? x.description : '-' }}</div>
                                 </div>
                             </div>
                         </div>
@@ -99,6 +111,7 @@
         $scope.LoadData = function () {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceJobExperience/DetailByRef',
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 dataType: 'json',
@@ -108,26 +121,8 @@
                 }),
                 success: function (result) {
                     $timeout(async function () {
-                        $scope.lData = result;
-                    }, 0);
-                }, error: AjaxError
-            });
-        }
-        
-        $scope.LoadUser = function () {
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserJobExperience',
-                type: "POST",
-                contentType: 'application/json',
-                dataType: 'json',
-                cache: false,
-                data: JSON.stringify({
-                    userId: $scope.userId
-                    , create_by: '@User.UserId()'
-                }),
-                success: function (result) {
-                    $timeout(async function () {
-                        $scope.lData = result;
+                        $scope.lData = result.filter(item => item.mode != 'original');
+                        $scope.lUser = result.filter(item => item.mode == 'original');
                     }, 0);
                 }, error: AjaxError
             });
@@ -138,7 +133,6 @@
             $scope.userId = x.userId;
             $scope.status = x.status;
             $scope.LoadData();
-            $scope.LoadUser();
         }
     });
 </script>

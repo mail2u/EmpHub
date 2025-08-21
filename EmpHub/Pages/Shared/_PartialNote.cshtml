@@ -1,4 +1,6 @@
-﻿
+﻿@{
+    var token = User.AccessToken(Context);
+}
 <div ng-controller="NoteCtrl">
    @*  <div class="rounded-4 p-2 bg-white mb-3">
         <div class="d-flex justify-content-between">
@@ -19,7 +21,7 @@
 
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/Note/DataList',
-                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 dataType: 'json',
@@ -39,7 +41,7 @@
         $scope.CreateNote = function () {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/Note/Create',
-                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 dataType: 'json',
@@ -60,7 +62,7 @@
         $scope.DeleteNote = function (x) {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/Note/Delete',
-                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 dataType: 'json',
@@ -82,7 +84,7 @@
         $scope.UpdateNote = function (x) {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/Note/Update',
-                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 dataType: 'json',

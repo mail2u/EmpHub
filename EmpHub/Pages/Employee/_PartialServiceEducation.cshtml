@@ -2,6 +2,7 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
+    var token = User.AccessToken(Context);
 }
 <div ng-controller="ServiceEducationCtrl" id="tab_education">
     @* View *@
@@ -46,10 +47,10 @@
                 <div class="btn btn-secondary-invert" ng-click="View()">
                     <i class="bi bi-pen"></i> แก้ไข
                 </div>
-                <div ng-show="status == 'Pending'" class="ms-3 text-warning bg-light-gray rounded-3 flex-fill p-2">
-                    รออนุมัติการปรับปรุงข้อมูล
+                <div ng-show="status == 'Pending'" class="ms-3 bg-gray rounded-3 d-flex p-2">
+                    <div class="me-2 text-warning">รออนุมัติการปรับปรุงข้อมูล</div>
                     <div class="badge bg-danger select" ng-click="Cancel()">
-                        <i class="bi bi-x"></i> ยกเลิก
+                        <i class="bi bi-x-circle"></i> ยกเลิก
                     </div>
                 </div>
             </div>
@@ -77,6 +78,9 @@
         <div class="offcanvas-body">
             <div class="list-group list-group-flush">
                 <div class="list-group-item list-group-item-action rounded-3 p-3 mb-3" ng-repeat="x in lData">
+                    <div>
+                        <div class="badge badge-{{ x.mode }}">{{ x.mode }}</div>
+                    </div>
                     <div class="row ">
                         <div class="col-sm-8 mb-3">
                             <div class="text-gray">
@@ -145,7 +149,7 @@
             </div>
             <div class="pt-3">
                 <div class="btn btn-secondary" ng-click="Save()">
-                    บันทึก
+                    <i class="bi bi-send"></i> ส่งปรับปรุงข้อมูล
                 </div>
                 <div class="btn btn-link" data-bs-dismiss="offcanvas">
                     ยกเลิก
@@ -162,7 +166,7 @@
             if (!$scope.lEduction) {
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
-                    , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                    , headers: { 'authorization': 'Bearer @token' }
                     , type: 'post'
                     , contentType: 'application/json'
                     , dataType: 'json'
@@ -182,6 +186,7 @@
         $scope.LoadData = function () {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceEducation/Detail',
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 dataType: 'json',
@@ -206,65 +211,60 @@
         $scope.InitEducation();
 
         $scope.View = function () {
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceEducation/Clone',
-                type: "POST",
-                contentType: 'application/json',
-                cache: false,
-                data: JSON.stringify({
-                    userId: $scope.userId
-                    , create_by: '@User.UserId()'
-                }),
-                success: function () {
-                    $timeout(async function () {
-                        $scope.LoadData();
-                        $("#educationOff").offcanvas('show');
-                    }, 0);
-                }, error: AjaxError
-            });
+            $scope.LoadData();
+            $("#educationOff").offcanvas('show');
         }
 
         $scope.New = function () {
             $scope.LoadMaster();
 
             $("#educationOffEdit").offcanvas('show');
-            $scope.iEdit = {};
-            $scope.iEdit.educationId = '';
-            $scope.iEdit.userId = $scope.userId;
-            $scope.iEdit.create_by = '@User.UserId()';
+            $scope.iEdit = { educationId: '' };
         }
 
         $scope.Edit = function (x) {
             $scope.LoadMaster();
 
             $("#educationOffEdit").offcanvas('show');
-            $scope.iEdit = {};
-            $scope.iEdit.educationId = x.educationId;
-            $scope.iEdit.levelCode = x.levelCode;
-            $scope.iEdit.levelName = x.levelName;
-            $scope.iEdit.institution = x.institution;
-            $scope.iEdit.year = x.year;
-            $scope.iEdit.description = x.description;
-            $scope.iEdit.userId = $scope.userId;
-            $scope.iEdit.create_by = '@User.UserId()';
+            $scope.iEdit = x;
         }
 
-        $scope.Save = function () {
+        $scope.Save = async function () {
             $("#educationOffEdit").offcanvas('hide');
 
-            $scope.iEdit.levelName = $scope.lEduction.find(a => a.code == $scope.iEdit.levelCode).desc_th;
+            if ($scope.iEdit.educationId == '') {
+                $scope.lData.splice($scope.lData.length, 0, $scope.iEdit);
+            }
 
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceEducation/Save',
-                type: "POST",
-                contentType: 'application/json',
-                cache: false,
-                data: JSON.stringify($scope.iEdit),
-                success: function () {
-                    $timeout(async function () {
-                        $scope.LoadData();
-                    }, 0);
-                }, error: AjaxError
+            for(var i = 0; i < $scope.lData.length; i++){
+                var iData = $scope.lData[i];
+                await $scope.SaveItem(iData);
+            }
+
+            $scope.LoadData();
+        }
+
+        $scope.SaveItem = function(x){
+            return new Promise((resolve) => {
+                x.levelName = $scope.lEduction.find(a => a.code == x.levelCode).desc_th;
+                x.create_by = '@User.UserId()';
+                x.userId = '@User.UserId()';
+                
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceEducation/Save',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify(x),
+                    success: function () {
+                        $timeout(async function () {
+                            resolve(true);
+                        }, 0);
+                    }, error: function(){
+                        resolve(false);
+                    }
+                });
             });
         }
 
@@ -272,6 +272,7 @@
             alertConfirm("ท่านต้องการยกเลิกรายการ", "ยืนยันการยกเลิกการปรับปรุงข้อมูลการศึกษา", function () {
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceEducation/Cancel',
+                    headers: { 'authorization': 'Bearer @token' },
                     type: "POST",
                     contentType: 'application/json',
                     cache: false,
@@ -292,6 +293,7 @@
             alertConfirm("ท่านต้องการลบรายการ", "ยืนยันการลบข้อมูลการศึกษา", function () {
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceEducation/Delete',
+                    headers: { 'authorization': 'Bearer @token' },
                     type: "POST",
                     contentType: 'application/json',
                     cache: false,

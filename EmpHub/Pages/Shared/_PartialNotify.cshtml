@@ -1,4 +1,7 @@
-﻿<style>
+﻿@{
+    var token = User.AccessToken(Context);
+}
+<style>
     .list-group-item.read{
         background-color:var(--light-blue);
         font-weight:bolder;
@@ -46,7 +49,7 @@
             $timeout(function () {
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/Notify/DataList',
-                    headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                    headers: { 'authorization': 'Bearer @token' },
                     type: "POST",
                     contentType: 'application/json',
                     dataType: 'json',

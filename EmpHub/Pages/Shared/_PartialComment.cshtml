@@ -1,5 +1,6 @@
 ﻿@{
     String refId = Model as String;
+    var token = User.AccessToken(Context);
 }
 <style>
     .icon-profile {
@@ -194,7 +195,7 @@
 
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/Comment/DataList',
-                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 dataType: 'json',
@@ -222,7 +223,7 @@
         $scope.LoadAttach = function (x) {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/File/DataList',
-                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 dataType: 'json',
@@ -303,7 +304,7 @@
 
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/Comment/Create',
-                    headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                    headers: { 'authorization': 'Bearer @token' },
                     type: "POST",
                     contentType: 'application/json',
                     dataType: 'json',
@@ -341,7 +342,7 @@
             alertConfirm("ยืนยันการลบข้อมูล", "ท่านต้องการลบข้อความนี้", function () {
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/Comment/Delete',
-                    headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                    headers: { 'authorization': 'Bearer @token' },
                     type: "POST",
                     contentType: 'application/json',
                     cache: false,
@@ -363,7 +364,7 @@
             return new Promise((resolve) => {
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/File/Create',
-                    headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                    headers: { 'authorization': 'Bearer @token' },
                     type: "POST",
                     contentType: 'application/json',
                     dataType: 'json',

@@ -1,4 +1,7 @@
-﻿<style>
+﻿@{
+    var token = User.AccessToken(Context);
+}
+<style>
 
     .box {
         margin-left: 0;
@@ -60,7 +63,7 @@
         $scope.LoadData = function(){
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceStep/WorkList',
-                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 dataType: 'json',
@@ -81,7 +84,7 @@
             alertConfirm("คุณต้องการลบผู้ดำเนินการ", "ยืนยันการทำรายการ", function () {
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceStep/WorkDelete',
-                    headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                    headers: { 'authorization': 'Bearer @token' },
                     type: "POST",
                     contentType: 'application/json',
                     cache: false,

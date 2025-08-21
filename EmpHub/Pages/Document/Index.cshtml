@@ -2,6 +2,7 @@
 @model EmpHub.Pages.Document.IndexModel
 @{
     ViewData["Title"] = "EmpHub";
+    var token = User.AccessToken(HttpContext);
 }
 <style>
     .bg-main {
@@ -52,7 +53,7 @@
         $scope.LoadData = function () {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/Document/DataList'
-                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , headers: { 'authorization': 'Bearer @token' }
                 , type: 'post'
                 , contentType: 'application/json'
                 , dataType: 'json'
@@ -82,7 +83,7 @@
 
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/File/DataList',
-                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 dataType: 'json',

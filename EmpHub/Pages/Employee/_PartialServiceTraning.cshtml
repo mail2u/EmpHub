@@ -2,13 +2,14 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
+    var token = User.AccessToken(Context);
 }
 <div ng-controller="ServiceTraningCtrl" id="tab_traning">
     @* View *@
     <div class="bg-white rounded-5 p-4 mb-3">
         <div class="d-flex align-items-center mb-4" ng-click="EditStage('education')">
             <div class="fw-bolder flex-fill text-secondary fs-5">
-                ใบอนุญาติหรือประกาศนียบัตร
+                ใบอนุญาตหรือประกาศนียบัตร
             </div>
         </div>
         <div ng-show="lData.length > 0">
@@ -17,7 +18,7 @@
                     <div class="row ">
                         <div class="col-sm-8 mb-3">
                             <div class="text-gray">
-                                ชื่อใบอนุญาติ
+                                ชื่อใบอนุญาต
                             </div>
                             <div class="fw-bolder">{{ x.license }}</div>
                         </div>
@@ -52,10 +53,10 @@
                 <div class="btn btn-secondary-invert" ng-click="View()">
                     <i class="bi bi-pen"></i> แก้ไข
                 </div>
-                <div ng-show="status == 'Pending'" class="ms-3 text-warning bg-light-gray rounded-3 flex-fill p-2">
-                    รออนุมัติการปรับปรุงข้อมูล
+                <div ng-show="status == 'Pending'" class="ms-3 bg-gray rounded-3 d-flex p-2">
+                    <div class="me-2 text-warning">รออนุมัติการปรับปรุงข้อมูล</div>
                     <div class="badge bg-danger select" ng-click="Cancel()">
-                        <i class="bi bi-x"></i> ยกเลิก
+                        <i class="bi bi-x-circle"></i> ยกเลิก
                     </div>
                 </div>
             </div>
@@ -63,12 +64,12 @@
         <div ng-show="lData.length == 0">
             <div class="row">
                 <div class="col-sm-12 mb-3 text-gray">
-                    แสดงข้อมูลที่เกี่ยวข้อง เพิ่มใบอนุญาติ ประกาศนียบัตร การเป็นสมาชิกและใบรับรองที่เกี่ยวข้องกับงานที่นี่
+                    แสดงข้อมูลที่เกี่ยวข้อง เพิ่มใบอนุญาต ประกาศนียบัตร การเป็นสมาชิกและใบรับรองที่เกี่ยวข้องกับงานที่นี่
                 </div>
             </div>
             <div class="pt-2 d-flex align-items-center">
                 <div class="btn btn-secondary-invert" ng-click="New()">
-                    <i class="bi bi-plus-lg"></i> เพิ่มใบอนุญาติหรือประกาศนียบัตร
+                    <i class="bi bi-plus-lg"></i> เพิ่มใบอนุญาตหรือประกาศนียบัตร
                 </div>
             </div>
         </div>
@@ -76,16 +77,19 @@
     @* Dialog *@
     <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="traningOff" aria-labelledby="offcanvasLabel" style="width:600px;">
         <div class="offcanvas-header">
-            <h5 class="offcanvas-title text-secondary fw-bolder" id="offcanvasLabel">ใบอนุญาติหรือประกาศนียบัตร</h5>
+            <h5 class="offcanvas-title text-secondary fw-bolder" id="offcanvasLabel">ใบอนุญาตหรือประกาศนียบัตร</h5>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
             <div class="list-group list-group-flush">
                 <div class="list-group-item list-group-item-action rounded-3 p-3 mb-3" ng-repeat="x in lData">
+                    <div>
+                        <div class="badge badge-{{ x.mode }}">{{ x.mode }}</div>
+                    </div>
                     <div class="row ">
                         <div class="col-sm-8 mb-3">
                             <div class="text-gray">
-                                ชื่อใบอนุญาติ
+                                ชื่อใบอนุญาต
                             </div>
                             <div class="fw-bolder">{{ x.license }}</div>
                         </div>
@@ -125,20 +129,20 @@
                 </div>
             </div>
             <div class="btn btn-secondary-invert" ng-click="New()">
-                <i class="bi bi-plus-lg"></i> พิ่มใบอนุญาติหรือประกาศนียบัตร
+                <i class="bi bi-plus-lg"></i> พิ่มใบอนุญาตหรือประกาศนียบัตร
             </div>
         </div>
     </div>
 
     <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="traningOffEdit" aria-labelledby="offcanvasLabel" style="width:600px;">
         <div class="offcanvas-header">
-            <h5 class="offcanvas-title text-secondary fw-bolder" id="offcanvasLabel">ใบอนุญาติหรือประกาศนียบัตร</h5>
+            <h5 class="offcanvas-title text-secondary fw-bolder" id="offcanvasLabel">ใบอนุญาตหรือประกาศนียบัตร</h5>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
             <div class="row">
                 <div class="col-sm-12 mb-3">
-                    <div class="fw-bolder">ชื่อใบอนุญาติ</div>
+                    <div class="fw-bolder">ชื่อใบอนุญาต</div>
                     <input ng-model="iEdit.license" class="form-control" />
                 </div>
                 <div class="col-sm-12 mb-3">
@@ -174,7 +178,7 @@
             </div>
             <div class="pt-3">
                 <div class="btn btn-secondary" ng-click="Save()">
-                    บันทึก
+                    <i class="bi bi-send"></i> ส่งปรับปรุงข้อมูล
                 </div>
                 <div class="btn btn-link" data-bs-dismiss="offcanvas">
                     ยกเลิก
@@ -189,6 +193,7 @@
         $scope.LoadData = function () {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceTraning/Detail',
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 dataType: 'json',
@@ -213,43 +218,18 @@
         $scope.InitTraning();
 
         $scope.View = function () {
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceTraning/Clone',
-                type: "POST",
-                contentType: 'application/json',
-                cache: false,
-                data: JSON.stringify({
-                    userId: $scope.userId
-                    , create_by: '@User.UserId()'
-                }),
-                success: function () {
-                    $timeout(async function () {
-                        $scope.LoadData();
-                        $("#traningOff").offcanvas('show');
-                    }, 0);
-                }, error: AjaxError
-            });
+            $scope.LoadData();
+            $("#traningOff").offcanvas('show');
         }
 
         $scope.New = function () {
             $("#traningOffEdit").offcanvas('show');
-            $scope.iEdit = {};
-            $scope.iEdit.traningId = '';
-            $scope.iEdit.userId = $scope.userId;
-            $scope.iEdit.create_by = '@User.UserId()';
+            $scope.iEdit = { traningId : ''};
         }
 
         $scope.Edit = function (x) {
             $("#traningOffEdit").offcanvas('show');
-            $scope.iEdit = {};
-            $scope.iEdit.traningId = x.traningId;
-            $scope.iEdit.license = x.license;
-            $scope.iEdit.oranization = x.oranization;
-            $scope.iEdit.issueDate = x.issueDate;
-            $scope.iEdit.expireDate = x.expireDate;
-            $scope.iEdit.description = x.description;
-            $scope.iEdit.userId = $scope.userId;
-            $scope.iEdit.create_by = '@User.UserId()';
+            $scope.iEdit = x;
 
             if (x.issueDate != '' && x.issueDate != undefined) {
                 var date = ConvertToDate(x.issueDate);
@@ -262,34 +242,58 @@
 
         }
 
-        $scope.Save = function () {
+        $scope.Save = async function () {
             $("#traningOffEdit").offcanvas('hide');
 
-            if ($scope.iEdit.issue_date_select) {
-                $scope.iEdit.issueDate = $scope.iEdit.issue_date_select.format("DD/MM/YYYY");
-            }
-            if ($scope.iEdit.expire_date_select) {
-                $scope.iEdit.expireDate = $scope.iEdit.expire_date_select.format("DD/MM/YYYY");
+            if ($scope.iEdit.traningId == '') {
+                $scope.lData.splice($scope.lData.length, 0, $scope.iEdit);
             }
 
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceTraning/Save',
-                type: "POST",
-                contentType: 'application/json',
-                cache: false,
-                data: JSON.stringify($scope.iEdit),
-                success: function () {
-                    $timeout(async function () {
-                        $scope.LoadData();
-                    }, 0);
-                }, error: AjaxError
+            for (var i = 0; i < $scope.lData.length; i++) {
+                var iData = $scope.lData[i];
+                await $scope.SaveItem(iData);
+            }
+
+            $scope.LoadData();
+        }
+
+        $scope.SaveItem = function (x) {
+            return new Promise((resolve) => {
+                x.issueDate = '';
+                x.expireDate = '';
+                x.create_by = '@User.UserId()';
+                x.userId = '@User.UserId()';
+
+                if (x.issue_date_select) {
+                    x.issueDate = x.issue_date_select.format("DD/MM/YYYY");
+                }
+                if (x.expire_date_select) {
+                    x.expireDate = x.expire_date_select.format("DD/MM/YYYY");
+                }
+
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceTraning/Save',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify(x),
+                    success: function () {
+                        $timeout(async function () {
+                            resolve(true);
+                        }, 0);
+                    }, error: function () {
+                        resolve(false);
+                    }
+                });
             });
         }
 
         $scope.Cancel = function () {
-            alertConfirm("ท่านต้องการยกเลิกรายการ", "ยืนยันการยกเลิกการปรับปรุงใบอนุญาติหรือประกาศนียบัตร", function () {
+            alertConfirm("ท่านต้องการยกเลิกรายการ", "ยืนยันการยกเลิกการปรับปรุงใบอนุญาตหรือประกาศนียบัตร", function () {
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceTraning/Cancel',
+                    headers: { 'authorization': 'Bearer @token' },
                     type: "POST",
                     contentType: 'application/json',
                     cache: false,
@@ -307,9 +311,10 @@
         }
 
         $scope.Delete = function (x) {
-            alertConfirm("ท่านต้องการลบรายการ", "ยืนยันการลบใบอนุญาติหรือประกาศนียบัตร", function () {
+            alertConfirm("ท่านต้องการลบรายการ", "ยืนยันการลบใบอนุญาตหรือประกาศนียบัตร", function () {
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceTraning/Delete',
+                    headers: { 'authorization': 'Bearer @token' },
                     type: "POST",
                     contentType: 'application/json',
                     cache: false,

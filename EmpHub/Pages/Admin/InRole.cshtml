@@ -2,6 +2,7 @@
 @model EmpHub.Pages.Admin.InRoleModel
 @{
     ViewData["Title"] = "ดูแลระบบ";
+    var token = User.AccessToken(HttpContext);
 }
 <style>
     .bg-main {
@@ -138,7 +139,7 @@
         $scope.LoadUser = function () {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/User/DataList'
-                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , headers: { 'authorization': 'Bearer @token' }
                 , type: 'post'
                 , dataType: 'json'
                 , cache: false
@@ -155,7 +156,7 @@
         $scope.LoadRole = function () {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/Role/DataList'
-                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , headers: { 'authorization': 'Bearer @token' }
                 , type: 'post'
                 , contentType: 'application/json'
                 , dataType: 'json'
@@ -179,7 +180,7 @@
         $scope.LoadData = function () {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/UserInRole/DataList'
-                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , headers: { 'authorization': 'Bearer @token' }
                 , type: 'post'
                 , contentType: 'application/json'
                 , dataType: 'json'
@@ -214,7 +215,7 @@
         $scope.Create = function (x) {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/UserInRole/Create'
-                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , headers: { 'authorization': 'Bearer @token' }
                 , type: 'post'
                 , contentType: 'application/json'
                 , cache: false
@@ -237,7 +238,7 @@
             alertConfirm("ลบสิทธิ์", "ต้องการยืนยันการทำรายการ", () => {
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/UserInRole/Delete'
-                    , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                    , headers: { 'authorization': 'Bearer @token' }
                     , type: 'post'
                     , contentType: 'application/json'
                     , cache: false

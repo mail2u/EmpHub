@@ -2,40 +2,49 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
+    var token = User.AccessToken(Context);
 }
 <div ng-controller="ServiceEducationCtrl" class="mb-4">
     @* View *@
     <div class="row">
         <div class="col-sm-6">
-            <div class="fw-bolder text-orange">ข้อมูลที่ต้องการปรับปรุง</div>
-            <div class="p-3 bg-gray rounded-4 h-100">
+            <small class="text-orange">ข้อมูลที่ต้องการปรับปรุง</small>
+            <div class="p-3 bg-soft-orange rounded-4 h-100">
                 <div ng-show="lData.length > 0">
                     <div class="list-group list-group-flush">
-                        <div class="list-group-item bg-gray px-0" ng-repeat="x in lData">
-                            <div class="row ">
-                                <div class="col-sm-8 mb-3">
-                                    <div class="text-gray">
-                                        หลักสูตรหรือวุฒิการศึกษา
-                                    </div>
-                                    <div class="fw-bolder">{{ x.levelName }}</div>
+                        <div class="list-group-item bg-soft-orange px-0 d-flex" ng-repeat="x in lData">
+                            <div style="width:20px" class="me-2 fw-bolder">
+                                {{ $index + 1 }}.
+                            </div>
+                            <div>
+                                <div>
+                                    <div class="badge badge-{{ x.mode }}">{{ x.mode }}</div>
                                 </div>
-                                <div class="col-sm-4 mb-3">
-                                    <div class="text-gray">
-                                        ปีที่สำเร็จการศึกษา
+                                <div class="row">
+                                    <div class="col-sm-8 mb-3">
+                                        <small class="text-decoration-underline">
+                                            หลักสูตรหรือวุฒิการศึกษา
+                                        </small>
+                                        <div class="fw-bolder">{{ x.levelName != '' ? x.levelName : '-' }}</div>
                                     </div>
-                                    <div class="fw-bolder">{{ x.year }}</div>
-                                </div>
-                                <div class="col-sm-12 mb-3">
-                                    <div class="text-gray">
-                                        สถาบันการศึกษา
+                                    <div class="col-sm-4 mb-3">
+                                        <small class="text-decoration-underline">
+                                            ปีที่สำเร็จการศึกษา
+                                        </small>
+                                        <div class="fw-bolder">{{ x.year != '' ? x.year : '-' }}</div>
                                     </div>
-                                    <div class="fw-bolder">{{ x.institution }}</div>
-                                </div>
-                                <div class="col-sm-12 mb-3">
-                                    <div class="text-gray">
-                                        เพิ่มกิจกรรม เกียรตินิยม รางวัล หรือโครงการพิเศษที่ประสบความสำเร็จระหว่างการศึกษา
+                                    <div class="col-sm-12 mb-3">
+                                        <small class="text-decoration-underline">
+                                            สถาบันการศึกษา
+                                        </small>
+                                        <div class="fw-bolder">{{ x.institution != '' ? x.institution : '-' }}</div>
                                     </div>
-                                    <div class="fw-bolder">{{ x.description }}</div>
+                                    <div class="col-sm-12 mb-3">
+                                        <small class="text-decoration-underline">
+                                            เพิ่มกิจกรรม เกียรตินิยม รางวัล หรือโครงการพิเศษที่ประสบความสำเร็จระหว่างการศึกษา
+                                        </small>
+                                        <div class="fw-bolder">{{ x.description != '' ? x.description : '-' }}</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -43,36 +52,39 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-6" ng-show="status == 'Pending'">
-            <div class="fw-bolder text-orange">ข้อมูลในระบบ</div>
-            <div class="p-3 bg-gray rounded-4 h-100">
+        <div class="col-sm-6" ng-show="lUser.length > 0">
+            <small class="fw-bolder text-blue">ข้อมูลในระบบ</small>
+            <div class="p-3 bg-soft-blue rounded-4 h-100">
                 <div ng-show="lData.length > 0">
                     <div class="list-group list-group-flush">
-                        <div class="list-group-item bg-gray px-0" ng-repeat="x in lUser">
+                        <div class="list-group-item bg-soft-blue px-0 d-flex" ng-repeat="x in lUser">
+                            <div style="width:20px" class="me-2 fw-bolder">
+                                {{ $index + 1 }}.
+                            </div>
                             <div class="row ">
                                 <div class="col-sm-8 mb-3">
-                                    <div class="text-gray">
+                                    <small class="text-decoration-underline">
                                         หลักสูตรหรือวุฒิการศึกษา
-                                    </div>
-                                    <div class="fw-bolder text-decoration-line-through">{{ x.levelName }}</div>
+                                    </small>
+                                    <div class="fw-bolder">{{ x.levelName != '' ? x.levelName : '-' }}</div>
                                 </div>
                                 <div class="col-sm-4 mb-3">
-                                    <div class="text-gray">
+                                    <small class="text-decoration-underline">
                                         ปีที่สำเร็จการศึกษา
-                                    </div>
-                                    <div class="fw-bolder text-decoration-line-through">{{ x.year }}</div>
+                                    </small>
+                                    <div class="fw-bolder">{{ x.year != '' ? x.year : '-' }}</div>
                                 </div>
                                 <div class="col-sm-12 mb-3">
-                                    <div class="text-gray">
+                                    <small class="text-decoration-underline">
                                         สถาบันการศึกษา
-                                    </div>
-                                    <div class="fw-bolder text-decoration-line-through">{{ x.institution }}</div>
+                                    </small>
+                                    <div class="fw-bolder">{{ x.institution != '' ? x.institution : '-' }}</div>
                                 </div>
                                 <div class="col-sm-12 mb-3">
-                                    <div class="text-gray">
+                                    <small class="text-decoration-underline">
                                         เพิ่มกิจกรรม เกียรตินิยม รางวัล หรือโครงการพิเศษที่ประสบความสำเร็จระหว่างการศึกษา
-                                    </div>
-                                    <div class="fw-bolder text-decoration-line-through">{{ x.description }}</div>
+                                    </small>
+                                    <div class="fw-bolder">{{ x.description != '' ? x.description : '-' }}</div>
                                 </div>
                             </div>
                         </div>
@@ -88,6 +100,7 @@
         $scope.LoadData = function () {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceEducation/DetailByRef',
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 dataType: 'json',
@@ -97,26 +110,8 @@
                 }),
                 success: function (result) {
                     $timeout(async function () {
-                        $scope.lData = result;
-                    }, 0);
-                }, error: AjaxError
-            });
-        }
-
-        $scope.LoadUser = function () {
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserEducation',
-                type: "POST",
-                contentType: 'application/json',
-                dataType: 'json',
-                cache: false,
-                data: JSON.stringify({
-                    userId: $scope.userId
-                    , create_by: '@User.UserId()'
-                }),
-                success: function (result) {
-                    $timeout(async function () {
-                        $scope.lUser = result;
+                        $scope.lData = result.filter(item => item.mode != 'original');
+                        $scope.lUser = result.filter(item => item.mode == 'original');
                     }, 0);
                 }, error: AjaxError
             });
@@ -127,7 +122,6 @@
             $scope.userId = x.userId;
             $scope.status = x.status;
             $scope.LoadData();
-            $scope.LoadUser();
         }
     });
 </script>

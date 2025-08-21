@@ -30,15 +30,21 @@ builder.Services.AddRazorPages(options =>
     options.Conventions.AuthorizeFolder("/");
     options.Conventions.AuthorizeFolder("/Account");
     options.Conventions.AuthorizeFolder("/Admin");
-    options.Conventions.AuthorizeFolder("/Config");
-    options.Conventions.AuthorizeFolder("/Notify");
+    options.Conventions.AuthorizeFolder("/Calendar");
+    options.Conventions.AuthorizeFolder("/Dashboard");
+    options.Conventions.AuthorizeFolder("/Document");
+    options.Conventions.AuthorizeFolder("/Employee");
     options.Conventions.AuthorizeFolder("/Report");
     options.Conventions.AuthorizeFolder("/Service");
-    options.Conventions.AuthorizeFolder("/CyberArk");
+    options.Conventions.AuthorizeFolder("/Structure");
 
     options.Conventions.AuthorizeFolder("/Admin", "Admin");
-    options.Conventions.AuthorizeFolder("/Employee", "Admin");
+    options.Conventions.AuthorizeFolder("/Dashboard", "Admin");
+    options.Conventions.AuthorizePage("/Employee/Index", "Admin");
     options.Conventions.AuthorizePage("/Service/Approve", "Admin");
+
+    options.Conventions.AuthorizeFolder("/Calendar", "DEV");
+    options.Conventions.AuthorizeFolder("/Structure", "DEV");
 
     options.Conventions.AddPageRoute("/Employee/Detail", "/Employee/{id?}");
     options.Conventions.AddPageRoute("/Service/Detail", "/Service/{id?}");
@@ -80,80 +86,82 @@ builder.Services.AddAuthorization(options =>
 builder.Services.Configure<WebAPIModels>(builder.Configuration.GetSection("WebAPI"));
 builder.Services.Configure<WebInfoModels>(builder.Configuration.GetSection("WebInfo"));
 
-//JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 //JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+    //options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
 })
-.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
-{
-    options.ExpireTimeSpan = TimeSpan.FromMinutes(400);
-    options.Cookie.SameSite = SameSiteMode.None;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-})
-.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
-{
-    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.SignOutScheme = OpenIdConnectDefaults.AuthenticationScheme;
-    options.Authority = builder.Configuration["Client:Authority"];
-    options.ClientId = builder.Configuration["Client:ClientId"];
-    options.ClientSecret = builder.Configuration["Client:ClientSecret"];
-    options.ResponseType = "code";
-    options.Scope.Add("openid");
-    options.Scope.Add("profile"); 
-    options.Scope.Add("api1");
-    options.SaveTokens = true;
-    options.GetClaimsFromUserInfoEndpoint = true;
-    options.ClaimActions.MapUniqueJsonKey("sub", "sub");
-    options.ClaimActions.MapUniqueJsonKey("profile", "profile");
-    options.ClaimActions.MapUniqueJsonKey("name", "name");
+.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
+//.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
+//{
+//    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+//    options.SignOutScheme = OpenIdConnectDefaults.AuthenticationScheme;
+//    options.Authority = builder.Configuration["Client:Authority"];
+//    options.ClientId = builder.Configuration["Client:ClientId"];
+//    options.ClientSecret = builder.Configuration["Client:ClientSecret"];
+//    options.ResponseType = "code";
+//    options.Scope.Add("openid");
+//    options.Scope.Add("profile"); 
+//    options.Scope.Add("api1");
+//    options.SaveTokens = true;
+//    options.GetClaimsFromUserInfoEndpoint = true;
+//    options.ClaimActions.MapUniqueJsonKey("sub", "sub");
+//    options.ClaimActions.MapUniqueJsonKey("profile", "profile");
+//    options.ClaimActions.MapUniqueJsonKey("name", "name");
 
-    options.Events = new OpenIdConnectEvents
-    {
-        OnTokenValidated = context =>
-        {
-            var claimsIdentity = (ClaimsIdentity)context.Principal.Identity;
-            var subClaim = claimsIdentity.FindFirst(JwtClaimTypes.Subject)?.Value;
+//    options.Events = new OpenIdConnectEvents
+//    {
+//        OnTokenValidated = context =>
+//        {
+//            var claimsIdentity = (ClaimsIdentity)context.Principal.Identity;
+//            var subClaim = claimsIdentity.FindFirst(JwtClaimTypes.Subject)?.Value;
 
-            if (string.IsNullOrEmpty(subClaim))
-            {
-                subClaim = context.SecurityToken?.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
-                if (!string.IsNullOrEmpty(subClaim))
-                {
-                    claimsIdentity.AddClaim(new Claim(JwtClaimTypes.Subject, subClaim));
-                }
-            }
+//            if (string.IsNullOrEmpty(subClaim))
+//            {
+//                subClaim = context.SecurityToken?.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
+//                if (!string.IsNullOrEmpty(subClaim))
+//                {
+//                    claimsIdentity.AddClaim(new Claim(JwtClaimTypes.Subject, subClaim));
+//                }
+//            }
 
-            return Task.CompletedTask;
-        }
-    };
-});
+//            return Task.CompletedTask;
+//        }
+//    };
+//})
+;
 
 IdentityModelEventSource.ShowPII = true;
 
 // เพิ่มบริการสำหรับ Session
-//builder.Services.AddDistributedMemoryCache(); // ใช้หน่วยความจำเพื่อเก็บข้อมูล Session
-//builder.Services.AddSession(options =>
-//{
-//    options.IdleTimeout = TimeSpan.FromMinutes(200); // กำหนดเวลาหมดอายุของ Session
-//    options.Cookie.HttpOnly = true; // ป้องกันการเข้าถึง Session ผ่าน JavaScript
-//    options.Cookie.IsEssential = true; // ทำให้ Cookie มีความสำคัญ
-//});
-
-builder.Services.ConfigureApplicationCookie(options =>
+builder.Services.AddDistributedMemoryCache(); // ใช้หน่วยความจำเพื่อเก็บข้อมูล Session
+builder.Services.AddSession(options =>
 {
-    options.ExpireTimeSpan = TimeSpan.FromDays(5);
+    options.IdleTimeout = TimeSpan.FromMinutes(200); // กำหนดเวลาหมดอายุของ Session
+    options.Cookie.HttpOnly = true; // ป้องกันการเข้าถึง Session ผ่าน JavaScript
+    options.Cookie.IsEssential = true; // ทำให้ Cookie มีความสำคัญ
 });
+
+//builder.Services.ConfigureApplicationCookie(options =>
+//{
+//    options.ExpireTimeSpan = TimeSpan.FromDays(5);
+//});
 
 //builder.WebHost.ConfigureKestrel(serverOptions =>
 //{
 //    serverOptions.Limits.MaxRequestLineSize = 8192; // ขยายขนาด URL ที่รองรับ
 //    serverOptions.Limits.MaxRequestHeadersTotalSize = 1048576; // 1MB
 //    serverOptions.Limits.MaxRequestBodySize = 52428800; // 50 MB
+//});
+
+//Antiforgery
+//builder.Services.AddAntiforgery(options =>
+//{
+//    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 //});
 
 var app = builder.Build();
@@ -171,7 +179,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-//app.UseSession();
+app.UseSession();
 
 app.UseAuthentication();
 

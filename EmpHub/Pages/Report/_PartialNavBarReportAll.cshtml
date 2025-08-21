@@ -1,4 +1,7 @@
-﻿<style>
+﻿@{
+    var token = User.AccessToken(Context);
+}
+<style>
     .form-control-filter {
         background-color: var(--light-blue);
         border: none;
@@ -187,7 +190,7 @@
             if ($scope.$parent.load_data_user == 1) {
                 // $.ajax({
                 //     url: '@webAPI.CurrentValue.APIEmpHub/api/User/DataList'
-                //     , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                //     , headers: { 'authorization': 'Bearer @token' }
                 //     , type: 'post'
                 //     , dataType: 'json'
                 //     , cache: false
@@ -200,7 +203,7 @@
                 // });
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
-                    , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                    , headers: { 'authorization': 'Bearer @token' }
                     , type: 'post'
                     , contentType: 'application/json'
                     , dataType: 'json'

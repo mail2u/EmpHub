@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>HRM</title>
-    <link rel="shortcut icon" href="~/icon-logo-EmpHub.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="~/partners.ico" type="image/x-icon" />
     @* <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
     <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
@@ -62,10 +62,6 @@
             background-color: var(--bs-white);
         }
 
-        .bg-main {
-            padding-bottom: 70px !important;
-        }
-
         .box-app {
             color: var(--dark-gray);
             width: 90px;
@@ -85,80 +81,97 @@
         }
 
         .btn-menu {
-            color: var(--dark-gray);
+            color: var(--tip-blue);
         }
 
         .btn-menu.active {
             color: var(--orange);
-            border-bottom: 2px solid var(--orange);
             font-weight: bolder;
+        }
+
+        .btn-menu:hover {
+            color: var(--orange);
+        }
+
+        .btn-menu:after {
+            display: block;
+            content: '';
+            border-bottom: solid 2px var(--orange);
+            font-weight: bolder;
+            transform: scaleX(0);
+            transition: transform 250ms ease-in-out;
+        }
+
+        .btn-menu:hover:after, .btn-menu.active:after {
+            transform: scaleX(1);
         }
     </style>
     <div class="p-2 container-fluid h-100">
         @* Header *@
-        <div class="d-flex align-items-center p-3 mb-2">
+        <div class="d-flex align-items-center p-3 mb-2 sticky-top bg-light-orange">
             <div class="d-flex align-items-center">
                 <a href='@Url.Page("/Index")' class="flex-fill d-flex text-decoration-none text-dark me-2">
                     <div>
-                        <img src="~/Images/logo-dms.png" height="30px;" class="me-3" />
+                        <img src="~/Images/partners.png" height="30px;" class="me-3" />
                     </div>
                     <div class="fs-4">
                         HRM
                     </div>
                 </a>
                 <div class="d-flex">
-                   @*  <a href='@Url.Page("/Dashboard/Index")' class="btn-menu @Html.IsSelected("/Dashboard/Index")" title="Dashboard">
-                        <i class="bi bi-bar-chart"></i>
-                        <span class="sb-label">Dashboard</span>
-                    </a> *@ 
-                  @*   <a href='@Url.Page("/Account/Profile")' class="btn-menu @Html.IsSelected("/Account/Profile")" title="Profile">
-                        Profile
-                    </a> *@
-                    <a href='@Url.Page("/Calendar/Index")' class="btn-menu @Html.IsSelected("/Calendar")" title="Calendar">
+                    @if (User.Authen().ToLower().Contains("[admin]"))
+                    {
+                        <a href='@Url.Page("/Dashboard/Index")' class="btn-menu @Html.IsSelected("/Dashboard/Index")" title="Dashboard">
+                            <i class="bi bi-bar-chart"></i>
+                            <span class="sb-label">Dashboard</span>
+                        </a>
+                    }
+                    @*  <a href='@Url.Page("/Calendar/Index")' class="btn-menu @Html.IsSelected("/Calendar")" title="Calendar">
                         ปฏิทินบริษัท
-                    </a>
-                    <a href='@Url.Page("/Structure/Index")' class="btn-menu @Html.IsSelected("/Structure/Index")" title="Structure">
+                    </a> *@
+                   @*  <a href='@Url.Page("/Structure/Index")' class="btn-menu @Html.IsSelected("/Structure/Index")" title="Structure">
                         โครงสร้างองค์กร
-                    </a>
+                    </a> *@
                     <a href='@Url.Page("/Service/Index")' class="btn-menu @Html.IsSelected("/Service/Index")" title="Service">
-                        รายการคำขอ
+                        <i class="bi bi-envelope-paper"></i> รายการคำขอ
                     </a>
-                    @if (User.Role().ToLower().Contains("[admin]"))
+                    @if (User.Authen().ToLower().Contains("[admin]"))
                     {
                         <a href='@Url.Page("/Service/Approve")' class="btn-menu @Html.IsSelected("/Service/Approve")" title="Service">
-                            บริการคำขอ
+                            <i class="bi bi-mailbox-flag"></i> กล่องคำขอ
                         </a>
                         <a href='@Url.Page("/Employee/Index")' class="btn-menu @Html.IsSelected("/Employee/Index")" title="รายชื่อพนักงาน">
-                            พนักงาน
+                            <i class="bi bi-people"></i> พนักงาน
                         </a>
                         <a href='@Url.Page("/Admin/Master")' class="btn-menu @Html.IsSelected("/Admin/Master")" title="Data Master">
-                            ตั้งค่าระบบ
+                            <i class="bi bi-gear"></i> ตั้งค่าระบบ
                         </a>
                     }
                 </div>
             </div>
-            <div class="flex-fill text-end me-3">
-                {{ today.toLocaleString() }}
+            <div class="flex-fill text-end me-3 fw-bolder text-secondary">
+                @User.UserName()
+                @* {{ today.toLocaleString() }} *@
             </div>
             <div>
-                <a href="#" class="btn px-2 py-1" title="Calendar">
+               @*  <a href="#" class="btn px-2 py-1 text-gray" title="Calendar">
                     <i class="bi bi-calendar4-week"></i>
                 </a>
-                <a href="#" class="btn px-2 py-1" title="Request">
+                <a href="#" class="btn px-2 py-1 text-gray" title="Request">
                     <i class="bi bi-chat-text"></i>
                 </a>
-                <a href="#" class="btn px-2 py-1" title="Notify">
+                <a href="#" class="btn px-2 py-1 text-gray" title="Notify">
                     <i class="bi bi-bell"></i>
-                </a>
+                </a> *@
                 @* Logout *@
-                <a href='@Url.Page("/Account/logout")' class="btn px-2 py-1" title="Logout">
+                <a href='@Url.Page("/Account/logout")' class="btn text-blue px-2 py-1" title="Logout">
                     <i class="bi bi-box-arrow-right"></i>
                 </a>
             </div>
         </div>
         <div class="container-fluid">
             @* Main *@
-            <div class="p-3 ps-4 bg-main">
+            <div class="p-2 ps-4 bg-main">
                 @RenderBody()
             </div>
         </div>
@@ -177,9 +190,9 @@
             $scope.today = new Date();
             $scope.viewMode = '';
 
-            var timer = $interval(function () {
-                $scope.today = new Date();
-            }, 1000);
+            // var timer = $interval(function () {
+            //     $scope.today = new Date();
+            // }, 1000);
 
             //$scope.lMonthShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
             $scope.lMonthShort = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
@@ -205,7 +218,6 @@
             $scope.LoadAlert = function () {
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/Service/Alert'
-                    , headers: { 'authorization': 'Bearer @User.AccessToken()' }
                     , type: 'post'
                     , contentType: 'application/json'
                     , dataType: 'json'

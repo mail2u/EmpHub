@@ -2,11 +2,12 @@
 @model EmpHub.Pages.Admin.MasterModel
 @{
     ViewData["Title"] = "ดูแลระบบ";
+    var token = User.AccessToken(HttpContext);
 }
 <style>
 </style>
 <div ng-controller="ManageCtrl">
-    <div class="bg-secondary p-2 rounded-4 mb-3">
+    <div class="rounded-4 p-3 bg-white shadow-sm border border-secondary">
         <div class="row">
             <div class="col-sm-6">
                 <div class="d-flex">
@@ -25,7 +26,7 @@
                 </div>
             </div>
             <div class="col-sm-6 text-end">
-                <span class="text-white">
+                <span class="">
                     {{ total > 0 ? ((page - 1) * row) + 1 : 0 }} - {{ page * row < total ? page * row : total }} of {{ total }}
                 </span>
                 <button class="btn btn-circle" ng-click="SetPage(page - 1)" ng-disabled="page <= 1">
@@ -36,62 +37,63 @@
                 </button>
             </div>
         </div>
-    </div>
-    <div class="rounded-4 p-2 bg-white">
-        <div style="min-height: 460px;" class="position-relative">
-            <div class="overflow-auto">
-                <table class="table table-tip mb-0">
-                    <thead>
-                        <tr>
-                            @*  <th>Group</th> *@
-                            <th>Code</th>
-                            <th>Desc_TH</th>
-                            <th>Desc_EN</th>
-                            @*   <th>Condition_1</th>
-                            <th>Condition_2</th>
-                            <th>Condition_3</th>
-                            <th>Condition_4</th> *@
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr ng-repeat="x in lData.slice(((page-1)*row), (page*row))">
-                            @*    <td>
-                            {{ x.groupName }}
-                            </td> *@
-                            <td>
-                                {{ x.code }}
-                            </td>
-                            <td>
-                                {{ x.desc_th }}
-                            </td>
-                            <td>
-                                {{ x.desc_en }}
-                            </td>
-                            <td>
-                                {{ x.condition_1 }}
-                            </td>
-                            @*  
-                            <td>
-                            {{ x.condition_2 }}
-                            </td>
-                            <td>
-                            {{ x.condition_3 }}
-                            </td>
-                            <td>
-                            {{ x.condition_4 }}
-                            </td> *@
-                            <td class="text-end">
-                                <button class="btn btn-circle" ng-click="ShowEdit(x)">
-                                    <i class="fas fa-pen"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div ng-show="lData.length == 0">
-                    <div class="text-gray fs-4 position-absolute top-50 start-50 translate-middle">
-                        ไม่พบข้อมูล
+        <div class="rounded-4 p-2 bg-white overflow-auto">
+            <div style="height: calc(100vh - 200px);" class="position-relative">
+                <div class="overflow-auto">
+                    <table class="table table-tip mb-0">
+                        <thead>
+                            <tr>
+                                @*  <th>Group</th> *@
+                                <th>Code</th>
+                                <th>Desc_TH</th>
+                                <th>Desc_EN</th>
+                                <th>Condition_1</th>
+                                @*   
+                                <th>Condition_2</th>
+                                <th>Condition_3</th>
+                                <th>Condition_4</th> *@
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="x in lData.slice(((page-1)*row), (page*row))">
+                                @*    <td>
+                                {{ x.groupName }}
+                                </td> *@
+                                <td>
+                                    {{ x.code }}
+                                </td>
+                                <td>
+                                    {{ x.desc_th }}
+                                </td>
+                                <td>
+                                    {{ x.desc_en }}
+                                </td>
+                                <td>
+                                    {{ x.condition_1 }}
+                                </td>
+                                @*
+                                <td>
+                                {{ x.condition_2 }}
+                                </td>
+                                <td>
+                                {{ x.condition_3 }}
+                                </td>
+                                <td>
+                                {{ x.condition_4 }}
+                                </td> *@
+                                <td class="text-end">
+                                    <button class="btn btn-circle text-blue" ng-click="ShowEdit(x)">
+                                        <i class="fas fa-pen"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div ng-show="lData.length == 0">
+                        <div class="text-gray fs-4 position-absolute top-50 start-50 translate-middle">
+                            ไม่พบข้อมูล
+                        </div>
                     </div>
                 </div>
             </div>
@@ -156,14 +158,15 @@
             { key: "ฝ่าย/ส่วนงาน", value: "departmentCode" }
             , { key: "ตำแหน่ง", value: "positionCode" }
             , { key: "ระดับการศึกษา", value: "educationCode" }
-            , { key: "ประเภท", value: "hrCategory" }
+            , { key: "ประเภทพนักงาน", value: "employeeType" }
+            , { key: "ประเภทข้อมูล", value: "hrCategory" }
         ];
         $scope.iGroup = $scope.lGroup[0].value;
 
         $scope.LoadData = function () {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
-                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , headers: { 'authorization': 'Bearer @token' }
                 , type: 'post'
                 , contentType: 'application/json'
                 , dataType: 'json'
@@ -212,7 +215,7 @@
 
             $.ajax({
                 url: url
-                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , headers: { 'authorization': 'Bearer @token' }
                 , type: 'post'
                 , contentType: 'application/json'
                 , cache: false
@@ -232,7 +235,7 @@
             $("#btnOK_warning").unbind().click(function () {
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/Delete'
-                    , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                    , headers: { 'authorization': 'Bearer @token' }
                     , type: 'post'
                     , contentType: 'application/json'
                     , cache: false

@@ -3,25 +3,21 @@
 @{
 }
 <style>
-    .bg-main {
-        padding-bottom: 300px !important;
-    }
-
     .text-overflow {
         overflow: hidden;
         position: relative;
     }
 
-        .text-overflow span {
-            position: absolute;
-            white-space: nowrap;
-            transform: translateX(0);
-            transition: 5s;
-        }
+    .text-overflow span {
+        position: absolute;
+        white-space: nowrap;
+        transform: translateX(0);
+        transition: 5s;
+    }
 
-        .text-overflow:hover span {
-            transform: translateX(calc(-100% + 250px));
-        }
+    .text-overflow:hover span {
+        transform: translateX(calc(-100% + 250px));
+    }
 
     .box-main, .box-detail {
         transition: 0.5s;
@@ -32,12 +28,12 @@
         width: 0px;
     }
 
-        .box-detail.show {
-            visibility: visible;
-            min-width: 300px;
-            width: 300px;
-            margin-left: 15px;
-        }
+    .box-detail.show {
+        visibility: visible;
+        min-width: 300px;
+        width: 300px;
+        margin-left: 15px;
+    }
 </style>
 <div ng-controller="calendarCtrl">
 @*     <div class="d-flex justify-content-between">
@@ -74,7 +70,7 @@
                                 {{ e.note }}
                             </div>
                         </div>
-                        @if (User.Role().ToLower().Contains("[admin]"))
+                        @if (User.Authen().ToLower().Contains("[admin]"))
                         {
                             <div>
                                 <div class="btn btn-circle" ng-click="EditEvent(e)">
@@ -84,7 +80,7 @@
                         }
                     </div>
                 </div>
-                @if (User.Role().ToLower().Contains("[admin]"))
+                @if (User.Authen().ToLower().Contains("[admin]"))
                 {
                     <div class="list-group-item px-1">
                         <div class="btn btn-link" ng-click="CreateEvent()">
@@ -183,6 +179,7 @@
         ];
 
         var today = new Date();
+        $scope.today = ConvertToDate103(today);
         $scope.currMonth = today.getMonth() + 1;
         $scope.currYear = today.getFullYear();
         $scope.lYear = [];

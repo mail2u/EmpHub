@@ -1,71 +1,86 @@
 ﻿@page
 @model EmpHub.Pages.Service.DetailModel
 @{
+    var token = User.AccessToken(HttpContext);
 }
 <div ng-controller="ServiceCtrl">
-    <div class="p-4 rounded-5 mb-3 {{ iData.status == 'Approve' ? 'bg-success' : iData.status == 'Reject' ? 'bg-danger' : 'bg-secondary' }}">
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-3">
-                    <div class="text-gray">
-                        เลขบริการ
-                    </div>
-                    <div class="fw-bolder fs-4 text-white">
-                        {{ iData.serviceNo }}
-                    </div>
-                </div>
-                <div class="col-sm-3">
-                    <div class="text-gray">
-                        สถานะ
-                    </div>
-                    <div class="fw-bolder fs-4 text-white">
-                        {{ iData.statusDesc }}
-                    </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="text-gray">
-                        ความประสงค์
-                    </div>
-                    <div class="fw-bolder fs-5 text-white">
-                        {{ iData.categoryDesc }}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     <div class="container-fluid">
-        <div class="bg-white p-4 rounded-4">
+        <div class="bg-white p-4 rounded-4 border border-secondary">
             <div class="row">
                 <div class="col-sm-3 mb-3">
                     <div class="text-center p-3">
                         <img src="~/Images/icon-user.png" class="rounded-pill mb-3" width="70%" />
                     </div>
                     <div class="mb-3">
-                        <div class="text-gray">
+                        <small class="text-gray">
                             ชื่อ-สกุล
-                        </div>
+                        </small>
                         <div class="fw-bolder text-secondary">
                             {{ iData.userName }}
                         </div>
                     </div>
                     <div class="mb-3">
-                        <div class="text-gray">
+                        <small class="text-gray">
                             ตำแหน่ง
-                        </div>
+                        </small>
                         <div class="fw-bolder text-secondary">
                             {{ iData.userPosition }}
                         </div>
                     </div>
                     <div class="mb-3">
-                        <div class="text-gray">
+                        <small class="text-gray">
                             ฝ่าย/ส่วนงาน
-                        </div>
+                        </small>
                         <div class="fw-bolder text-secondary">
                             {{ iData.userDepartment }}
                         </div>
                     </div>
                 </div>
                 <div class="col-sm-9">
+                    <div class="mb-3 d-flex">
+                        <div class="me-4">
+                            <small class="text-gray">
+                                เลขบริการ
+                            </small>
+                            <div class="fw-bolder fs-4 text-secondary">
+                                {{ iData.serviceNo }}
+                            </div>
+                        </div>
+                        <div class="me-4 flex-fill">
+                            <small class="text-gray">
+                                ความประสงค์
+                            </small>
+                            <div class="fw-bolder fs-4 text-secondary">
+                                {{ iData.categoryDesc }}
+                            </div>
+                        </div>
+                        <div class="me-4">
+                            <small class="text-gray">
+                                สถานะ
+                            </small>
+                            <div class="fw-bolder fs-4 text-secondary">
+                                <i class="bi bi-check2-circle text-green" ng-show="iData.status == 'Approve'"></i> 
+                                <i class="bi bi-x-circle text-danger" ng-show="iData.status == 'Reject'"></i>
+                                <i class="bi bi-record-circle text-blue" ng-show="iData.status == 'Pending'"></i>
+                                {{ iData.statusDesc }}
+                            </div>
+                            <div ng-show="iData.status == 'Approve'" class="text-secondary">
+                                <div class="fw-bolder">
+                                    <i class="bi bi-person-circle"></i> {{ iData.approveName }}
+                                </div>
+                                <i class="bi bi-clock"></i> {{ iData.approveDate }}
+                            </div>
+                            <div ng-show="iData.status == 'Reject'" class="text-secondary">
+                                <div class="fw-bolder">
+                                    <i class="bi bi-person-circle"></i> {{ iData.rejectName }}
+                                </div>
+                                <i class="bi bi-clock"></i> {{ iData.rejectDate }}
+                                <div>
+                                    หมายเหตุ : {{ iData.rejectDesc != '' ? iData.rejectDesc : '-' }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div ng-show="iData.categoryCode == 'changeAddress'">
                         <partial name="_PartialServiceAddress" />
                     </div>
@@ -85,13 +100,13 @@
                         <partial name="_PartialServiceTraning" />
                     </div>
                     <div class="d-flex pt-4">
-                        <div ng-show="iData.can_approve == 1" class="btn btn-secondary me-2" ng-click="Approve()">
-                            <i class="bi bi-check-lg"></i> อนุมัติ
+                        <div ng-show="iData.can_approve == 1" class="btn btn-success me-2" ng-click="Approve()" style="width:120px;">
+                            <i class="bi bi-check2-circle"></i> อนุมัติ
                         </div>
-                        <div ng-show="iData.can_approve == 1" class="btn btn-danger-invert me-2" ng-click="Reject()">
-                            <i class="bi bi-ban"></i> ปฏิเสธ
+                        <div ng-show="iData.can_approve == 1" class="btn btn-danger-invert me-2" ng-click="Reject()" style="width:120px;">
+                            ไม่อนุมัติ
                         </div>
-                        <div ng-show="iData.can_cancel == 1" class="btn btn-warning-invert me-2" ng-click="Cancel()">
+                        <div ng-show="iData.can_cancel == 1" class="btn btn-warning-invert me-2" ng-click="Cancel()" style="width:120px;">
                             ยกเลิก
                         </div>
                     </div>
@@ -107,7 +122,7 @@
         $scope.LoadData = function () {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/Service/Detail',
-                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 dataType: 'json',
@@ -148,9 +163,10 @@
 
         $scope.Approve = function () {
             alertConfirm("อนุมัติ", "ยืนยันการอนุมัติรายการ", function () {
+                showPreloader();
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/Service/Approve',
-                    headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                    headers: { 'authorization': 'Bearer @token' },
                     type: "POST",
                     contentType: 'application/json',
                     cache: false,
@@ -160,8 +176,14 @@
                     }),
                     success: function (result) {
                         $timeout(function () {
-                            alertSuccess("บันทึกรายการสำเร็จ", "", function () {
+                            hidePreloader();
+
+                            alertSuccess("อนุมัติรายการสำเร็จ", "บันทึกการทำรายการเรียบร้อยแล้ว", () => {
+                                if (window.opener && typeof window.opener.ReloadApprove === 'function') {
+                                    if (!window.opener.ReloadApprove()) { window.opener.ReloadApprove(); }
+                                }
                                 window.close();
+                                $scope.LoadData();
                             });
                         }, 0);
                     },
@@ -170,36 +192,57 @@
             });
         }
 
-        $scope.Reject = function () {
-            alertConfirm("ปฏิเสธ", "ยืนยันการปฏิเสธรายการ", function () {
-                $.ajax({
-                    url: '@webAPI.CurrentValue.APIEmpHub/api/Service/Reject',
-                    headers: { 'authorization': 'Bearer @User.AccessToken()' },
-                    type: "POST",
-                    contentType: 'application/json',
-                    cache: false,
-                    data: JSON.stringify({
-                        id: $scope.id
-                        , userBy: '@User.UserId()'
-                        , description : ''
-                    }),
-                    success: function (result) {
-                        $timeout(function () {
-                            alertSuccess("บันทึกรายการสำเร็จ", "", function () {
-                                window.close();
-                            });
-                        }, 0);
-                    },
-                    error: AjaxError
-                });
+        $scope.Reject = async function () {
+            const result = await Swal.fire({
+                title: "ยืนยันปฏิเสธรายการ",
+                input: "textarea",
+                inputPlaceholder: "กรุณาระบุเหตุผล",
+                confirmButtonText: "ยืนยัน",
+                cancelButtonText: "ปิด",
+                showCancelButton: true
             });
+
+            if (result.isConfirmed) {
+                if (result.value) {
+                    showPreloader();
+
+                    $.ajax({
+                        url: '@webAPI.CurrentValue.APIEmpHub/api/Service/Reject',
+                        headers: { 'authorization': 'Bearer @token' },
+                        type: "POST",
+                        contentType: 'application/json',
+                        cache: false,
+                        data: JSON.stringify({
+                            id: $scope.id
+                            , userBy: '@User.UserId()'
+                            , description : result.value
+                        }),
+                        success: function () {
+                            $timeout(function () {
+                                hidePreloader();
+
+                                alertSuccess("ปฏิเสธรายการสำเร็จ", "บันทึกการทำรายการเรียบร้อยแล้ว", () => {
+                                    if (window.opener && typeof window.opener.ReloadApprove === 'function') {
+                                        if (!window.opener.ReloadApprove()) { window.opener.ReloadApprove(); }
+                                    }
+                                    window.close();
+                                    $scope.LoadData();
+                                });
+                            }, 0);
+                        },
+                        error: AjaxError
+                    });
+                }
+            }
         }
 
         $scope.Cancel = function () {
             alertConfirm("ยกเลิก", "ยืนยันการยกเลิกรายการ", function () {
+                showPreloader();
+
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/Service/Cancel',
-                    headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                    headers: { 'authorization': 'Bearer @token' },
                     type: "POST",
                     contentType: 'application/json',
                     cache: false,
@@ -209,8 +252,14 @@
                     }),
                     success: function (result) {
                         $timeout(function () {
-                            alertSuccess("บันทึกรายการสำเร็จ", "", function () {
+                            hidePreloader();
+
+                            alertSuccess("ยกเลิกรายการสำเร็จ", "บันทึกการทำรายการเรียบร้อยแล้ว", () => {
+                                if (window.opener && typeof window.opener.ReloadRequest === 'function') {
+                                    if (!window.opener.ReloadRequest()) { window.opener.ReloadRequest(); }
+                                }
                                 window.close();
+                                $scope.LoadData();
                             });
                         }, 0);
                     },

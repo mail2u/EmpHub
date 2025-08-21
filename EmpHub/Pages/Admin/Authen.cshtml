@@ -2,6 +2,7 @@
 @model EmpHub.Pages.Admin.AuthenModel
 @{
     ViewData["Title"] = "User Authen";
+    var token = User.AccessToken(HttpContext);
 }
 <div ng-controller="AuthenCtrl">
     <div class="bg-gray rounded p-4 mb-3 fw-bolder">
@@ -37,7 +38,7 @@
         $scope.LoadData = function () {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/User/Detail'
-                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , headers: { 'authorization': 'Bearer @token' }
                 , type: 'post'
                 , contentType: 'application/json'
                 , dataType: 'json'
@@ -59,7 +60,7 @@
             return new Promise((resolve) => {
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/Role/DataList'
-                    , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                    , headers: { 'authorization': 'Bearer @token' }
                     , type: 'post'
                     , contentType: 'application/json'
                     , dataType: 'json'
@@ -85,7 +86,7 @@
             return new Promise((resolve) => {
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/UserInRole/DataList'
-                    , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                    , headers: { 'authorization': 'Bearer @token' }
                     , type: 'post'
                     , contentType: 'application/json'
                     , dataType: 'json'
@@ -129,7 +130,7 @@
         $scope.CreateRole = function (x) {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/UserInRole/Create'
-                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , headers: { 'authorization': 'Bearer @token' }
                 , type: 'post'
                 , contentType: 'application/json'
                 , cache: false
@@ -150,7 +151,7 @@
         $scope.DeleteRole = function (x) {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/UserInRole/Delete'
-                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , headers: { 'authorization': 'Bearer @token' }
                 , type: 'post'
                 , contentType: 'application/json'
                 , cache: false

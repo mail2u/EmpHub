@@ -1,5 +1,6 @@
 ﻿@{
     String refId = Model as String;
+    var token = User.AccessToken(Context);
 }
 <div ng-controller="TagCtrl">
     <div class="rounded-5 border shadow-sm p-2 bg-white mb-3" ng-show="lData.length > 0 || iData.can_tag == 1">
@@ -73,7 +74,7 @@
         $scope.LoadData = function () {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceTag/DataList',
-                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 dataType: 'json',
@@ -108,7 +109,7 @@
 
             $.ajax({
                 url: url,
-                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 cache: false,
@@ -125,7 +126,7 @@
             alertConfirm("คุณต้องการลบการติดป้าย", "ยืนยันการทำรายการ", function () {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceTag/Delete',
-                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 cache: false,

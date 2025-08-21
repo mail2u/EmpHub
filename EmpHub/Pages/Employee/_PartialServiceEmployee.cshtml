@@ -2,6 +2,7 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
+    var token = User.AccessToken(Context);
 }
 <div ng-controller="ServiceEmployeeCtrl" id="tab_employee">
     @* View *@
@@ -70,10 +71,10 @@
                 <div class="btn btn-secondary-invert" ng-click="Edit()">
                     <i class="bi bi-pen"></i> แก้ไข
                 </div>
-                <div ng-show="iData.status == 'Pending'" class="ms-3 text-warning bg-light-gray rounded-3 flex-fill p-2">
-                    รออนุมัติการปรับปรุงข้อมูล
+                <div ng-show="iData.status == 'Pending'" class="ms-3 bg-gray rounded-3 d-flex p-2">
+                    <div class="me-2 text-warning">รออนุมัติการปรับปรุงข้อมูล</div>
                     <div class="badge bg-danger select" ng-click="Cancel()">
-                        <i class="bi bi-x"></i> ยกเลิก
+                        <i class="bi bi-x-circle"></i> ยกเลิก
                     </div>
                 </div>
             </div>
@@ -105,7 +106,7 @@
                 </div>
                 <div class="col-sm-4 mb-3">
                     <div class="fw-bolder">ประเภท</div>
-                     <select ng-model="iEdit.employeeType" class="form-select" ng-options="x.code as x.desc_th for x in lEmployeeType"></select>
+                    <select ng-model="iEdit.employeeType" class="form-select" ng-options="x.code as x.desc_th for x in lEmployeeType"></select>
                 </div>
                 <div class="col-sm-4 mb-3">
                     <div class="fw-bolder">วันที่เริ่มงาน</div>
@@ -120,11 +121,11 @@
                 </div>
                 <div class="col-sm-12 mb-3">
                     <div class="fw-bolder">ตำแหน่ง</div>
-                    <select ng-model="iEdit.positionCode" class="form-select" ng-options="x.code as x.desc_th for x in lPosition"></select>
+                    <select ng-model="iEdit.positionCode" class="form-select" ng-options="x.code as x.desc_th + ' (' + x.desc_en + ')' for x in lPosition"></select>
                 </div>
                 <div class="col-sm-12 mb-3">
                     <div class="fw-bolder">ฝ่าย/ส่วนงาน</div>
-                    <select ng-model="iEdit.departmentCode" class="form-select" ng-options="x.code as x.desc_th for x in lDepartment"></select>
+                    <select ng-model="iEdit.departmentCode" class="form-select" ng-options="x.code as x.desc_th + ' (' + x.desc_en + ')' for x in lDepartment"></select>
                 </div>
                 <div class="col-sm-6 mb-3">
                     <div class="fw-bolder">อีเมล์</div>
@@ -141,7 +142,7 @@
             </div>
             <div class="pt-3">
                 <div class="btn btn-secondary" ng-click="Save()">
-                    บันทึก
+                    <i class="bi bi-send"></i> ส่งปรับปรุงข้อมูล
                 </div>
                 <div class="btn btn-link" data-bs-dismiss="offcanvas">
                     ยกเลิก
@@ -195,16 +196,30 @@
     $(".ext").mask("0000");
     app.controller('ServiceEmployeeCtrl', function ($scope, $http, $timeout, $filter) {
 
-        $scope.lEmployeeType = [
-            {code:'permanent',desc_th:'พนักงานประจำ'}
-            ,{code:'contract',desc_th:'พนักงานสัญญาจ้าง'}
-        ]
-        
         $scope.LoadMaster = function () {
+            if (!$scope.lEmployeeType) {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                    , headers: { 'authorization': 'Bearer @token' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , dataType: 'json'
+                    , cache: false
+                    , data: JSON.stringify({
+                        groupName: 'employeeType'
+                    })
+                    , success: function (result) {
+                        $timeout(function () {
+                            $scope.lEmployeeType = result;
+                        }, 0);
+                    }
+                    , error: AjaxError
+                });
+            }
             if(!$scope.lDepartment){
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
-                    , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                    , headers: { 'authorization': 'Bearer @token' }
                     , type: 'post'
                     , contentType: 'application/json'
                     , dataType: 'json'
@@ -223,7 +238,7 @@
             if(!$scope.lPosition){
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
-                    , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                    , headers: { 'authorization': 'Bearer @token' }
                     , type: 'post'
                     , contentType: 'application/json'
                     , dataType: 'json'
@@ -241,8 +256,8 @@
             }
             if(!$scope.lEmployee){
                 $.ajax({
-                    url: '@webAPI.CurrentValue.APIEmpHub/api/Employee/DataList'
-                    , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/User/DataList'
+                    , headers: { 'authorization': 'Bearer @token' }
                     , type: 'post'
                     , contentType: 'application/json'
                     , dataType: 'json'
@@ -264,6 +279,7 @@
         $scope.LoadData = function () {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceEmployee/Detail',
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 dataType: 'json',
@@ -329,6 +345,7 @@
             }
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceEmployee/Save',
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 cache: false,
@@ -342,23 +359,24 @@
         }
 
         $scope.Cancel = function () {
-                    alertConfirm("ท่านต้องการยกเลิกรายการ", "ยืนยันการยกเลิกการปรับปรุงข้อมูลพนักงาน", function () {
-                    $.ajax({
-                        url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceEmployee/Cancel',
-                        type: "POST",
-                        contentType: 'application/json',
-                        cache: false,
-                        data: JSON.stringify({
-                            userId: $scope.userId
-                            , update_by: '@User.UserId()'
-                        }),
-                        success: function () {
-                            $timeout(async function () {
-                                $scope.LoadData();
-                            }, 0);
-                        }, error: AjaxError
-                    });
+            alertConfirm("ท่านต้องการยกเลิกรายการ", "ยืนยันการยกเลิกการปรับปรุงข้อมูลพนักงาน", function () {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceEmployee/Cancel',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify({
+                        userId: $scope.userId
+                        , update_by: '@User.UserId()'
+                    }),
+                    success: function () {
+                        $timeout(async function () {
+                            $scope.LoadData();
+                        }, 0);
+                    }, error: AjaxError
                 });
-            }
+            });
+        }
     });
 </script>

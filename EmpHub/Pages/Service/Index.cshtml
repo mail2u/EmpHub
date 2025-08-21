@@ -1,42 +1,43 @@
 ﻿@page
 @model EmpHub.Pages.Service.IndexModel
 @{
+    var token = User.AccessToken(HttpContext);
 }
 
 <div ng-controller="ServiceCtrl">
-    <div class="d-md-flex bg-secondary rounded-4 p-2 mb-3">
+    <div class="d-md-flex mb-3">
         <div class="overflow-auto flex-fill">
             <div class="flex-fill d-flex flex-nowrap align-items-center">
-                <div class="btn btn-link-orange text-white text-nowrap {{ iStatus == '' ? 'active' : '' }}" ng-click="SelectStatus('')">
-                    ทั้งหมด <span class="badge bg-white text-secondary" ng-show="sum_all > 0">{{ sum_all | number }}</span>
+                <div class="btn btn-link-orange text-nowrap {{ iStatus == '' ? 'active' : '' }}" ng-click="SelectStatus('')">
+                    ทั้งหมด <span class="badge" ng-show="sum_all > 0">{{ sum_all | number }}</span>
                 </div> |
-                <div class="btn btn-link-orange text-white text-nowrap {{ iStatus == 'Pending' ? 'active' : '' }}" ng-click="SelectStatus('Pending')">
+                <div class="btn btn-link-orange text-nowrap {{ iStatus == 'Pending' ? 'active' : '' }}" ng-click="SelectStatus('Pending')">
                     <span ng-show="alert_request > 0" class="ms-1 badge rounded-circle bg-danger p-1">
                         <span class="visually-hidden">unread messages</span>
                     </span>
-                    รออนุมัติ <span class="badge bg-white text-secondary" ng-show="sum_request > 0">{{ sum_request | number }}</span>
+                    รออนุมัติ <span class="badge" ng-show="sum_request > 0">{{ sum_request | number }}</span>
                 </div>
-                <div class="btn btn-link-orange text-white text-nowrap {{ iStatus == 'Reject' ? 'active' : '' }}" ng-click="SelectStatus('Reject')">
+                <div class="btn btn-link-orange text-nowrap {{ iStatus == 'Reject' ? 'active' : '' }}" ng-click="SelectStatus('Reject')">
                     <span ng-show="alert_reject > 0" class="ms-1 badge rounded-circle bg-danger p-1">
                         <span class="visually-hidden">unread messages</span>
                     </span>
-                    ไม่อนุมัติ <span class="badge bg-white text-secondary" ng-show="sum_reject > 0">{{ sum_reject | number }}</span>
+                    ไม่อนุมัติ <span class="badge" ng-show="sum_reject > 0">{{ sum_reject | number }}</span>
                 </div>
-                <div class="btn btn-link-orange text-white text-nowrap {{ iStatus == 'Approve' ? 'active' : '' }}" ng-click="SelectStatus('Approve')">
+                <div class="btn btn-link-orange text-nowrap {{ iStatus == 'Approve' ? 'active' : '' }}" ng-click="SelectStatus('Approve')">
                     <span ng-show="alert_approve > 0" class="ms-1 badge rounded-circle bg-danger p-1">
                         <span class="visually-hidden">unread messages</span>
                     </span>
-                    อนุมัติแล้ว <span class="badge bg-white text-secondary" ng-show="sum_approve > 0">{{ sum_approve | number }}</span>
+                    อนุมัติแล้ว <span class="badge" ng-show="sum_approve > 0">{{ sum_approve | number }}</span>
                 </div>
             </div>
         </div>
         <div class="d-none d-sm-block">
-            <div class="btn btn-light" ng-click="Download()">
+           @*  <div class="btn btn-secondary" ng-click="Download()">
                 <i class="bi bi-download"></i> ดาวน์โหลด
-            </div>
+            </div> *@
         </div>
     </div>
-    <div class="rounded-4 p-2 bg-white">
+    <div class="rounded-4 p-3 bg-white shadow-sm border border-secondary">
         <partial name="Service/_PartialNavBar" />
         <div class="bg-white rounded p-1">
             <partial name="_PartialRequestDataList"></partial>
@@ -60,9 +61,15 @@
 
         $scope.LoadData = function(page = 1){
             $scope.page = page;
+            var createDate = '';
+
+            if($scope.createDate != null){
+                createDate = $scope.createDate.format("DD/MM/YYYY");
+            }
+
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/Service/RequestList',
-                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 dataType: 'json',
@@ -73,6 +80,10 @@
                     , row: $scope.row
                     , sortBy: $scope.sortBy
                     , status: $scope.iStatus
+                    , serviceNo: $scope.serviceNo
+                    , categoryDesc: $scope.categoryDesc
+                    , createName: $scope.createName
+                    , createDate: createDate
                 }),
                 success: function (result) {
                     $timeout(function () {
@@ -85,19 +96,17 @@
             
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/Service/RequestSummary', 
-                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 dataType: 'json',
                 cache: false,
                 data: JSON.stringify({
                     userBy: '@User.UserId()'
-                    , search_title: $scope.search_title
-                    , search_detail: $scope.search_detail
-                    , search_create_by: $scope.search_create_by
-                    , search_create_date_start: $scope.search_create_date_start
-                    , search_create_date_end: $scope.search_create_date_end
-                    , search_comment: $scope.search_comment
+                    , serviceNo: $scope.serviceNo
+                    , categoryDesc: $scope.categoryDesc
+                    , createName: $scope.createName
+                    , createDate: createDate
                 }),
                 success: function (result) {
                     $timeout(function () {
@@ -162,14 +171,14 @@
             window.open('@Url.Page("Detail")/' + x.id, '_blank');
         }
         
-        window.parent.ReloadApprove = function () {
+        window.parent.ReloadRequest = function () {
             $scope.LoadData();
         }
         
         $scope.Download = function(){
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/Service/RequestList',
-                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 dataType: 'json',

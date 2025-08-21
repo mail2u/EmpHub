@@ -1,6 +1,6 @@
-﻿<style>
-
-</style>
+﻿@{
+    var token = User.AccessToken(Context);
+}
 <div ng-controller="ChangeCategoryCtrl">
     @* Change Modal *@
     <div id="changeCategoryModal" class="modal fade dialog-info" tabindex="-1" role="dialog">
@@ -59,7 +59,7 @@
         $scope.LoadCategory = function () {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/Category/AuthenList'
-                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , headers: { 'authorization': 'Bearer @token' }
                 , type: 'post'
                 , contentType: 'application/json'
                 , dataType: 'json'
@@ -79,7 +79,7 @@
         $scope.LoadSubCategory = function () {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/SubCategory/AuthenList'
-                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , headers: { 'authorization': 'Bearer @token' }
                 , type: 'post'
                 , contentType: 'application/json'
                 , dataType: 'json'
@@ -101,7 +101,7 @@
             return new Promise((resolve) => {
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList',
-                    headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                    headers: { 'authorization': 'Bearer @token' },
                     type: "POST",
                     contentType: 'application/json',
                     dataType: 'json',
@@ -173,7 +173,7 @@
                 $("#changeCategoryModal").modal('hide');
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/Service/ChangeCategory',
-                    headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                    headers: { 'authorization': 'Bearer @token' },
                     type: "POST",
                     contentType: 'application/json',
                     dataType: 'json',

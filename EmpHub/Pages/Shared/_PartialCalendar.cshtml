@@ -1,5 +1,6 @@
 ﻿@{
     String refId = Model as String;
+    var token = User.AccessToken(Context);
 }
 <div ng-controller="CalendarCtrl">
     <div class="rounded-5 border shadow-sm p-2 bg-white mb-3">
@@ -120,7 +121,7 @@
                 if ($scope.lWorker == null) {
                     $.ajax({
                         url: '@webAPI.CurrentValue.APIEmpHub/api/Service/UserAllWork',
-                        headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                        headers: { 'authorization': 'Bearer @token' },
                         type: "POST",
                         contentType: 'application/json',
                         cache: false,
@@ -145,7 +146,7 @@
         $scope.LoadData = function () {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceCalendar/DataList',
-                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 dataType: 'json',
@@ -222,7 +223,7 @@
 
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceCalendar/Create',
-                    headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                    headers: { 'authorization': 'Bearer @token' },
                     type: "POST",
                     contentType: 'application/json',
                     cache: false,
@@ -241,7 +242,7 @@
             alertConfirm("ยืนยันการลบรายการ", "ท่านต้องการลบตารางงานนี้", function () {
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceCalendar/Delete',
-                    headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                    headers: { 'authorization': 'Bearer @token' },
                     type: "POST",
                     contentType: 'application/json',
                     cache: false,

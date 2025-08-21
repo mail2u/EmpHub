@@ -2,6 +2,7 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
+    var token = User.AccessToken(Context);
 }
 <div ng-controller="ServiceAddressCtrl" id="tab_address">
     @* View *@
@@ -53,10 +54,10 @@
                     <div class="btn btn-secondary-invert" ng-click="Edit()">
                         <i class="bi bi-pen"></i> แก้ไข
                     </div>
-                    <div ng-show="iData.status == 'Pending'" class="ms-3 text-warning bg-light-gray rounded-3 flex-fill p-2">
-                        รออนุมัติการปรับปรุงข้อมูล
+                    <div ng-show="iData.status == 'Pending'" class="ms-3 bg-gray rounded-3 d-flex p-2">
+                        <div class="me-2 text-warning">รออนุมัติการปรับปรุงข้อมูล</div>
                         <div class="badge bg-danger select" ng-click="Cancel()">
-                            <i class="bi bi-x"></i> ยกเลิก
+                            <i class="bi bi-x-circle"></i> ยกเลิก
                         </div>
                     </div>
                 </div>
@@ -113,7 +114,7 @@
             </div>
             <div class="pt-3">
                 <div class="btn btn-secondary" ng-click="Save()">
-                    บันทึก
+                    <i class="bi bi-send"></i> ส่งปรับปรุงข้อมูล
                 </div>
                 <div class="btn btn-link" data-bs-dismiss="offcanvas">
                     ยกเลิก
@@ -170,7 +171,7 @@
             if(!$scope.lAddress){
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/Address'
-                    , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                    , headers: { 'authorization': 'Bearer @token' }
                     , type: 'post'
                     , dataType: 'json'
                     , cache: false
@@ -187,6 +188,7 @@
         $scope.LoadData = function () {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceAddress/Detail',
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 dataType: 'json',
@@ -246,6 +248,7 @@
 
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceAddress/Save',
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 cache: false,
@@ -262,6 +265,7 @@
             alertConfirm("ท่านต้องการยกเลิกรายการ", "ยืนยันการยกเลิกการปรับปรุงที่พักอาศัย", function () {
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceAddress/Cancel',
+                    headers: { 'authorization': 'Bearer @token' },
                     type: "POST",
                     contentType: 'application/json',
                     cache: false,

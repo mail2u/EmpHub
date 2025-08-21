@@ -2,6 +2,7 @@
 @model EmpHub.Pages.Admin.InFuncModel
 @{
     ViewData["Title"] = "ดูแลระบบ";
+    var token = User.AccessToken(HttpContext);
 }
 <style>
 </style>
@@ -109,7 +110,7 @@
         $scope.LoadRole = function () {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/Role/DataList'
-                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , headers: { 'authorization': 'Bearer @token' }
                 , type: 'post'
                 , contentType: 'application/json'
                 , dataType: 'json'
@@ -134,7 +135,7 @@
         $scope.LoadFuncInRole = function (x) {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/FuncInRole/DataList'
-                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , headers: { 'authorization': 'Bearer @token' }
                 , type: 'post'
                 , contentType: 'application/json'
                 , dataType: 'json'
@@ -154,7 +155,7 @@
         $scope.LoadFunc = function () {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/Function/DataList'
-                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , headers: { 'authorization': 'Bearer @token' }
                 , type: 'post'
                 , contentType: 'application/json'
                 , dataType: 'json'
@@ -181,7 +182,7 @@
         $scope.CreateFunc = function (x) {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/FuncInRole/Create'
-                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , headers: { 'authorization': 'Bearer @token' }
                 , type: 'post'
                 , contentType: 'application/json'
                 , cache: false
@@ -203,7 +204,7 @@
             alertConfirm("ลบฟังก์ชั่น", "ต้องการยืนยันการทำรายการ", () => {
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/FuncInRole/Delete'
-                    , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                    , headers: { 'authorization': 'Bearer @token' }
                     , type: 'post'
                     , contentType: 'application/json'
                     , cache: false
@@ -246,7 +247,7 @@
             }
             $.ajax({
                 url: url
-                , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                , headers: { 'authorization': 'Bearer @token' }
                 , type: 'post'
                 , contentType: 'application/json'
                 , cache: false
@@ -264,7 +265,7 @@
             alertConfirm("ลบกลุ่มสิทธิ์", "ต้องการยืนยันการทำรายการ", () => {
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/Role/Delete'
-                    , headers: { 'authorization': 'Bearer @User.AccessToken()' }
+                    , headers: { 'authorization': 'Bearer @token' }
                     , type: 'post'
                     , contentType: 'application/json'
                     , cache: false

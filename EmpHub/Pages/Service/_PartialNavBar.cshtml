@@ -1,75 +1,50 @@
-﻿<style>
-    .form-control-filter {
-        background-color: var(--light-blue);
-        border: none;
-        width: 100%;
-        display: block;
-        border-bottom: 1px solid var(--soft-blue);
-    }
-</style>
-<div class="d-flex mb-1" ng-controller="NavBarCtrl">
+﻿@{
+    var token = User.AccessToken(Context);
+}
+<div class="d-flex mb-1">
     <div class="flex-fill">
-        <div class="d-flex">
-            <div class="dropdown">
-                <div id="ddSearch" class="btn btn-circle btn-circle-hover" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="false">
-                    <i class="fas fa-filter"></i>
-                </div>
-                <div class="dropdown-menu shadow p-2" style="width:380px;">
-                    <table class="table table-borderless mb-0">
-                        <tr>
-                            <td>วันที่ขอรับบริการ</td>
-                            <td>
-                                <div class="d-flex">
-                                    <input class="form-control-filter icon-calendar date"
-                                           ng-model="$parent.input_create_date_start"
-                                           ng-model-options="{ updateon: 'blur' }"
-                                           moment-picker="$parent.input_create_date_start"
-                                           locale="th"
-                                           format="dd/mm/yyyy"
-                                           min-view="month"
-                                           max-view="month"
-                                           start-view="month"
-                                           max-date="$parent.input_create_date_end"
-                                           required />
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>ถึง</td>
-                            <td>
-                                <div class="d-flex">
-                                    <input class="form-control-filter icon-calendar date"
-                                           ng-model="$parent.input_create_date_end"
-                                           ng-model-options="{ updateon: 'blur' }"
-                                           moment-picker="$parent.input_create_date_end"
-                                           locale="th"
-                                           format="dd/mm/yyyy"
-                                           min-view="month"
-                                           max-view="month"
-                                           start-view="month"
-                                           min-date="$parent.input_create_date_start"
-                                           required />
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td class="text-end">
-                                <div class="btn btn-secondary" ng-click="SearchAdvance()">
-                                    <i class="bi bi-search"></i> ค้นหา
-                                </div>
-                                <div class="btn btn-light" ng-click="CancelSearchAdvance()">
-                                    ล้างตัวกรอง
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
+        <div class="d-flex align-items-end">
+            <div class="me-2">
+                <small>เลขบริการ</small>
+                <div class="d-flex">
+                    <input class="form-control" ng-model="serviceNo" my-enter="LoadData()" />
                 </div>
             </div>
-            <input class="form-control form-control-search flex-fill mx-2" ng-model="$parent.search_title" placeholder="ค้นหา" my-enter="Search()" />
-            <button ng-click="Search()" class="btn btn-light me-4">
-                <i class="fas fa-search"></i>
-            </button>
+            <div class="me-2">
+                <small>ความประสงค์</small>
+                <div class="d-flex">
+                    <input class="form-control" ng-model="categoryDesc" my-enter="LoadData()" />
+                </div>
+            </div>
+            <div class="me-2">
+                <small>คำขอโดย</small>
+                <div class="d-flex">
+                    <input class="form-control" ng-model="createName" my-enter="LoadData()" />
+                </div>
+            </div>
+            <div class="me-2">
+                <small>วันที่ขอรับบริการ</small>
+                <div class="d-flex">
+                    <input class="form-control icon-calendar date"
+                           ng-model="createDate"
+                           ng-model-options="{ updateon: 'blur' }"
+                           moment-picker="createDate"
+                           locale="th"
+                           format="DD/MM/YYYY"
+                           min-view="month"
+                           max-view="month"
+                           start-view="month"
+                           my-enter="LoadData()" />
+                </div>
+            </div>
+            <div>
+                <button ng-click="LoadData()" class="btn btn-light me-4">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            <div class="flex-fill">
+
+            </div>
         </div>
     </div>
     <div class="text-end d-flex flex-nowrap align-items-center">
@@ -84,82 +59,3 @@
         </button>
     </div>
 </div>
-<script>
-    app.controller('NavBarCtrl', function ($scope, $http, $timeout, $filter) {
-        $scope.search_create_name = '';
-        $scope.search_create_name_find = '';
-
-        $scope.LoadUser = function () {
-            if ($scope.$parent.load_data_user == 1) {
-                $.ajax({
-                    url: '@webAPI.CurrentValue.APIEmpHub/api/User/DataList'
-                    , headers: { 'authorization': 'Bearer @User.AccessToken()' }
-                    , type: 'post'
-                    , dataType: 'json'
-                    , cache: false
-                    , success: function (result) {
-                        $timeout(function () {
-                            $scope.$parent.lUser = result.map((x) => {return { userId:x.userId, fullname : x.firstname_th + ' ' + x.lastname_th }; });
-                        }, 0);
-                    }
-                    , error: AjaxError
-                });
-            }
-        }
-        $scope.LoadUser();
-
-        $scope.SelectUser = function (x) {
-            $scope.$parent.search_create_by = x.userId;
-            $scope.search_create_name = x.fullname;
-        }
-
-        $scope.RemoveUser = function () {
-            $scope.$parent.search_create_by = '';
-            $scope.search_create_name = '';
-        }
-
-        $scope.Search = function () {
-            $scope.$parent.search_detail = '';
-            $scope.$parent.search_create_by = '';
-            $scope.$parent.search_create_date_start = '';
-            $scope.$parent.search_create_date_end = '';
-            $scope.$parent.search_comment = '';
-            $scope.$parent.LoadData();
-        }
-
-        $scope.SearchAdvance = function () {
-            $scope.$parent.search_title = '';
-            $scope.$parent.search_create_date_start = '';
-            $scope.$parent.search_create_date_end = '';
-
-            if ($scope.$parent.input_create_date_start != '' && $scope.$parent.input_create_date_start != undefined) {
-                $scope.$parent.search_create_date_start = $scope.$parent.input_create_date_start.format("DD/MM/YYYY");
-            }
-            if ($scope.$parent.input_create_date_end != '' && $scope.$parent.input_create_date_end != undefined) {
-                $scope.$parent.search_create_date_end = $scope.$parent.input_create_date_end.format("DD/MM/YYYY");
-            }
-
-            $("#ddSearch").dropdown('toggle');
-            $scope.$parent.LoadData();
-        }
-
-        $scope.CancelSearchAdvance = function () {
-            $scope.$parent.search_title = '';
-            $scope.$parent.search_detail = '';
-            $scope.$parent.search_create_by = '';
-            $scope.$parent.search_create_date_from = '';
-            $scope.$parent.search_create_date_end = '';
-            $scope.$parent.search_comment = '';
-            $scope.$parent.input_create_date_start = null;
-            $scope.$parent.input_create_date_end = null;
-
-            $("#ddSearch").dropdown('toggle');
-            $scope.$parent.LoadData();
-        }
-
-        $scope.SelectReadMode = function (x) {
-            $scope.$parent.is_not_read = x.value;
-            $scope.$parent.LoadData();
-        }
-    });
-</script>

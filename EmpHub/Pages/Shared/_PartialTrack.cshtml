@@ -1,4 +1,7 @@
-﻿<style>
+﻿@{
+    var token = User.AccessToken(Context);
+}
+<style>
 
     .box {
         margin-left: 0;
@@ -77,7 +80,7 @@
         $scope.$parent.LoadTrack = function (refId) {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceStep/DataList',
-                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 dataType: 'json',
@@ -105,7 +108,7 @@
         $scope.LoadUser = function(x){
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceStep/ActionList',
-                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 dataType: 'json',

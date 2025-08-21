@@ -47,7 +47,7 @@
 </style>
 @* Web View *@
 <div class="overflow-auto d-none d-lg-block">
-    <div style="min-height: 470px;" class="position-relative">
+    <div style="height:calc(100vh - 280px);" class="position-relative">
         <table class="table table-tip">
             <thead>
                 <tr>
@@ -56,9 +56,9 @@
                         เลขบริการ
                         <i ng-show="sortBy.indexOf('serviceNo') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
                     </th>
-                    <th class="select" ng-click="SetSort('subCategoryDesc')">
+                    <th class="select" ng-click="SetSort('categoryDesc')">
                         มีความประสงค์
-                        <i ng-show="sortBy.indexOf('subCategoryDesc') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                        <i ng-show="sortBy.indexOf('categoryDesc') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
                     </th>
                     <th class="select" ng-click="SetSort('status')">
                         สถานะ

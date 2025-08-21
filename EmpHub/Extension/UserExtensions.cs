@@ -1,14 +1,18 @@
-﻿using System.Security.Claims;
+﻿using EmpHub.Models;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Principal;
+using System.Text;
 
 namespace EmpHub.Extension
 {
     public static class UserExtensions
     {
-        public static IConfiguration config;
+        public static IConfiguration _config;
         public static void Initialize(IConfiguration Configuration)
         {
-            config = Configuration;
+            _config = Configuration;
         }
 
         public static string GetClaimsValue(this IPrincipal principal, string claimType)
@@ -32,12 +36,7 @@ namespace EmpHub.Extension
 
         public static string UserId(this IPrincipal principal)
         {
-            return GetClaimsValue(principal, "sub");
-        }
-
-        public static string ProfileId(this IPrincipal principal)
-        {
-            return GetClaimsValue(principal, "profile");
+            return GetClaimsValue(principal, ClaimTypes.NameIdentifier);
         }
 
         public static string UserName(this IPrincipal principal)
@@ -45,44 +44,33 @@ namespace EmpHub.Extension
             return GetClaimsValue(principal, "name");
         }
 
-        public static string Email(this IPrincipal principal)
-        {
-            return GetClaimsValue(principal, "email");
-        }
-
         public static string Department(this IPrincipal principal)
         {
-            return GetClaimsValue(principal, "family_name");
+            return GetClaimsValue(principal, "department");
         }
 
-        public static string Role(this IPrincipal principal)
-        {
-            return GetClaimsValue(principal, "role");
-        }
-
-
-        public static string AccessToken(this IPrincipal principal)
+        public static string AccessToken(this IPrincipal principal, HttpContext context)
         {
             var identity = (ClaimsIdentity)principal.Identity;
-            var accessTokenClaim = identity.FindFirst("access_token");
-            var expireTokenClaim = identity.FindFirst("expire_token");
+            var accessTokenClaim = context.Session.GetString("access_token");
+            var expireTokenClaim = context.Session.GetString("expire_token");
 
             if (accessTokenClaim == null || expireTokenClaim == null
-                || String.IsNullOrEmpty(accessTokenClaim.Value)
-                || String.IsNullOrEmpty(expireTokenClaim.Value)
-                || DateTime.UtcNow >= DateTime.Parse(expireTokenClaim.Value))
+                || String.IsNullOrEmpty(accessTokenClaim)
+                || String.IsNullOrEmpty(expireTokenClaim)
+                || DateTime.Now >= DateTime.Parse(expireTokenClaim))
             {
-                var userId = principal.UserId();
-                var authen = principal.Authen();
-
-                return RefreshToken(identity, userId, authen);
+                return RefreshToken((ClaimsPrincipal)principal, context);
             }
 
-            return accessTokenClaim.Value;
+            return accessTokenClaim;
         }
 
-        private static string RefreshToken(ClaimsIdentity identity, string userId, string authen)
+        private static string RefreshToken(ClaimsPrincipal principal, HttpContext context)
         {
+            var userId = principal.UserId();
+            var authen = principal.Authen();
+
             if (!String.IsNullOrEmpty(userId) && !String.IsNullOrEmpty(authen))
             {
                 var claims = new List<Claim>
@@ -102,24 +90,9 @@ namespace EmpHub.Extension
 
                 var accessToken = new JwtSecurityTokenHandler().WriteToken(Sectoken);
 
-                #region AccessToken
-                var accessTokenClaim = identity.FindFirst("access_token");
-                if (accessTokenClaim != null)
-                {
-                    identity.RemoveClaim(accessTokenClaim);
-                }
-
-                identity.AddClaim(new Claim("access_token", accessToken));
-                #endregion
-                #region ExpireToken
-                var expireTokenClaim = identity.FindFirst("expire_token");
-                if (expireTokenClaim != null)
-                {
-                    identity.RemoveClaim(accessTokenClaim);
-                }
-
-                identity.AddClaim(new Claim("expire_token", DateTime.UtcNow.AddMinutes(58).ToString("o")));
-                #endregion
+                // เก็บลง Session
+                context.Session.SetString("access_token", accessToken);
+                context.Session.SetString("expire_token", DateTime.UtcNow.AddMinutes(58).ToString("o"));
 
                 return accessToken;
             }

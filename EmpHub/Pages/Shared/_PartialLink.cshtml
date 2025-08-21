@@ -1,5 +1,7 @@
 ﻿@{
     String refId = Model as String;
+
+    var token = User.AccessToken(Context);
 }
 <div ng-controller="LinkCtrl">
     <div class="rounded-5 border shadow-sm p-2 bg-white mb-3" ng-show="lData.length > 0 || iData.can_link == 1">
@@ -70,7 +72,7 @@
         $scope.LoadData = function () {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceLink/DataList',
-                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 dataType: 'json',
@@ -118,7 +120,7 @@
 
             $.ajax({
                 url: url,
-                headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 cache: false,
@@ -136,7 +138,7 @@
             alertConfirm("คุณต้องการลบการเชื่อมโยง", "ยืนยันการทำรายการ", function () {
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceLink/Delete',
-                    headers: { 'authorization': 'Bearer @User.AccessToken()' },
+                    headers: { 'authorization': 'Bearer @token' },
                     type: "POST",
                     contentType: 'application/json',
                     cache: false,

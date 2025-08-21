@@ -17,7 +17,7 @@
     .box-day {
         margin: 1px;
         padding: 5px;
-        border-radius: 15px;
+        border-radius: 5px;
         border: 2px solid var(--bs-white);
     }
 
@@ -88,15 +88,15 @@
                 </div>
                 <div class="row" ng-repeat="w in lWeek">
                     <div class="col-1-of-7 p-0" ng-repeat="d in w" ng-click="SelectDay(d)">
-                        <div class="box-day {{ d.day_of_week == 1 || d.day_of_week == 7 ? 'Weekend' : '' }} {{ d.month == currMonth ? 'bg-gray' : '' }} {{ d.dt == iDay.dt ? 'box-today' : '' }} {{ d.status }} {{ d.dt == iDay.dt ? 'active' : '' }} {{ d.status }}">
+                        <div class="box-day {{ d.day_of_week == 1 || d.day_of_week == 7 ? 'Weekend' : '' }} {{ d.month == currMonth ? 'bg-gray' : '' }} {{ d.dt == today ? 'box-today' : '' }} {{ d.status }} {{ d.status }}">
                             <div class="d-flex border-bottom border-2">
-                                <div class="fw-bolder fs-5 me-2">{{ d.day }}</div>
+                                <div class="fw-bolder me-2">{{ d.day }}</div>
                             </div>
-                            <div style="height:100px; overflow-x:clip !important;" class="overflow-auto mt-1">
-                                <div class="bg-light-blue rounded-3 p-2 mb-2 shadow-sm text-blue" ng-show="d.total_holiday > 0">
+                            <div style="height:70px; overflow-x:clip !important;" class="overflow-auto mt-1">
+                                <div class="bg-light-blue p-1 mb-1 text-blue small" ng-show="d.total_holiday > 0">
                                     วันหยุดนักขัตฤกษ์
                                 </div>
-                                <div class="bg-light-green rounded-3 p-2 mb-2 shadow-sm text-green" ng-show="d.total_activity > 0">
+                                <div class="bg-light-green p-1 mb-1 text-green small" ng-show="d.total_activity > 0">
                                     กิจกรรมบริษัท
                                 </div>
                             </div>

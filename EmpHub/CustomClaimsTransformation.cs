@@ -22,7 +22,8 @@ namespace EmpHub
         {
 
             var identity = (ClaimsIdentity)principal.Identity;
-            string username = identity.FindFirst("profile").Value;
+            var profile = identity.FindFirst("profile");
+            string username = profile != null ? profile.Value : "";
 
             if (!String.IsNullOrEmpty(username))
             {

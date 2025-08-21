@@ -16,6 +16,8 @@
     --light-mint: #f1fefc;
     --soft-gray: #f2f2f2;
     --soft-blue: #b5dafd;
+    --soft-green: #CBF9BE;
+    --soft-orange: #FFDEB8;
     --dark-gray: #595959;
     --dark-blue: #1e3b92;
     --dark-yellow: #e6c000;
@@ -65,6 +67,11 @@ main {
 .box-light {
     background-color: #fcfcfc;
     border-radius: 15px;
+}
+
+.border-secondary {
+    border-color: var(--tip-blue) !important;
+    box-shadow: 5px 5px 0 var(--tip-blue) !important;
 }
 
 .border-start-tip-blue{
@@ -158,10 +165,14 @@ main {
 
 
 .btn-link-orange {
-    color: var(--orange);
+    color: var(--tip-blue);
     text-decoration: none;
     border-radius: 0px;
     transition: 0.5s;
+}
+
+.btn-link-orange > .badge{
+    background-color:var(--tip-blue);
 }
 
 .btn-link-orange:hover {
@@ -182,17 +193,32 @@ main {
 
 .btn-link-orange.active {
     color: var(--orange) !important;
-    font-weight: bolder;
 }
 
 .btn-link-orange:hover > .badge, .btn-link-orange.active > .badge {
+    color:white !important;
     background-color: var(--orange) !important;
+}
+
+.badge-original {
+    border: 1px solid var(--bs-green);
+    color: var(--bs-green);
+}
+
+.badge-edit {
+    border: 1px solid var(--bs-blue);
+    color: var(--bs-blue);
+}
+
+.badge-delete {
+    border: 1px solid var(--bs-danger);
+    color: var(--bs-danger);
 }
 
 .btn-light {
     border-radius: 5px;
     color: var(--tip-blue);
-    border: 1px solid var(--gray);
+    border: 1px solid var(--tip-blue);
 }
 
 .btn-light:hover {
@@ -429,6 +455,10 @@ main {
     color: var(--dark-gray);
 }
 
+.bg-soft-orange {
+    background-color: var(--soft-orange) !important;
+}
+
 .bg-Active {
     background-color: #eef3f6;
     color: #202020;
@@ -456,7 +486,10 @@ main {
 
 .bg-soft-blue {
     background-color: var(--soft-blue);
-    color: var(--dark-gray);
+}
+
+.bg-soft-green {
+    background-color: var(--soft-green);
 }
 
 .bg-warning {
