@@ -66,13 +66,13 @@ namespace EmpHub
                             identity.AddClaim(new Claim(JwtClaimTypes.Name, $"{dataResponse.firstname_th} {dataResponse.lastname_th}"));
                             #endregion
                             #region Role
-                            var existingClaimRole = identity.FindFirst(JwtClaimTypes.Role);
+                            var existingClaimRole = identity.FindFirst(ClaimTypes.Authentication);
                             if (existingClaimRole != null)
                             {
                                 identity.RemoveClaim(existingClaimRole); // ลบ Claim เดิม
                             }
 
-                            identity.AddClaim(new Claim(JwtClaimTypes.Role, dataResponse.role));
+                            identity.AddClaim(new Claim(ClaimTypes.Authentication, dataResponse.role));
                             #endregion
                         }
                     }

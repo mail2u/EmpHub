@@ -54,32 +54,11 @@ builder.Services.AddRazorPages(options =>
 //Policy
 builder.Services.AddAuthorization(options =>
 {
-    //Admin
-    //options.AddPolicy("User", policy =>
-    //{
-    //    policy.RequireAuthenticatedUser();
-    //    policy.RequireAssertion(context => (context.User.FindFirst(ClaimTypes.Authentication) != null ? context.User.FindFirst(ClaimTypes.Authentication).Value : "").ToLower().Contains("[user]"));
-    //});
-
-    ////SuperAdmin
-    //options.AddPolicy("SuperUser", policy =>
-    //{
-    //    policy.RequireAuthenticatedUser();
-    //    policy.RequireAssertion(context => (context.User.FindFirst(ClaimTypes.Authentication) != null ? context.User.FindFirst(ClaimTypes.Authentication).Value : "").ToLower().Contains("[superuser]"));
-    //});
-
-    ////Executive
-    //options.AddPolicy("Executive", policy =>
-    //{
-    //    policy.RequireAuthenticatedUser();
-    //    policy.RequireAssertion(context => (context.User.FindFirst(ClaimTypes.Authentication) != null ? context.User.FindFirst(ClaimTypes.Authentication).Value : "").ToLower().Contains("[executive]"));
-    //});
-
     ////Admin
     options.AddPolicy("Admin", policy =>
     {
         policy.RequireAuthenticatedUser();
-        policy.RequireAssertion(context => (context.User.FindFirst(JwtClaimTypes.Role) != null ? context.User.FindFirst(JwtClaimTypes.Role).Value : "").ToLower().Contains("[admin]"));
+        policy.RequireAssertion(context => (context.User.FindFirst(ClaimTypes.Authentication) != null ? context.User.FindFirst(ClaimTypes.Authentication).Value : "").ToLower().Contains("[admin]"));
     });
 });
 

@@ -327,16 +327,19 @@
 
         $scope.Download = function () {
             $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/User/FullList',
-                headers: { 'authorization': 'Bearer @token' },
-                type: "POST",
-                contentType: 'application/json',
-                dataType: 'json',
-                cache: false,
-                data: JSON.stringify({
-                    page: $scope.page
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    page: 1
                     , row: 2000
-                    , firstname: $scope.subject
+                    , firstname_th: $scope.firstname_th
+                    , positionCode: $scope.positionCode
+                    , departmentCode: $scope.departmentCode
+                    , employeeType: $scope.iStatus
                 }),
                 success: function (result) {
                     $timeout(function () {
@@ -344,30 +347,31 @@
 
                         if (lData.length > 0) {
                             var JSData = [[
-                                { 'text': 'Username' }
+                                { 'text': 'ชื่อ - สกุล' }
                                 , { 'text': 'Fullname' }
-                                , { 'text': 'ชื่อ - สกุล' }
-                                , { 'text': 'E-mail' }
+                                , { 'text': 'ตำแหน่ง' }
+                                , { 'text': 'ฝ่ายงาน' }
                                 , { 'text': 'ประเภท' }
-                                , { 'text': 'วันที่สร้าง' }
+                                , { 'text': 'อีเมล์' }
+                                , { 'text': 'เบอร์ติดต่อ' }
                             ]];
 
                             for (var i = 0; i < lData.length; i++) {
                                 var iData = lData[i];
 
                                 JSData.splice(JSData.length, 0, [
-                                    { 'text': iData.serviceNo }
-                                    , { 'text': iData.categoryDesc }
-                                    , { 'text': iData.subCategoryDesc }
-                                    , { 'text': iData.title }
-                                    , { 'text': iData.status }
-                                    , { 'text': iData.createName }
-                                    , { 'text': iData.createDate }
+                                    { 'text': (iData.firstname_th + ' ' + iData.lastname_th) }
+                                    , { 'text': (iData.firstname_en + ' ' + iData.lastname_en) }
+                                    , { 'text': iData.positionDesc }
+                                    , { 'text': iData.departmentDesc }
+                                    , { 'text': (iData.employeeType != '' ? iData.employeeType : 'ไม่ระบุ') }
+                                    , { 'text': iData.email }
+                                    , { 'text': iData.phoneNo }
                                 ]);
                             }
 
                             var dt = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-                            ExportFile(JSData, 'รายงานฝ่าย_' + dt);
+                            ExportFile(JSData, 'รายงานพนักงาน_' + dt);
                         }
                     }, 0);
                 },

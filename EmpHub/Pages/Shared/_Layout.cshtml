@@ -132,18 +132,21 @@
                    @*  <a href='@Url.Page("/Structure/Index")' class="btn-menu @Html.IsSelected("/Structure/Index")" title="Structure">
                         โครงสร้างองค์กร
                     </a> *@
-                    <a href='@Url.Page("/Service/Index")' class="btn-menu @Html.IsSelected("/Service/Index")" title="Service">
+                    <a href='@Url.Page("/Service/Index")' class="btn-menu @Html.IsSelected("/Service/Index")" title="รายการคำขอ">
                         <i class="bi bi-envelope-paper"></i> รายการคำขอ
                     </a>
                     @if (User.Authen().ToLower().Contains("[admin]"))
                     {
-                        <a href='@Url.Page("/Service/Approve")' class="btn-menu @Html.IsSelected("/Service/Approve")" title="Service">
+                        <a href='@Url.Page("/Service/Approve")' class="btn-menu @Html.IsSelected("/Service/Approve")" title="กล่องคำขอ">
                             <i class="bi bi-mailbox-flag"></i> กล่องคำขอ
                         </a>
-                        <a href='@Url.Page("/Employee/Index")' class="btn-menu @Html.IsSelected("/Employee/Index")" title="รายชื่อพนักงาน">
+                        <a href='@Url.Page("/Employee/Index")' class="btn-menu @Html.IsSelected("/Employee/Index")" title="พนักงาน">
                             <i class="bi bi-people"></i> พนักงาน
                         </a>
-                        <a href='@Url.Page("/Admin/Master")' class="btn-menu @Html.IsSelected("/Admin/Master")" title="Data Master">
+                        <a href='@Url.Page("/Admin/InRole")' class="btn-menu @Html.IsSelected("/Admin/InRole")" title="สิทธิ์การใช้งาน">
+                            <i class="bi bi-shield-check"></i> สิทธิ์การใช้งาน
+                        </a>
+                        <a href='@Url.Page("/Admin/Master")' class="btn-menu @Html.IsSelected("/Admin/Master")" title="ตั้งค่าระบบ">
                             <i class="bi bi-gear"></i> ตั้งค่าระบบ
                         </a>
                     }
