@@ -1,0 +1,526 @@
+﻿@page
+@model EmpHub.Pages.Organization.StructureModel
+@{
+    var token = User.AccessToken(HttpContext);
+}
+
+<div ng-controller="OrgChartCtrl" class="p-2">
+    <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">Organization</li>
+            <li class="breadcrumb-item active" aria-current="page">Organization Structure</li>
+        </ol>
+    </nav>
+    <div class="mb-2 text-end bg-white p-2 border shadow-sm rounded-3">
+        <button ng-click="Reposition()" class="btn btn-default">
+            <i class="bi bi-diagram-2"></i> จัดเรียงอัตโนมัติ
+        </button>
+        <button class="btn btn-default {{ mode == 'edit' ? 'active' : '' }}" ng-click="toggleMode()">
+            <i class="bi bi-pen"></i> ปรับแต่ง
+        </button>
+    </div>
+    <div id="cy" class="p-3 border bg-white rounded-4" style="width:100%; height:calc(100vh - 200px);"></div>
+</div>
+<script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+<script src="https://unpkg.com/dagre@0.8.5/dist/dagre.min.js"></script>
+<script src="https://unpkg.com/cytoscape-dagre/cytoscape-dagre.js"></script>
+<script>
+    cytoscape.use(cytoscapeDagre);
+</script>
+<script>
+    app.controller('OrgChartCtrl', function ($scope, $http, $timeout, $filter, $document) {
+        let cy;
+        let draggingNode = null;
+        var chartId = "TIPOrgChart";
+        const GRID_X = 10;
+        const GRID_Y = 10;
+        $scope.mode = 'view';
+        $scope.root = 'CEO';
+
+        let lastTapTime = 0;
+        const DOUBLE_TAP_DELAY = 300;
+
+        function createChart(nodes, edges) {
+            cy = cytoscape({
+                container: document.getElementById('cy'),
+
+                elements: {
+                    nodes: nodes,
+                    edges: edges
+                },
+
+                layout: {
+                    name: 'preset',
+                    rankDir: 'TB',
+                    nodeSep: 40,
+                    rankSep: 100,
+                    animate: true
+                },
+
+                style: [
+                    {
+                        selector: 'node',
+                        style: {
+                            'label': 'data(label)',
+                            'text-valign': 'center',
+                            'text-halign': 'center',
+                            'background-color': '#e3f2fd',
+                            'border-width': 2,
+                            'border-color': '#1976d2',
+                            'color': '#0d47a1',
+                            'width': 'label',
+                            'height': 'label',
+                            'padding': '15px',
+                            'text-wrap': 'wrap',
+                            'text-valign': 'center',
+                            'text-halign': 'center',
+                            'font-size': 14,
+                            'font-weight': 'bold',
+                            'shape': 'round-rectangle',
+
+                        }
+                    },
+                    {
+                        selector: 'edge',
+                        style: {
+                            'width': 2,
+                            'line-color': '#1976d2',
+                            'target-arrow-color': '#1976d2',
+                            'target-arrow-shape': 'triangle',
+                            'curve-style': 'straight',
+                            // 'segment-weights': '0.5',
+                            // 'segment-distances': '50',
+                            //'line-cap': 'round'
+                        }
+                    },
+                    {
+                        selector: ':selected',
+                        style: {
+                            'background-color': '#fff3cd',
+                            'border-color': '#ff9800',
+                            'line-color': '#ff9800',
+                            'target-arrow-color': '#ff9800'
+                        }
+                    }
+                ],
+
+                zoomingEnabled: true,
+                userZoomingEnabled: true,
+                panningEnabled: true,
+                userPanningEnabled: true
+            });
+
+            applyMode();
+            bindKeyboardDelete();
+
+            // ⭐ fit ครั้งแรกให้พอดีจอ
+            cy.fit();
+
+            cy.zoom(1);      // 100%
+            cy.pan({ x: 0, y: 0 }); // กล้องเริ่มที่ (0,0)
+
+            // ⭐ drag แล้วย้ายตำแหน่ง + save
+            cy.on('dragfree', 'node', function (evt) {
+                if ($scope.mode !== 'edit') return;
+
+                let node = evt.target;
+                let snapped = snapToGrid(node.position());
+
+                node.position(snapped);
+
+                savePosition(node.id(), snapped.x, snapped.y);
+            });
+
+            cy.on('grab', 'node', function (evt) {
+                draggingNode = evt.target;
+            });
+
+            cy.on('dragfree', 'node', function (evt) {
+                if ($scope.mode !== 'edit') return;
+
+                let child = evt.target;
+                let childPos = child.position();
+
+                // หา node ที่อยู่ใกล้ที่สุด
+                let parent = cy.nodes().filter(n => {
+                    if (n.id() === child.id()) return false;
+
+                    let p = n.position();
+                    let dx = Math.abs(p.x - childPos.x);
+                    let dy = Math.abs(p.y - childPos.y);
+
+                    return dx < 80 && dy < 40; // ระยะ snap
+                })[0];
+
+                if (!parent) return;
+
+                if (!canReparent(child, parent)) {
+                    alert('ไม่สามารถย้ายโครงสร้างแบบนี้ได้');
+                    return;
+                }
+
+                reparentNode(child, parent);
+            });
+
+            //Double Click
+            cy.on('tap', 'node', function (evt) {
+                const now = Date.now();
+                const node = evt.target;
+
+                // กัน drag
+                if (node.grabbed()) return;
+
+                if (now - lastTapTime < DOUBLE_TAP_DELAY) {
+                    // 🎯 double click
+                    openNodeDetail(node);
+                }
+
+                lastTapTime = now;
+            });
+        }
+
+        function openNodeDetail(node) {
+            const code = node.id();
+
+            window.open('@Url.Page("/Organization/Detail")?code=' + code, '_blank');
+        }
+
+        function canReparent(child, parent) {
+
+            // ห้าม parent เป็นลูกตัวเอง
+            let ancestors = getAncestors(parent);
+            return !ancestors.includes(child.id());
+        }
+
+        function getAncestors(node) {
+            let parents = [];
+
+            function walk(n) {
+                let inEdges = n.incomers('edge');
+                inEdges.forEach(e => {
+                    let p = e.source();
+                    parents.push(p.id());
+                    walk(p);
+                });
+            }
+
+            walk(node);
+            return parents;
+        }
+
+        function reparentNode(child, parent) {
+
+            // ลบ edge เดิม
+            child.incomers('edge').remove();
+
+            // สร้าง edge ใหม่
+            cy.add({
+                data: {
+                    source: parent.id(),
+                    target: child.id()
+                }
+            });
+
+            arrangeChildren(parent);
+            saveParent(child.id(), parent.id());
+        }
+
+        function buildOrgTree(items) {
+            let nodes = [];
+            let edges = [];
+
+            items.forEach(item => {
+                nodes.push({
+                    data: {
+                        id: item.id,
+                        label: item.name
+                    },
+                    position: {
+                        x: item.pos_x || 300,
+                        y: item.pos_y || 100
+                    }
+                });
+
+                if (item.parentId) {
+                    edges.push({
+                        data: {
+                            id: item.parentId + '-' + item.id,
+                            source: item.parentId,
+                            target: item.id
+                        }
+                    });
+                }
+            });
+
+            createChart(nodes, edges);
+        }
+
+        function savePosition(code, x, y) {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/OrgChart/UpdatePosition'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , cache: false
+                , data: JSON.stringify({
+                    chartId: chartId
+                    , id: code
+                    , pos_x: parseInt(x)
+                    , pos_y: parseInt(y)
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+
+        function saveParent(childCode, parentCode) {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/OrgChart/UpdateParent'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , cache: false
+                , data: JSON.stringify({
+                    chartId: chartId
+                    , id: childCode
+                    , parentId: parentCode
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+
+        function snapToGrid(pos) {
+            return {
+                x: Math.round(pos.x / GRID_X) * GRID_X,
+                y: Math.round(pos.y / GRID_Y) * GRID_Y
+            };
+        }
+
+        function arrangeChildren(parent) {
+
+            let children = parent.outgoers('edge').targets();
+            if (children.length === 0) return;
+
+            const spacingX = 170;
+            const spacingY = 90;
+
+            let startX = parent.position('x') - ((children.length - 1) * spacingX) / 2;
+            let startY = parent.position('y') + spacingY;
+
+            children.forEach((child, i) => {
+                let pos = snapToGrid({
+                    x: startX + i * spacingX,
+                    y: startY
+                });
+
+                child.position(pos);
+                savePosition(child.id(), pos.x, pos.y);
+            });
+        }
+
+        function bindKeyboardDelete() {
+            $document.on('keydown', function (e) {
+                if ($scope.mode !== 'edit') return;
+
+                // ❌ ไม่ดักตอนพิมพ์ฟอร์ม
+                if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
+
+                if (e.key !== 'Delete' && e.key !== 'Backspace') return;
+
+                $scope.$applyAsync(() => {
+                    let selected = cy.$(':selected');
+                    if (!selected.length) return;
+
+                    // 🔒 กันลบ Root
+                    if (selected.is('node') && selected.id() === 'CEO') {
+                        alert('ไม่สามารถลบตำแหน่งหลักได้');
+                        return;
+                    }
+
+                    if (selected.is('edge')) {
+                        deleteEdge(selected);
+                        selected.remove();
+                    }
+
+                    if (selected.is('node')) {
+                        if (!confirm('ต้องการลบตำแหน่งนี้หรือไม่')) return;
+
+                        deleteNode(selected);
+                        selected.connectedEdges().remove();
+                        selected.remove();
+                    }
+                });
+            });
+        }
+
+        function deleteNode(node) {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/OrgChart/Delete'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , cache: false
+                , data: JSON.stringify({
+                    chartId: chartId
+                    , id: node.id()
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+
+        function deleteEdge(edge) {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/OrgChart/UpdateParent'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , cache: false
+                , data: JSON.stringify({
+                    chartId: chartId
+                    , id: edge.target().id()
+                    , parentId: ''
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+
+        function applyMode() {
+
+            if ($scope.mode === 'view') {
+
+                // ❌ ห้ามลาก
+                cy.nodes().ungrabify();
+
+                // ❌ ห้ามเลือก
+                //cy.elements().unselectify();
+
+                // ❌ ห้าม zoom / pan
+                // cy.userZoomingEnabled(false);
+                // cy.userPanningEnabled(false);
+
+            } else {
+
+                // ✅ ลากได้
+                cy.nodes().grabify();
+
+                // ✅ เลือกได้
+                //cy.elements().selectify();
+
+                // ✅ zoom / pan ได้
+                // cy.userZoomingEnabled(true);
+                // cy.userPanningEnabled(true);
+            }
+        }
+
+        $scope.toggleMode = function () {
+            $scope.mode = $scope.mode == 'view' ? 'edit' : 'view';
+            applyMode();
+        };
+
+        $scope.LoadDepartment = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Department/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    code: ''
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lDepartment = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadDepartment();
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/OrgChart/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    chartId: chartId
+                    , id: $scope.root
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lData = result.data;
+                        buildOrgTree($scope.lData);
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+        $scope.Reposition = function () {
+            cy.layout({
+                name: 'dagre',
+                rankDir: 'LR',      // บน → ล่าง
+                nodeSep: 40,
+                rankSep: 90,
+                edgeSep: 10,
+                animate: true
+            }).run();
+
+
+            let list = [];
+
+            cy.nodes().forEach(n => {
+                let p = n.position();
+                list.push({
+                    code: n.id(),
+                    x: p.x,
+                    y: p.y
+                });
+            });
+
+
+            for (var i = 0; i < list.length; i++) {
+                var data = list[i];
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/OrgChart/UpdatePosition'
+                    , headers: { 'authorization': 'Bearer @token' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , cache: false
+                    , data: JSON.stringify({
+                        chartId: chartId
+                        , id: data.code
+                        , pos_x: parseInt(data.x)
+                        , pos_y: parseInt(data.y)
+                    })
+                    , success: function (result) {
+                        $timeout(function () {
+
+                        }, 0);
+                    }
+                    , error: AjaxError
+                });
+            }
+        }
+    });
+</script>

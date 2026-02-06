@@ -44,6 +44,11 @@ namespace EmpHub.Extension
             return GetClaimsValue(principal, "name");
         }
 
+        public static string Position(this IPrincipal principal)
+        {
+            return GetClaimsValue(principal, "position");
+        }
+
         public static string Department(this IPrincipal principal)
         {
             return GetClaimsValue(principal, "department");

@@ -6,109 +6,95 @@
 }
 <div ng-controller="ServiceAddressCtrl" id="tab_address">
     @* View *@
-    <div class="bg-white rounded-5 p-4 mb-3">
-        <div class="d-flex align-items-center mb-4">
-            <div class="fw-bolder flex-fill text-secondary fs-5">
-                ที่พักอาศัย
-            </div>
-        </div>
+    <div class="position-relative">
         <div class="row" ng-show="iData.status != undefinded">
             <div class="col-sm-8 mb-3">
                 <div class="text-gray">
                     บ้านเลขที่
                 </div>
-                <div class="fw-bolder">{{ iData.home }}</div>
+                <div class="text-dark fs-5">{{ iData.home != '' ? iData.home : '-' }}</div>
             </div>
             <div class="col-sm-4 mb-3">
                 <div class="text-gray">
                     ถนน
                 </div>
-                <div class="fw-bolder">{{ iData.road }}</div>
+                <div class="text-dark fs-5">{{ iData.road != '' ? iData.road : '-' }}</div>
             </div>
             <div class="col-sm-4 mb-3">
                 <div class="text-gray">
                     แขวง/ตำบล
                 </div>
-                <div class="fw-bolder">{{ iData.subDistrictName }}</div>
+                <div class="text-dark fs-5">{{ iData.subDistrictName != '' ? iData.subDistrictName : '-' }}</div>
             </div>
             <div class="col-sm-4 mb-3">
                 <div class="text-gray">
                     เขต/อำเภอ
                 </div>
-                <div class="fw-bolder">{{ iData.districtName }}</div>
+                <div class="text-dark fs-5">{{ iData.districtName != '' ? iData.districtName : '-' }}</div>
             </div>
             <div class="col-sm-4 mb-3">
                 <div class="text-gray">
                     จังหวัด
                 </div>
-                <div class="fw-bolder">{{ iData.provinceName }}</div>
+                <div class="text-dark fs-5">{{ iData.provinceName != '' ? iData.provinceName : '-' }}</div>
             </div>
             <div class="col-sm-4 mb-3">
                 <div class="text-gray">
                     รหัสไปรษณีย์
                 </div>
-                <div class="fw-bolder">{{ iData.postcode }}</div>
+                <div class="text-dark fs-5">{{ iData.postcode != '' ? iData.postcode : '-' }}</div>
             </div>
-            <div class="col-sm-12">
-                <div class="pt-2 d-flex align-items-center">
-                    <div class="btn btn-secondary-invert" ng-click="Edit()">
-                        <i class="bi bi-pen"></i> แก้ไข
-                    </div>
-                    <div ng-show="iData.status == 'Pending'" class="ms-3 bg-gray rounded-3 d-flex p-2">
-                        <div class="me-2 text-warning">รออนุมัติการปรับปรุงข้อมูล</div>
-                        <div class="badge bg-danger select" ng-click="Cancel()">
-                            <i class="bi bi-x-circle"></i> ยกเลิก
-                        </div>
+           @*  <div>
+                <div ng-show="iData.status == 'Pending'" class="ms-3 bg-gray rounded-3 d-flex p-2">
+                    <div class="me-2 text-warning">รออนุมัติการปรับปรุงข้อมูล</div>
+                    <div class="badge bg-danger select" ng-click="Cancel()">
+                        <i class="bi bi-x-circle"></i> ยกเลิก
                     </div>
                 </div>
-            </div>
+            </div> *@
         </div>
         <div class="row" ng-show="iData.status == undefinded">
-            <div class="col-sm-12 mb-3">
-                <div class="text-gray">
-                    เพิ่มข้อมูลที่พักอาศัย ณ ปัจจุบันของคุณ
-                </div>
-            </div>
-            <div class="col-sm-12">
-                <div class="pt-2 d-flex align-items-center">
-                    <div class="btn btn-secondary-invert" ng-click="Edit()">
-                        <i class="bi bi-plus-lg"></i> เพิ่มข้อมูลที่พักอาศัย
-                    </div>
-                </div>
-            </div>
+            <a class="btn btn-light fw-bolder rounded-3 p-4" href="@Url.Page("/Service/Create")?cateCode=AddInfo&subCateCode=Education">
+                <i class="fas fa-plus me-2"></i> เพิ่มข้อมูลที่พักอาศัย
+            </a>
         </div>
+       @*  <div class="position-absolute top-0 end-0 m-2">
+            <div class="btn btn-light border-0" ng-click="Edit()">
+                <i class="bi bi-pen"></i> แก้ไข
+            </div>
+        </div> *@
     </div>
 
     @* Dialog *@
     <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="addressOff" aria-labelledby="offcanvasLabel" style="width:600px;">
         <div class="offcanvas-header">
-            <h5 class="offcanvas-title text-secondary fw-bolder" id="offcanvasLabel">ที่พักอาศัย</h5>
+            <h5 class="offcanvas-title text-secondary text-dark fs-5" id="offcanvasLabel">ที่พักอาศัย</h5>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
             <div class="row">
                 <div class="col-sm-12 mb-3">
-                    <div class="fw-bolder">บ้านเลขที่</div>
+                    <div class="text-dark fs-5">บ้านเลขที่</div>
                     <textarea ng-model="iEdit.home" class="form-control" maxlength="200" rows="2"></textarea>
                 </div>
                 <div class="col-sm-12 mb-3">
-                    <div class="fw-bolder">ถนน</div>
+                    <div class="text-dark fs-5">ถนน</div>
                     <input ng-model="iEdit.road" class="form-control" maxlength="100" />
                 </div>
                 <div class="col-sm-6 mb-3">
-                    <div class="fw-bolder">แขวง/ตำบล</div>
+                    <div class="text-dark fs-5">แขวง/ตำบล</div>
                     <input ng-model="iEdit.subDistrictName" class="form-select bg-light-blue" data-bs-toggle="modal" data-bs-target="#addressModal" readonly />
                 </div>
                 <div class="col-sm-6 mb-3">
-                    <div class="fw-bolder">เขต/อำเภอ</div>
+                    <div class="text-dark fs-5">เขต/อำเภอ</div>
                     <input ng-model="iEdit.districtName" class="form-select bg-light-blue" data-bs-toggle="modal" data-bs-target="#addressModal" readonly />
                 </div>
                 <div class="col-sm-6 mb-3">
-                    <div class="fw-bolder">จังหวัด</div>
+                    <div class="text-dark fs-5">จังหวัด</div>
                     <input ng-model="iEdit.provinceName" class="form-select bg-light-blue" data-bs-toggle="modal" data-bs-target="#addressModal" readonly />
                 </div>
                 <div class="col-sm-6 mb-3">
-                    <div class="fw-bolder">รหัสไปรษณีย์</div>
+                    <div class="text-dark fs-5">รหัสไปรษณีย์</div>
                     <input ng-model="iEdit.postcode" class="form-control postcode" />
                 </div>
             </div>

@@ -95,7 +95,7 @@ function alertSuccess(title, msg, fn) {
         confirmButtonText: "ตกลง",
         confirmButtonColor: '#1e3b92',
     }).then((result) => {
-        if (result.isConfirmed) {
+        if (result.value) {
             if (fn) {
                 fn();
             }
@@ -113,7 +113,7 @@ function alertConfirm(title, msg, fn) {
         cancelButtonText: "ปิด",
         showCancelButton: true
     }).then((result) => {
-        if (result.isConfirmed) {
+        if (result.value) {
             if (fn) {
                 fn();
             }

@@ -1,0 +1,418 @@
+﻿@page
+@model EmpHub.Pages.Organization.IndexModel
+@{
+    var token = User.AccessToken(HttpContext);
+}
+<style>
+    .halo {
+        position: absolute;
+        background: white;
+        border-radius: 999px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.25);
+        padding: 6px;
+        display: flex;
+        gap: 6px;
+        z-index: 1000;
+    }
+
+    .halo button {
+        width: 28px;
+        height: 28px;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+
+    .hidden {
+        display: none;
+    }
+</style>
+<div ng-controller="OrgChartCtrl" class="p-2">
+    <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">Organization</li>
+            <li class="breadcrumb-item active" aria-current="page">Organization Structure</li>
+        </ol>
+    </nav>
+    <div class="mb-2 text-end bg-white p-2 border shadow-sm rounded-3">
+        <button class="btn btn-default {{ mode == 'edit' ? 'active' : '' }}" ng-click="toggleMode()">
+            <i class="bi bi-pen"></i> ปรับแต่ง
+        </button>
+    </div>
+    <div id="halo" class="halo hidden">
+        <button id="btnDelete">🗑</button>
+        <button id="btnAdd">➕</button>
+    </div>
+    
+    <div id="linkHalo" class="halo hidden">
+        <button id="btnDeleteLink">🗑</button>
+    </div>
+    <div id="paper" class="p-3 border bg-white rounded-4" style="width:100%; height:calc(100vh - 200px);"></div>
+</div>
+<link rel="stylesheet" href="~/lib/jointjs/joint.min.css">
+<script src="~/lib/jointjs/lodash.min.js"></script>
+<script src="~/lib/jointjs/backbone-min.js"></script>
+<script src="~/lib/jointjs/joint.min.js"></script>
+<script>
+    app.controller('OrgChartCtrl', function ($scope, $http, $timeout, $filter, $document) {
+        var chartId = "TIPOrgChart";
+        $scope.mode = 'view';
+        $scope.root = 'CEO';
+
+        let selectedElement = null;
+        let activeLink = null;
+        let scale = 1;
+        let panning = false;
+        let start = { x: 0, y: 0, tx: 0, ty: 0 };
+
+        const minScale = 0.3;
+        const maxScale = 2.5;
+        const halo = document.getElementById('halo');
+        const haloEl = document.getElementById('linkHalo');
+        const graph = new joint.dia.Graph();
+
+        const paper = new joint.dia.Paper({
+            el: document.getElementById('paper'),
+            model: graph,
+            width: '100%',
+            height: 600,
+            gridSize: 10,
+            drawGrid: true,
+            interactive: {
+                blankMove: true
+            },
+            background: { color: '#F5F5F5' },
+            defaultRouter: { name: 'orthogonal' },
+            defaultConnector: { name: 'straight', args: { cornerType: 'line' } },
+            defaultLink: new joint.shapes.standard.Link({
+                attrs: {
+                    line: { stroke: '#555', strokeWidth: 2 }
+                }
+            }),
+            linkPinning: false
+        });
+
+        paper.on('element:pointerdown', function (elementView) {
+            selectedElement = elementView.model;
+
+            const bbox = elementView.getBBox();
+            const paperOffset = paper.el.getBoundingClientRect();
+
+            halo.style.left = paperOffset.left + bbox.x + bbox.width - 10 + 'px';
+            halo.style.top = paperOffset.top + bbox.y - 10 + 'px';
+
+            halo.classList.remove('hidden');
+        });
+
+        paper.on('element:pointerup', function (elementView, evt, x, y) {
+            const model = elementView.model;
+            const position = model.position();
+            const nodeId = model.get('nodeId');
+            const target = $scope.lData.find(x => x.id === nodeId);
+
+            if (target) {
+                target.pos_x = position.x;
+                target.pos_y = position.y;
+            }
+
+            savePosition(nodeId, position.x, position.y);
+        });
+
+        paper.on('element:pointermove', ev => {
+            if (ev.model === selectedElement) {
+                const bbox = ev.getBBox();
+                const paperOffset = paper.el.getBoundingClientRect();
+
+                halo.style.left = paperOffset.left + bbox.x + bbox.width - 10 + 'px';
+                halo.style.top = paperOffset.top + bbox.y - 10 + 'px';
+            }
+        });
+
+        // paper.on('cell:pointerup', (cellView) => {
+        //     openHalo(cellView);
+        // });
+
+
+        paper.on('blank:pointerdown', function () {
+            halo.classList.add('hidden');
+            selectedElement = null;
+            haloEl.classList.add('hidden');
+            activeLink = null;
+        });
+
+        paper.on('blank:mousewheel', function (evt, x, y, delta) {
+            evt.preventDefault();
+
+            const factor = delta > 0 ? 1.1 : 0.9;
+            zoom(factor, { x, y });
+        });
+
+        paper.on('blank:pointerdown', function (evt, x, y) {
+            const t = paper.translate();
+            panning = true;
+            start = { 
+                x, 
+                y,
+                tx: t.tx,
+                ty: t.ty 
+            };
+        });
+
+        paper.on('blank:pointermove', function (evt, x, y) {
+            if (!panning) return;
+            
+            const dx = x - start.x;
+            const dy = y - start.y;
+
+            paper.translate(paper.translate().tx + x, paper.translate().ty + y);
+
+            //paper.translate(start.tx + dx, start.ty + dy);
+        });
+
+        paper.on('blank:pointerup', function () {
+            panning = false;
+            start = null;
+        });
+
+        paper.on('link:connect', function (linkView, evt, elementViewConnected, magnet) {
+            const source = linkView.model.getSourceElement();
+            const target = linkView.model.getTargetElement();
+
+            if (!source || !target || source === target) {
+                linkView.model.remove();
+                return;
+            }
+
+            // sync parentId
+            const parentId = source.get('nodeId');
+            const childId = target.get('nodeId');
+
+            const child = $scope.lData.find(x => x.id === childId);
+            if (child) {
+                child.parentId = parentId;
+                saveParent(childId, parentId);
+            }
+        });
+
+        paper.on('link:pointerclick', function(linkView) {
+            activeLink = linkView.model;
+
+            const bbox = linkView.getBBox();
+            const paperRect = paper.el.getBoundingClientRect();
+
+            haloEl.style.left = (paperRect.left + bbox.x + bbox.width / 2 - 13) + 'px';
+            haloEl.style.top  = (paperRect.top  + bbox.y + bbox.height / 2 - 13) + 'px';
+            haloEl.style.display = 'flex';
+        });
+
+        //halo
+        document.getElementById('btnDelete').onclick = () => {
+            if (!selectedElement) return;
+            deleteNode(selectedElement);
+            halo.classList.add('hidden');
+        };
+        
+        //link-halo
+        document.getElementById('btnDeleteLink').onclick = () => {
+            if (!activeLink) return;
+            
+            const sourceCell = graph.getCell(activeLink.get('source').id);
+            const targetCell = graph.getCell(activeLink.get('target').id);
+
+            const parentId = sourceCell.prop('nodeId');
+            const childId  = targetCell.prop('nodeId');
+            
+            saveParent(childId, '');
+            activeLink.remove();
+            activeLink = null;
+            haloEl.classList.add('hidden');
+        };
+
+        function zoom(factor, center) {
+            scale = Math.min(maxScale, Math.max(minScale, scale * factor));
+            paper.scale(scale, scale, center);
+        }
+
+        function createNode(x, y, text) {
+            return new joint.shapes.standard.Rectangle({
+                position: { x, y },
+                size: { width: 180, height: 50 },
+                attrs: {
+                    body: {
+                        rx: 8,
+                        ry: 8,
+                        fill: '#e3f2fd',
+                        stroke: '#1976d2',
+                        strokeWidth: 2
+                    },
+                    label: {
+                        text,
+                        fill: '#0d47a1',
+                        fontSize: 14,
+                        fontWeight: 'bold'
+                    }
+                }
+            });
+        }
+
+        function connect(source, target) {
+            return new joint.shapes.standard.Link({
+                source: { id: source.id },
+                target: { id: target.id },
+                router: { name: 'orthogonal' },   // ⭐ หัวใจ
+                connector: { name: 'rounded' },   // มุมโค้งนิด ๆ ดูสวย
+                attrs: {
+                    line: {
+                        stroke: '#1976d2',
+                        strokeWidth: 2,
+                        targetMarker: {
+                            type: 'path',
+                            d: 'M 10 -5 0 0 10 5 z'
+                        }
+                    }
+                }
+            });
+        }
+
+        function savePosition(code, x, y) {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/OrgChart/UpdatePosition'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , cache: false
+                , data: JSON.stringify({
+                    chartId: chartId
+                    , id: code
+                    , pos_x: parseInt(x)
+                    , pos_y: parseInt(y)
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+
+
+        function saveParent(childCode, parentCode) {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/OrgChart/UpdateParent'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , cache: false
+                , data: JSON.stringify({
+                    chartId: chartId
+                    , id: childCode
+                    , parentId: parentCode
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+
+        $scope.LoadDepartment = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Department/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    code: ''
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lDepartment = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadDepartment();
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/OrgChart/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    chartId: chartId
+                    , id: $scope.root
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lData = result.data;
+
+                        const nodeMap = {};
+
+                        $scope.lData.forEach(item => {
+                            const rect = new joint.shapes.standard.Rectangle();
+
+                            rect.position(item.pos_x, item.pos_y);
+                            rect.resize(260, 60);
+
+                            rect.attr({
+                                label: { 
+                                    text: item.title + '\n' + item.name 
+                                },
+                                body: {
+                                    magnet: true,        // ⭐ สำคัญ
+                                    cursor: 'crosshair'
+                                }
+                            });
+
+                            // ⭐ key สำคัญ
+                            rect.set('nodeId', item.id);
+
+                            rect.addTo(graph);
+
+                            //add
+                            nodeMap[item.id] = rect;
+                        });
+
+                        $scope.lData.forEach(item => {
+                            if (!item.parentId) return;
+
+                            const parent = nodeMap[item.parentId];
+                            const child = nodeMap[item.id];
+
+                            if (!parent || !child) return;
+
+                            const link = new joint.shapes.standard.Link();
+
+                            link.source(parent);
+                            link.target(child);
+                            link.router({ name: 'orthogonal' });   // ⭐ หัวใจ
+                            link.connector({ name: 'rounded' });   // มุมโค้งนิด ๆ ดูสวย
+                            link.attr({
+                                line: {
+                                    stroke: '#555',
+                                    strokeWidth: 2,
+                                    targetMarker: {
+                                        type: 'path',
+                                        d: 'M 10 -5 0 0 10 5 z'
+                                    }
+                                }
+                            });
+
+                            link.addTo(graph);
+                        });
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+    });
+</script>

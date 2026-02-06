@@ -1,0 +1,654 @@
+﻿@page
+@model EmpHub.Pages.Service.ProcessModel
+@{
+    ViewData["Title"] = "Process";
+    var token = User.AccessToken(HttpContext);
+}
+
+@section PageHeader {
+    <!-- [ page-header ] start -->
+    <div class="page-header">
+        <div class="page-header-left d-flex align-items-center">
+            <div class="page-header-title">
+                <h5 class="m-b-10">HR Service</h5>
+            </div>
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Page("/Index")">Home</a></li>
+                <li class="breadcrumb-item">Service Process</li>
+            </ul>
+        </div>
+    </div>
+}
+
+<style>
+    .ui-sortable-helper {
+        display: flex;
+    }
+
+    .ui-sortable-placeholder {
+        border: 2px dashed var(--bs-blue);
+    }
+
+    .row-item:hover {
+        background-color: var(--bs-gray-100) !important;
+    }
+
+    .row-item.active {
+        background-color: var(--light-blue) !important;
+    }
+</style>
+<div ng-controller="ManageCtrl">
+    <div class="d-flex mb-2">
+        <div class="flex-fill fs-4">Service Process</div>
+    </div>
+    <div class="d-flex">
+        <div class="rounded-4 border shadow-sm bg-white p-3 me-3">
+            <div class="">
+                Category
+            </div>
+            <div class="bg-white rounded-3 p-2">
+                <div class="overflow-auto" style="height: calc(100vh - 375px);">
+                    <div ng-repeat="f in lCategory">
+                        <div class="d-flex row-item ps-2 {{ f.cateId == iCategory.cateId ? 'active' : ''  }}" ng-click="SelectCategory(f)">
+                            <div class="flex-fill fs-5 text-dark">
+                                {{ f.cateDesc }}
+                            </div>
+                        </div>
+                        @* SubCate *@
+                        <div ng-repeat="s in f.lSub">
+                            <div class="d-flex select row-item px-2 {{ s.cateId == iCategory.cateId ? 'active' : '' }}" ng-click="SelectSubCategory(s)">
+                                <div class="flex-fill d-flex align-items-center" style="margin-left:15px;">
+                                    <i class="bi bi-arrow-return-right me-2"></i>
+                                    <span class="text-primary">{{ s.cateDesc }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="rounded-4 border shadow-sm bg-white p-3 flex-fill">
+            <div>
+                <div>Process Stage</div>
+                <div class="position-relative overflow-auto" style="height:calc(100vh - 375px);">
+                    <div class="" ng-show="iCategory != null">
+                        @* Authen *@
+                        <div class="bg-white rounded-4 h-100 p-2">
+                            <table class="table table-tip connected-apps-container">
+                                <thead>
+                                    <tr>
+                                        <th width="20"></th>
+                                        <th>Name</th>
+                                        <th>Description</th>
+                                        <th>Operator</th>
+                                        <th width="50"></th>
+                                        <th width="50"></th>
+                                    </tr>
+                                </thead>
+                                <tbody ui-sortable="sortableOptions" ng-model="lStep">
+                                    <tr ng-repeat="s in lStep">
+                                        <td>
+                                            <div class="sort-handle select">
+                                                <i class="bi bi-grip-vertical"></i>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {{ s.status }}
+                                        </td>
+                                        <td>
+                                            {{ s.statusDesc }}
+                                        </td>
+                                        <td class="p-1">
+                                            <div class=" d-flex align-items-center">
+                                                <div ng-repeat="a in s.lAction" class="btn btn-light bg-light-blue border-0 rounded-pill px-2 py-1 me-1 d-flex align-items-center text-nowrap">
+                                                    <div>{{ a.actionName }} </div>
+                                                    <div class="select ms-2 text-danger" title="Remove Operator" ng-click="DeleteAction(a, s)">
+                                                        <i class="bi bi-x-circle"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="btn btn-sm btn-light-dash rounded-pill px-2 py-1 text-primary" ng-click="ShowCreateAction(s)" title="Add Operator">
+                                                    <i class="fas fa-user-plus me-1"></i> Add
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="p-1">
+                                            <div class="btn btn-circle" ng-click="ShowEditStep(s)" title="Edit Stage">
+                                                <i class="bi bi-pen"></i>
+                                            </div>
+                                        </td>
+                                        <td class="p-1">
+                                            <div class="btn btn-circle" ng-click="DeleteStep(s)" title="Delete Stage">
+                                                <i class="bi bi-trash"></i>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="btn btn-light-dash rounded-2 text-primary mt-2" ng-click="ShowCreateStep(iCategory)">
+                                Add Stage
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @* Step Modal *@
+    <div id="UpdateStepModal" class="modal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Stage Info</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <div>Name</div>
+                        <select ng-model="iStep.status" ng-options="x.code as x.code for x in lProcess" class="form-select" ng-change="SelectProcess()"></select>
+                    </div>
+                    <div class="mb-3">
+                        <div>Description</div>
+                        <input ng-model="iStep.statusDesc" class="form-control" maxlength="50" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" ng-click="UpdateStep()">บันทึกรายการ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @* Action Modal *@
+    <div id="UpdateActionModal" class="modal modal-lx" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Operator</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="position-relative">
+                        <input ng-model="filter_name" class="form-control mb-2" placeholder="ค้นหา" />
+                        <span class="position-absolute top-50 end-0 me-2 translate-middle-y">
+                            <i class="fas fa-search"></i>
+                        </span>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4 border-end">
+                            <div class="fw-bolder">User List</div>
+                            <div class="list-group list-group-flush overflow-auto" style="height: 400px;">
+                                <div class="list-group-item list-group-item-action d-flex align-items-center justify-content-between" ng-repeat="x in lUser | filter : filter_name">
+                                    <div>
+                                        <div class="fw-bolder text-secondary">
+                                            {{ x.firstname_en + ' ' + x.lastname_en }}
+                                        </div>
+                                        <div>
+                                            {{ x.firstname_th + ' ' + x.lastname_th }} <span ng-show="x.nickname != ''">({{ x.nickname }})</span>
+                                        </div>
+                                        <small class="text-dark">
+                                            {{ x.positionDesc }} {{ x.departmentDesc }}
+                                        </small>
+                                    </div>
+                                    <div>
+                                        <button ng-click="CreateAction(x.userId)" class="btn btn-circle text-primary">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4 border-end">
+                            <div class="d-flex align-items-center">
+                                <div class="fw-bolder me-2 flex-fill">
+                                    Group List
+                                </div>
+                                <a href='@Url.Page("/Group/Index")' class="btn-link" target="_blank">
+                                    <i class="fas fa-user-cog me-1"></i> Manage Group
+                                </a>
+                            </div>
+                            <div class="list-group list-group-flush overflow-auto" style="max-height: 400px;">
+                                <div class="list-group-item list-group-item-action d-flex align-items-center justify-content-between" ng-repeat="x in lGroup">
+                                    <div>
+                                        {{ x.groupName }}
+                                    </div>
+                                    <div>
+                                        <button ng-click="CreateAction(x.groupId)" class="btn btn-circle text-primary">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div>
+                                <b>Relation List</b>
+                            </div>
+                            <div class="list-group list-group-flush overflow-auto" style="max-height: 400px;">
+                                <div class="list-group-item list-group-item-action d-flex align-items-center justify-content-between" ng-repeat="x in lRelation">
+                                    <div>
+                                        {{ x.userName }}
+                                    </div>
+                                    <div>
+                                        <button ng-click="CreateAction(x.userId)" class="btn btn-circle text-primary">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ManageCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.sysId = 'HR';
+        $scope.page = 1
+        $scope.row = 10;
+
+        $scope.lRelation = [
+            { userId: 'Head1', userName: 'หัวหน้างาน 1' }
+            // , { userId: 'Head2', userName: 'หัวหน้างาน 2' }
+            // , { userId: 'Head3', userName: 'หัวหน้างาน 3' }
+            // , { userId: 'Head4', userName: 'หัวหน้างาน 4' }
+            // , { userId: 'Head5', userName: 'หัวหน้างาน 5' }
+        ];
+
+        $scope.LoadProcess = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'hrProcess'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lProcess = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadProcess();
+
+        $scope.SelectCategory = function (x) {
+            if (x.lSub.length > 0) {
+                $scope.iCategory = x.lSub[0];
+                $scope.LoadStep($scope.iCategory);
+            }
+        }
+
+        $scope.SelectSubCategory = function (x) {
+            $scope.iCategory = x;
+            $scope.LoadStep($scope.iCategory);
+        }
+
+        $scope.LoadCategory = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Category/AllList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    sysId: $scope.sysId
+                    , cateId: ''
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lCategory = result;
+
+                        if ($scope.lCategory.length > 0) {
+                            $scope.SelectCategory($scope.lCategory[0]);
+                        }
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadCategory();
+
+        $scope.LoadStep = function (x) {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceStepTemplate/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    cateId: x.cateId
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lStep = result;
+
+                        for (var i = 0; i < $scope.lStep.length; i++) {
+                            $scope.LoadAction($scope.lStep[i]);
+                        }
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+
+        $scope.LoadAction = function (x) {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceStepTemplateAction/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    stepId: x.stepId
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        x.lAction = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+
+        $scope.LoadUser = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    page: 1
+                    , row: 1000
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lUser = result.data;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadUser();
+
+        $scope.LoadGroup = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Group/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    sysId: 'PROS'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lGroup = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        //$scope.LoadGroup();
+
+        $scope.SelectProcess = function () {
+            var find = $scope.lProcess.find(x => x.code == $scope.iStep.status);
+
+            if (find) {
+                $scope.iStep.statusDesc = find.desc_th;
+            }
+        }
+
+        /* Step */
+        $scope.ShowCreateStep = function (x) {
+            $scope.iStep = {
+                stepId: ''
+                , cateId: x.cateId
+                , status: ''
+                , statusDesc: ''
+                , create_by: '@User.UserId()'
+            };
+            $("#UpdateStepModal").modal('show');
+        }
+
+        $scope.ShowEditStep = function (x) {
+            $scope.iStep = x;
+            $("#UpdateStepModal").modal('show');
+        }
+
+        $scope.UpdateStep = function () {
+            var url = '@webAPI.CurrentValue.APIEmpHub/api/ServiceStepTemplate/Create';
+            $("#UpdateStepModal").modal('hide');
+
+            if ($scope.iStep.stepId != '') {
+                var url = '@webAPI.CurrentValue.APIEmpHub/api/ServiceStepTemplate/Update';
+            }
+
+            $.ajax({
+                url: url
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , cache: false
+                , data: JSON.stringify($scope.iStep)
+                , success: function () {
+                    $timeout(function () {
+                        $scope.LoadStep($scope.iCategory);
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+
+        $scope.DeleteStep = function (x) {
+            alertConfirm("Delete Stage", "ยืนยันการทำรายการ", function () {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceStepTemplate/Delete'
+                    , headers: { 'authorization': 'Bearer @token' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , cache: false
+                    , data: JSON.stringify(x)
+                    , success: function () {
+                        $timeout(function () {
+                            $scope.LoadStep(x);
+                        }, 0);
+                    }
+                    , error: AjaxError
+                });
+            });
+        }
+
+        /* Sort SubCate */
+
+        $scope.sortableSubCate = {
+            handle: '.sort-subcate-handle',
+            axis: "y",
+            cursor: "grabbing",
+            connectWith: ".connected-subcate-container",
+            update: function (event, ui) {
+                $scope.UpdateCateSort();
+            }
+        };
+
+        $scope.UpdateCateSort = function () {
+            $timeout(function () {
+                for (var i = 0; i < $scope.lCategory.length; i++) {
+                    var iCate = $scope.lCategory[i];
+
+                    for (var j = 0; j < iCate.lSub.length; j++) {
+                        var iSubCate = iCate.lSub[j];
+                        var sub_index = j + 1;
+
+                        if (sub_index != iSubCate.order_index) {
+                            $scope.UpdateSubCateOrder(iSubCate, sub_index);
+                        }
+                    }
+                }
+            }, 0);
+        }
+
+        $scope.UpdateSubCateOrder = function (x, order_index) {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/SubCategory/Sort'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , cache: false
+                , data: JSON.stringify({
+                    subCateId: x.cateId
+                    , order_index: order_index
+                })
+                , success: function () {
+                    $timeout(function () {
+                        x.order_index = order_index;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+
+        /* Sort Condition */
+        $scope.sortableOptions = {
+            handle: '.sort-handle',
+            axis: "y",
+            cursor: "grabbing",
+            connectWith: ".connected-apps-container",
+            update: function (event, ui) {
+                $scope.UpdateSort();
+            }
+        };
+
+        $scope.UpdateSort = function () {
+            $timeout(function () {
+                for (var j = 0; j < $scope.lStep.length; j++) {
+                    var iStep = $scope.lStep[j];
+                    $scope.UpdateStepOrder(iStep, j);
+                }
+            }, 0);
+        }
+
+        $scope.UpdateStepOrder = function (x, order_index) {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceStepTemplate/Sort'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , cache: false
+                , data: JSON.stringify({
+                    stepId: x.stepId
+                    , stepIndex: order_index
+                })
+                , success: function () {
+                    $timeout(function () {
+                        x.stepIndex = order_index;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+
+        /* Action */
+        $scope.ShowCreateAction = function (x) {
+            $scope.iStep = x;
+            $("#UpdateActionModal").modal('show');
+        }
+
+        $scope.CreateAction = function (actionBy) {
+            $("#UpdateActionModal").modal('hide');
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceStepTemplateAction/Create'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , cache: false
+                , data: JSON.stringify({
+                    stepId: $scope.iStep.stepId
+                    , actionBy: actionBy
+                    , create_by: '@User.UserId()'
+                })
+                , success: function () {
+                    $timeout(function () {
+                        $scope.LoadAction($scope.iStep);
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+
+        $scope.DeleteAction = function (x, s) {
+            alertConfirm("Delete Operator", "ท่านต้องการลบผู้ดำเนินการท่านนี้", function () {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceStepTemplateAction/Delete'
+                    , headers: { 'authorization': 'Bearer @token' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , cache: false
+                    , data: JSON.stringify(x)
+                    , success: function () {
+                        $timeout(function () {
+                            $scope.LoadAction(s);
+                        }, 0);
+                    }
+                    , error: AjaxError
+                });
+            });
+        }
+
+        $scope.Download = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Category/ReportProcess',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    sysId: 'PO'
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        var lData = JSON.parse(result.data);
+                        var JSData = [[
+                            { 'text': 'Category' }
+                            , { 'text': 'SubCategory' }
+                            , { 'text': 'Condition' }
+                            , { 'text': 'Status' }
+                            , { 'text': 'ActionBy' }
+                        ]];
+
+                        if (lData.length > 0) {
+                            for (var i = 0; i < lData.length; i++) {
+                                var iData = lData[i];
+
+                                JSData.splice(JSData.length, 0, [
+                                    { 'text': iData.categoryDesc }
+                                    , { 'text': iData.subCategoryDesc }
+                                    , { 'text': iData.condition }
+                                    , { 'text': iData.status }
+                                    , { 'text': iData.actionBy }
+                                ]);
+                            }
+
+
+                            var dt = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+                            ExportFile(JSData, 'ProcessPO_' + dt);
+                        }
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+    });
+</script>

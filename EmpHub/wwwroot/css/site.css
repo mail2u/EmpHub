@@ -2,6 +2,7 @@
     --tip-yellow: #fbde14;
     --tip-blue: #1e3b92;
     --gray: #e3e3e3;
+    --label-gray: #8596ad;
     --orange: #ff8900;
     --purple: #af08dd;
     --pink: #f9538d;
@@ -84,6 +85,10 @@ main {
     color: var(--tip-blue) !important;
 }*/
 
+.btn{
+    font-size:14px !important;
+}
+
 .btn:disabled{
     color:var(--soft-gray);
 }
@@ -118,17 +123,27 @@ main {
 .btn-circle {
     width: 40px;
     height: 40px;
-    border-radius: 50%;
+    border-radius: 50% !important;
     position: relative;
-    color: var(--orange);
+    color: var(--bs-primary-text-emphasis);
 }
 
 .btn-circle:hover {
-    color:var(--bs-blue);
+    color: var(--bs-blue) !important;
+    background-color: var(--bs-gray-200);
 }
 
 .btn-circle-hover:hover {
     background-color:var(--light-blue);
+}
+
+.btn-circle-orange {
+    color: var(--orange) !important;
+}
+
+.btn-circle-orange:active {
+    color: var(--bs-blue) !important;
+    background-color: var(--light-blue) !important;
 }
 
 .btn-link {
@@ -139,7 +154,7 @@ main {
 }
 
 .btn-link:hover {
-    color: var(--tip-blue);
+    color: var(--tip-blue) !important;
 }
 
 .btn-link:after {
@@ -155,8 +170,13 @@ main {
 }
 
 .btn-link.active {
+    text-decoration:underline;
     color: var(--tip-blue)!important;
     font-weight: bolder;
+}
+
+.btn-link > .badge, .btn-link.active > .badge {
+    background-color: var(--dark-gray);
 }
 
 .btn-link:hover > .badge, .btn-link.active > .badge {
@@ -215,15 +235,37 @@ main {
     color: var(--bs-danger);
 }
 
+.btn {
+    color: var(--dark-gray);
+}
+
+.btn-default {
+    border-radius: 5px;
+    color: var(--dark-gray);
+    border: 1px solid var(--gray);
+}
+
+.btn-default.active{
+    color: white;
+    background-color: var(--bs-blue);
+}
+
+.btn-default:hover {
+    border: 1px solid var(--light-blue);
+    color: var(--bs-blue);
+    background-color: var(--light-blue);
+}
+
 .btn-light {
     border-radius: 5px;
-    color: var(--tip-blue);
-    border: 1px solid var(--tip-blue);
+    color: var(--dark-gray);
+    border: 1px solid var(--gray);
 }
 
 .btn-light:hover {
-    color: var(--orange);
-    border: 1px solid var(--orange);
+    border: 1px solid var(--light-blue);
+    color: var(--bs-blue);
+    background-color: var(--light-blue);
 }
 
 .btn-gray-invert.active,
@@ -297,25 +339,27 @@ main {
 }
 
 .btn-light-dash {
-    background-color: var(--light-gray);
     border-width: 2px;
     border-style: dashed;
-    border-color: var(--bs-blue);
+    border-color: var(--gray);
 }
 
 .btn-light-dash:hover {
+    color: var(--bs-blue) !important;
     border-style: solid;
+    border-width: 2px;
+    border-color: var(--bs-blue);
+    background-color: white;
 }
 
 .btn-danger-invert {
     border: 1px solid var(--bs-red);
-    color: var(--bs-red);
+    color: var(--bs-red) !important;
 }
 
 .btn-danger-invert:hover {
-    border: 1px solid var(--bs-red);
-    color: var(--bs-red);
-    opacity: 0.8;
+    background-color: var( --light-red);
+    opacity: 0.6;
 }
 
 .btn-warning-invert {
@@ -399,7 +443,7 @@ main {
 }
 
 .text-gray {
-    color: var(--bs-gray-500);
+    color: var(--label-gray);
 }
 
 .text-dark-gray{
@@ -416,6 +460,10 @@ main {
 
 .text-light-orange{
     color:var(--light-orange);
+}
+
+.text-teal {
+    color: var(--bs-teal);
 }
 
 .bg-primary {
@@ -506,6 +554,28 @@ main {
     background-color:var(--orange);
 }
 
+.bg-teal {
+    background-color: var(--bs-teal);
+}
+
+.btn-logo{
+    background-color: var(--bs-teal) !important;
+    color: white !important;
+}
+
+.box-shadow {
+    border: 1px solid white;
+    box-shadow: 0px 4px 2px var(--gray);
+    background-color: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.box-shadow:hover{
+    background-color:var(--light-blue);
+    border:1px solid var(--bs-blue);
+}
+
 .btn-orange {
     color: var(--bs-white);
     background-color: var(--orange);
@@ -537,6 +607,17 @@ main {
     color: #fff;
     background-color: #f59123;
     opacity: 0.6;
+}
+
+.btn-teal {
+    color: var(--bs-white);
+    background-color: var(--bs-teal);
+}
+
+.btn-teal:hover {
+    color: var(--bs-white);
+    background-color: var(--bs-teal);
+    opacity: 0.8;
 }
 
 .bg-purple {
@@ -582,6 +663,10 @@ main {
     background-color: #e8edfd;
     color: #273e58;
     border-radius: 5px;
+}
+
+.list-group-item-action{
+
 }
 
 .is_favorite {
@@ -663,7 +748,6 @@ main {
     background-color: rgb(229, 236, 255, 30%);
     opacity: 0.7;
 }
-
 
 tr.requets > td {
     color: var(--bs-blue);

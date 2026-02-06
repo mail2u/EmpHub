@@ -1,4 +1,232 @@
 ﻿@page
 @model EmpHub.Pages.Structure.EditModel
 @{
+    var token = User.AccessToken(HttpContext);
 }
+<link rel="stylesheet" href="~/lib/orgchart/jquery.orgchart.css" />
+<script src="~/lib/orgchart/jquery.orgchart.js"></script>
+<style>
+
+    #chart-container {
+        height: 620px;
+    }
+
+    .orgchart {
+        background: white;
+    }
+
+        .orgchart .node.highlight-parent .title, .chart-legend__item__color.highlight-parent {
+            background-color: blue;
+        }
+
+        .orgchart .node.highlight-parent .content {
+            border: 1px solid blue;
+        }
+
+        .orgchart .node.highlight-siblings .title, .chart-legend__item__color.highlight-siblings {
+            background-color: green;
+        }
+
+        .orgchart .node.highlight-siblings .content {
+            border: 1px solid green;
+        }
+
+        .orgchart .node.highlight-children .title, .chart-legend__item__color.highlight-children {
+            background-color: #aeaeae;
+        }
+
+        .orgchart .node.highlight-children .content {
+            border: 1px solid #aeaeae;
+        }
+
+    #chart-legend {
+        padding: 10px;
+        width: 300px;
+        margin: 0 auto;
+        margin-top: 10px;
+        border: 2px dashed #aaa;
+    }
+
+    #chart-legend__title {
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+
+    .chart-legend__item {
+        margin-bottom: 5px;
+        padding: 5px 10px;
+    }
+
+    .chart-legend__item__color,
+    .chart-legend__item__title {
+        vertical-align: middle;
+        line-height: 20px;
+    }
+
+    .chart-legend__item__color {
+        width: 20px;
+        height: 20px;
+        border-radius: 20px;
+    }
+
+    .chart-legend__item div {
+        display: inline-block;
+    }
+
+</style>
+<div ng-controller="OrgChartCtrl" class="p-2">
+    <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">Organization</li>
+            <li class="breadcrumb-item active" aria-current="page">Organization Structure</li>
+        </ol>
+    </nav>
+   @*<div id="controls" class="mb-3">
+        <button id="btn-add">➕ เพิ่มโหนด</button>
+        <button id="btn-delete">❌ ลบโหนด</button>
+        <button id="btn-edit">✏️ แก้ไขโหนด</button>
+    </div> *@
+    <div id="chart-container" class="w-100 rounded-4 border p-3 bg-white" style="height:800px;"></div>
+</div>
+<script>
+    app.controller('OrgChartCtrl', function ($scope, $http, $timeout, $filter) {
+        let chart;
+        let selectedNodeId = null;
+
+        function buildOrgTree(items) {
+            const map = {};
+            let root = null;
+
+            items.forEach(i => {
+                map[i.code] = {
+                    id: i.code,
+                    name: i.code,
+                    title: i.desc_th,
+                    children: []
+                };
+            });
+
+            items.forEach(i => {
+                if (i.parentCode) {
+                    map[i.parentCode]?.children.push(map[i.code]);
+                } else {
+                    root = map[i.code];
+                }
+            });
+
+            return root;
+        }
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Department/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    code:''
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lDepartment = result;
+
+                        let data = buildOrgTree($scope.lDepartment);
+
+                        console.log(data);
+
+                        // **2. สร้าง OrgChart**
+                        let orgChart = $('#chart-container').orgchart({
+                            'data': data,
+                            'direction': 't2b',
+                            'nodeContent': 'title',
+                            'draggable': true,
+                            'pan': true,
+                            'zoom': true,
+                            'createNode': function ($node, data) {
+                                //add cover
+                                //$node.prepend(`<img class="avatar" src="https://dabeng.github.io/OrgChart/img/avatar/${data.id}.jpg" crossorigin="anonymous" />`);
+                            }
+                        });
+
+
+                        orgChart.$chart.find('.node')
+                        .on('mouseenter', function () {
+                            orgChart.getParent($(this)).addClass('highlight-parent');
+                            orgChart.getSiblings($(this)).addClass('highlight-siblings');
+                            orgChart.getChildren($(this)).addClass('highlight-children');
+                        })
+                        .on('mouseleave', function () {
+                            orgChart.$chart.find('.highlight-parent, .highlight-siblings, .highlight-children')
+                                .removeClass('highlight-parent highlight-siblings highlight-children');
+                        });
+
+                        setTimeout(() => {
+                            orgChart.setPosition(0, 0);
+                        }, 300);
+
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+        // **3. ฟังก์ชันเพิ่มโหนดใหม่**
+        $('#btn-add').click(function () {
+            let selectedNode = $('.orgchart .selected');
+            if (selectedNode.length === 0) {
+                alert("กรุณาเลือกโหนดก่อนเพิ่ม!");
+                return;
+            }
+
+            let parentId = selectedNode.closest('.node').attr('id');
+            let newNodeId = Date.now().toString(); // ใช้ timestamp เป็น ID
+            let newName = prompt("ป้อนชื่อโหนด:");
+            let newTitle = prompt("ป้อนตำแหน่ง:");
+
+            if (newName && newTitle) {
+                let newNode = { id: newNodeId, name: newName, title: newTitle };
+                orgChart.addChildren($('#' + parentId), [newNode]);
+            }
+        });
+
+        // **4. ฟังก์ชันลบโหนด**
+        $('#btn-delete').click(function () {
+            let selectedNode = $('.orgchart .selected');
+            if (selectedNode.length === 0) {
+                alert("กรุณาเลือกโหนดที่ต้องการลบ!");
+                return;
+            }
+
+            if (confirm("คุณต้องการลบโหนดนี้จริงหรือ?")) {
+                let nodeId = selectedNode.closest('.node').attr('id');
+                orgChart.removeNodes($('#' + nodeId));
+            }
+        });
+
+        // **5. ฟังก์ชันแก้ไขชื่อโหนด**
+        $('#btn-edit').click(function () {
+            let selectedNode = $('.orgchart .selected');
+            if (selectedNode.length === 0) {
+                alert("กรุณาเลือกโหนดที่ต้องการแก้ไข!");
+                return;
+            }
+
+            let nodeId = selectedNode.closest('.node').attr('id');
+            let newName = prompt("ป้อนชื่อใหม่:");
+            let newTitle = prompt("ป้อนตำแหน่งใหม่:");
+
+            if (newName && newTitle) {
+                orgChart.updateNode($('#' + nodeId), { name: newName, title: newTitle });
+            }
+        });
+
+        // **6. ทำให้โหนดที่คลิกถูกเลือก**
+        $(document).on('click', '.orgchart .node', function () {
+            $('.orgchart .node').removeClass('selected');
+            $(this).addClass('selected');
+        });
+    });
+</script>

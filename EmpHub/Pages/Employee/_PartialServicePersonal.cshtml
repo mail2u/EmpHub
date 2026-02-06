@@ -6,110 +6,106 @@
 }
 <div ng-controller="ServicePersonalCtrl" id="tab_personal">
     @* View *@
-    <div class="rounded-5 p-4 bg-secondary">
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-2">
-                    <img src="~/Images/icon-user.png" class="rounded-pill" width="90%" />
-                </div>
-                <div class="col-sm-10">
-                    <div class="row">
-                        <div class="col-sm-5 mb-3">
-                            <small class="text-gray">
-                                ชื่อ-สกุล (ภาษาไทย)
-                            </small>
-                            <div class="fw-bolder text-white">{{ iData.firstname_th }} {{ iData.lastname_th }}</div>
+    <div class="rounded-4 mb-2 bg-white position-relative">
+        <div class="text-center mb-4">
+            <img src="~/Images/icon-user.png" class="rounded-pill" width="200px" />
+        </div>
+        <div class="d-flex">
+            <div class="flex-fill">
+                <div class="row">
+                    <div class="col-sm-5 mb-3">
+                        <div class="text-gray">
+                            ชื่อ-สกุล (ภาษาไทย)
                         </div>
-                        <div class="col-sm-5 mb-3">
-                            <small class="text-gray">
-                                ชื่อ-สกุล (ภาษาอังกฤษ)
-                            </small>
-                            <div class="fw-bolder text-white">{{ iData.firstname_en }} {{ iData.lastname_en }}</div>
-                        </div>
-                        <div class="col-sm-2 mb-3">
-                            <small class="text-gray">
-                                ชื่อเล่น
-                            </small>
-                            <div class="fw-bolder text-white">{{ iData.nickname != '' ? iData.nickname : '-' }}</div>
-                        </div>
+                        <div class="text-dark fs-5">{{ iData.firstname_th }} {{ iData.lastname_th }}</div>
                     </div>
-                    <div class="row">
-                        <div class="col-sm-5 mb-3">
-                            <small class="text-gray">
-                                เบอร์ติดต่อ
-                            </small>
-                            <div class="fw-bolder text-white">{{ iData.phoneNo != '' ? iData.phoneNo : '-' }}</div>
+                    <div class="col-sm-7 mb-3">
+                        <div class="text-gray">
+                            ชื่อเล่น
                         </div>
-                        <div class="col-sm-5 mb-3">
-                            <small class="text-gray">
-                                วันเกิด
-                            </small>
-                            <div class="fw-bolder text-white">{{ iData.birth_date != '' ? iData.birth_date : '-' }}</div>
-                        </div>
-                        <div class="col-sm-2 mb-3">
-                            <small class="text-gray">
-                                เพศ
-                            </small>
-                            <div class="fw-bolder text-white">{{ iData.sex == 'Male' ? 'ชาย' : iData.sex == 'Female' ? 'หญิง' : '-'  }}</div>
-                        </div>
+                        <div class="text-dark fs-5">{{ iData.nickname != '' ? iData.nickname : '-' }}</div>
                     </div>
-                    <div class="row">
-                        <div class="col-sm-5 mb-3">
-                            <small class="text-gray">
-                                อีเมล์
-                            </small>
-                            <div class="fw-bolder text-white">{{ iData.email != '' ? iData.email : '-' }}</div>
+                    <div class="col-sm-5 mb-3">
+                        <div class="text-gray">
+                            ชื่อ-สกุล (ภาษาอังกฤษ)
                         </div>
+                        <div class="text-dark fs-5">{{ iData.firstname_en }} {{ iData.lastname_en }}</div>
                     </div>
-                    <div class="row">
-                        <div class="col-sm-5 d-flex align-items-center">
-                            <div class="btn bg-secondary text-white border-white" ng-click="Edit()">
-                                <i class="bi bi-pen"></i> แก้ไข
-                            </div>
-                            <div ng-show="iData.status == 'Pending'" class="ms-3 d-flex bg-white bg-opacity-25 rounded p-2">
-                                <div class="me-2 text-warning">
-                                    รออนุมัติการปรับปรุงข้อมูล
-                                </div>
-                                <div class="badge bg-danger select" ng-click="Cancel()">
-                                    <i class="bi bi-x-circle"></i> ยกเลิก
-                                </div>
-                            </div>
+                    <div class="col-sm-5 mb-3">
+                        <div class="text-gray">
+                            วันเกิด
                         </div>
+                        <div class="text-dark fs-5">{{ iData.birth_date != '' ? iData.birth_date : '-' }}</div>
+                    </div>
+                    <div class="col-sm-2 mb-3">
+                        <div class="text-gray">
+                            เพศ
+                        </div>
+                        <div class="text-dark fs-5">{{ iData.sex == 'Male' ? 'ชาย' : iData.sex == 'Female' ? 'หญิง' : '-'  }}</div>
+                    </div>
+                    <div class="col-sm-5 mb-3">
+                        <div class="text-gray">
+                            เบอร์ติดต่อ
+                        </div>
+                        <div class="text-dark fs-5">{{ iData.phoneNo != '' ? iData.phoneNo : '-' }}</div>
+                    </div>
+                    <div class="col-sm-7">
+                        <div class="text-gray">
+                            อีเมล์
+                        </div>
+                        <div class="text-dark fs-5">{{ iData.email != '' ? iData.email : '-' }}</div>
                     </div>
                 </div>
+                @* Notify *@
+                @* <div class="d-flex align-items-center">
+                    <div ng-show="iData.status == 'Pending'" class="ms-3 d-flex bg-white bg-opacity-25 rounded p-2">
+                        <div class="me-2 text-warning">
+                            รออนุมัติการปรับปรุงข้อมูล
+                        </div>
+                        <div class="badge bg-danger select" ng-click="Cancel()">
+                            <i class="bi bi-x-circle"></i> ยกเลิก
+                        </div>
+                    </div>
+                </div> *@
+                @* Edit *@
+              @*   <div class="position-absolute top-0 end-0 m-2">
+                    <div class="btn btn-circle border-0" ng-click="Edit()">
+                        <i class="bi bi-pen"></i>
+                    </div>
+                </div> *@
             </div>
         </div>
     </div>
     @* Dialog *@
     <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="personalOff" aria-labelledby="offcanvasLabel" style="width:600px;">
         <div class="offcanvas-header">
-            <h5 class="offcanvas-title text-secondary fw-bolder" id="offcanvasLabel">ข้อมูลส่วนบุคคล</h5>
+            <h5 class="offcanvas-title text-secondary text-dark fs-5" id="offcanvasLabel">ข้อมูลส่วนบุคคล</h5>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
             <div class="row">
                 <div class="col-sm-6 mb-3">
-                    <div class="fw-bolder">ชื่อ</div>
+                    <div class="text-dark fs-5">ชื่อ</div>
                     <input ng-model="iEdit.firstname_th" class="form-control" />
                 </div>
                 <div class="col-sm-6 mb-3">
-                    <div class="fw-bolder">นามสกุล</div>
+                    <div class="text-dark fs-5">นามสกุล</div>
                     <input ng-model="iEdit.lastname_th" class="form-control" />
                 </div>
                 <div class="col-sm-6 mb-3">
-                    <div class="fw-bolder">Firstname</div>
+                    <div class="text-dark fs-5">Firstname</div>
                     <input ng-model="iEdit.firstname_en" class="form-control" />
                 </div>
                 <div class="col-sm-6 mb-3">
-                    <div class="fw-bolder">Lastname</div>
+                    <div class="text-dark fs-5">Lastname</div>
                     <input ng-model="iEdit.lastname_en" class="form-control" />
                 </div>
                 <div class="col-sm-4 mb-3">
-                    <div class="fw-bolder">ชื่อเล่น</div>
+                    <div class="text-dark fs-5">ชื่อเล่น</div>
                     <input ng-model="iEdit.nickname" class="form-control" />
                 </div>
                 <div class="col-sm-4 mb-3">
-                    <div class="fw-bolder">วันเกิด (ค.ศ.)</div>
+                    <div class="text-dark fs-5">วันเกิด (ค.ศ.)</div>
                     <input class="form-control icon-calendar date"
                            ng-model="iEdit.birth_date_select"
                            ng-model-options="{ updateOn: 'blur' }"
@@ -120,7 +116,7 @@
                            max-view="month" required />
                 </div>
                 <div class="col-sm-4 mb-3">
-                    <div class="fw-bolder">เพศ</div>
+                    <div class="text-dark fs-5">เพศ</div>
                     <div class="d-flex align-items-center p-2">
                         <div class="me-4">
                             <input ng-model="iEdit.sex" type="radio" value="Male" id="ra_male" />
@@ -133,15 +129,15 @@
                     </div>
                 </div>
                 @*  <div class="col-sm-4 mb-3">
-                <div class="fw-bolder">สถานะ</div>
+                <div class="text-dark fs-5">สถานะ</div>
                 <input ng-model="iEdit.maritalStatus" class="form-control" />
                 </div> *@
                 <div class="col-sm-6 mb-3">
-                    <div class="fw-bolder">เบอร์ติดต่อ</div>
+                    <div class="text-dark fs-5">เบอร์ติดต่อ</div>
                     <input ng-model="iEdit.phoneNo" class="form-control phone" />
                 </div>
                 <div class="col-sm-6 mb-3">
-                    <div class="fw-bolder">อีเมล์</div>
+                    <div class="text-dark fs-5">อีเมล์</div>
                     <input ng-model="iEdit.email" class="form-control" />
                 </div>
             </div>
@@ -177,6 +173,8 @@
                     $timeout(async function () {
                         $scope.iData = result;
 
+                        $scope.$parent.fullname = $scope.iData.firstname_en + ' ' + $scope.iData.lastname_en;
+                        console.log( $scope.$parent.fullname);
                     }, 0);
                 }, error: AjaxError
             });

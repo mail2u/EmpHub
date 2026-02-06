@@ -1,0 +1,380 @@
+﻿@page
+@model EmpHub.Pages.Report.EmployeeModel
+@{
+    var token = User.AccessToken(HttpContext);
+}
+<div ng-controller="EmpCtrl" class="p-2">
+    <div class="d-flex mb-3 align-items-center">
+        <div class="overflow-auto flex-fill">
+            <div class="flex-fill d-flex flex-nowrap align-items-center">
+                <div class="btn btn-link text-nowrap {{ iStatus == '' ? 'active' : '' }}" ng-click="SelectStatus('')">
+                    ทั้งหมด <span class="badge" ng-show="sum_all > 0">{{ sum_all | number }}</span>
+                </div> |
+                <div class="btn btn-link text-nowrap {{ iStatus == 'Permanent' ? 'active' : '' }}" ng-click="SelectStatus('Permanent')">
+                    พนง.ประจำ <span class="badge" ng-show="sum_permanent > 0">{{ sum_permanent | number }}</span>
+                </div>
+                <div class="btn btn-link text-nowrap {{ iStatus == 'Contract' ? 'active' : '' }}" ng-click="SelectStatus('Contract')">
+                    พนง.สัญญาจ้าง <span class="badge" ng-show="sum_contract > 0">{{ sum_contract | number }}</span>
+                </div>
+                <div class="btn btn-link text-nowrap {{ iStatus == 'None' ? 'active' : '' }}" ng-click="SelectStatus('None')">
+                    ไม่ระบุ <span class="badge" ng-show="sum_none > 0">{{ sum_none | number }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="d-none d-sm-block">
+            @if (User.Authen().ToLower().Contains("[admin]"))
+            {
+                <div class="btn btn-teal me-2" ng-click="New()">
+                    <i class="bi bi-person-plus"></i> เพิ่มข้อมูลพนักงาน
+                </div>
+                <div class="btn btn-secondary" ng-click="Download()">
+                    <i class="bi bi-download"></i> ดาวน์โหลด
+                </div>
+            }
+        </div>
+    </div>
+    <div class="rounded-2 p-3 bg-white shadow-sm border">
+        <div class="d-flex mb-2">
+            <div class="flex-fill">
+                <div class="d-flex align-items-end">
+                    <div class="me-2">
+                        <small>ชื่อ - สกุล</small>
+                        <div class="d-flex">
+                            <input class="form-control" ng-model="firstname_th" my-enter="LoadData()" />
+                        </div>
+                    </div>
+                    <div class="me-2">
+                        <small>ตำแหน่ง</small>
+                        <div class="d-flex">
+                            <input class="form-control" ng-model="positionCode" my-enter="LoadData()" />
+                        </div>
+                    </div>
+                    <div class="me-2">
+                        <small>ฝ่ายงาน</small>
+                        <div class="d-flex">
+                            <input class="form-control" ng-model="departmentCode" my-enter="LoadData()" />
+                        </div>
+                    </div>
+                    <div>
+                        <button ng-click="LoadData()" class="btn btn-light me-2">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    <div class="flex-fill">
+                    </div>
+                </div>
+            </div>
+            <div class="text-end d-flex flex-nowrap align-items-center">
+                <span class="d-none d-md-block">
+                    {{ (total > 0 ? ((page - 1) * row) + 1 : 0) | number }} - {{ (page * row < total ? page * row : total) | number }} of {{ total | number }}
+                </span>
+                <button class="btn btn-circle" ng-click="LoadData(page - 1)" ng-disabled="page <= 1">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="btn btn-circle" ng-click="LoadData(page + 1)" ng-disabled="page * row >= total">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+        <div class="overflow-auto d-none d-lg-block">
+            <div class="pt-3" style="height:calc(100vh - 265px);">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th width="50"></th>
+                            <th class="text-nowrap">ชื่อ - สกุล</th>
+                            <th class="text-nowrap">ฝ่ายงาน</th>
+                            <th class="text-nowrap">อีเมล์</th>
+                            <th class="text-nowrap">เบอร์โทรติดต่อ</th>
+                            <th class="text-nowrap"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="x in lData">
+                            <td>
+                                <span ng-show="x.employeeType == 'permanent'" class="text-teal" title="permanent">
+                                    <i class="bi bi-shield-check"></i>
+                                </span>
+                                <span ng-show="x.employeeType == 'contract'" class="text-orange" title="contract">
+                                    <i class="bi bi-hourglass-split"></i>
+                                </span>
+                            </td>
+                            <td>
+                                <div class="text-secondary fw-bolder">
+                                    {{ x.firstname_th + ' ' + x.lastname_th }} <span ng-show="x.nickname != ''">({{ x.nickname }})</span>
+                                </div>
+                                @*    <div class="text-secondary">
+                                {{ x.firstname_en + ' ' + x.lastname_en }}
+                                </div> *@
+                            </td>
+                            <td>
+                                {{ x.positionDesc }} {{ x.departmentDesc }}
+                            </td>
+                            <td>
+                                {{ x.email != '' ? x.email : '-' }}
+                            </td>
+                            <td>
+                                {{ x.phoneNo != '' ? x.phoneNo : '-' }}
+                            </td>
+                            <td class="p-0 text-nowrap">
+                                @if (User.Authen().ToLower().Contains("[admin]"))
+                                {
+                                    <a href='@Url.Page("Detail")/{{ x.userId}}' class="btn text-blue" target="_blank">
+                                        <i class="bi bi-person-badge"></i> รายละเอียด
+                                    </a>
+                                    <div class="btn text-danger" ng-click="Delete(x)">
+                                        <i class="bi bi-trash3"></i> ลบ
+                                    </div>
+                                }
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    @* Modal *@
+    <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="createOff" aria-labelledby="offcanvasLabel" style="width:600px;">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title text-secondary fw-bolder" id="offcanvasLabel">เพิ่มผู้ใช้งาน</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="row">
+                <div class="col-sm-6 mb-3">
+                    <div class="fw-bolder">username</div>
+                    <input ng-model="iData.username" class="form-control" />
+                </div>
+            </div>
+            <div class="pt-3">
+                <div class="btn btn-secondary" ng-click="Create()">
+                    สร้าง
+                </div>
+                <div class="btn btn-link" data-bs-dismiss="offcanvas">
+                    ยกเลิก
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('EmpCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.page = 1
+        $scope.row = 10;
+
+        $scope.LoadInit = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'departmentCode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lDepartment = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'positionCode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lPosition = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadInit();
+
+        $scope.LoadData = function (page = 1) {
+            $scope.page = page;
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    page: $scope.page
+                    , row: $scope.row
+                    , firstname_th: $scope.firstname_th
+                    , positionCode: $scope.positionCode
+                    , departmentCode: $scope.departmentCode
+                    , employeeType: $scope.iStatus
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lData = result.data;
+                        $scope.total = result.total;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserSummary',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    firstname_th: $scope.firstname_th
+                    , positionCode: $scope.positionCode
+                    , departmentCode: $scope.departmentCode
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.sum_permanent = 0;
+                        $scope.sum_contract = 0;
+                        $scope.sum_none = 0;
+
+                        var find = result.find(x => x.status == 'Permanent');
+                        if (find) {
+                            $scope.sum_permanent = find.total;
+                        }
+                        find = result.find(x => x.status == 'Contract');
+                        if (find) {
+                            $scope.sum_contract = find.total;
+                        }
+                        find = result.find(x => x.status == 'None');
+                        if (find) {
+                            $scope.sum_none = find.total;
+                        }
+
+                        $scope.sum_all = $scope.sum_permanent
+                        + $scope.sum_contract
+                        + $scope.sum_none
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+        $scope.SelectStatus = function (status) {
+            $scope.iStatus = status;
+            $scope.LoadData();
+        }
+
+        $scope.New = function () {
+            $scope.iData = { username: '' };
+            $("#createOff").offcanvas('show');
+        }
+
+        $scope.Create = function () {
+            $scope.iData.create_by = '@User.UserId()';
+            $("#createOff").offcanvas('hide');
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/Create'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify($scope.iData)
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.LoadData($scope.page);
+                        window.open('@Url.Page("/Employee/Detail")/' + result.userId);
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+
+        $scope.Delete = function (x) {
+            alertConfirm('ยืนยันการทำรายการ', 'ท่านต้องการลบข้อมูลผู้ใช้งานนี้', function () {
+                x.update_by = '@User.UserId()';
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/User/Delete'
+                    , headers: { 'authorization': 'Bearer @token' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , cache: false
+                    , data: JSON.stringify({
+                        userId: x.userId
+                        , update_by: '@User.UserId()'
+                    })
+                    , success: function () {
+                        $timeout(function () {
+                            $scope.LoadData($scope.page);
+                        }, 0);
+                    }
+                    , error: AjaxError
+                });
+            });
+        }
+
+        $scope.Download = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    page: 1
+                    , row: 2000
+                    , firstname_th: $scope.firstname_th
+                    , positionCode: $scope.positionCode
+                    , departmentCode: $scope.departmentCode
+                    , employeeType: $scope.iStatus
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        var lData = result.data;
+
+                        if (lData.length > 0) {
+                            var JSData = [[
+                                { 'text': 'ชื่อ - สกุล' }
+                                , { 'text': 'Fullname' }
+                                , { 'text': 'ตำแหน่ง' }
+                                , { 'text': 'ฝ่ายงาน' }
+                                , { 'text': 'ประเภท' }
+                                , { 'text': 'อีเมล์' }
+                                , { 'text': 'เบอร์ติดต่อ' }
+                            ]];
+
+                            for (var i = 0; i < lData.length; i++) {
+                                var iData = lData[i];
+
+                                JSData.splice(JSData.length, 0, [
+                                    { 'text': (iData.firstname_th + ' ' + iData.lastname_th) }
+                                    , { 'text': (iData.firstname_en + ' ' + iData.lastname_en) }
+                                    , { 'text': iData.positionDesc }
+                                    , { 'text': iData.departmentDesc }
+                                    , { 'text': (iData.employeeType != '' ? iData.employeeType : 'ไม่ระบุ') }
+                                    , { 'text': iData.email }
+                                    , { 'text': iData.phoneNo }
+                                ]);
+                            }
+
+                            var dt = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+                            ExportFile(JSData, 'รายงานพนักงาน_' + dt);
+                        }
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+    });
+</script>

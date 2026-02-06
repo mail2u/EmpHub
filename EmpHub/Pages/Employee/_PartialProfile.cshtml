@@ -6,11 +6,12 @@
     }
 </style>
 <div ng-controller="ProfileCtrl">
-    <partial name="Employee/_PartialServicePersonal" />
     <div class="container">
-        <div class="row">
-            <div class="col-sm-9 pt-3">
-                <div class="">
+        <div class="d-md-flex gap-2">
+            <div class="flex-fill">
+                <div class="bg-white rounded-4 p-3 border shadow-sm container">
+                    @* Prosonal *@
+                    <partial name="Employee/_PartialServicePersonal" />
                     @* Employee *@
                     <partial name="Employee/_PartialServiceEmployee" />
                     @* Location *@
@@ -24,8 +25,8 @@
                 </div>
             </div>
             @* Summary *@
-            <div class="col-sm-3 ">
-                <div class="sticky-top pt-3" style="top:50px;">
+            <div class="" style="width:250px;">
+                <div style="top:50px;">
                     <partial name="Employee/_PartialProfileSummary" />
                 </div>
             </div>

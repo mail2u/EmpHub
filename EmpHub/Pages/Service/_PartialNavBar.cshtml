@@ -5,27 +5,27 @@
     <div class="flex-fill">
         <div class="d-flex align-items-end">
             <div class="me-2">
-                <small>เลขบริการ</small>
+                <small>Service No</small>
                 <div class="d-flex">
-                    <input class="form-control" ng-model="serviceNo" my-enter="LoadData()" />
+                    <input class="form-control form-control-sm" ng-model="serviceNo" my-enter="LoadData()" />
                 </div>
             </div>
             <div class="me-2">
-                <small>ความประสงค์</small>
+                <small>Category</small>
                 <div class="d-flex">
-                    <input class="form-control" ng-model="categoryDesc" my-enter="LoadData()" />
+                    <input class="form-control form-control-sm" ng-model="categoryDesc" my-enter="LoadData()" />
                 </div>
             </div>
             <div class="me-2">
-                <small>คำขอโดย</small>
+                <small>Request By</small>
                 <div class="d-flex">
-                    <input class="form-control" ng-model="createName" my-enter="LoadData()" />
+                    <input class="form-control form-control-sm" ng-model="createName" my-enter="LoadData()" />
                 </div>
             </div>
             <div class="me-2">
-                <small>วันที่ขอรับบริการ</small>
+                <small>Request Date</small>
                 <div class="d-flex">
-                    <input class="form-control icon-calendar date"
+                    <input class="form-control form-control-sm icon-calendar date"
                            ng-model="createDate"
                            ng-model-options="{ updateon: 'blur' }"
                            moment-picker="createDate"
@@ -37,9 +37,14 @@
                            my-enter="LoadData()" />
                 </div>
             </div>
-            <div>
-                <button ng-click="LoadData()" class="btn btn-light me-4">
+            <div class="me-2">
+                <button ng-click="LoadData()" class="btn btn-circle" title="Search">
                     <i class="fas fa-search"></i>
+                </button>
+            </div>
+            <div class="me-2">
+                <button ng-click="Download()" class="btn btn-circle" title="Download">
+                    <i class="fas fa-arrow-down"></i>
                 </button>
             </div>
             <div class="flex-fill">
@@ -48,13 +53,13 @@
         </div>
     </div>
     <div class="text-end d-flex flex-nowrap align-items-center">
-        <span class="d-none d-md-block">
+        <span class="d-none d-md-block me-2">
             {{ (total > 0 ? ((page - 1) * row) + 1 : 0) | number }} - {{ (page * row < total ? page * row : total) | number }} of {{ total | number }}
         </span>
-        <button class="btn btn-circle" ng-click="SetPage(page - 1)" ng-disabled="page <= 1">
+        <button class="btn btn-circle me-1" ng-click="SetPage(page - 1)" ng-disabled="page <= 1" title="Previous Page">
             <i class="fas fa-chevron-left"></i>
         </button>
-        <button class="btn btn-circle" ng-click="SetPage(page + 1)" ng-disabled="page * row >= total">
+        <button class="btn btn-circle" ng-click="SetPage(page + 1)" ng-disabled="page * row >= total" title="Next Page">
             <i class="fas fa-chevron-right"></i>
         </button>
     </div>

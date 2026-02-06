@@ -54,11 +54,53 @@ builder.Services.AddRazorPages(options =>
 //Policy
 builder.Services.AddAuthorization(options =>
 {
-    ////Admin
+    //Admin
     options.AddPolicy("Admin", policy =>
     {
         policy.RequireAuthenticatedUser();
         policy.RequireAssertion(context => (context.User.FindFirst(ClaimTypes.Authentication) != null ? context.User.FindFirst(ClaimTypes.Authentication).Value : "").ToLower().Contains("[admin]"));
+    });
+    //Authorization
+    options.AddPolicy("Authorization", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireAssertion(context => (context.User.FindFirst(ClaimTypes.Authentication) != null ? context.User.FindFirst(ClaimTypes.Authentication).Value : "").ToLower().Contains("[authorization]"));
+    });
+    //Admin
+    options.AddPolicy("Dashboard", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireAssertion(context => (context.User.FindFirst(ClaimTypes.Authentication) != null ? context.User.FindFirst(ClaimTypes.Authentication).Value : "").ToLower().Contains("[dashboard]"));
+    });
+    //Admin
+    options.AddPolicy("Employee", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireAssertion(context => (context.User.FindFirst(ClaimTypes.Authentication) != null ? context.User.FindFirst(ClaimTypes.Authentication).Value : "").ToLower().Contains("[employee]"));
+    });
+    //Admin
+    options.AddPolicy("HRService", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireAssertion(context => (context.User.FindFirst(ClaimTypes.Authentication) != null ? context.User.FindFirst(ClaimTypes.Authentication).Value : "").ToLower().Contains("[hrservice]"));
+    });
+    //Admin
+    options.AddPolicy("Organization", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireAssertion(context => (context.User.FindFirst(ClaimTypes.Authentication) != null ? context.User.FindFirst(ClaimTypes.Authentication).Value : "").ToLower().Contains("[organization]"));
+    });
+    //Admin
+    options.AddPolicy("Report", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireAssertion(context => (context.User.FindFirst(ClaimTypes.Authentication) != null ? context.User.FindFirst(ClaimTypes.Authentication).Value : "").ToLower().Contains("[report]"));
+    });
+    //Admin
+    options.AddPolicy("Setting", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireAssertion(context => (context.User.FindFirst(ClaimTypes.Authentication) != null ? context.User.FindFirst(ClaimTypes.Authentication).Value : "").ToLower().Contains("[setting]"));
     });
 });
 

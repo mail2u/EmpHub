@@ -47,33 +47,33 @@
 </style>
 @* Web View *@
 <div class="overflow-auto d-none d-lg-block">
-    <div style="height:calc(100vh - 280px);" class="position-relative">
+    <div style="height:calc(100vh - 410px);" class="position-relative">
         <table class="table table-tip">
             <thead>
                 <tr>
                     <th width="40"></th>
                     <th class="select" width="120" ng-click="SetSort('serviceNo')">
-                        เลขบริการ
+                        Service No
                         <i ng-show="sortBy.indexOf('serviceNo') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
                     </th>
                     <th class="select" ng-click="SetSort('categoryDesc')">
-                        มีความประสงค์
+                        Category
                         <i ng-show="sortBy.indexOf('categoryDesc') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
                     </th>
                     <th class="select" ng-click="SetSort('status')">
-                        สถานะ
+                        Status
                         <i ng-show="sortBy.indexOf('status') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
                     </th>
                     <th class="select" ng-click="SetSort('createBy')">
-                        คำขอโดย
+                        Request By
                         <i ng-show="sortBy.indexOf('createBy') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
                     </th>
                     <th class="select" ng-click="SetSort('orderDate1')">
-                        วันที่ขอรับบริการ
+                        Request Date
                         <i ng-show="sortBy.indexOf('orderDate1') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
                     </th>
                     <th class="select text-nowrap" ng-click="SetSort('orderDate2')">
-                        วันที่ดำเนินการ
+                        Action Date
                         <i ng-show="sortBy.indexOf('orderDate2') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
                     </th>
                 </tr>

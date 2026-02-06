@@ -6,12 +6,7 @@
 }
 <div ng-controller="ServiceEducationCtrl" id="tab_education">
     @* View *@
-    <div class="bg-white rounded-5 p-4 mb-3">
-        <div class="d-flex align-items-center mb-4" ng-click="EditStage('education')">
-            <div class="fw-bolder flex-fill text-secondary fs-5">
-                ข้อมูลการศึกษา
-            </div>
-        </div>
+    <div class="">
         <div ng-show="lData.length > 0">
             <div class="list-group list-group-flush">
                 <div class="list-group-item px-0" ng-repeat="x in lData">
@@ -20,30 +15,24 @@
                             <div class="text-gray">
                                 หลักสูตรหรือวุฒิการศึกษา
                             </div>
-                            <div class="fw-bolder">{{ x.levelName }}</div>
+                            <div class="text-dark fs-5">{{ x.levelName != '' ? x.levelName : '-' }}</div>
                         </div>
                         <div class="col-sm-4 mb-3">
                             <div class="text-gray">
                                 ปีที่สำเร็จการศึกษา
                             </div>
-                            <div class="fw-bolder">{{ x.year }}</div>
+                            <div class="text-dark fs-5">{{ x.year != '' ? x.year : '-' }}</div>
                         </div>
                         <div class="col-sm-12 mb-3">
                             <div class="text-gray">
                                 สถาบันการศึกษา
                             </div>
-                            <div class="fw-bolder">{{ x.institution }}</div>
-                        </div>
-                        <div class="col-sm-12 mb-3">
-                            <div class="text-gray">
-                                เพิ่มกิจกรรม เกียรตินิยม รางวัล หรือโครงการพิเศษที่ประสบความสำเร็จระหว่างการศึกษา
-                            </div>
-                            <div class="fw-bolder">{{ x.description }}</div>
+                            <div class="text-dark fs-5">{{ x.institution != '' ? x.institution : '-' }}</div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="pt-2 d-flex align-items-center">
+            @* <div class="pt-2 d-flex align-items-center">
                 <div class="btn btn-secondary-invert" ng-click="View()">
                     <i class="bi bi-pen"></i> แก้ไข
                 </div>
@@ -53,26 +42,19 @@
                         <i class="bi bi-x-circle"></i> ยกเลิก
                     </div>
                 </div>
-            </div>
+            </div> *@
         </div>
         <div ng-show="lData.length == 0">
-            <div class="row">
-                <div class="col-sm-12 mb-3 text-gray">
-                    เพิ่มประวัติการศึกษาของคุณ
-                </div>
-            </div>
-            <div class="pt-2 d-flex align-items-center">
-                <div class="btn btn-secondary-invert" ng-click="New()">
-                    <i class="bi bi-plus-lg"></i> เพิ่มข้อมูลการศึกษา
-                </div>
-            </div>
+            <a class="btn btn-light fw-bolder rounded-3 p-4" href="@Url.Page("/Service/Create")?cateCode=AddInfo&subCateCode=Education">
+                <i class="fas fa-plus me-2"></i> เพิ่มประวัติการศึกษาของคุณ
+            </a>
         </div>
     </div>
 
     @* Dialog *@
     <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="educationOff" aria-labelledby="offcanvasLabel" style="width:600px;">
         <div class="offcanvas-header">
-            <h5 class="offcanvas-title text-secondary fw-bolder" id="offcanvasLabel">ข้อมูลการศึกษา</h5>
+            <h5 class="offcanvas-title text-secondary text-dark fs-5" id="offcanvasLabel">ข้อมูลการศึกษา</h5>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
@@ -86,25 +68,25 @@
                             <div class="text-gray">
                                 หลักสูตรหรือวุฒิการศึกษา
                             </div>
-                            <div class="fw-bolder">{{ x.levelName }}</div>
+                            <div class="text-dark fs-5">{{ x.levelName }}</div>
                         </div>
                         <div class="col-sm-4 mb-3">
                             <div class="text-gray">
                                 ปีที่สำเร็จการศึกษา
                             </div>
-                            <div class="fw-bolder">{{ x.year }}</div>
+                            <div class="text-dark fs-5">{{ x.year }}</div>
                         </div>
                         <div class="col-sm-12 mb-3">
                             <div class="text-gray">
                                 สถาบันการศึกษา
                             </div>
-                            <div class="fw-bolder">{{ x.institution }}</div>
+                            <div class="text-dark fs-5">{{ x.institution }}</div>
                         </div>
                         <div class="col-sm-12 mb-3">
                             <div class="text-gray">
                                 เพิ่มกิจกรรม เกียรตินิยม รางวัล หรือโครงการพิเศษที่ประสบความสำเร็จระหว่างการศึกษา
                             </div>
-                            <div class="fw-bolder">{{ x.description }}</div>
+                            <div class="text-dark fs-5">{{ x.description }}</div>
                         </div>
                         <div class="col-sm-12">
                             <div class="btn btn-warning-invert" ng-click="Edit(x)">
@@ -125,21 +107,21 @@
 
     <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="educationOffEdit" aria-labelledby="offcanvasLabel" style="width:600px;">
         <div class="offcanvas-header">
-            <h5 class="offcanvas-title text-secondary fw-bolder" id="offcanvasLabel">ข้อมูลการศึกษา</h5>
+            <h5 class="offcanvas-title text-secondary text-dark fs-5" id="offcanvasLabel">ข้อมูลการศึกษา</h5>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
             <div class="row">
                 <div class="col-sm-12 mb-3">
-                    <div class="fw-bolder">หลักสูตรหรือวุฒิการศึกษา</div>
+                    <div class="text-dark fs-5">หลักสูตรหรือวุฒิการศึกษา</div>
                     <select ng-model="iEdit.levelCode" class="form-select" ng-options="x.code as x.desc_th for x in lEduction"></select>
                 </div>
                 <div class="col-sm-12 mb-3">
-                    <div class="fw-bolder">สถาบันการศึกษา</div>
+                    <div class="text-dark fs-5">สถาบันการศึกษา</div>
                     <input ng-model="iEdit.institution" class="form-control" maxlength="200" />
                 </div>
                 <div class="col-sm-6 mb-3">
-                    <div class="fw-bolder">ปีที่สำเร็จการศึกษา</div>
+                    <div class="text-dark fs-5">ปีที่สำเร็จการศึกษา</div>
                     <input ng-model="iEdit.year" class="form-control year" />
                 </div>
                 <div class="col-sm-12 mb-3">

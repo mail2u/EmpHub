@@ -5,7 +5,7 @@
     var token = User.AccessToken(Context);
 }
 <div ng-controller="ProfileSummaryCtrl">
-    <div class="bg-white rounded-4 p-4">
+    <div class="bg-white rounded-4 shadow-sm border p-4">
         <div class="fw-bolder mb-2">ความสมบูรณ์ของประวัติ</div>
         <div class="position-relative">
             <canvas id="chart_summary"></canvas>
@@ -44,7 +44,7 @@
                     aspectRatio: 1,
                     borderRadius: 5,
                     weight: 5,
-                    cutout: 85,
+                    cutout: 65,
                     plugins: {
                         legend: {
                             display: false
@@ -82,7 +82,7 @@
                             labels: ['Success', 'Wait'],
                             datasets: [{
                                 data: [totalHave, totalDiff],
-                                backgroundColor: ['#ff8900', 'rgb(222,222,222,0.2)'],
+                                backgroundColor: ['#0d6efd', 'rgb(222,222,222,0.2)'],
                                 borderWidth: 0
                             }],
                         };

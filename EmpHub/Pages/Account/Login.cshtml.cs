@@ -19,6 +19,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Collections.Generic;
 using System.DirectoryServices.AccountManagement;
+using static System.Net.Mime.MediaTypeNames;
+using System.Text.RegularExpressions;
 
 namespace EmpHub.Pages.Account
 {
@@ -62,6 +64,14 @@ namespace EmpHub.Pages.Account
             iUser.password = Request.Form["password"];
             iUser.ipaddress = HttpContext.Connection.RemoteIpAddress.ToString();
 
+            string pattern = @"^[a-zA-Z]+\.[a-zA-Z]{2}$";
+
+            if (Regex.IsMatch(iUser.username, pattern) == false)
+            {
+                errorMsg = "username pattern invalid.";
+                return Page();
+            }
+
             var returnUrl = Request.Form["ReturnUrl"];
 
             this.ReturnUrl = returnUrl;
@@ -96,6 +106,8 @@ namespace EmpHub.Pages.Account
                         {
                             new Claim(ClaimTypes.NameIdentifier, iUser.userId),
                             new Claim("profile", iUser.username),
+                            new Claim("position", iUser.positionDesc),
+                            new Claim("department", iUser.departmentDesc),
                             new Claim("given_name", String.Format("{0} {1}", iUser.firstname_th, iUser.lastname_th)),
                             new Claim(ClaimTypes.Authentication, iUser.role),
                         };
@@ -180,6 +192,7 @@ namespace EmpHub.Pages.Account
                         iUser.firstname_th = dataResponse.firstname_th;
                         iUser.lastname_th = dataResponse.lastname_th;
                         iUser.role = !String.IsNullOrEmpty(dataResponse.role) ? dataResponse.role : "-";
+                        iUser.positionDesc = !String.IsNullOrEmpty(dataResponse.positionDesc) ? dataResponse.positionDesc : "-";
                         iUser.departmentDesc = !String.IsNullOrEmpty(dataResponse.departmentDesc) ? dataResponse.departmentDesc : "-";
                     }
                     else

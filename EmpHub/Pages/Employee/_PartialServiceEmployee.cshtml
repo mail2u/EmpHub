@@ -6,71 +6,63 @@
 }
 <div ng-controller="ServiceEmployeeCtrl" id="tab_employee">
     @* View *@
-    <div class="bg-white rounded-5 p-4 mb-3 ">
-        <div class="d-flex align-items-center mb-4">
-            <div class="fw-bolder flex-fill text-secondary fs-5">
-                ข้อมูลพนักงาน
-            </div>
-        </div>
+    <div class=" position-relative">
         <div ng-show="iData.status != undefinded">
             <div class="row">
                 <div class="col-sm-4 mb-3">
                     <div class="text-gray">
                         รหัสพนักงาน
                     </div>
-                    <div class="fw-bolder ">{{ iData.employeeCode }}</div>
+                    <div class="text-dark fs-5 ">{{ iData.employeeCode != '' ? iData.employeeCode : '-' }}</div>
                 </div>
                 <div class="col-sm-4 mb-3">
                     <div class="text-gray">
                         ประเภท
                     </div>
-                    <div class="fw-bolder ">{{ iData.employeeDesc }}</div>
+                    <div class="text-dark fs-5 ">{{ iData.employeeDesc != '' ? iData.employeeDesc : '-' }}</div>
                 </div>
                 <div class="col-sm-4 mb-3">
                     <div class="text-gray">
                         วันที่เริ่มงาน
                     </div>
-                    <div class="fw-bolder ">{{ iData.join_date }}</div>
+                    <div class="text-dark fs-5 ">{{ iData.join_date != '' ? iData.join_date : '-' }}</div>
                 </div>
                 <div class="col-sm-4 mb-3">
                     <div class="text-gray">
                         ตำแหน่ง
                     </div>
-                    <div class="fw-bolder ">{{ iData.positionDesc }}</div>
+                    <div class="text-dark fs-5 ">{{ iData.positionDesc != '' ? iData.positionDesc : '-' }}</div>
                 </div>
                 <div class="col-sm-8 mb-3">
                     <div class="text-gray">
                         ฝ่าย/ส่วนงาน
                     </div>
-                    <div class="fw-bolder ">{{ iData.departmentDesc }}</div>
-                </div>
-                <div class="col-sm-4 mb-3">
-                    <div class="text-gray">
-                        อีเมล์บริษัท
-                    </div>
-                    <div class="fw-bolder ">{{ iData.email }}</div>
+                    <div class="text-dark fs-5 ">{{ iData.departmentDesc != '' ? iData.departmentDesc : '-' }}</div>
                 </div>
                 <div class="col-sm-8 mb-3">
                     <div class="text-gray">
+                        อีเมล์บริษัท
+                    </div>
+                    <div class="text-dark fs-5 ">{{ iData.email != '' ? iData.email : '-' }}</div>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-gray">
                         เบอร์ติดต่อภายใน
                     </div>
-                    <div class="fw-bolder">{{ iData.ext != '' ? iData.ext : '-' }}</div>
+                    <div class="text-dark fs-5">{{ iData.ext != '' ? iData.ext : '-' }}</div>
                 </div>
                 <div class="col-sm-12 mb-3">
                     <div class="text-gray">
                         หัวหน้างาน
                     </div>
                     <div>
-                        <div class="fw-bolder ">{{ iData.supervisorName }}</div>
+                        <div class="text-dark fs-5 ">{{ iData.supervisorName != '' ? iData.supervisorName : '-' }}</div>
                         <div>{{ iData.supervisorPosition }}</div>
                         <div>{{ iData.supervisorDepartment }}</div>
                     </div>
                 </div>
             </div>
-            <div class="pt-2 d-flex align-items-center">
-                <div class="btn btn-secondary-invert" ng-click="Edit()">
-                    <i class="bi bi-pen"></i> แก้ไข
-                </div>
+          @*   <div class="pt-2 d-flex align-items-center">
                 <div ng-show="iData.status == 'Pending'" class="ms-3 bg-gray rounded-3 d-flex p-2">
                     <div class="me-2 text-warning">รออนุมัติการปรับปรุงข้อมูล</div>
                     <div class="badge bg-danger select" ng-click="Cancel()">
@@ -78,6 +70,11 @@
                     </div>
                 </div>
             </div>
+            <div class="position-absolute top-0 end-0 m-2">
+                <div class="btn btn-light border-0" ng-click="Edit()">
+                    <i class="bi bi-pen"></i> แก้ไข
+                </div>
+            </div> *@
         </div>
         <div ng-show="iData.status == undefinded">
             <div class="row">
@@ -95,21 +92,21 @@
     @* Dialog *@
     <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="employeeOff" aria-labelledby="offcanvasLabel" style="width:600px;">
         <div class="offcanvas-header">
-            <h5 class="offcanvas-title text-secondary fw-bolder" id="offcanvasLabel">ข้อมูลพนักงาน</h5>
+            <h5 class="offcanvas-title text-secondary text-dark fs-5" id="offcanvasLabel">ข้อมูลพนักงาน</h5>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
             <div class="row">
                 <div class="col-sm-4 mb-3">
-                    <div class="fw-bolder">รหัสพนักงาน</div>
+                    <div class="text-dark fs-5">รหัสพนักงาน</div>
                     <input ng-model="iEdit.employeeCode" class="form-control" maxlength="6" />
                 </div>
                 <div class="col-sm-4 mb-3">
-                    <div class="fw-bolder">ประเภท</div>
+                    <div class="text-dark fs-5">ประเภท</div>
                     <select ng-model="iEdit.employeeType" class="form-select" ng-options="x.code as x.desc_th for x in lEmployeeType"></select>
                 </div>
                 <div class="col-sm-4 mb-3">
-                    <div class="fw-bolder">วันที่เริ่มงาน</div>
+                    <div class="text-dark fs-5">วันที่เริ่มงาน</div>
                     <input class="form-control icon-calendar date"
                            ng-model="iEdit.join_date_select"
                            ng-model-options="{ updateOn: 'blur' }"
@@ -120,23 +117,23 @@
                            max-view="month" required />
                 </div>
                 <div class="col-sm-12 mb-3">
-                    <div class="fw-bolder">ตำแหน่ง</div>
+                    <div class="text-dark fs-5">ตำแหน่ง</div>
                     <select ng-model="iEdit.positionCode" class="form-select" ng-options="x.code as x.desc_th + ' (' + x.desc_en + ')' for x in lPosition"></select>
                 </div>
                 <div class="col-sm-12 mb-3">
-                    <div class="fw-bolder">ฝ่าย/ส่วนงาน</div>
+                    <div class="text-dark fs-5">ฝ่าย/ส่วนงาน</div>
                     <select ng-model="iEdit.departmentCode" class="form-select" ng-options="x.code as x.desc_th + ' (' + x.desc_en + ')' for x in lDepartment"></select>
                 </div>
                 <div class="col-sm-6 mb-3">
-                    <div class="fw-bolder">อีเมล์</div>
+                    <div class="text-dark fs-5">อีเมล์</div>
                     <input ng-model="iEdit.email" class="form-control" />
                 </div>
                 <div class="col-sm-6 mb-3">
-                    <div class="fw-bolder">เบอร์ติดต่อภายใน</div>
+                    <div class="text-dark fs-5">เบอร์ติดต่อภายใน</div>
                     <input ng-model="iEdit.ext" class="form-control ext" maxlength="10" />
                 </div>
                 <div class="col-sm-12 mb-3">
-                    <div class="fw-bolder">หัวหน้งาน</div>
+                    <div class="text-dark fs-5">หัวหน้งาน</div>
                     <input ng-model="iEdit.supervisorName" class="form-select bg-light-blue" data-bs-toggle="modal" data-bs-target="#supervisorModal" readonly />
                 </div>
             </div>
@@ -162,10 +159,10 @@
                             <div class="list-group list-group-flush overflow-auto" style="max-height: 400px;">
                                 <div class="list-group-item list-group-item-action d-flex align-items-center justify-content-between" ng-repeat="x in lEmployee | filter : filter_name">
                                     <div>
-                                        <div class="fw-bolder text-secondary">
+                                        <div class="text-dark fs-5 text-secondary">
                                             {{ x.firstname_th + ' ' + x.lastname_th }} <span ng-show="x.nickname != ''">({{ x.nickname }})</span>
                                         </div>
-                                        <div class="fw-bolder text-secondary">
+                                        <div class="text-dark fs-5 text-secondary">
                                             {{ x.firstname + ' ' + x.lastname }}
                                         </div>
                                         <small class="text-dark">

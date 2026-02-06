@@ -6,50 +6,50 @@
 }
 <div ng-controller="ServiceTraningCtrl" id="tab_traning">
     @* View *@
-    <div class="bg-white rounded-5 p-4 mb-3">
-        <div class="d-flex align-items-center mb-4" ng-click="EditStage('education')">
-            <div class="fw-bolder flex-fill text-secondary fs-5">
+    <div class="">
+      @*   <div class="d-flex align-items-center mb-4" ng-click="EditStage('education')">
+            <div class="text-dark fs-5 flex-fill text-secondary fs-5">
                 ใบอนุญาตหรือประกาศนียบัตร
             </div>
-        </div>
+        </div> *@
         <div ng-show="lData.length > 0">
             <div class="list-group list-group-flush">
                 <div class="list-group-item px-0" ng-repeat="x in lData">
-                    <div class="row ">
-                        <div class="col-sm-8 mb-3">
+                    <div class="d-flex mb-3">
+                        <div class="flex-fill me-3">
                             <div class="text-gray">
                                 ชื่อใบอนุญาต
                             </div>
-                            <div class="fw-bolder">{{ x.license }}</div>
+                            <div class="text-dark fs-5">{{ x.license != '' ? x.license : '-' }}</div>
                         </div>
-                        <div class="col-sm-2 mb-3">
+                        <div class="me-3">
                             <div class="text-gray">
                                 วันที่ออกเอกสาร
                             </div>
-                            <div class="fw-bolder">{{ x.issueDate }}</div>
+                            <div class="text-dark fs-5">{{ x.issueDate != '' ? x.issueDate : '-' }}</div>
                         </div>
-                        <div class="col-sm-2 mb-3">
+                        <div class="">
                             <div class="text-gray">
                                 วันหมดอายุ
                             </div>
-                            <div class="fw-bolder">{{ x.expireDate }}</div>
+                            <div class="text-dark fs-5">{{ x.expireDate != '' ? x.expireDate : '-' }}</div>
                         </div>
-                        <div class="col-sm-12 mb-3">
-                            <div class="text-gray">
-                                องค์กรที่ออกเอกสาร
-                            </div>
-                            <div class="fw-bolder">{{ x.organization }}</div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="text-gray">
+                            องค์กรที่ออกเอกสาร
                         </div>
-                        <div class="col-sm-12 mb-3">
-                            <div class="text-gray">
-                                รายละเอียด
-                            </div>
-                            <div class="fw-bolder">{{ x.description }}</div>
+                        <div class="text-dark fs-5">{{ x.organization != '' ? x.organization : '-' }}</div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="text-gray">
+                            รายละเอียด
                         </div>
+                        <div class="text-dark fs-5">{{ x.description != '' ? x.description : '-' }}</div>
                     </div>
                 </div>
             </div>
-            <div class="pt-2 d-flex align-items-center">
+           @*  <div class="pt-2 d-flex align-items-center">
                 <div class="btn btn-secondary-invert" ng-click="View()">
                     <i class="bi bi-pen"></i> แก้ไข
                 </div>
@@ -59,10 +59,13 @@
                         <i class="bi bi-x-circle"></i> ยกเลิก
                     </div>
                 </div>
-            </div>
+            </div> *@
         </div>
         <div ng-show="lData.length == 0">
-            <div class="row">
+            <a class="btn btn-light fw-bolder rounded-3 p-4" href="@Url.Page("/Service/Create")?cateCode=AddInfo&subCateCode=Education">
+                <i class="fas fa-plus me-2"></i> เพิ่มใบอนุญาตหรือประกาศนียบัตร
+            </a>
+            @* <div class="row">
                 <div class="col-sm-12 mb-3 text-gray">
                     แสดงข้อมูลที่เกี่ยวข้อง เพิ่มใบอนุญาต ประกาศนียบัตร การเป็นสมาชิกและใบรับรองที่เกี่ยวข้องกับงานที่นี่
                 </div>
@@ -71,13 +74,13 @@
                 <div class="btn btn-secondary-invert" ng-click="New()">
                     <i class="bi bi-plus-lg"></i> เพิ่มใบอนุญาตหรือประกาศนียบัตร
                 </div>
-            </div>
-        </div>
+            </div>*@
+        </div> 
     </div>
     @* Dialog *@
     <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="traningOff" aria-labelledby="offcanvasLabel" style="width:600px;">
         <div class="offcanvas-header">
-            <h5 class="offcanvas-title text-secondary fw-bolder" id="offcanvasLabel">ใบอนุญาตหรือประกาศนียบัตร</h5>
+            <h5 class="offcanvas-title text-secondary text-dark fs-5" id="offcanvasLabel">ใบอนุญาตหรือประกาศนียบัตร</h5>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
@@ -91,31 +94,31 @@
                             <div class="text-gray">
                                 ชื่อใบอนุญาต
                             </div>
-                            <div class="fw-bolder">{{ x.license }}</div>
+                            <div class="text-dark fs-5">{{ x.license }}</div>
                         </div>
                         <div class="col-sm-2 mb-3">
                             <div class="text-gray">
                                 วันที่ออกเอกสาร
                             </div>
-                            <div class="fw-bolder">{{ x.issueDate }}</div>
+                            <div class="text-dark fs-5">{{ x.issueDate }}</div>
                         </div>
                         <div class="col-sm-2 mb-3">
                             <div class="text-gray">
                                 วันหมดอายุ
                             </div>
-                            <div class="fw-bolder">{{ x.expireDate }}</div>
+                            <div class="text-dark fs-5">{{ x.expireDate }}</div>
                         </div>
                         <div class="col-sm-12 mb-3">
                             <div class="text-gray">
                                 องค์กรที่ออกเอกสาร
                             </div>
-                            <div class="fw-bolder">{{ x.organization }}</div>
+                            <div class="text-dark fs-5">{{ x.organization }}</div>
                         </div>
                         <div class="col-sm-12 mb-3">
                             <div class="text-gray">
                                 รายละเอียด
                             </div>
-                            <div class="fw-bolder">{{ x.description }}</div>
+                            <div class="text-dark fs-5">{{ x.description }}</div>
                         </div>
                         <div class="col-sm-12">
                             <div class="btn btn-warning-invert" ng-click="Edit(x)">
@@ -136,21 +139,21 @@
 
     <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="traningOffEdit" aria-labelledby="offcanvasLabel" style="width:600px;">
         <div class="offcanvas-header">
-            <h5 class="offcanvas-title text-secondary fw-bolder" id="offcanvasLabel">ใบอนุญาตหรือประกาศนียบัตร</h5>
+            <h5 class="offcanvas-title text-secondary text-dark fs-5" id="offcanvasLabel">ใบอนุญาตหรือประกาศนียบัตร</h5>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
             <div class="row">
                 <div class="col-sm-12 mb-3">
-                    <div class="fw-bolder">ชื่อใบอนุญาต</div>
+                    <div class="text-dark fs-5">ชื่อใบอนุญาต</div>
                     <input ng-model="iEdit.license" class="form-control" />
                 </div>
                 <div class="col-sm-12 mb-3">
-                    <div class="fw-bolder">องค์กรที่ออกเอกสาร</div>
+                    <div class="text-dark fs-5">องค์กรที่ออกเอกสาร</div>
                     <input ng-model="iEdit.organization" class="form-control" />
                 </div>
                 <div class="col-sm-6 mb-3">
-                    <div class="fw-bolder">วันที่ออกเอกสาร</div>
+                    <div class="text-dark fs-5">วันที่ออกเอกสาร</div>
                     <input class="form-control icon-calendar target"
                            ng-model="iEdit.issue_date_select"
                            ng-model-options="{ updateOn: 'blur' }"
@@ -161,7 +164,7 @@
                            max-view="month" required />
                 </div>
                 <div class="col-sm-6 mb-3">
-                    <div class="fw-bolder">วันที่หมดอายุ</div>
+                    <div class="text-dark fs-5">วันที่หมดอายุ</div>
                     <input class="form-control icon-calendar target"
                            ng-model="iEdit.expire_date_select"
                            ng-model-options="{ updateOn: 'blur' }"
@@ -172,7 +175,7 @@
                            max-view="month" required />
                 </div>
                 <div class="col-sm-12 mb-3">
-                    <div class="fw-bolder">รายละเอียด</div>
+                    <div class="text-dark fs-5">รายละเอียด</div>
                     <textarea ng-model="iEdit.description" class="form-control" rows="5" maxlength="4000"></textarea>
                 </div>
             </div>

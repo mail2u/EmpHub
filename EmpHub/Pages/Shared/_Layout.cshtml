@@ -1,10 +1,11 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="en" translate="no" class="">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HRM</title>
-    <link rel="shortcut icon" href="~/partners.ico" type="image/x-icon" />
+    <meta name="google" content="notranslate">
+    <title>Core HR</title>
+    <link rel="shortcut icon" href="~/icon-logo-pros.ico" type="image/x-icon" />
     @* <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
     <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
@@ -18,14 +19,16 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"> *@
-    <link rel="manifest" href="/manifest.json">
+    @*    <link rel="manifest" href="/manifest.json"> *@
     <meta name="msapplication-TileColor" content="#ffffff">
     @*    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png"> *@
     <meta name="theme-color" content="#ffffff">
     <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap-icon.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap-utilities.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @*  <link rel="stylesheet" href="~/css/sidebar.css" asp-append-version="true" /> *@
     <link rel="stylesheet" href="~/lib/angular-moment-picker/angular-moment-picker.css" />
     <link rel="stylesheet" href="~/lib/angular-datetime-picker/angular-datetime-picker.css" />
     <script src="~/js/site.js" asp-append-version="true"></script>
@@ -34,10 +37,11 @@
     <script src="~/js/xlsx.core.js"></script>
     <script src="~/js/moment.js"></script>
     <script src="~/js/charjs.js"></script>
-    <script src="~/js/sweetalert.js"></script>
+  @*   <script src="~/js/sweetalert.js"></script> *@
+    @*  <script src="~/js/papaparse.js"></script> *@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/jquery/dist/jquery-ui.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+   @*  <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script> *@
     <script src="~/lib/angular.js/angular.min.js"></script>
     <script src="~/lib/angular-sortable/sortable.js"></script>
     <script src="~/lib/angular-base64/angular-base64.js"></script>
@@ -45,8 +49,17 @@
     <script src="~/lib/angular-datetime-picker/angular-datetime-picker.js"></script>
     <script src="~/lib/angular-sanitize/angular-sanitize.js"></script>
     <script src="~/lib/jquery-mask/jquery.mask.min.js"></script>
+
+    <!--! BEGIN: Vendors CSS-->
+    <link rel="stylesheet" type="text/css" href="~/assets/vendors/css/vendors.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/assets/vendors/css/daterangepicker.min.css" />
+    <!--! END: Vendors CSS-->
+    <!--! BEGIN: Custom CSS-->
+    <link rel="stylesheet" type="text/css" href="~/assets/css/theme.min.css" />
+    <!--! END: Custom CSS-->
+
 </head>
-<body ng-app="myApp" ng-controller="myCtrl" ng-cloak>
+<body ng-app="myApp" ng-controller="myCtrl" ng-cloak class="notranslate">
     <script>
         var app = angular.module('myApp', ['moment-picker', 'angularjs-datetime-picker', 'naif.base64', 'ngSanitize', 'ui.sortable']);
     </script>
@@ -55,147 +68,692 @@
             height: 100%;
             padding: 0;
             margin: 0;
-            background-color: var(--light-orange);
-        }
-
-        .bg-bar {
-            background-color: var(--bs-white);
-        }
-
-        .box-app {
-            color: var(--dark-gray);
-            width: 90px;
-            text-align: center;
-        }
-
-        .box-app:hover {
-            border-radius: 15px;
-            background-color: var(--light-blue);
-            cursor: pointer;
-        }
-
-        .btn-menu {
-            padding: 5px 5px 5px 5px;
-            margin: 0px 10px;
-            text-decoration: none;
-        }
-
-        .btn-menu {
-            color: var(--tip-blue);
-        }
-
-        .btn-menu.active {
-            color: var(--orange);
-            font-weight: bolder;
-        }
-
-        .btn-menu:hover {
-            color: var(--orange);
-        }
-
-        .btn-menu:after {
-            display: block;
-            content: '';
-            border-bottom: solid 2px var(--orange);
-            font-weight: bolder;
-            transform: scaleX(0);
-            transition: transform 250ms ease-in-out;
-        }
-
-        .btn-menu:hover:after, .btn-menu.active:after {
-            transform: scaleX(1);
+            background-color: #f9fafb;
         }
     </style>
-    <div class="p-2 container-fluid h-100">
-        @* Header *@
-        <div class="d-flex align-items-center p-3 mb-2 sticky-top bg-light-orange">
-            <div class="d-flex align-items-center">
-                <a href='@Url.Page("/Index")' class="flex-fill d-flex text-decoration-none text-dark me-2">
-                    <div>
-                        <img src="~/Images/partners.png" height="30px;" class="me-3" />
-                    </div>
-                    <div class="fs-4">
-                        HRM
-                    </div>
+    <!--! ================================================================ !-->
+    <!--! [Start] Navigation Manu !-->
+    <!--! ================================================================ !-->
+    <nav class="nxl-navigation">
+        <div class="navbar-wrapper">
+            <div class="m-header">
+                <a href="index.html" class="b-brand">
+                    <!-- ========   change your logo hear   ============ -->
+                    <span class="logo logo-lg fs-4">
+                        <img src="~/Images/icon-TIP.png" height="43" /> Core HR
+                    </span>
+                    <img src="~/Images/icon-TIP.png" alt="" class="logo logo-sm" />
                 </a>
-                <div class="d-flex">
-                    @if (User.Authen().ToLower().Contains("[admin]"))
-                    {
-                        <a href='@Url.Page("/Dashboard/Index")' class="btn-menu @Html.IsSelected("/Dashboard/Index")" title="Dashboard">
-                            <i class="bi bi-bar-chart"></i>
-                            <span class="sb-label">Dashboard</span>
+            </div>
+            <div class="navbar-content">
+                <ul class="nxl-navbar">
+                    <li class="nxl-item nxl-caption">
+                        <label>Navigation</label>
+                    </li>
+                    <li class="nxl-item nxl-hasmenu">
+                        <a href="javascript:void(0);" class="nxl-link">
+                            <span class="nxl-micon"><i class="feather-airplay"></i></span>
+                            <span class="nxl-mtext">Dashboards</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                         </a>
-                    }
-                    @*  <a href='@Url.Page("/Calendar/Index")' class="btn-menu @Html.IsSelected("/Calendar")" title="Calendar">
-                        ปฏิทินบริษัท
-                    </a> *@
-                   @*  <a href='@Url.Page("/Structure/Index")' class="btn-menu @Html.IsSelected("/Structure/Index")" title="Structure">
-                        โครงสร้างองค์กร
-                    </a> *@
-                    <a href='@Url.Page("/Service/Index")' class="btn-menu @Html.IsSelected("/Service/Index")" title="รายการคำขอ">
-                        <i class="bi bi-envelope-paper"></i> รายการคำขอ
+                        <ul class="nxl-submenu">
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Dashboard/CRM")">CRM</a></li>
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Dashboard/Analytics")">Analytics</a></li>
+                        </ul>
+                    </li>
+                    <li class="nxl-item nxl-hasmenu">
+                        <a href="javascript:void(0);" class="nxl-link">
+                            <span class="nxl-micon"><i class="fas fa-sitemap"></i></span>
+                            <span class="nxl-mtext">Organization</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                        </a>
+                        <ul class="nxl-submenu">
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Organization/Index")">Company</a></li>
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Organization/Structure")">Structure</a></li>
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Organization/Team")">Team</a></li>
+                        </ul>
+                    </li>
+                    @*   <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                    <span class="nxl-micon"><i class="feather-send"></i></span>
+                    <span class="nxl-mtext">Applications</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                     </a>
-                    @if (User.Authen().ToLower().Contains("[admin]"))
-                    {
-                        <a href='@Url.Page("/Service/Approve")' class="btn-menu @Html.IsSelected("/Service/Approve")" title="กล่องคำขอ">
-                            <i class="bi bi-mailbox-flag"></i> กล่องคำขอ
+                    <ul class="nxl-submenu">
+                    <li class="nxl-item"><a class="nxl-link" href="apps-chat.html">Chat</a></li>
+                    <li class="nxl-item"><a class="nxl-link" href="apps-email.html">Email</a></li>
+                    <li class="nxl-item"><a class="nxl-link" href="apps-tasks.html">Tasks</a></li>
+                    <li class="nxl-item"><a class="nxl-link" href="apps-notes.html">Notes</a></li>
+                    <li class="nxl-item"><a class="nxl-link" href="apps-storage.html">Storage</a></li>
+                    <li class="nxl-item"><a class="nxl-link" href="apps-calendar.html">Calendar</a></li>
+                    </ul>
+                    </li> *@
+                    @* <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                    <span class="nxl-micon"><i class="fas fa-scroll"></i></span>
+                    <span class="nxl-mtext">Document</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+                    <ul class="nxl-submenu">
+                    <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Document/Announcements")">Announcements</a></li>
+                    <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Document/Policys")">Company Policy</a></li>
+                    </ul>
+                    </li> *@
+                    <li class="nxl-item nxl-hasmenu">
+                        <a href="javascript:void(0);" class="nxl-link">
+                            <span class="nxl-micon"><i class="fas fa-at"></i></span>
+                            <span class="nxl-mtext">HR Service</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                         </a>
-                        <a href='@Url.Page("/Employee/Index")' class="btn-menu @Html.IsSelected("/Employee/Index")" title="พนักงาน">
-                            <i class="bi bi-people"></i> พนักงาน
+                        <ul class="nxl-submenu">
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/Index")">My Request</a></li>
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/Approve")">Approve</a></li>
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/Work")">Work</a></li>
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/Inquire")">Inquire</a></li>
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/Category")">Category</a></li>
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/Process")">Process</a></li>
+                        </ul>
+                    </li>
+                    <li class="nxl-item nxl-hasmenu">
+                        <a href="javascript:void(0);" class="nxl-link">
+                            <span class="nxl-micon"><i class="feather-users"></i></span>
+                            <span class="nxl-mtext">Employees</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                         </a>
-                        <a href='@Url.Page("/Admin/InRole")' class="btn-menu @Html.IsSelected("/Admin/InRole")" title="สิทธิ์การใช้งาน">
-                            <i class="bi bi-shield-check"></i> สิทธิ์การใช้งาน
+                        <ul class="nxl-submenu">
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Employee/Index")">All Employee</a></li>
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Onboarding/Index")">Onboarding</a></li>
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Offboarding/Index")">Offboarding</a></li>
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/EmpManage/Index")">Management</a></li>
+                        </ul>
+                    </li>
+                    <li class="nxl-item nxl-hasmenu">
+                        <a href="javascript:void(0);" class="nxl-link">
+                            <span class="nxl-micon"><i class="feather-cast"></i></span>
+                            <span class="nxl-mtext">Reports</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                         </a>
-                        <a href='@Url.Page("/Admin/Master")' class="btn-menu @Html.IsSelected("/Admin/Master")" title="ตั้งค่าระบบ">
-                            <i class="bi bi-gear"></i> ตั้งค่าระบบ
+                        <ul class="nxl-submenu">
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Report/Traning")">Traning Report</a></li>
+                        </ul>
+                    </li>
+                    @*  <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                    <span class="nxl-micon"><i class="feather-alert-circle"></i></span>
+                    <span class="nxl-mtext">Leads</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+                    <ul class="nxl-submenu">
+                    <li class="nxl-item"><a class="nxl-link" href="leads.html">Leads</a></li>
+                    <li class="nxl-item"><a class="nxl-link" href="leads-view.html">Leads View</a></li>
+                    <li class="nxl-item"><a class="nxl-link" href="leads-create.html">Leads Create</a></li>
+                    </ul>
+                    </li> *@
+                    @* <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                    <span class="nxl-micon"><i class="feather-briefcase"></i></span>
+                    <span class="nxl-mtext">Projects</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+                    <ul class="nxl-submenu">
+                    <li class="nxl-item"><a class="nxl-link" href="projects.html">Projects</a></li>
+                    <li class="nxl-item"><a class="nxl-link" href="projects-view.html">Projects View</a></li>
+                    <li class="nxl-item"><a class="nxl-link" href="projects-create.html">Projects Create</a></li>
+                    </ul>
+                    </li> *@
+                    <li class="nxl-item nxl-hasmenu">
+                        <a href="javascript:void(0);" class="nxl-link">
+                            <span class="nxl-micon"><i class="fas fa-shield-alt"></i></span>
+                            <span class="nxl-mtext">Authorization</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                         </a>
-                    }
+                        <ul class="nxl-submenu">
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Authorization/Role")">Role Function</a></li>
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Authorization/UserAuthen")">User Authen</a></li>
+                        </ul>
+                    </li>
+                    <li class="nxl-item nxl-hasmenu">
+                        <a href="javascript:void(0);" class="nxl-link">
+                            <span class="nxl-micon"><i class="feather-settings"></i></span>
+                            <span class="nxl-mtext">Settings</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                        </a>
+                        <ul class="nxl-submenu">
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Setting/General")">General</a></li>
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Setting/Department")">Department</a></li>
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Setting/Position")">Position</a></li>
+                        </ul>
+                    </li>
+                    @*  <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                    <span class="nxl-micon"><i class="feather-power"></i></span>
+                    <span class="nxl-mtext">Authentication</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+                    <ul class="nxl-submenu">
+                    <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                    <span class="nxl-mtext">Login</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+                    <ul class="nxl-submenu">
+                    <li class="nxl-item"><a class="nxl-link" href="./auth-login-cover.html">Cover</a></li>
+                    <li class="nxl-item"><a class="nxl-link" href="./auth-login-minimal.html">Minimal</a></li>
+                    <li class="nxl-item"><a class="nxl-link" href="./auth-login-creative.html">Creative</a></li>
+                    </ul>
+                    </li>
+                    <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                    <span class="nxl-mtext">Register</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+                    <ul class="nxl-submenu">
+                    <li class="nxl-item"><a class="nxl-link" href="./auth-register-cover.html">Cover</a></li>
+                    <li class="nxl-item"><a class="nxl-link" href="./auth-register-minimal.html">Minimal</a></li>
+                    <li class="nxl-item"><a class="nxl-link" href="./auth-register-creative.html">Creative</a></li>
+                    </ul>
+                    </li>
+                    <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                    <span class="nxl-mtext">Error-404</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+                    <ul class="nxl-submenu">
+                    <li class="nxl-item"><a class="nxl-link" href="./auth-404-cover.html">Cover</a></li>
+                    <li class="nxl-item"><a class="nxl-link" href="./auth-404-minimal.html">Minimal</a></li>
+                    <li class="nxl-item"><a class="nxl-link" href="./auth-404-creative.html">Creative</a></li>
+                    </ul>
+                    </li>
+                    <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                    <span class="nxl-mtext">Reset Pass</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+                    <ul class="nxl-submenu">
+                    <li class="nxl-item"><a class="nxl-link" href="./auth-reset-cover.html">Cover</a></li>
+                    <li class="nxl-item"><a class="nxl-link" href="./auth-reset-minimal.html">Minimal</a></li>
+                    <li class="nxl-item"><a class="nxl-link" href="./auth-reset-creative.html">Creative</a></li>
+                    </ul>
+                    </li>
+                    <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                    <span class="nxl-mtext">Verify OTP</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+                    <ul class="nxl-submenu">
+                    <li class="nxl-item"><a class="nxl-link" href="./auth-verify-cover.html">Cover</a></li>
+                    <li class="nxl-item"><a class="nxl-link" href="./auth-verify-minimal.html">Minimal</a></li>
+                    <li class="nxl-item"><a class="nxl-link" href="./auth-verify-creative.html">Creative</a></li>
+                    </ul>
+                    </li>
+                    <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                    <span class="nxl-mtext">Maintenance</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+                    <ul class="nxl-submenu">
+                    <li class="nxl-item"><a class="nxl-link" href="./auth-maintenance-cover.html">Cover</a></li>
+                    <li class="nxl-item"><a class="nxl-link" href="./auth-maintenance-minimal.html">Minimal</a></li>
+                    <li class="nxl-item"><a class="nxl-link" href="./auth-maintenance-creative.html">Creative</a></li>
+                    </ul>
+                    </li>
+                    </ul>
+                    </li> *@
+                    @* <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                    <span class="nxl-micon"><i class="feather-life-buoy"></i></span>
+                    <span class="nxl-mtext">Help Center</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+                    <ul class="nxl-submenu">
+                    <li class="nxl-item"><a class="nxl-link" href="#!">Support</a></li>
+                    <li class="nxl-item"><a class="nxl-link" href="help-knowledgebase.html">KnowledgeBase</a></li>
+                    <li class="nxl-item"><a class="nxl-link" href="/docs/documentations">Documentations</a></li>
+                    </ul>
+                    </li> *@
+                </ul>
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="feather-sunrise fs-4 text-dark"></i>
+                        <h6 class="mt-4 text-dark fw-bolder">Core HR</h6>
+                        <p class="fs-11 my-3 text-dark">เป็นระบบศูนย์กลางในการบริหารจัดการข้อมูลทรัพยากรบุคคลขององค์กร โดยทำหน้าที่รวบรวม จัดเก็บ และบริหารข้อมูลพนักงานตั้งแต่เริ่มเข้าทำงาน ระหว่างการทำงาน จนถึงการสิ้นสุดการจ้างงาน เพื่อให้ข้อมูลมีความถูกต้อง เป็นปัจจุบัน และสามารถนำไปใช้ร่วมกับระบบอื่นได้อย่างมีประสิทธิภาพ</p>
+                    </div>
                 </div>
             </div>
-            <div class="flex-fill text-end me-3 fw-bolder text-secondary">
-                @User.UserName()
-                @* {{ today.toLocaleString() }} *@
-            </div>
-            <div>
-               @*  <a href="#" class="btn px-2 py-1 text-gray" title="Calendar">
-                    <i class="bi bi-calendar4-week"></i>
-                </a>
-                <a href="#" class="btn px-2 py-1 text-gray" title="Request">
-                    <i class="bi bi-chat-text"></i>
-                </a>
-                <a href="#" class="btn px-2 py-1 text-gray" title="Notify">
-                    <i class="bi bi-bell"></i>
-                </a> *@
-                @* Logout *@
-                <a href='@Url.Page("/Account/logout")' class="btn text-blue px-2 py-1" title="Logout">
-                    <i class="bi bi-box-arrow-right"></i>
-                </a>
-            </div>
         </div>
-        <div class="container-fluid">
-            @* Main *@
-            <div class="p-2 ps-4 bg-main">
+    </nav>
+    <!--! ================================================================ !-->
+    <!--! [End]  Navigation Manu !-->
+    <!--! ================================================================ !-->
+    <!--! ================================================================ !-->
+    <!--! [Start] Header !-->
+    <!--! ================================================================ !-->
+    <header class="nxl-header">
+        <div class="header-wrapper">
+            <!--! [Start] Header Left !-->
+            <div class="header-left d-flex align-items-center gap-4">
+                <!--! [Start] nxl-head-mobile-toggler !-->
+                <a href="javascript:void(0);" class="nxl-head-mobile-toggler" id="mobile-collapse">
+                    <div class="hamburger hamburger--arrowturn">
+                        <div class="hamburger-box">
+                            <div class="hamburger-inner"></div>
+                        </div>
+                    </div>
+                </a>
+                <!--! [Start] nxl-head-mobile-toggler !-->
+                <!--! [Start] nxl-navigation-toggle !-->
+                <div class="nxl-navigation-toggle">
+                    <a href="javascript:void(0);" id="menu-mini-button">
+                        <i class="feather-align-left"></i>
+                    </a>
+                    <a href="javascript:void(0);" id="menu-expend-button" style="display: none">
+                        <i class="feather-arrow-right"></i>
+                    </a>
+                </div>
+                <!--! [End] nxl-navigation-toggle !-->
+                <!--! [Start] nxl-lavel-mega-menu-toggle !-->
+                <div class="nxl-lavel-mega-menu-toggle d-flex d-lg-none">
+                    <a href="javascript:void(0);" id="nxl-lavel-mega-menu-open">
+                        <i class="feather-align-left"></i>
+                    </a>
+                </div>
+                <!--! [End] nxl-lavel-mega-menu-toggle !-->
+            </div>
+            <!--! [End] Header Left !-->
+            <!--! [Start] Header Right !-->
+            <div class="header-right ms-auto">
+                <div class="d-flex align-items-center">
+                    @*  <div class="dropdown nxl-h-item nxl-header-language d-none d-sm-flex">
+                    <a href="javascript:void(0);" class="nxl-head-link me-0 nxl-language-link" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                    <img src="~/assets/vendors/img/flags/4x3/us.svg" alt="" class="img-fluid wd-20" />
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end nxl-h-dropdown nxl-language-dropdown">
+                    <div class="dropdown-divider mt-0"></div>
+                    <div class="language-items-wrapper">
+                    <div class="select-language px-4 py-2 hstack justify-content-between gap-4">
+                    <div class="lh-lg">
+                    <h6 class="mb-0">Select Language</h6>
+                    <p class="fs-11 text-muted mb-0">12 languages avaiable!</p>
+                    </div>
+                    <a href="javascript:void(0);" class="avatar-text avatar-md" data-bs-toggle="tooltip" title="Add Language">
+                    <i class="feather-plus"></i>
+                    </a>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <div class="row px-4 pt-3">
+                    <div class="col-sm-4 col-6 language_select">
+                    <a href="javascript:void(0);" class="d-flex align-items-center gap-2">
+                    <div class="avatar-image avatar-sm"><img src="~/assets/vendors/img/flags/1x1/sa.svg" alt="" class="img-fluid" /></div>
+                    <span>Arabic</span>
+                    </a>
+                    </div>
+                    <div class="col-sm-4 col-6 language_select">
+                    <a href="javascript:void(0);" class="d-flex align-items-center gap-2">
+                    <div class="avatar-image avatar-sm"><img src="~/assets/vendors/img/flags/1x1/bd.svg" alt="" class="img-fluid" /></div>
+                    <span>Bengali</span>
+                    </a>
+                    </div>
+                    <div class="col-sm-4 col-6 language_select">
+                    <a href="javascript:void(0);" class="d-flex align-items-center gap-2">
+                    <div class="avatar-image avatar-sm"><img src="~/assets/vendors/img/flags/1x1/ch.svg" alt="" class="img-fluid" /></div>
+                    <span>Chinese</span>
+                    </a>
+                    </div>
+                    <div class="col-sm-4 col-6 language_select">
+                    <a href="javascript:void(0);" class="d-flex align-items-center gap-2">
+                    <div class="avatar-image avatar-sm"><img src="~/assets/vendors/img/flags/1x1/nl.svg" alt="" class="img-fluid" /></div>
+                    <span>Dutch</span>
+                    </a>
+                    </div>
+                    <div class="col-sm-4 col-6 language_select active">
+                    <a href="javascript:void(0);" class="d-flex align-items-center gap-2">
+                    <div class="avatar-image avatar-sm"><img src="~/assets/vendors/img/flags/1x1/us.svg" alt="" class="img-fluid" /></div>
+                    <span>English</span>
+                    </a>
+                    </div>
+                    <div class="col-sm-4 col-6 language_select">
+                    <a href="javascript:void(0);" class="d-flex align-items-center gap-2">
+                    <div class="avatar-image avatar-sm"><img src="~/assets/vendors/img/flags/1x1/fr.svg" alt="" class="img-fluid" /></div>
+                    <span>French</span>
+                    </a>
+                    </div>
+                    <div class="col-sm-4 col-6 language_select">
+                    <a href="javascript:void(0);" class="d-flex align-items-center gap-2">
+                    <div class="avatar-image avatar-sm"><img src="~/assets/vendors/img/flags/1x1/de.svg" alt="" class="img-fluid" /></div>
+                    <span>German</span>
+                    </a>
+                    </div>
+                    <div class="col-sm-4 col-6 language_select">
+                    <a href="javascript:void(0);" class="d-flex align-items-center gap-2">
+                    <div class="avatar-image avatar-sm"><img src="~/assets/vendors/img/flags/1x1/in.svg" alt="" class="img-fluid" /></div>
+                    <span>Hindi</span>
+                    </a>
+                    </div>
+                    <div class="col-sm-4 col-6 language_select">
+                    <a href="javascript:void(0);" class="d-flex align-items-center gap-2">
+                    <div class="avatar-image avatar-sm"><img src="~/assets/vendors/img/flags/1x1/ru.svg" alt="" class="img-fluid" /></div>
+                    <span>Russian</span>
+                    </a>
+                    </div>
+                    <div class="col-sm-4 col-6 language_select">
+                    <a href="javascript:void(0);" class="d-flex align-items-center gap-2">
+                    <div class="avatar-image avatar-sm"><img src="~/assets/vendors/img/flags/1x1/es.svg" alt="" class="img-fluid" /></div>
+                    <span>Spanish</span>
+                    </a>
+                    </div>
+                    <div class="col-sm-4 col-6 language_select">
+                    <a href="javascript:void(0);" class="d-flex align-items-center gap-2">
+                    <div class="avatar-image avatar-sm"><img src="~/assets/vendors/img/flags/1x1/tr.svg" alt="" class="img-fluid" /></div>
+                    <span>Turkish</span>
+                    </a>
+                    </div>
+                    <div class="col-sm-4 col-6 language_select">
+                    <a href="javascript:void(0);" class="d-flex align-items-center gap-2">
+                    <div class="avatar-image avatar-sm"><img src="~/assets/vendors/img/flags/1x1/pk.svg" alt="" class="img-fluid" /></div>
+                    <span>Urdo</span>
+                    </a>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                    </div> *@
+                    <div class="nxl-h-item d-none d-sm-flex">
+                        <div class="full-screen-switcher">
+                            <a href="javascript:void(0);" class="nxl-head-link me-0" onclick="$('body').fullScreenHelper('toggle');">
+                                <i class="feather-maximize maximize"></i>
+                                <i class="feather-minimize minimize"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="nxl-h-item dark-light-theme">
+                        <a href="javascript:void(0);" class="nxl-head-link me-0 dark-button">
+                            <i class="feather-moon"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="nxl-head-link me-0 light-button" style="display: none">
+                            <i class="feather-sun"></i>
+                        </a>
+                    </div>
+                    <div class="dropdown nxl-h-item">
+                        <a href="javascript:void(0);" class="nxl-head-link me-0" data-bs-toggle="dropdown" role="button" data-bs-auto-close="outside">
+                            <i class="feather-clock"></i>
+                            <span class="badge bg-success nxl-h-badge">2</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end nxl-h-dropdown nxl-timesheets-menu">
+                            <div class="d-flex justify-content-between align-items-center timesheets-head">
+                                <h6 class="fw-bold text-dark mb-0">Timesheets</h6>
+                                <a href="javascript:void(0);" class="fs-11 text-success text-end ms-auto" data-bs-toggle="tooltip" title="Upcomming Timers">
+                                    <i class="feather-clock"></i>
+                                    <span>3 Upcomming</span>
+                                </a>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center flex-column timesheets-body">
+                                <i class="feather-clock fs-1 mb-4"></i>
+                                <p class="text-muted">No started timers found yes!</p>
+                                <a href="javascript:void(0);" class="btn btn-sm btn-primary">Started Timer</a>
+                            </div>
+                            <div class="text-center timesheets-footer">
+                                <a href="javascript:void(0);" class="fs-13 fw-semibold text-dark">Alls Timesheets</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dropdown nxl-h-item">
+                        <a class="nxl-head-link me-3" data-bs-toggle="dropdown" href="#" role="button" data-bs-auto-close="outside">
+                            <i class="feather-bell"></i>
+                            <span class="badge bg-danger nxl-h-badge">3</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end nxl-h-dropdown nxl-notifications-menu">
+                            <div class="d-flex justify-content-between align-items-center notifications-head">
+                                <h6 class="fw-bold text-dark mb-0">Notifications</h6>
+                                <a href="javascript:void(0);" class="fs-11 text-success text-end ms-auto" data-bs-toggle="tooltip" title="Make as Read">
+                                    <i class="feather-check"></i>
+                                    <span>Make as Read</span>
+                                </a>
+                            </div>
+                            <div class="notifications-item">
+                                <img src="~/assets/images/avatar/2.png" alt="" class="rounded me-3 border" />
+                                <div class="notifications-desc">
+                                    <a href="javascript:void(0);" class="font-body text-truncate-2-line"> <span class="fw-semibold text-dark">Malanie Hanvey</span> We should talk about that at lunch!</a>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="notifications-date text-muted border-bottom border-bottom-dashed">2 minutes ago</div>
+                                        <div class="d-flex align-items-center float-end gap-2">
+                                            <a href="javascript:void(0);" class="d-block wd-8 ht-8 rounded-circle bg-gray-300" data-bs-toggle="tooltip" title="Make as Read"></a>
+                                            <a href="javascript:void(0);" class="text-danger" data-bs-toggle="tooltip" title="Remove">
+                                                <i class="feather-x fs-12"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="notifications-item">
+                                <img src="~/assets/images/avatar/3.png" alt="" class="rounded me-3 border" />
+                                <div class="notifications-desc">
+                                    <a href="javascript:void(0);" class="font-body text-truncate-2-line"> <span class="fw-semibold text-dark">Valentine Maton</span> You can download the latest invoices now.</a>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="notifications-date text-muted border-bottom border-bottom-dashed">36 minutes ago</div>
+                                        <div class="d-flex align-items-center float-end gap-2">
+                                            <a href="javascript:void(0);" class="d-block wd-8 ht-8 rounded-circle bg-gray-300" data-bs-toggle="tooltip" title="Make as Read"></a>
+                                            <a href="javascript:void(0);" class="text-danger" data-bs-toggle="tooltip" title="Remove">
+                                                <i class="feather-x fs-12"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="notifications-item">
+                                <img src="~/assets/images/avatar/4.png" alt="" class="rounded me-3 border" />
+                                <div class="notifications-desc">
+                                    <a href="javascript:void(0);" class="font-body text-truncate-2-line"> <span class="fw-semibold text-dark">Archie Cantones</span> Don't forget to pickup Jeremy after school!</a>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="notifications-date text-muted border-bottom border-bottom-dashed">53 minutes ago</div>
+                                        <div class="d-flex align-items-center float-end gap-2">
+                                            <a href="javascript:void(0);" class="d-block wd-8 ht-8 rounded-circle bg-gray-300" data-bs-toggle="tooltip" title="Make as Read"></a>
+                                            <a href="javascript:void(0);" class="text-danger" data-bs-toggle="tooltip" title="Remove">
+                                                <i class="feather-x fs-12"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center notifications-footer">
+                                <a href="javascript:void(0);" class="fs-13 fw-semibold text-dark">Alls Notifications</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dropdown nxl-h-item">
+                        <a href="javascript:void(0);" data-bs-toggle="dropdown" role="button" data-bs-auto-close="outside">
+                            <img src="~/assets/images/avatar/1.png" alt="user-image" class="img-fluid user-avtar me-0" />
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end nxl-h-dropdown nxl-user-dropdown">
+                            <div class="dropdown-header">
+                                <div class="d-flex align-items-center">
+                                    <img src="~/assets/images/avatar/1.png" alt="user-image" class="img-fluid user-avtar" />
+                                    <div>
+                                        <h6 class="text-dark mb-0">Alexandra Della <span class="badge bg-soft-success text-success ms-1">PRO</span></h6>
+                                        <span class="fs-12 fw-medium text-muted">alex@example.com</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dropdown">
+                                <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="dropdown">
+                                    <span class="hstack">
+                                        <i class="wd-10 ht-10 border border-2 border-gray-1 bg-success rounded-circle me-2"></i>
+                                        <span>Active</span>
+                                    </span>
+                                    <i class="feather-chevron-right ms-auto me-0"></i>
+                                </a>
+                                <div class="dropdown-menu">
+                                    <a href="javascript:void(0);" class="dropdown-item">
+                                        <span class="hstack">
+                                            <i class="wd-10 ht-10 border border-2 border-gray-1 bg-warning rounded-circle me-2"></i>
+                                            <span>Always</span>
+                                        </span>
+                                    </a>
+                                    <a href="javascript:void(0);" class="dropdown-item">
+                                        <span class="hstack">
+                                            <i class="wd-10 ht-10 border border-2 border-gray-1 bg-success rounded-circle me-2"></i>
+                                            <span>Active</span>
+                                        </span>
+                                    </a>
+                                    <a href="javascript:void(0);" class="dropdown-item">
+                                        <span class="hstack">
+                                            <i class="wd-10 ht-10 border border-2 border-gray-1 bg-danger rounded-circle me-2"></i>
+                                            <span>Bussy</span>
+                                        </span>
+                                    </a>
+                                    <a href="javascript:void(0);" class="dropdown-item">
+                                        <span class="hstack">
+                                            <i class="wd-10 ht-10 border border-2 border-gray-1 bg-info rounded-circle me-2"></i>
+                                            <span>Inactive</span>
+                                        </span>
+                                    </a>
+                                    <a href="javascript:void(0);" class="dropdown-item">
+                                        <span class="hstack">
+                                            <i class="wd-10 ht-10 border border-2 border-gray-1 bg-dark rounded-circle me-2"></i>
+                                            <span>Disabled</span>
+                                        </span>
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="javascript:void(0);" class="dropdown-item">
+                                        <span class="hstack">
+                                            <i class="wd-10 ht-10 border border-2 border-gray-1 bg-primary rounded-circle me-2"></i>
+                                            <span>Cutomization</span>
+                                        </span>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <div class="dropdown">
+                                <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="dropdown">
+                                    <span class="hstack">
+                                        <i class="feather-dollar-sign me-2"></i>
+                                        <span>Subscriptions</span>
+                                    </span>
+                                    <i class="feather-chevron-right ms-auto me-0"></i>
+                                </a>
+                                <div class="dropdown-menu">
+                                    <a href="javascript:void(0);" class="dropdown-item">
+                                        <span class="hstack">
+                                            <i class="wd-5 ht-5 bg-gray-500 rounded-circle me-3"></i>
+                                            <span>Plan</span>
+                                        </span>
+                                    </a>
+                                    <a href="javascript:void(0);" class="dropdown-item">
+                                        <span class="hstack">
+                                            <i class="wd-5 ht-5 bg-gray-500 rounded-circle me-3"></i>
+                                            <span>Billings</span>
+                                        </span>
+                                    </a>
+                                    <a href="javascript:void(0);" class="dropdown-item">
+                                        <span class="hstack">
+                                            <i class="wd-5 ht-5 bg-gray-500 rounded-circle me-3"></i>
+                                            <span>Referrals</span>
+                                        </span>
+                                    </a>
+                                    <a href="javascript:void(0);" class="dropdown-item">
+                                        <span class="hstack">
+                                            <i class="wd-5 ht-5 bg-gray-500 rounded-circle me-3"></i>
+                                            <span>Payments</span>
+                                        </span>
+                                    </a>
+                                    <a href="javascript:void(0);" class="dropdown-item">
+                                        <span class="hstack">
+                                            <i class="wd-5 ht-5 bg-gray-500 rounded-circle me-3"></i>
+                                            <span>Statements</span>
+                                        </span>
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="javascript:void(0);" class="dropdown-item">
+                                        <span class="hstack">
+                                            <i class="wd-5 ht-5 bg-gray-500 rounded-circle me-3"></i>
+                                            <span>Subscriptions</span>
+                                        </span>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <a href="javascript:void(0);" class="dropdown-item">
+                                <i class="feather-user"></i>
+                                <span>Profile Details</span>
+                            </a>
+                            <a href="javascript:void(0);" class="dropdown-item">
+                                <i class="feather-activity"></i>
+                                <span>Activity Feed</span>
+                            </a>
+                            <a href="javascript:void(0);" class="dropdown-item">
+                                <i class="feather-dollar-sign"></i>
+                                <span>Billing Details</span>
+                            </a>
+                            <a href="javascript:void(0);" class="dropdown-item">
+                                <i class="feather-bell"></i>
+                                <span>Notifications</span>
+                            </a>
+                            <a href="javascript:void(0);" class="dropdown-item">
+                                <i class="feather-settings"></i>
+                                <span>Account Settings</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="./auth-login-minimal.html" class="dropdown-item">
+                                <i class="feather-log-out"></i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--! [End] Header Right !-->
+        </div>
+    </header>
+    <!--! ================================================================ !-->
+    <!--! [End] Header !-->
+    <!--! ================================================================ !-->
+    <!--! ================================================================ !-->
+    <!--! [Start] Main Content !-->
+    <!--! ================================================================ !-->
+    <main class="nxl-container">
+        <div class="nxl-content">
+            @RenderSection("PageHeader", required: false)
+            <!-- [ page-header ] end -->
+            <!-- [ Main Content ] start -->
+            <div class="main-content mb-2">
                 @RenderBody()
             </div>
+            <!-- [ Main Content ] end -->
         </div>
-        <partial name="_Dialog" />
-        <partial name="_PartialImagePreview" />
-    </div>
+        <!-- [ Footer ] start -->
+        <footer class="footer">
+            <p class="fs-11 text-muted fw-medium text-uppercase mb-0 copyright">
+                <span>Copyright ©</span>
+                <script>
+                    document.write(new Date().getFullYear());
+                </script>
+            </p>
+            <div class="d-flex align-items-center gap-4">
+                <a href="javascript:void(0);" class="fs-11 fw-semibold text-uppercase">Help</a>
+                <a href="javascript:void(0);" class="fs-11 fw-semibold text-uppercase">Terms</a>
+                <a href="javascript:void(0);" class="fs-11 fw-semibold text-uppercase">Privacy</a>
+            </div>
+        </footer>
+        <!-- [ Footer ] end -->
+    </main>
+    <!--! ================================================================ !-->
+    <!--! [End] Main Content !-->
+    <!--! ================================================================ !-->
+    <!--! ================================================================ !-->
+    <!--! Footer Script !-->
+    <!--! ================================================================ !-->
+    <!--! BEGIN: Vendors JS !-->
+    <script src="~/assets/vendors/js/vendors.min.js"></script>
+    <!-- vendors.min.js {always must need to be top} -->
+    <script src="~/assets/vendors/js/daterangepicker.min.js"></script>
+    <script src="~/assets/vendors/js/apexcharts.min.js"></script>
+    <script src="~/assets/vendors/js/circle-progress.min.js"></script>
+    <!--! END: Vendors JS !-->
+    <!--! BEGIN: Apps Init  !-->
+    <script src="~/assets/js/common-init.min.js"></script>
+    <script src="~/assets/js/dashboard-init.min.js"></script>
+    <!--! END: Apps Init !-->
+    <!--! BEGIN: Theme Customizer  !-->
+    <script src="~/assets/js/theme-customizer-init.min.js"></script>
+    <!--! END: Theme Customizer !-->
+    @Html.AntiForgeryToken()
     @await RenderSectionAsync("Scripts", required: false)
     <script>
+        function toggleSubmenu(id) {
+            const submenu = document.getElementById(id);
+            submenu.classList.toggle("collapse");
+        }
+
         //enable tooltip bootstrap
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
     </script>
     <script>
 
-        app.controller('myCtrl', function ($scope, $http, $timeout, $filter, $interval) {
+        app.controller('myCtrl', function ($scope, $http, $timeout, $filter) {
             $scope.today = new Date();
             $scope.viewMode = '';
-
-            // var timer = $interval(function () {
-            //     $scope.today = new Date();
-            // }, 1000);
 
             //$scope.lMonthShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
             $scope.lMonthShort = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
@@ -230,21 +788,222 @@
                     })
                     , success: function (result) {
                         $timeout(function () {
-                            $scope.iRequest = result.find(x => x.status == 'Request');
-                            $scope.iApprove = result.find(x => x.status == 'Approve');
-                            $scope.iWork = result.find(x => x.status == 'Work');
-                            $scope.iShare = result.find(x => x.status == 'Share');
+                            $scope.PR_PO_Request = result.find(x => x.status == 'PR-PO-Request');
+                            $scope.PR_NON_PO_ADV_Request = result.find(x => x.status == 'PR-NON-PO-ADV-Request');
+                            $scope.PR_Review = result.find(x => x.status == 'PR-Review');
+                            $scope.PR_Approve = result.find(x => x.status == 'PR-Approve');
+                            $scope.PO_New = result.find(x => x.status == 'PO-New');
+                            $scope.PO_Review = result.find(x => x.status == 'PO-Review');
+                            $scope.PO_Approve = result.find(x => x.status == 'PO-Approve');
+                            $scope.GR_New = result.find(x => x.status == 'GR-New');
+                            $scope.GR_Request = result.find(x => x.status == 'GR-Request');
+                            $scope.PI_Request = result.find(x => x.status == 'PI-Request');
+                            $scope.PV_New = result.find(x => x.status == 'PV-New');
+                            $scope.PV_Approve = result.find(x => x.status == 'PV-Approve');
+                            $scope.PV_Review = result.find(x => x.status == 'PV-Review');
                         }, 0);
                     }
                     , error: AjaxError
                 });
             }
+            //$scope.LoadAlert();
         }).directive('formatToCurrency', function ($filter) {
             return {
                 scope: {
                     amount: '='
                 },
                 link: function (scope, el, attrs) {
+                    scope.$watch('amount', function (newVal) {
+                        if (el[0] !== document.activeElement) { // ไม่เปลี่ยนค่าตอนที่โฟกัสอยู่
+                            el.val($filter('currency')(newVal || 0, '', 2));//.replace('.00', '')); // ตัด .00 ถ้าต้องการ
+                        }
+                    });
+
+                    el.bind('focus', function () {
+                        if (scope.amount != 0) {
+                            el.val(parseFloat(scope.amount).toFixed(2));
+                        } else {
+                            el.val('');
+                        }
+                    });
+
+                    el.bind('keydown', function (e) {
+                        let val = el.val();
+                        let key = e.key;
+                        let keyCode = e.keyCode;
+
+                        // Block multiple '.' (dot)
+                        if ((keyCode === 190 || key === '.') && val.indexOf('.') !== -1) {
+                            e.preventDefault();
+                            return;
+                        }
+
+                        //block '-'
+                        if (keyCode === 189 || key === '-') {
+                            e.preventDefault();
+                            return;
+                        }
+
+                        // Allow: backspace, delete, tab, escape, enter, arrows, Ctrl+A/C/V/X
+                        if (
+                            [8, 9, 13, 27, 46, 110, 190].includes(keyCode) ||
+                            (keyCode >= 35 && keyCode <= 39) || // home, end, left, right
+                            (keyCode === 65 && e.ctrlKey) || // Ctrl+A
+                            (keyCode === 67 && e.ctrlKey) || // Ctrl+C
+                            (keyCode === 86 && e.ctrlKey) || // Ctrl+V
+                            (keyCode === 88 && e.ctrlKey)    // Ctrl+X
+                        ) {
+                            return;
+                        }
+
+                        // Allow only number keys
+                        if ((keyCode < 48 || keyCode > 57) && (keyCode < 96 || keyCode > 105)) {
+                            e.preventDefault();
+                            return;
+                        }
+
+                        // Predict the value after key press
+                        const input = el[0];
+                        const start = input.selectionStart;
+                        const end = input.selectionEnd;
+                        const futureValue = val.substring(0, start) + key + val.substring(end);
+
+                        if (futureValue.includes('.')) {
+                            const decimalPart = futureValue.split('.')[1];
+                            if (decimalPart.length > 2) {
+                                e.preventDefault();
+                            }
+                        }
+                    });
+
+                    el.on('input', function () {
+                        let val = el.val();
+                        val = val.replace(/[^0-9.]/g, '');
+
+                        if (val.includes('.')) {
+                            let parts = val.split('.');
+                            if (parts[1].length > 2) {
+                                parts[1] = parts[1].substring(0, 2);
+                            }
+                            val = parts[0] + '.' + parts[1];
+                        }
+
+                        el.val(val);
+                    });
+
+                    el.bind('blur', function () {
+                        var val = parseFloat(el.val().replace(/,/g, '')) || 0;
+                        scope.$apply(function () {
+                            scope.amount = val;
+                        });
+                        el.val($filter('currency')(val, '', 2));
+                    });
+                }
+            }
+        }).directive('formatToQuantity', function ($filter) {
+            return {
+                scope: {
+                    amount: '='
+                },
+                link: function (scope, el, attrs) {
+                    scope.$watch('amount', function (newVal) {
+                        if (el[0] !== document.activeElement) { // ไม่เปลี่ยนค่าตอนที่โฟกัสอยู่
+                            el.val($filter('currency')(newVal || 0, '', 8));//.replace('.00', '')); // ตัด .00 ถ้าต้องการ
+                        }
+                    });
+
+                    el.bind('focus', function () {
+                        if (scope.amount != 0) {
+                            el.val(parseFloat(scope.amount).toFixed(8));
+                        } else {
+                            el.val('');
+                        }
+                    });
+
+                    el.bind('keydown', function (e) {
+                        let val = el.val();
+                        let key = e.key;
+                        let keyCode = e.keyCode;
+
+                        // Block multiple '.' (dot)
+                        if ((keyCode === 190 || key === '.') && val.indexOf('.') !== -1) {
+                            e.preventDefault();
+                            return;
+                        }
+
+                        //block '-'
+                        if (keyCode === 189 || key === '-') {
+                            e.preventDefault();
+                            return;
+                        }
+
+                        // Allow: backspace, delete, tab, escape, enter, arrows, Ctrl+A/C/V/X
+                        if (
+                            [8, 9, 13, 27, 46, 110, 190].includes(keyCode) ||
+                            (keyCode >= 35 && keyCode <= 39) || // home, end, left, right
+                            (keyCode === 65 && e.ctrlKey) || // Ctrl+A
+                            (keyCode === 67 && e.ctrlKey) || // Ctrl+C
+                            (keyCode === 86 && e.ctrlKey) || // Ctrl+V
+                            (keyCode === 88 && e.ctrlKey)    // Ctrl+X
+                        ) {
+                            return;
+                        }
+
+                        // Allow only number keys
+                        if ((keyCode < 48 || keyCode > 57) && (keyCode < 96 || keyCode > 105)) {
+                            e.preventDefault();
+                            return;
+                        }
+
+                        // Predict the value after key press
+                        const input = el[0];
+                        const start = input.selectionStart;
+                        const end = input.selectionEnd;
+                        const futureValue = val.substring(0, start) + key + val.substring(end);
+
+                        if (futureValue.includes('.')) {
+                            const decimalPart = futureValue.split('.')[1];
+                            if (decimalPart.length > 8) {
+                                e.preventDefault();
+                            }
+                        }
+                    });
+
+                    el.on('input', function () {
+                        let val = el.val();
+                        val = val.replace(/[^0-9.]/g, '');
+
+                        if (val.includes('.')) {
+                            let parts = val.split('.');
+                            if (parts[1].length > 2) {
+                                parts[1] = parts[1].substring(0, 8);
+                            }
+                            val = parts[0] + '.' + parts[1];
+                        }
+
+                        el.val(val);
+                    });
+
+                    el.bind('blur', function () {
+                        var val = parseFloat(el.val().replace(/,/g, '')) || 0;
+                        scope.$apply(function () {
+                            scope.amount = val;
+                        });
+                        el.val($filter('currency')(val, '', 8));
+                    });
+                }
+            }
+        }).directive('formatToNumber', function ($filter) {
+            return {
+                scope: {
+                    amount: '='
+                },
+                link: function (scope, el, attrs) {
+                    scope.$watch('amount', function (newVal) {
+                        if (el[0] !== document.activeElement) { // ไม่เปลี่ยนค่าตอนที่โฟกัสอยู่
+                            el.val($filter('number')(newVal || 0, '').replace('.00', '')); // ตัด .00 ถ้าต้องการ
+                        }
+                    });
 
                     //el.val($filter('currency')(scope.amount, ''));
 
@@ -257,19 +1016,12 @@
                     });
 
                     el.bind('keydown', function (e) {
-                        if (e.keyCode == 190 && el.val().indexOf(".") >= 0) {
-                            e.preventDefault();
-                        }
-                        //allow '-'
-                        // if (e.keyCode == 189 && el.val() != '') {
-                        //     e.preventDefault();
-                        // }
                         //block '-'
                         if (e.keyCode == 189) {
                             e.preventDefault();
                         }
-                        // Allow: backspace, delete, tab, escape, enter and .
-                        if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190, 189]) !== -1 ||
+                        // Allow: backspace, delete, tab, escape, enter
+                        if ($.inArray(e.keyCode, [46, 8, 9, 27, 13]) !== -1 ||
                             // Allow: Ctrl+A
                             (e.keyCode == 65 && e.ctrlKey === true) ||
                             // Allow: Ctrl+C
@@ -293,12 +1045,20 @@
                         }
                     });
 
-                    el.bind('blur', function () {
-                        el.val($filter('currency')(scope.amount, ''));
+                    el.on('input', function () {
+                        let val = el.val();
 
-                        if (el.val() == 0 || el.val() == '' || el.val() == NaN) {
-                            scope.amount = 0;
-                        }
+                        val = val.replace(/[^0-9]/g, '');
+
+                        el.val(val);
+                    });
+
+                    el.bind('blur', function () {
+                        var val = parseFloat(el.val().replace(/,/g, '')) || 0;
+                        scope.$apply(function () {
+                            scope.amount = val;
+                        });
+                        el.val($filter('number')(val, '').replace('.00', ''));
                     });
                 }
             }
@@ -314,7 +1074,44 @@
                     }
                 });
             };
-        });
+        }).filter('range', function () {
+            return function (input, total) {
+                total = parseInt(total);
+
+                for (var i = 0; i < total; i++) {
+                    input.push(i);
+                }
+
+                return input;
+            };
+        }).filter('truncateDecimal', function () {
+            return function (input, digits) {
+                if (input === null || input === undefined || input === '') return input;
+
+                digits = digits || 8;
+
+                // แปลงเป็น string เพื่อไม่ให้ JS ปัดเอง
+                let str = input.toString();
+
+                // แยกส่วนจำนวนเต็ม / ทศนิยม
+                let parts = str.split('.');
+                let integerPart = parts[0];
+                let decimalPart = parts[1] || '';
+
+                // ตัดทศนิยม (ไม่ปัด)
+                if (decimalPart.length > digits) {
+                    decimalPart = decimalPart.substring(0, digits);
+                }
+
+                // ใส่ comma ให้จำนวนเต็ม
+                integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+                // รวมกลับ
+                return decimalPart
+                    ? integerPart + '.' + decimalPart
+                    : integerPart;
+            };
+        });;
     </script>
 </body>
 </html>

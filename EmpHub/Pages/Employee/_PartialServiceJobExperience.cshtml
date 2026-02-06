@@ -6,50 +6,45 @@
 }
 <div ng-controller="ServiceJobExperienceCtrl" id="tab_job">
     @* View *@
-    <div class="bg-white rounded-5 p-4 mb-3">
-        <div class="d-flex align-items-center mb-4" ng-click="EditStage('education')">
-            <div class="fw-bolder flex-fill text-secondary fs-5">
-                ประวัติการทำงาน
-            </div>
-        </div>
+    <div class="">
         <div ng-show="lData.length > 0">
             <div class="list-group list-group-flush">
                 <div class="list-group-item px-0" ng-repeat="x in lData">
-                    <div class="row">
-                        <div class="col-sm-8 mb-3">
+                    <div class="d-flex mb-3">
+                        <div class="flex-fill me-3">
                             <div class="text-gray">
                                 บริษัท
                             </div>
-                            <div class="fw-bolder">{{ x.company }}</div>
+                            <div class="text-dark fs-5">{{ x.company != '' ? x.company : '-' }}</div>
                         </div>
-                        <div class="col-sm-2 mb-3">
+                        <div class="me-3">
                             <div class="text-gray">
                                 วันที่เริ่ม
                             </div>
-                            <div class="fw-bolder">{{ x.from_date | date:'MMM yyyy' }}</div>
+                            <div class="text-dark fs-5">{{ x.from_date | date:'MMM yyyy' }}</div>
                         </div>
-                        <div class="col-sm-2 mb-3">
+                        <div class="">
                             <div class="text-gray">
                                 วันที่สิ้นสุด
                             </div>
-                            <div class="fw-bolder">{{ x.end_date | date:'MMM yyyy' }}</div>
+                            <div class="text-dark fs-5">{{ x.end_date | date:'MMM yyyy' }}</div>
                         </div>
-                        <div class="col-sm-8 mb-3">
-                            <div class="text-gray">
-                                ตำแหน่ง
-                            </div>
-                            <div class="fw-bolder">{{ x.position }}</div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="text-gray">
+                            ตำแหน่ง
                         </div>
-                        <div class="col-sm-12 mb-3">
-                            <div class="text-gray">
-                                รายละเอียดการทำงาน
-                            </div>
-                            <div class="fw-bolder">{{ x.description }}</div>
+                        <div class="text-dark fs-5">{{ x.position != '' ? x.position : '-' }}</div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="text-gray">
+                            รายละเอียดการทำงาน
                         </div>
+                        <div class="text-dark fs-5">{{ x.description != '' ? x.description : '-' }}</div>
                     </div>
                 </div>
             </div>
-            <div class="pt-2 d-flex align-items-center">
+            @* <div class="pt-2 d-flex align-items-center">
                 <div class="btn btn-secondary-invert" ng-click="View()">
                     <i class="bi bi-pen"></i> แก้ไข
                 </div>
@@ -59,25 +54,18 @@
                         <i class="bi bi-x-circle"></i> ยกเลิก
                     </div>
                 </div>
-            </div>
+            </div> *@
         </div>
         <div ng-show="lData.length == 0">
-            <div class="row">
-                <div class="col-sm-12 mb-3 text-gray">
-                    เพิ่มข้อมูลประวัติการทำงานของคุณ
-                </div>
-            </div>
-            <div class="pt-2 d-flex align-items-center">
-                <div class="btn btn-secondary-invert" ng-click="New()">
-                    <i class="bi bi-plus-lg"></i> เพิ่มตำแหน่งงาน
-                </div>
-            </div>
+            <a class="btn btn-light fw-bolder rounded-3 p-4" href="@Url.Page("/Service/Create")?cateCode=AddInfo&subCateCode=Education">
+                <i class="fas fa-plus me-2"></i> เพิ่มข้อมูลประวัติการทำงานของคุณ
+            </a>
         </div>
     </div>
     @* Dialog *@
     <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="jobOff" aria-labelledby="offcanvasLabel" style="width:600px;">
         <div class="offcanvas-header">
-            <h5 class="offcanvas-title text-secondary fw-bolder" id="offcanvasLabel">ประวัติการทำงาน</h5>
+            <h5 class="offcanvas-title text-secondary text-dark fs-5" id="offcanvasLabel">ประวัติการทำงาน</h5>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
@@ -91,31 +79,31 @@
                             <div class="text-gray">
                                 บริษัท
                             </div>
-                            <div class="fw-bolder">{{ x.company }}</div>
+                            <div class="text-dark fs-5">{{ x.company }}</div>
                         </div>
                         <div class="col-sm-2 mb-3">
                             <div class="text-gray">
                                 วันที่เริ่ม
                             </div>
-                            <div class="fw-bolder">{{ x.from_date | date:'MMM yyyy' }}</div>
+                            <div class="text-dark fs-5">{{ x.from_date | date:'MMM yyyy' }}</div>
                         </div>
                         <div class="col-sm-2 mb-3">
                             <div class="text-gray">
                                 วันที่สิ้นสุด
                             </div>
-                            <div class="fw-bolder">{{ x.end_date | date:'MMM yyyy' }}</div>
+                            <div class="text-dark fs-5">{{ x.end_date | date:'MMM yyyy' }}</div>
                         </div>
                         <div class="col-sm-8 mb-3">
                             <div class="text-gray">
                                 ตำแหน่ง
                             </div>
-                            <div class="fw-bolder">{{ x.position }}</div>
+                            <div class="text-dark fs-5">{{ x.position }}</div>
                         </div>
                         <div class="col-sm-12 mb-3">
                             <div class="text-gray">
                                 รายละเอียดการทำงาน
                             </div>
-                            <div class="fw-bolder">{{ x.description }}</div>
+                            <div class="text-dark fs-5">{{ x.description }}</div>
                         </div>
                         <div class="col-sm-12">
                             <div class="btn btn-warning-invert" ng-click="Edit(x)">
@@ -138,21 +126,21 @@
 
     <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="jobOffEdit" aria-labelledby="offcanvasLabel" style="width:600px;">
         <div class="offcanvas-header">
-            <h5 class="offcanvas-title text-secondary fw-bolder" id="offcanvasLabel">ประวัติการทำงาน</h5>
+            <h5 class="offcanvas-title text-secondary text-dark fs-5" id="offcanvasLabel">ประวัติการทำงาน</h5>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
             <div class="row">
                 <div class="col-sm-12 mb-3">
-                    <div class="fw-bolder">บริษัท</div>
+                    <div class="text-dark fs-5">บริษัท</div>
                     <input ng-model="iEdit.company" class="form-control" />
                 </div>
                 <div class="col-sm-12 mb-3">
-                    <div class="fw-bolder">ตำแหน่ง</div>
+                    <div class="text-dark fs-5">ตำแหน่ง</div>
                     <input ng-model="iEdit.position" class="form-control" />
                 </div>
                 <div class="col-sm-6 mb-3">
-                    <div class="fw-bolder">วันเริ่ม</div>
+                    <div class="text-dark fs-5">วันเริ่ม</div>
                     <input class="form-control icon-calendar date"
                            ng-model="iEdit.from_date_select"
                            ng-model-options="{ updateOn: 'blur' }"
@@ -163,7 +151,7 @@
                            max-view="year" required />
                 </div>
                 <div class="col-sm-6 mb-3">
-                    <div class="fw-bolder">วันที่สิ้นสุด</div>
+                    <div class="text-dark fs-5">วันที่สิ้นสุด</div>
                     <input class="form-control icon-calendar date"
                            ng-model="iEdit.end_date_select"
                            ng-model-options="{ updateOn: 'blur' }"
@@ -174,7 +162,7 @@
                            max-view="year" required />
                 </div>
                 <div class="col-sm-12 mb-3">
-                    <div class="fw-bolder">รายละเอียดงาน</div>
+                    <div class="text-dark fs-5">รายละเอียดงาน</div>
                     <textarea ng-model="iEdit.descripition" class="form-control" maxlength="4000" rows="5"></textarea>
                 </div>
             </div>

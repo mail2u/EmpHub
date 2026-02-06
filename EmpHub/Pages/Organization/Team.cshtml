@@ -1,0 +1,187 @@
+﻿@page
+@model EmpHub.Pages.Organization.TeamModel
+@{
+    var token = User.AccessToken(HttpContext);
+}
+
+<div ng-controller="OrgChartCtrl" class="p-2">
+    <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">Organization</li>
+            <li class="breadcrumb-item">Team</li>
+            <li class="breadcrumb-item active" aria-current="page">{{ iDepartment.desc_th }}</li>
+        </ol>
+    </nav>
+    <div id="cy" class="p-3 border bg-white rounded-4" style="width:100%; height:calc(100vh - 200px);"></div>
+</div>
+<script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+<script src="https://unpkg.com/dagre@0.8.5/dist/dagre.min.js"></script>
+<script src="https://unpkg.com/cytoscape-dagre/cytoscape-dagre.js"></script>
+<script>
+    cytoscape.use(cytoscapeDagre);
+</script>
+<script>
+    app.controller('OrgChartCtrl', function ($scope, $http, $timeout, $filter, $document) {
+        let cy;
+        let draggingNode = null;
+        var chartId = "TIPOrgChart";
+        const GRID_X = 10;
+        const GRID_Y = 10;
+        $scope.root = '@Model.code';
+
+        let lastTapTime = 0;
+        const DOUBLE_TAP_DELAY = 300;
+
+        function createChart(nodes, edges) {
+            cy = cytoscape({
+                container: document.getElementById('cy'),
+
+                elements: {
+                    nodes: nodes,
+                    edges: edges
+                },
+
+                layout: {
+                    name: 'preset',
+                    rankDir: 'TB',
+                    nodeSep: 40,
+                    rankSep: 100,
+                    animate: true
+                },
+
+                style: [
+                    {
+                        selector: 'node',
+                        style: {
+                            'label': 'data(label)',
+                            'text-valign': 'center',
+                            'text-halign': 'center',
+                            'background-color': '#e3f2fd',
+                            'border-width': 2,
+                            'border-color': '#1976d2',
+                            'color': '#0d47a1',
+                            'width': 'label',
+                            'height': 'label',
+                            'padding': '15px',
+                            'text-wrap': 'wrap',
+                            'text-valign': 'center',
+                            'text-halign': 'center',
+                            'font-size': 14,
+                            'font-weight': 'bold',
+                            'shape': 'round-rectangle',
+
+                        }
+                    },
+                    {
+                        selector: 'edge',
+                        style: {
+                            'width': 2,
+                            'line-color': '#1976d2',
+                            'target-arrow-color': '#1976d2',
+                            'target-arrow-shape': 'triangle',
+                            'curve-style': 'straight',
+                            // 'segment-weights': '0.5',
+                            // 'segment-distances': '50',
+                            //'line-cap': 'round'
+                        }
+                    },
+                    {
+                        selector: ':selected',
+                        style: {
+                            'background-color': '#fff3cd',
+                            'border-color': '#ff9800',
+                            'line-color': '#ff9800',
+                            'target-arrow-color': '#ff9800'
+                        }
+                    }
+                ],
+
+                zoomingEnabled: true,
+                userZoomingEnabled: true,
+                panningEnabled: true,
+                userPanningEnabled: true
+            });
+
+            // ⭐ fit ครั้งแรกให้พอดีจอ
+            cy.fit();
+
+            cy.zoom(1);      // 100%
+            cy.pan({ x: 0, y: 0 }); // กล้องเริ่มที่ (0,0)
+
+        }
+
+        function buildOrgTree(items) {
+            let nodes = [];
+            let edges = [];
+
+            items.forEach(item => {
+                nodes.push({
+                    data: {
+                        id: item.id,
+                        label: item.name
+                    },
+                    position: {
+                        x: item.pos_x || 300,
+                        y: item.pos_y || 100
+                    }
+                });
+
+                if (item.parentId) {
+                    edges.push({
+                        data: {
+                            id: item.parentId + '-' + item.id,
+                            source: item.parentId,
+                            target: item.id
+                        }
+                    });
+                }
+            });
+
+            createChart(nodes, edges);
+        }
+
+        $scope.LoadDepartment = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Department/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    code: ''
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.iDepartment = result.find(item=>item.code==$scope.root) || null;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadDepartment();
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/OrgChart/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    chartId: chartId
+                    , id: $scope.root
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lData = result.data;
+                        buildOrgTree($scope.lData);
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadData();
+    });
+</script>
