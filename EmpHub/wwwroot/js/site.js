@@ -65,6 +65,16 @@ function JS_ValidateTime(text) {
     }
 }
 
+function JS_ValidateEmail(text) {
+    var regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (text == "" || text == null || regex.test(text) == false) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
 function JS_Reset(inputbox) {
     inputbox.removeClass("input-error");
     inputbox.removeClass("is-invalid");

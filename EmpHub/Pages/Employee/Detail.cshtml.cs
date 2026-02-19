@@ -6,9 +6,11 @@ namespace EmpHub.Pages.Employee
     public class DetailModel : PageModel
     {
         public string id { get; set; }
-        public void OnGet(string id)
+        public string tab { get; set; }
+        public void OnGet(string id, string tab)
         {
             this.id = id;
+            this.tab = tab;
         }
     }
 }

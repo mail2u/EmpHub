@@ -23,48 +23,53 @@
     <div class="bg-white rounded-4 p-4 border shadow-sm container d-flex">
         <div class="border-end me-4" style="min-width:500px; width:500px;">
             @* Prosonal *@
-            <partial name="Employee/_PartialServicePersonal" />
+            <partial name="Employee/_PartialUserPersonal" />
         </div>
         <div class="flex-fill">
             <nav class="mb-3">
                 <div class="nav nav-underline" id="nav-tab" role="tablist">
-                    <button class="nav-link active" id="nav-employee-tab" data-bs-toggle="tab" data-bs-target="#nav-employee" type="button" role="tab" aria-controls="nav-employee" aria-selected="true">
+                    <a class="nav-link active" href="?tab=nav-employee"
+                       data-bs-target="#nav-employee">
                         <i class="fas fa-id-card-alt"></i> Employee
-                    </button>
-                    <button class="nav-link" id="nav-address-tab" data-bs-toggle="tab" data-bs-target="#nav-address" type="button" role="tab" aria-controls="nav-address" aria-selected="false">
+                    </a>
+                    <a class="nav-link" href="?tab=nav-address"
+                       data-bs-target="#nav-address">
                         <i class="fas fa-map-marker-alt"></i> Address
-                    </button>
-                    <button class="nav-link" id="nav-education-tab" data-bs-toggle="tab" data-bs-target="#nav-education" type="button" role="tab" aria-controls="nav-education" aria-selected="false">
+                    </a>
+                    <a class="nav-link" href="?tab=nav-education"
+                       data-bs-target="#nav-education">
                         <i class="fas fa-user-graduate"></i> Education
-                    </button>
-                    <button class="nav-link" id="nav-traning-tab" data-bs-toggle="tab" data-bs-target="#nav-traning" type="button" role="tab" aria-controls="nav-traning" aria-selected="false">
-                        <i class="fas fa-chalkboard-teacher"></i> Traning
-                    </button>
-                    <button class="nav-link" id="nav-jobs-tab" data-bs-toggle="tab" data-bs-target="#nav-job-exper" type="button" role="tab" aria-controls="nav-job" aria-selected="false">
+                    </a>
+                    <a class="nav-link" href="?tab=nav-training"
+                       data-bs-target="#nav-training">
+                        <i class="fas fa-chalkboard-teacher"></i> Training
+                    </a>
+                    <a class="nav-link" href="?tab=nav-job"
+                       data-bs-target="#nav-job">
                         <i class="fas fa-building"></i> Job Experience
-                    </button>
+                    </a>
                 </div>
             </nav>
             <div class="tab-content" id="nav-tabContent">
                 <div class="tab-pane fade show active" id="nav-employee" role="tabpanel" aria-labelledby="nav-employee-tab" tabindex="0">
                     @* Employee *@
-                    <partial name="Employee/_PartialServiceEmployee" />
+                    <partial name="Employee/_PartialUserEmployee" />
                 </div>
                 <div class="tab-pane fade" id="nav-address" role="tabpanel" aria-labelledby="nav-address-tab" tabindex="0">
                     @* Location *@
-                    <partial name="Employee/_PartialServiceAddress" />
+                    <partial name="Employee/_PartialUserAddress" />
                 </div>
                 <div class="tab-pane fade" id="nav-education" role="tabpanel" aria-labelledby="nav-education-tab" tabindex="0">
                     @* Education *@
-                    <partial name="Employee/_PartialServiceEducation" />
+                    <partial name="Employee/_PartialUserEducation" />
                 </div>
-                <div class="tab-pane fade" id="nav-traning" role="tabpanel" aria-labelledby="nav-traning-tab" tabindex="0">
-                    @* Traning *@
-                    <partial name="Employee/_PartialServiceTraning" />
+                <div class="tab-pane fade" id="nav-training" role="tabpanel" aria-labelledby="nav-training-tab" tabindex="0">
+                    @* Training *@
+                    <partial name="Employee/_PartialUserTraining" />
                 </div>
-                <div class="tab-pane fade" id="nav-job-exper" role="tabpanel" aria-labelledby="nav-jobs-tab" tabindex="0">
+                <div class="tab-pane fade" id="nav-job" role="tabpanel" aria-labelledby="nav-job-tab" tabindex="0">
                     @* JobExperience*@
-                    <partial name="Employee/_PartialServiceJobExperience" />
+                    <partial name="Employee/_PartialUserJobExperience" />
                 </div>
             </div>
         </div>
@@ -72,6 +77,17 @@
 </div>
 <script>
     app.controller('DataCtrl', function ($scope, $http, $timeout, $filter) {
+        var tabName = '@Model.tab';
         $scope.userId = '@Model.id';
+
+        if (tabName != '') {
+            const triggerEl = document.querySelector(
+                `#nav-tab [data-bs-target="#${tabName}"]`
+            );
+
+            if (triggerEl) {
+                new bootstrap.Tab(triggerEl).show();
+            }
+        }
     });
 </script>

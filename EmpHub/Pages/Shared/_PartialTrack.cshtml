@@ -33,9 +33,9 @@
 
 </style>
 <div ng-controller="TrackCtrl">
-    <div class="rounded-5 border shadow-sm p-2 bg-white mb-3">
-        <div class="fw-bolder rounded-4 p-2 bg-secondary text-white ps-3">ติดตามสถานะ</div>
-        <div class="p-3 pe-0 bg-white rounded-4">
+    <div class="mb-3">
+        <div class="p-2 ps-3 bg-light text-dark">ติดตามสถานะ</div>
+        <div class="p-3 pe-0">
             <div ng-repeat="x in lTrack" class="ps-3 pe-2 mt-3 d-flex align-items-center position-relative box {{ x.is_action == 3 ? 'box-complete' : x.is_action == 2 ? 'box-current' : x.is_action == -2 ? 'box-cancel' : x.is_action == 1 ? 'box-info' : 'box-future' }}">
                 <span class="position-absolute stage" style="left:-9px; top:-20px;">
                     <i class="bi bi-circle" ng-show="x.is_action == 3"></i>

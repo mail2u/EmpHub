@@ -3,185 +3,246 @@
 @{
     var token = User.AccessToken(HttpContext);
 }
+<style>
+    .hidden {
+        display: none;
+    }
 
+    /* ซ่อน icon / magnet */
+    .joint-port,
+    .joint-magnet {
+        display: none !important;
+    }
+
+    /* กัน cursor แปลก ๆ จาก joint */
+    .joint-element {
+        cursor: pointer !important;
+    }
+</style>
 <div ng-controller="OrgChartCtrl" class="p-2">
     <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item">Organization</li>
-            <li class="breadcrumb-item">Team</li>
-            <li class="breadcrumb-item active" aria-current="page">{{ iDepartment.desc_th }}</li>
+            <li class="breadcrumb-item active" aria-current="page">Organization Structure</li>
         </ol>
     </nav>
-    <div id="cy" class="p-3 border bg-white rounded-4" style="width:100%; height:calc(100vh - 200px);"></div>
+    <div id="paper" class="p-3 border bg-white rounded-4" style="width:100%; height:calc(100vh - 200px);"></div>
 </div>
-<script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+<link rel="stylesheet" href="~/lib/jointjs/joint.min.css">
+<script src="https://unpkg.com/graphlib@2.1.8/dist/graphlib.min.js"></script>
 <script src="https://unpkg.com/dagre@0.8.5/dist/dagre.min.js"></script>
-<script src="https://unpkg.com/cytoscape-dagre/cytoscape-dagre.js"></script>
-<script>
-    cytoscape.use(cytoscapeDagre);
-</script>
+<script src="~/lib/jointjs/lodash.min.js"></script>
+<script src="~/lib/jointjs/backbone-min.js"></script>
+<script src="~/lib/jointjs/joint.min.js"></script>
 <script>
     app.controller('OrgChartCtrl', function ($scope, $http, $timeout, $filter, $document) {
-        let cy;
-        let draggingNode = null;
         var chartId = "TIPOrgChart";
-        const GRID_X = 10;
-        const GRID_Y = 10;
-        $scope.root = '@Model.code';
+        $scope.mode = 'view';
+        $scope.root = '@User.UserId()';
 
-        let lastTapTime = 0;
-        const DOUBLE_TAP_DELAY = 300;
+        let selectedElement = null;
+        let activeLink = null;
+        let scale = 1;
+        let panning = false;
+        let start = { x: 0, y: 0, tx: 0, ty: 0 };
 
-        function createChart(nodes, edges) {
-            cy = cytoscape({
-                container: document.getElementById('cy'),
+        const minScale = 0.3;
+        const maxScale = 2.5;
+        const graph = new joint.dia.Graph();
 
-                elements: {
-                    nodes: nodes,
-                    edges: edges
-                },
-
-                layout: {
-                    name: 'preset',
-                    rankDir: 'TB',
-                    nodeSep: 40,
-                    rankSep: 100,
-                    animate: true
-                },
-
-                style: [
-                    {
-                        selector: 'node',
-                        style: {
-                            'label': 'data(label)',
-                            'text-valign': 'center',
-                            'text-halign': 'center',
-                            'background-color': '#e3f2fd',
-                            'border-width': 2,
-                            'border-color': '#1976d2',
-                            'color': '#0d47a1',
-                            'width': 'label',
-                            'height': 'label',
-                            'padding': '15px',
-                            'text-wrap': 'wrap',
-                            'text-valign': 'center',
-                            'text-halign': 'center',
-                            'font-size': 14,
-                            'font-weight': 'bold',
-                            'shape': 'round-rectangle',
-
-                        }
-                    },
-                    {
-                        selector: 'edge',
-                        style: {
-                            'width': 2,
-                            'line-color': '#1976d2',
-                            'target-arrow-color': '#1976d2',
-                            'target-arrow-shape': 'triangle',
-                            'curve-style': 'straight',
-                            // 'segment-weights': '0.5',
-                            // 'segment-distances': '50',
-                            //'line-cap': 'round'
-                        }
-                    },
-                    {
-                        selector: ':selected',
-                        style: {
-                            'background-color': '#fff3cd',
-                            'border-color': '#ff9800',
-                            'line-color': '#ff9800',
-                            'target-arrow-color': '#ff9800'
-                        }
-                    }
-                ],
-
-                zoomingEnabled: true,
-                userZoomingEnabled: true,
-                panningEnabled: true,
-                userPanningEnabled: true
-            });
-
-            // ⭐ fit ครั้งแรกให้พอดีจอ
-            cy.fit();
-
-            cy.zoom(1);      // 100%
-            cy.pan({ x: 0, y: 0 }); // กล้องเริ่มที่ (0,0)
-
-        }
-
-        function buildOrgTree(items) {
-            let nodes = [];
-            let edges = [];
-
-            items.forEach(item => {
-                nodes.push({
-                    data: {
-                        id: item.id,
-                        label: item.name
-                    },
-                    position: {
-                        x: item.pos_x || 300,
-                        y: item.pos_y || 100
-                    }
-                });
-
-                if (item.parentId) {
-                    edges.push({
-                        data: {
-                            id: item.parentId + '-' + item.id,
-                            source: item.parentId,
-                            target: item.id
-                        }
-                    });
+        const paper = new joint.dia.Paper({
+            el: document.getElementById('paper'),
+            model: graph,
+            width: '100%',
+            height: 600,
+            gridSize: 10,
+            drawGrid: false,
+            interactive: {
+                blankMove: false,
+                elementMove: false,
+            },
+            background: { color: '#F5F5F5' },
+            defaultRouter: { name: 'orthogonal' },
+            defaultConnector: { name: 'straight', args: { cornerType: 'line' } },
+            defaultLink: new joint.shapes.standard.Link({
+                attrs: {
+                    line: { stroke: '#555', strokeWidth: 2 }
                 }
-            });
+            }),
+            linkPinning: false
+        });
 
-            createChart(nodes, edges);
+        // paper.on('element:pointerdblclick', function (elementView, evt) {
+        //     evt.stopPropagation();   // กัน event ซ้อน
+        //     evt.preventDefault();
+
+        //     const model = elementView.model;
+        //     const nodeId = model.get('nodeId');
+
+        //     // 👉 เรียก function drill down
+        //     if ($scope.root == nodeId) {
+        //         var find = $scope.lData.find(item => item.id == nodeId);
+        //         //dill up
+        //         location.href = '@Url.Page("Index")?id=' + find.parentId;
+        //     } else {
+        //         //dill down
+        //         location.href = '@Url.Page("Index")?id=' + nodeId;
+        //     }
+        // });
+
+        paper.on('blank:mousewheel', function (evt, x, y, delta) {
+            evt.preventDefault();
+
+            const factor = delta > 0 ? 1.1 : 0.9;
+            zoom(factor, { x, y });
+        });
+
+        paper.on('blank:pointerdown', function (evt, x, y) {
+            selectedElement = null;
+            start = {
+                mouseX: evt.clientX,
+                mouseY: evt.clientY,
+                x,
+                y,
+                t: paper.translate(),
+                scale: paper.scale().sx
+            };
+        });
+
+        paper.on('blank:pointermove', function (evt, x, y) {
+            if (!start) return;
+
+            const dx = (evt.clientX - start.mouseX) + start.t.tx;
+            const dy = (evt.clientY - start.mouseY) + start.t.ty;
+
+            paper.translate(dx, dy);
+        });
+
+        paper.on('blank:pointerup', function () {
+            start = null;
+        });
+
+
+        function clamp(value, min, max) {
+            return Math.min(Math.max(value, min), max);
         }
 
-        $scope.LoadDepartment = function () {
+        function getPanBounds() {
+            const paperSize = paper.getComputedSize();
+            const contentBBox = graph.getBBox(graph.getCells());
+
+            return {
+                minX: paperSize.width - contentBBox.x - contentBBox.width - 100,
+                maxX: -contentBBox.x + 100,
+                minY: paperSize.height - contentBBox.y - contentBBox.height - 100,
+                maxY: -contentBBox.y + 100
+            };
+        }
+
+        function zoom(factor, center) {
+            scale = Math.min(maxScale, Math.max(minScale, scale * factor));
+            paper.scale(scale, scale, center);
+        }
+
+        $scope.LoadData = function (id) {
             $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/Department/DataList'
+                url: '@webAPI.CurrentValue.APIEmpHub/api/OrgChart/Team'
                 , headers: { 'authorization': 'Bearer @token' }
                 , type: 'post'
                 , contentType: 'application/json'
                 , dataType: 'json'
                 , cache: false
                 , data: JSON.stringify({
-                    code: ''
-                })
-                , success: function (result) {
-                    $timeout(function () {
-                        $scope.iDepartment = result.find(item=>item.code==$scope.root) || null;
-                    }, 0);
-                }
-                , error: AjaxError
-            });
-        }
-        $scope.LoadDepartment();
-
-        $scope.LoadData = function () {
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/OrgChart/DataList'
-                , headers: { 'authorization': 'Bearer @token' }
-                , type: 'post'
-                , contentType: 'application/json'
-                , dataType: 'json'
-                , cache: false
-                , data: JSON.stringify({
-                    chartId: chartId
-                    , id: $scope.root
+                    id: id
+                    , chartId: chartId
                 })
                 , success: function (result) {
                     $timeout(function () {
                         $scope.lData = result.data;
-                        buildOrgTree($scope.lData);
+
+                        const nodeMap = {};
+                        graph.clear();
+
+                        $scope.lData.forEach(item => {
+                            const rect = new joint.shapes.standard.Rectangle();
+
+                            // rect.position(item.pos_x, item.pos_y);
+                            rect.resize(item.pos_w, item.pos_h);
+
+                            rect.attr({
+                                label: {
+                                    text: item.title + '\n' + item.position + '\n' + item.department
+                                },
+                                body: {
+                                    fill: '#FFF3CD',        // สีพื้น
+                                    stroke: '#F59E0B',      // สีเส้น
+                                    strokeWidth: 2,
+                                    rx: 6,                  // มุมโค้ง (optional)
+                                    ry: 6
+                                }
+                            });
+
+                            // ⭐ key สำคัญ
+                            rect.set('nodeId', item.id);
+
+                            rect.addTo(graph);
+
+                            //add
+                            nodeMap[item.id] = rect;
+                        });
+
+                        $scope.lData.forEach(item => {
+                            if (!item.parentId) return;
+
+                            const parent = nodeMap[item.parentId];
+                            const child = nodeMap[item.id];
+
+                            if (!parent || !child) return;
+
+                            const link = new joint.shapes.standard.Link();
+
+                            link.source(parent);
+                            link.target(child);
+                            link.router({ name: 'orthogonal' });   // ⭐ หัวใจ
+                            link.connector({ name: 'rounded' });   // มุมโค้งนิด ๆ ดูสวย
+                            link.attr({
+                                line: {
+                                    stroke: '#555',
+                                    strokeWidth: 2,
+                                    targetMarker: {
+                                        type: 'path',
+                                        d: 'M 10 -5 0 0 10 5 z'
+                                    }
+                                }
+                            });
+
+                            link.addTo(graph);
+                        });
+
+                        joint.layout.DirectedGraph.layout(graph, {
+                            setLinkVertices: false,
+                            rankDir: 'TB',   // TB = Top to Bottom (ผังองค์กร)
+                            align: 'UL',
+                            marginX: 50,
+                            marginY: 50,
+                            nodeSep: 50,
+                            rankSep: 80,
+                            setLinkVertices: false
+                        });
+
+                        paper.scaleContentToFit({
+                            padding: 40,
+                            preserveAspectRatio: true,
+                            minScale: 1,
+                            maxScale: 1
+                        });
+
                     }, 0);
                 }
                 , error: AjaxError
             });
         }
-        $scope.LoadData();
+        $scope.LoadData($scope.root);
+
     });
 </script>

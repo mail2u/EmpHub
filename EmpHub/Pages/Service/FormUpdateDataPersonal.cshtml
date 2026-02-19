@@ -1,0 +1,191 @@
+﻿@page
+@model EmpHub.Pages.Service.FormUpdateDataPersonalModel
+@{
+    var token = User.AccessToken(HttpContext);
+}
+<style>
+    .main-content{
+        min-height:calc(100vh - 150px) !important;
+    }
+</style>
+<div ng-controller="ServicePersonalCtrl" id="tab_personal">
+    @* Header *@
+    <partial name="_PartialFormHeader" />
+    @* View *@
+    <div class="rounded-4 mb-3 bg-white shadow-sm p-4">
+     @*    <div class="text-center mb-4">
+            <img src="~/Images/icon-user.png" class="rounded-pill" width="200px" />
+        </div> *@
+        <div class="d-flex">
+           <div class="row">
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fs-5">ชื่อ <i class="text-danger">*</i></div>
+                    <input ng-model="iData.firstname_th" class="form-control firstname_th" />
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fs-5">นามสกุล <i class="text-danger">*</i></div>
+                    <input ng-model="iData.lastname_th" class="form-control lastname_th" />
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fs-5">ชื่อเล่น</div>
+                    <input ng-model="iData.nickname" class="form-control" />
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fs-5">Firstname</div>
+                    <input ng-model="iData.firstname_en" class="form-control" />
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fs-5">Lastname</div>
+                    <input ng-model="iData.lastname_en" class="form-control" />
+                </div>
+                <div class="col-sm-2 mb-3">
+                    <div class="text-dark fs-5">วันเกิด (ค.ศ.)</div>
+                    <input class="form-control icon-calendar date"
+                            ng-model="iData.birth_date_select"
+                            ng-model-options="{ updateOn: 'blur' }"
+                            moment-picker="iData.birth_date_select"
+                            locale="th"
+                            format="DD/MM/YYYY"
+                            min-view="month"
+                            max-view="month" required />
+                </div>
+                <div class="col-sm-2 mb-3">
+                    <div class="text-dark fs-5">เพศ</div>
+                    <div class="d-flex align-items-center p-2">
+                        <div class="me-4">
+                            <input ng-model="iData.sex" type="radio" value="Male" id="ra_male" />
+                            <label for="ra_male">ชาย</label>
+                        </div>
+                        <div>
+                            <input ng-model="iData.sex" type="radio" value="Female" id="ra_female" />
+                            <label for="ra_female">หญิง</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-end">
+        <div class="btn btn-primary" ng-click="Save()">
+            <i class="far fa-paper-plane me-2"></i> Send Request
+        </div>
+    </div>
+</div>
+<script>
+    $(".date").mask("00/00/0000");
+    $(".phone").mask("000-000-0000");
+    app.controller('ServicePersonalCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.mode = '@Model.mode';
+        $scope.userId = '@Model.id';
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserPersonal',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.userId
+                    , create_by: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.iData = result.data;
+
+                        if(result.can_edit != 1){
+                            alertWarning("ท่านไม่ได้สิทธิ์ให้เข้าถึงหน้านี้","กรุณาตรวจสอบ",function(){
+                                location.href = '@Url.Page("/Service/Index")';
+                            })
+                        }
+                        
+                        if ($scope.iData.birth_date != '' && $scope.iData.birth_date != undefined){
+                            var date = ConvertToDate($scope.iData.birth_date);
+                            $scope.iData.birth_date_select = new moment(date);
+                        }
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+        $scope.Validate = function(){
+            var flag = true;
+            JS_Reset($(".firstname_th"));
+            JS_Reset($(".lastname_th"));
+
+            if($scope.iData.firstname_th == ''){
+                flag = false;
+                JS_Require($(".firstname_th"));
+            }
+            if($scope.iData.lastname_th == ''){
+                flag = false;
+                JS_Require($(".lastname_th"));
+            }
+
+            return flag;
+        }
+
+        $scope.Save = async function () {
+            if($scope.Validate()){
+                alertConfirm("ยืนยันการทำรายการ","ท่านต้องการส่งใบคำขอ", async function(){
+                    var id = await $scope.CreateService();
+
+                    if(id){
+                        $scope.iData.id = id;
+                        $scope.iData.refId = id;
+                        
+                        var flag = await $scope.CreatePersonal();
+
+                        if(flag){
+                            var serviceNo = await $scope.ServiceRequest();
+
+                            if(serviceNo){
+                                alertSuccess("ทำรายการสำเร็จ","ระบบบันทึกใบคำขอของท่านเรียบร้อย", function(){
+                                    location.href = '@Url.Page("/Service/Index")';
+                                });
+                            }else{
+                                $scope.CancelService();
+                            }
+                        }else{
+                            $scope.CancelService();
+                        }
+                    }
+                });
+            }else{
+                alertWarning("แจ้งเตือน","กรุณากรอกข้อมูลให้ครบ");
+            }
+        }
+        
+        $scope.CreatePersonal = function(){
+            return new Promise((resolve)=>{
+                if ($scope.iData.birth_date_select) {
+                    $scope.iData.birth_date = $scope.iData.birth_date_select.format("DD/MM/YYYY");
+                }
+
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServicePersonal/Save',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify($scope.iData),
+                    success: function () {
+                        $timeout(async function () {
+                           resolve(true);
+                        }, 0);
+                    }, error: function(jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "ระบบเกิดข้อผิดพลาด",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+    });
+</script>

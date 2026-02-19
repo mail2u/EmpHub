@@ -4,94 +4,43 @@
 @{
     var token = User.AccessToken(Context);
 }
-<div ng-controller="ServiceAddressCtrl" class="mb-4">
-    @* View *@
+<div ng-controller="ServiceAddressCtrl" class="mb-4 text-dark">
     <div class="row">
-        <div class="col-sm-6">
-            <small class="text-orange">ข้อมูลที่ต้องการปรับปรุง</small>
-            <div class="p-3 bg-soft-orange rounded-4 h-100">
-                <div class="row">
-                    <div class="col-sm-8 mb-3">
-                        <small class="text-decoration-underline">
-                            บ้านเลขที่
-                        </small>
-                        <div class="fw-bolder">{{ iData.home != '' ? iData.home : '-' }}</div>
-                    </div>
-                    <div class="col-sm-4 mb-3">
-                        <small class="text-decoration-underline">
-                            ถนน
-                        </small>
-                        <div class="fw-bolder">{{ iData.road != '' ? iData.road : '-' }}</div>
-                    </div>
-                    <div class="col-sm-4 mb-3">
-                        <small class="text-decoration-underline">
-                            แขวง/ตำบล
-                        </small>
-                        <div class="fw-bolder">{{ iData.subDistrictName != '' ? iData.subDistrictName : '-' }}</div>
-                    </div>
-                    <div class="col-sm-4 mb-3">
-                        <small class="text-decoration-underline">
-                            เขต/อำเภอ
-                        </small>
-                        <div class="fw-bolder">{{ iData.districtName != '' ? iData.districtName : '-' }}</div>
-                    </div>
-                    <div class="col-sm-4 mb-3">
-                        <small class="text-decoration-underline">
-                            จังหวัด
-                        </small>
-                        <div class="fw-bolder">{{ iData.provinceName != '' ? iData.provinceName : '-' }}</div>
-                    </div>
-                    <div class="col-sm-4 mb-3">
-                        <small class="text-decoration-underline">
-                            รหัสไปรษณีย์
-                        </small>
-                        <div class="fw-bolder">{{ iData.postcode != '' ? iData.postcode : '-' }}</div>
-                    </div>
-                </div>
-            </div>
+        <div class="col-sm-8 mb-3">
+            <small class="text-decoration-underline">
+                บ้านเลขที่
+            </small>
+            <div class="fw-bolder">{{ iData.home != '' ? iData.home : '-' }}</div>
         </div>
-        <div class="col-sm-6" ng-show="iUser != null">
-            <small class="text-blue">ข้อมูลในระบบ</small>
-            <div class="p-3 bg-soft-blue rounded-4 h-100">
-                <div class="row">
-                    <div class="col-sm-8 mb-3">
-                        <small class="text-decoration-underline">
-                            บ้านเลขที่
-                        </small>
-                        <div class="fw-bolder">{{ iUser.home != '' ? iUser.home : '-' }}</div>
-                    </div>
-                    <div class="col-sm-4 mb-3">
-                        <small class="text-decoration-underline">
-                            ถนน
-                        </small>
-                        <div class="fw-bolder">{{ iUser.road != '' ? iUser.road : '-' }}</div>
-                    </div>
-                    <div class="col-sm-4 mb-3">
-                        <small class="text-decoration-underline">
-                            แขวง/ตำบล
-                        </small>
-                        <div class="fw-bolder">{{ iUser.subDistrictName != '' ? iUser.subDistrictName : '-' }}</div>
-                    </div>
-                    <div class="col-sm-4 mb-3">
-                        <small class="text-decoration-underline">
-                            เขต/อำเภอ
-                        </small>
-                        <div class="fw-bolder">{{ iUser.districtName != '' ? iUser.districtName : '-' }}</div>
-                    </div>
-                    <div class="col-sm-4 mb-3">
-                        <small class="text-decoration-underline">
-                            จังหวัด
-                        </small>
-                        <div class="fw-bolder">{{ iUser.provinceName != '' ? iUser.provinceName : '-' }}</div>
-                    </div>
-                    <div class="col-sm-4 mb-3">
-                        <small class="text-decoration-underline">
-                            รหัสไปรษณีย์
-                        </small>
-                        <div class="fw-bolder">{{ iUser.postcode != '' ? iUser.postcode : '-' }}</div>
-                    </div>
-                </div>
-            </div>
+        <div class="col-sm-4 mb-3">
+            <small class="text-decoration-underline">
+                ถนน
+            </small>
+            <div class="fw-bolder">{{ iData.road != '' ? iData.road : '-' }}</div>
+        </div>
+        <div class="col-sm-4 mb-3">
+            <small class="text-decoration-underline">
+                แขวง/ตำบล
+            </small>
+            <div class="fw-bolder">{{ iData.subDistrictName != '' ? iData.subDistrictName : '-' }}</div>
+        </div>
+        <div class="col-sm-4 mb-3">
+            <small class="text-decoration-underline">
+                เขต/อำเภอ
+            </small>
+            <div class="fw-bolder">{{ iData.districtName != '' ? iData.districtName : '-' }}</div>
+        </div>
+        <div class="col-sm-4 mb-3">
+            <small class="text-decoration-underline">
+                จังหวัด
+            </small>
+            <div class="fw-bolder">{{ iData.provinceName != '' ? iData.provinceName : '-' }}</div>
+        </div>
+        <div class="col-sm-4 mb-3">
+            <small class="text-decoration-underline">
+                รหัสไปรษณีย์
+            </small>
+            <div class="fw-bolder">{{ iData.postcode != '' ? iData.postcode : '-' }}</div>
         </div>
     </div>
 </div>
@@ -100,7 +49,7 @@
 
         $scope.LoadData = function () {
             $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceAddress/DetailByRef',
+                url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceAddress/Detail',
                 headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
@@ -111,8 +60,7 @@
                 }),
                 success: function (result) {
                     $timeout(async function () {
-                        $scope.iData = result.find(item=>item.mode == 'edit');
-                        $scope.iUser = result.find(item=>item.mode == 'original');
+                        $scope.iData = result;
                     }, 0);
                 }, error: AjaxError
             });

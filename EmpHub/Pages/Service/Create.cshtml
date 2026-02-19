@@ -1,0 +1,31 @@
+﻿@page
+@model EmpHub.Pages.Service.CreateModel
+@{
+    var token = User.AccessToken(HttpContext);
+}
+
+@section PageHeader {
+    <!-- [ page-header ] start -->
+    <div class="page-header">
+        <div class="page-header-left d-flex align-items-center">
+            <div class="page-header-title">
+                <h5 class="m-b-10">HR Service</h5>
+            </div>
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Page("/Index")">Home</a></li>
+                <li class="breadcrumb-item">New Request</li>
+            </ul>
+        </div>
+    </div>
+}
+
+<div ng-controller="ServiceCtrl">
+    <div class="rounded-4 p-3 bg-white shadow-sm border">
+      
+    </div>
+</div>
+<script>
+    app.controller('ServiceCtrl', function ($scope, $http, $timeout, $filter) {
+
+    })
+</Script>

@@ -1,0 +1,101 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var token = User.AccessToken(Context);
+}
+<div ng-controller="ServiceJobExperienceCtrl" id="tab_job">
+    @* View *@
+    <div class="">
+        <div ng-show="lData.length > 0">
+            <div class="list-group list-group-flush">
+                <div class="list-group-item px-0" ng-repeat="x in lData">
+                    <div class="d-flex mb-3">
+                        <div class="flex-fill me-3">
+                            <div class="text-gray">
+                                บริษัท
+                            </div>
+                            <div class="text-dark fs-5">{{ x.company != '' ? x.company : '-' }}</div>
+                        </div>
+                        <div class="me-3">
+                            <div class="text-gray">
+                                วันที่เริ่ม
+                            </div>
+                            <div class="text-dark fs-5">{{ x.from_date | date:'MMM yyyy' }}</div>
+                        </div>
+                        <div class="">
+                            <div class="text-gray">
+                                วันที่สิ้นสุด
+                            </div>
+                            <div class="text-dark fs-5">{{ x.end_date | date:'MMM yyyy' }}</div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="text-gray">
+                            ตำแหน่ง
+                        </div>
+                        <div class="text-dark fs-5">{{ x.position != '' ? x.position : '-' }}</div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="text-gray">
+                            รายละเอียดการทำงาน
+                        </div>
+                        <div class="text-dark fs-5">{{ x.description != '' ? x.description : '-' }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div ng-show="lData.length == 0 && can_edit == 1">
+            <a class="btn btn-light border-0" href="@Url.Page("/Service/FormUpdateDataJobs")?mode=EDIT_JOB&id={{userId}}" target="_blank">
+                <i class="fas fa-plus me-2"></i> เพิ่มข้อมูลประวัติการทำงาน
+            </a>
+        </div>
+        <div ng-show="lData.length > 0 && can_edit == 1">
+            <a class="btn btn-light border-0" href="@Url.Page("/Service/FormUpdateDataJobs")?mode=EDIT_JOB&id={{userId}}" target="_blank">
+                <i class="far fa-edit me-1"></i> แก้ไข
+            </a>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ServiceJobExperienceCtrl', function ($scope, $http, $timeout, $filter) {
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserJobExperience',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.userId
+                    , create_by: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.can_view = result.can_view;
+                        $scope.can_edit = result.can_edit;
+                        $scope.lData = result.data;
+                        console.log($scope.lData);
+                        if($scope.lData.length > 0){
+                            $scope.lData = $scope.lData.map((x) => {
+                                x.from_date = x.fromDate != '' ? ConvertToDate(x.fromDate) : '';
+                                x.end_date = x.endDate != '' ? ConvertToDate(x.endDate) : '';
+                                return x;
+                            });
+                        }
+                        $scope.status = $scope.lData.filter(x => x.status == 'Pending').length > 0 ? 'Pending' : 'Approve';
+                        
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+
+        $scope.InitJob = function () {
+            $scope.userId = $scope.$parent.userId
+            $scope.LoadData();
+        }
+        $scope.InitJob();
+    });
+</script>

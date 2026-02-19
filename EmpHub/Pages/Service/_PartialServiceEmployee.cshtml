@@ -5,124 +5,57 @@
     var token = User.AccessToken(Context);
 }
 <div ng-controller="ServiceEmployeeCtrl" class="mb-4">
-    @* View *@
-    <div class="row">
-        <div class="col-sm-6">
-            <small class="text-orange">ข้อมูลที่ต้องการปรับปรุง</small>
-            <div class="p-3 bg-soft-orange rounded-4 h-100">
-                <div class="row">
-                    <div class="col-sm-4 mb-3">
-                        <small class="text-decoration-underline">
-                            รหัสพนักงาน
-                        </small>
-                        <div class="fw-bolder ">{{ iData.employeeCode != '' ? iData.employeeCode : '-' }}</div>
-                    </div>
-                    <div class="col-sm-4 mb-3">
-                        <small class="text-decoration-underline">
-                            ประเภท
-                        </small>
-                        <div class="fw-bolder ">{{ iData.employeeDesc != '' ? iData.employeeDesc : '-' }}</div>
-                    </div>
-                    <div class="col-sm-4 mb-3">
-                        <small class="text-decoration-underline">
-                            วันที่เริ่มงาน
-                        </small>
-                        <div class="fw-bolder ">{{ iData.join_date != '' ? iData.join_date : '-' }}</div>
-                    </div>
-                    <div class="col-sm-4 mb-3">
-                        <small class="text-decoration-underline">
-                            ตำแหน่ง
-                        </small>
-                        <div class="fw-bolder ">{{ iData.positionDesc != '' ? iData.positionDesc : '-' }}</div>
-                    </div>
-                    <div class="col-sm-8 mb-3">
-                        <small class="text-decoration-underline">
-                            ฝ่าย/ส่วนงาน
-                        </small>
-                        <div class="fw-bolder ">{{ iData.departmentDesc != '' ? iData.departmentDesc : '-' }}</div>
-                    </div>
-                    <div class="col-sm-8 mb-3">
-                        <small class="text-decoration-underline">
-                            อีเมล์บริษัท
-                        </small>
-                        <div class="fw-bolder ">{{ iData.email != '' ? iData.email : '-' }}</div>
-                    </div>
-                    <div class="col-sm-4 mb-3">
-                        <small class="text-decoration-underline">
-                            เบอร์ติดต่อภายใน
-                        </small>
-                        <div class="fw-bolder">{{ iData.ext != '' ? iData.ext : '-' }}</div>
-                    </div>
-                    <div class="col-sm-12 mb-3">
-                        <small class="text-decoration-underline">
-                            หัวหน้างาน
-                        </small>
-                        <div>
-                            <div class="fw-bolder ">{{ iData.supervisorName != '' ? iData.supervisorName : '-' }}</div>
-                            <div>{{ iData.supervisorPosition }}</div>
-                            <div>{{ iData.supervisorDepartment }}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div class="row text-dark">
+        <div class="col-sm-4 mb-3">
+            <small class="text-decoration-underline">
+                รหัสพนักงาน
+            </small>
+            <div class="fw-bolder ">{{ iData.employeeCode != '' ? iData.employeeCode : '-' }}</div>
         </div>
-        <div class="col-sm-6" ng-show="status == 'Pending'">
-            <small class="fw-bolder text-blue">ข้อมูลในระบบ</small>
-            <div class="p-3 bg-soft-blue rounded-4 h-100">
-                <div class="row">
-                    <div class="col-sm-4 mb-3">
-                        <small class="text-decoration-underline">
-                            รหัสพนักงาน
-                        </small>
-                        <div class="fw-bolder ">{{ iUser.employeeCode != '' ? iUser.employeeCode : '-' }}</div>
-                    </div>
-                    <div class="col-sm-4 mb-3">
-                        <small class="text-decoration-underline">
-                            ประเภท
-                        </small>
-                        <div class="fw-bolder ">{{ iUser.employeeDesc != '' ? iUser.employeeDesc : '-' }}</div>
-                    </div>
-                    <div class="col-sm-4 mb-3">
-                        <small class="text-decoration-underline">
-                            วันที่เริ่มงาน
-                        </small>
-                        <div class="fw-bolder ">{{ iUser.join_date != '' ? iUser.join_date : '-' }}</div>
-                    </div>
-                    <div class="col-sm-4 mb-3">
-                        <small class="text-decoration-underline">
-                            ตำแหน่ง
-                        </small>
-                        <div class="fw-bolder ">{{ iUser.positionDesc != '' ? iUser.positionDesc : '-' }}</div>
-                    </div>
-                    <div class="col-sm-8 mb-3">
-                        <small class="text-decoration-underline">
-                            ฝ่าย/ส่วนงาน
-                        </small>
-                        <div class="fw-bolder ">{{ iUser.departmentDesc != '' ? iUser.departmentDesc : '-' }}</div>
-                    </div>
-                    <div class="col-sm-8 mb-3">
-                        <small class="text-decoration-underline">
-                            อีเมล์บริษัท
-                        </small>
-                        <div class="fw-bolder ">{{ iUser.email != '' ? iUser.email : '-' }}</div>
-                    </div>
-                    <div class="col-sm-4 mb-3">
-                        <small class="text-decoration-underline">
-                            เบอร์ติดต่อภายใน
-                        </small>
-                        <div class="fw-bolder ">{{ iUser.ext != '' ? iUser.ext : '-' }}</div>
-                    </div>
-                    <div class="col-sm-12 mb-3">
-                        <small class="text-decoration-underline">
-                            หัวหน้างาน
-                        </small>
-                        <div>
-                            <div class="fw-bolder ">{{ iUser.supervisorName != '' ? iData.supervisorName : '-' }}</div>
-                            <div class="">{{ iUser.supervisorPosition }}</div>
-                            <div class="">{{ iUser.supervisorDepartment }}</div>
-                        </div>
-                    </div>
-                </div>
+        <div class="col-sm-4 mb-3">
+            <small class="text-decoration-underline">
+                ประเภท
+            </small>
+            <div class="fw-bolder ">{{ iData.employeeDesc != '' ? iData.employeeDesc : '-' }}</div>
+        </div>
+        <div class="col-sm-4 mb-3">
+            <small class="text-decoration-underline">
+                วันที่เริ่มงาน
+            </small>
+            <div class="fw-bolder ">{{ iData.join_date != '' ? iData.join_date : '-' }}</div>
+        </div>
+        <div class="col-sm-4 mb-3">
+            <small class="text-decoration-underline">
+                ตำแหน่ง
+            </small>
+            <div class="fw-bolder ">{{ iData.positionDesc != '' ? iData.positionDesc : '-' }}</div>
+        </div>
+        <div class="col-sm-8 mb-3">
+            <small class="text-decoration-underline">
+                ฝ่าย/ส่วนงาน
+            </small>
+            <div class="fw-bolder ">{{ iData.departmentDesc != '' ? iData.departmentDesc : '-' }}</div>
+        </div>
+        <div class="col-sm-8 mb-3">
+            <small class="text-decoration-underline">
+                อีเมล์บริษัท
+            </small>
+            <div class="fw-bolder ">{{ iData.email != '' ? iData.email : '-' }}</div>
+        </div>
+      @*   <div class="col-sm-4 mb-3">
+            <small class="text-decoration-underline">
+                เบอร์ติดต่อภายใน
+            </small>
+            <div class="fw-bolder">{{ iData.ext != '' ? iData.ext : '-' }}</div>
+        </div> *@
+        <div class="col-sm-12 mb-3">
+            <small class="text-decoration-underline">
+                หัวหน้างาน
+            </small>
+            <div>
+                <div class="fw-bolder ">{{ iData.supervisorName != '' ? iData.supervisorName : '-' }}</div>
+                <div>{{ iData.supervisorPosition }}</div>
+                <div>{{ iData.supervisorDepartment }}</div>
             </div>
         </div>
     </div>
@@ -132,7 +65,7 @@
 
         $scope.LoadData = function () {
             $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceEmployee/DetailByRef',
+                url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceEmployee/Detail',
                 headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
@@ -143,8 +76,7 @@
                 }),
                 success: function (result) {
                     $timeout(async function () {
-                        $scope.iData = result.find(item=>item.mode=='edit');
-                        $scope.iUser = result.find(item=>item.mode=='original');
+                        $scope.iData = result;
                     }, 0);
                 }, error: AjaxError
             });

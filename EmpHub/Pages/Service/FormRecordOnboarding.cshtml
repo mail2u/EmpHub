@@ -1,0 +1,254 @@
+﻿@page
+@model EmpHub.Pages.Service.FormRecordOnboardingModel
+@{
+    var token = User.AccessToken(HttpContext);
+}
+<style>
+    .main-content {
+        min-height: calc(100vh - 150px) !important;
+    }
+
+</style>
+<div ng-controller="ServiceEducationCtrl" id="tab_education">
+    @* View *@
+    <div class="rounded-4 mb-3 bg-white shadow-sm p-4">
+        <div class="text-center fs-4 fw-bolder mb-4 text-dark">
+            Onboarding Record
+        </div>
+        <div class="text-dark fw-bolder mb-2">1. ข้อมูลตำแหน่งงาน (Position Identification)</div>
+        <div class="mb-2">
+            ชื่อ - นามสกุล : <span class="text-blue">{{ iProfile.firstname_th }} {{ iProfile.lastname_th }}</span>
+        </div>
+        <div class="mb-2">
+            ตำแหน่ง : <span class="text-blue">{{ iEmployee.positionDesc }}</span>
+        </div>
+        <div class="mb-3">
+            ฝ่ายงาน : <span class="text-blue">{{ iEmployee.departmentDesc }}</span>
+        </div>
+        <div class="text-dark fw-bolder mb-2">2. ความรับผิดชอบโดยสังเขป (Position Summary)</div>
+        <div class="mb-3">
+            <textarea ng-model="iData.position_summary" class="form-control form-control-input" maxlength="2000" rows="5" ng-readonly="can_edit != 1"></textarea>
+        </div>
+        <div class="text-dark fw-bolder mb-2">3. โปรแกรมการเรียนรู้และพัฒนา (Learning & Development Program)</div>
+        <div>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th colspan="3" class="text-center">
+                            <div class="mb-2">
+                                แผนการเรียนรู้ในตำแหน่งงาน
+                            </div>
+                        </th>
+                        <th rowspan="2" class="text-center" width="100">
+                            <div class="mb-4">ช่องทาง<br />การเรียนรู้</div>
+                        </th>
+                        <th colspan="2" class="text-center" width="100">
+                            <div>ประเมินผลการเรียนรู้<br />โดยผู้สอนงาน</div>
+                        </th>
+                        <th rowspan="2" class="text-center" width="150">
+                            <div class="mb-4">พนักงาน<br />ลงนามรับทราบ</div>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th class="text-center" width="140">
+                            ช่วงเวลาการเรียนรู้
+                        </th>
+                        <th class="text-center" width="50">
+                            ลำดับ
+                        </th>
+                        <th class="text-center">
+                            หัวข้อการเรียนรู้
+                        </th>
+                        <th class="text-center" width="80">
+                            ผ่าน
+                        </th>
+                        <th class="text-center" width="80">
+                            ไม่ผ่าน
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="x in lData">
+                        <td>
+                            <input ng-model="x.period" class="form-control form-control-input period" ng-show="can_edit == 1" maxlength="100" />
+                            <span class="text-blue" ng-show="can_edit == 0">{{ x.period }}</span>
+                        </td>
+                        <td class="text-center">
+                            {{ $index + 1 }}
+                        </td>
+                        <td>
+                            <input ng-model="x.topic" class="form-control form-control-input topic" ng-show="can_edit == 1" maxlength="200" />
+                            <span class="text-blue" ng-show="can_edit == 0">{{ x.topic }}</span>
+                        </td>
+                        <td>
+                            <input ng-model="x.channel" class="form-control form-control-input channel" ng-show="can_edit == 1" maxlength="100" />
+                            <span class="text-blue" ng-show="can_edit == 0">{{ x.channel }}</span>
+                        </td>
+                        <td class="text-center">
+                            <input type="radio" ng-model="x.answer" value="pass" ng-show="can_edit == 1" />
+                            <i class="fas fa-check text-success" ng-show="can_edit != 1 && x.answer == 'pass'"></i>
+                        </td>
+                        <td class="text-center">
+                            <input type="radio" ng-model="x.answer" value="nopass" ng-show="can_edit == 1" />
+                            <i class="fas fa-check text-success" ng-show="can_edit != 1 && x.answer == 'nopass'"></i>
+                        </td>
+                        <td class="text-center">
+                            
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="btn btn-light-dash text-blue" ng-click="AddRow()">
+                เพิ่มแถว
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-end" ng-show="can_edit == 1">
+        <div class="btn btn-primary" ng-click="Save()">
+            <i class="far fa-save me-2"></i> Save
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ServiceEducationCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.refId = '@Model.id';
+        $scope.lData = [{}];
+
+        $scope.Init = function () {
+            // if ($scope.refId == '') {
+            //     alertWarning("แจ้งเตือน", "ไม่พบเลขอ้างอิง", function () {
+            //         location.href = '@Url.Page("/Service/Index")';
+            //     });
+            // }
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserPersonal',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.refId
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.iProfile = result.data;
+                    }, 0);
+                }, error: AjaxError
+            });
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserEmployee',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.refId
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.iEmployee = result.data;
+                    }, 0);
+                }, error: AjaxError
+            });
+
+            // $.ajax({
+            //     url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceRecordOnboarding/Detail',
+            //     headers: { 'authorization': 'Bearer @token' },
+            //     type: "POST",
+            //     contentType: 'application/json',
+            //     dataType: 'json',
+            //     cache: false,
+            //     data: JSON.stringify({
+            //         refId: $scope.refId
+            //         , userId: '@User.UserId()'
+            //     }),
+            //     success: function (result) {
+            //         $timeout(async function () {
+            //             $scope.lData = result.data;
+
+            //             if ($scope.lData.length == 0) {
+            //                 $scope.lData = [{}];
+            //             }
+
+            //             $scope.can_edit = result.can_edit;
+            //         }, 0);
+            //     }, error: AjaxError
+            // });
+        }
+        $scope.Init();
+
+        $scope.AddRow = function () {
+            $timeout(async function () {
+                $scope.lData.splice($scope.lData.length, 0, {});
+            }, 0);
+        }
+
+        $scope.Validate = function () {
+            var flag = true;
+            // JS_Reset($(".firstname_th"));
+            // JS_Reset($(".lastname_th"));
+
+            // if($scope.iData.firstname_th == ''){
+            //     flag = false;
+            //     JS_Require($(".firstname_th"));
+            // }
+            // if($scope.iData.lastname_th == ''){
+            //     flag = false;
+            //     JS_Require($(".lastname_th"));
+            // }
+
+            return flag;
+        }
+
+        $scope.Save = async function () {
+            if ($scope.Validate()) {
+                $scope.lData = $scope.lData.map(item => {
+                    item.refId = $scope.refId;
+                    item.create_by = '@User.UserId()';
+
+                    return item;
+                });
+
+                var flag = await $scope.CreateKPIProbation();
+
+                if (flag) {
+                    alertSuccess("บันทึกรายการ", "ระบบบันทึกข้อมูลเรียบร้อย");
+                } else {
+                    alertWarning("บันทึกรายการ", "ทำรายการไม่สำเร็จ");
+                }
+            } else {
+                alertWarning("แจ้งเตือน", "กรุณากรอกข้อมูลให้ครบ");
+            }
+        }
+
+        $scope.CreateKPIProbation = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceRecordOnboarding/Save',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify($scope.lData),
+                    success: function () {
+                        $timeout(async function () {
+                            resolve(true);
+                        }, 0);
+                    }, error: function (jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "ระบบเกิดข้อผิดพลาด",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+    });
+</script>

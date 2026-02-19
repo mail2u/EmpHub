@@ -1,0 +1,186 @@
+﻿@{
+    var token = User.AccessToken(Context);
+}
+<div ng-controller="ServiceHeaderCtrl">
+    <div class="mb-3">
+        <div class="d-flex">
+            <div class="flex-fill">
+                บริการ
+                <div class="fs-5 text-dark">
+                    {{ $parent.iCategory.categoryDesc }} / {{ $parent.iCategory.subCategoryDesc }}
+                </div>
+            </div>
+            <div class="">
+                <div class="fs-5 text-primary fw-bolder">{{ $parent.iProfile.firstname_th }} {{ $parent.iProfile.lastname_th }}</div>
+                <div class="text-primary">{{ $parent.iEmployee.positionDesc }} {{ $parent.iEmployee.departmentDesc }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ServiceHeaderCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.LoadCategory = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Category/CategoryByCode',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    subCategoryCode: $scope.$parent.mode
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        if (result.length > 0) {
+                            $scope.$parent.iCategory = result[0];
+                        }
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+
+        $scope.LoadProfile = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserPersonal',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.$parent.userId
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.$parent.iProfile = result.data;
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+
+        $scope.LoadEmployee = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserEmployee',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.$parent.userId
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.$parent.iEmployee = result.data;
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+
+        $scope.Init = function () {
+            $timeout(function () {
+                $scope.LoadProfile();
+                $scope.LoadCategory();
+                $scope.LoadEmployee();
+            }, 500);
+        }
+        $scope.Init();
+
+        $scope.$parent.CreateService = function(){
+            return new Promise((resolve)=>{
+                console.log($scope.$parent.iCategory);
+                $scope.$parent.iData.categoryId = $scope.$parent.iCategory.cateId;
+                $scope.$parent.iData.categoryCode = $scope.$parent.iCategory.categoryCode;
+                $scope.$parent.iData.categoryDesc = $scope.$parent.iCategory.categoryDesc;
+                $scope.$parent.iData.subCategoryId = $scope.$parent.iCategory.subCateId;
+                $scope.$parent.iData.subCategoryCode = $scope.$parent.iCategory.subCategoryCode;
+                $scope.$parent.iData.subCategoryDesc = $scope.$parent.iCategory.subCategoryDesc;
+                $scope.$parent.iData.userId = $scope.$parent.userId;
+                $scope.$parent.iData.createBy = '@User.UserId()';
+
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Service/Create',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify($scope.$parent.iData),
+                    success: function (result) {
+                        $timeout(async function () {
+                            resolve(result.id);
+                        }, 0);
+                    }, error: function(jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "ระบบเกิดข้อผิดพลาด",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+
+        $scope.$parent.ServiceRequest = function(){
+            return new Promise((resolve)=>{
+                $scope.$parent.iData.userBy = '@User.UserId()';
+
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Service/Request',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify($scope.$parent.iData),
+                    success: function (result) {
+                        $timeout(async function () {
+                            resolve(result.serviceNo)
+                        }, 0);
+                    }, error: function(jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "ระบบเกิดข้อผิดพลาด",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+
+        $scope.$parent.CancelService = function(){
+            return new Promise((resolve)=>{
+                $scope.$parent.iData.userBy = '@User.UserId()';
+                $scope.$parent.iData.description = 'Error Auto Cancel';
+
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Service/Cancel',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify($scope.$parent.iData),
+                    success: function (result) {
+                        $timeout(async function () {
+                            resolve(result.serviceNo)
+                        }, 0);
+                    }, error: function(jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "ระบบเกิดข้อผิดพลาด",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+    });
+</script>

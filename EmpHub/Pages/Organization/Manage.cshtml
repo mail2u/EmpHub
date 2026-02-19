@@ -1,0 +1,638 @@
+﻿@page
+@model EmpHub.Pages.Organization.ManageModel
+@{
+    var token = User.AccessToken(HttpContext);
+}
+<style>
+    .hidden {
+        display: none;
+    }
+
+    .resize-handle {
+        fill: #666;
+        stroke: #fff;
+        stroke-width: 1;
+    }
+
+    .handle-nw {
+        cursor: nwse-resize;
+    }
+
+    .handle-ne {
+        cursor: nesw-resize;
+    }
+
+    .handle-sw {
+        cursor: nesw-resize;
+    }
+
+    .handle-se {
+        cursor: nwse-resize;
+    }
+
+</style>
+<div ng-controller="OrgChartCtrl" class="">
+    <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">Organization</li>
+            <li class="breadcrumb-item active" aria-current="page">Organization Structure</li>
+        </ol>
+    </nav>
+    <div class="mb-2 text-end bg-white p-2 border shadow-sm rounded-3 d-flex">
+        @*  <button class="btn btn-default {{ mode == 'edit' ? 'active' : '' }}" ng-click="toggleMode()">
+        <i class="bi bi-pen"></i> ปรับแต่ง
+        </button> *@
+        <select ng-model="chartId" ng-options="x.value as x.key for x in lChart" class="form-select me-2" style="width:200px;" ng-change="LoadChange()"></select>
+        <select ng-model="mode" ng-options="x.code as x.desc_th for x in lDepartment | orderBy : 'desc_th'" class="form-select me-2" style="width:400px;" ng-change="LoadChange()"></select>
+        <div class="btn btn-default me-2" ng-click="AutoAlign()">
+            <i class="fas fa-sitemap me-2"></i> Auto
+        </div>
+        <div class="btn btn-default me-2" ng-click="FitToPage()">
+            <i class="fas fa-expand-arrows-alt me-2"></i> Fit
+        </div>
+        <div class="btn btn-primary me-2" ng-click="SaveAll()">
+            <i ng-show="is_process_save == 0" class="far fa-save me-2"></i>
+            <i ng-show="is_process_save == 1" class="spinner-border spinner-border-sm text-light me-2" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </i>
+            <i ng-show="is_process_save == 2" class="fas fa-check text-success me-2"></i>
+            Save
+        </div>
+        <div ng-show="is_lock != 1" class="btn btn-default" ng-click="Lock()">
+            <i class="fas fa-lock-open me-2"></i> Lock
+        </div>
+        <div ng-show="is_lock == 1" class="btn btn-gray" ng-click="Lock()">
+            <i class="fas fa-lock me-2"></i> Lock
+        </div>
+    </div>
+    <div id="paper" class="p-3 border bg-white rounded-4"></div>
+</div>
+<link rel="stylesheet" href="~/lib/jointjs/joint.min.css">
+<script src="~/lib/jointjs/graphlib.min.js"></script>
+<script src="~/lib/jointjs/dagre.min.js"></script>
+<script src="~/lib/jointjs/lodash.min.js"></script>
+<script src="~/lib/jointjs/backbone-min.js"></script>
+<script src="~/lib/jointjs/joint.min.js"></script>
+<script>
+    app.controller('OrgChartCtrl', function ($scope, $http, $timeout, $filter, $document) {
+        $scope.chartId = "@Model.chartId";
+        $scope.mode = '@Model.id';
+        $scope.is_lock = 0;
+        $scope.is_process_save = 0;
+
+        $scope.lChart = [{ value: 'TIPOrgChart1', key: 'Company' }, { value: 'TIPOrgChart2', key: 'Team' }];
+
+        let selectedElement = null;
+        let resizeState = null;
+        let scale = 1;
+        let start = { x: 0, y: 0, mouseX: 0, mouseY: 0, scale: 0 };
+        const EDGE = 8; // ระยะขอบ (px)
+
+        const minScale = 0.3;
+        const maxScale = 2.5;
+        const graph = new joint.dia.Graph();
+
+        const paper = new joint.dia.Paper({
+            el: document.getElementById('paper'),
+            model: graph,
+            width: '100%',
+            height: 'calc(100vh - 300px)',
+            gridSize: 10,
+            drawGrid: true,
+            interactive: {
+                blankMove: true,
+                elementResize: true
+            },
+            background: { color: '#F5F5F5' },
+            defaultRouter: { name: 'orthogonal' },
+            defaultConnector: { name: 'straight', args: { cornerType: 'line' } },
+            defaultLink: new joint.shapes.standard.Link({
+                attrs: {
+                    line: { stroke: '#555', strokeWidth: 2 }
+                }
+            }),
+            linkPinning: false
+        });
+
+        paper.on('element:pointerdblclick', function (elementView, evt) {
+            evt.stopPropagation();   // กัน event ซ้อน
+            evt.preventDefault();
+
+            const model = elementView.model;
+            const nodeId = model.get('nodeId');
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/OrgChart/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    mode: nodeId
+                    , chartId: $scope.chartId
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        //length > 1 have child
+                        if (result.data.length > 1) {
+                            if ($scope.mode == nodeId) {
+                                var find = $scope.lData.find(item => item.id == nodeId);
+                                //dill up
+                                location.href = '@Url.Page("Manage")?id=' + find.parentId + "&chartId=" + $scope.chartId;
+                            } else {
+                                //dill down
+                                location.href = '@Url.Page("Manage")?id=' + nodeId + "&chartId=" + $scope.chartId;
+                            }
+                        }
+
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        });
+
+        paper.on('element:pointerdown', function (elementView) {
+            if ($scope.is_lock == 1) { return; }
+            selectedElement = elementView.model;
+
+            if (window.activeHandles) {
+                window.activeHandles.remove();
+            }
+            addResizeHandles(elementView.model, paper);
+        });
+
+        paper.on('element:pointerup', function (elementView, evt, x, y) {
+            const model = elementView.model;
+            const size = model.size();
+            const position = model.position();
+            const nodeId = model.get('nodeId');
+            const target = $scope.lData.find(x => x.id === nodeId);
+
+            if (target) {
+                target.pos_x = position.x;
+                target.pos_y = position.y;
+            }
+
+            savePosition(nodeId, position.x, position.y, size.width, size.height);
+        });
+
+        paper.on('element:pointermove', ev => {
+            if (ev.model === selectedElement) {
+                const bbox = ev.getBBox();
+                const paperOffset = paper.el.getBoundingClientRect();
+            }
+        });
+
+        paper.on('blank:mousewheel', function (evt, x, y, delta) {
+            evt.preventDefault();
+
+            const factor = delta > 0 ? 1.1 : 0.9;
+            zoom(factor, { x, y });
+        });
+
+        paper.on('blank:pointerdown', function (evt, x, y) {
+            selectedElement = null;
+            start = {
+                mouseX: evt.clientX,
+                mouseY: evt.clientY, 
+                x, 
+                y, 
+                t: paper.translate(),
+                scale: paper.scale().sx
+            };
+        });
+
+        paper.on('blank:pointermove', function (evt, x, y) {
+            if (!start) return;
+
+            const dx = (evt.clientX - start.mouseX) + start.t.tx;
+            const dy = (evt.clientY - start.mouseY) + start.t.ty;
+
+            paper.translate(dx, dy);
+        });
+
+        paper.on('blank:pointerup', function () {
+            start = null;
+        });
+
+        //ตรวจจับเมาส์อยู่ที่ขอบไหม + เปลี่ยน cursor
+        paper.on('cell:mousemove', function (view, evt, x, y) {
+            if (!selectedElement || view !== selectedElement) return;
+
+            const bbox = view.getBBox();
+            const localX = x - bbox.x;
+            const localY = y - bbox.y;
+
+            let cursor = 'move';
+
+            if (localX < EDGE || localX > bbox.width - EDGE ||
+                localY < EDGE || localY > bbox.height - EDGE) {
+                cursor = 'nwse-resize';
+            }
+
+            paper.el.style.cursor = cursor;
+        });
+
+        //เริ่ม resize เมื่อกดเมาส์ที่ขอบ
+        paper.on('cell:pointerdown', function (view, evt, x, y) {
+            if (!selectedElement || view !== selectedElement) return;
+
+            const bbox = view.getBBox();
+            const localX = x - bbox.x;
+            const localY = y - bbox.y;
+
+            const onEdge =
+                localX < EDGE || localX > bbox.width - EDGE ||
+                localY < EDGE || localY > bbox.height - EDGE;
+
+            if (!onEdge) return;
+
+            evt.stopPropagation();
+
+            resizeState = {
+                el: view.model,
+                startX: x,
+                startY: y,
+                size: view.model.size()
+            };
+        });
+
+        //ลากเพื่อ resize
+        paper.on('cell:pointermove', function (view, evt, x, y) {
+            if (!resizeState) return;
+
+            const dx = x - resizeState.startX;
+            const dy = y - resizeState.startY;
+
+            resizeState.el.resize(
+                Math.max(120, resizeState.size.width + dx),
+                Math.max(50, resizeState.size.height + dy)
+            );
+        });
+
+        //จบ resize
+        paper.on('cell:pointerup', function () {
+            resizeState = null;
+            paper.el.style.cursor = 'default';
+        });
+
+        //ป้องกันชนกับ pan / drag
+        paper.on('cell:pointerdown', (view, evt) => {
+            if (resizeState) evt.stopPropagation();
+        });
+
+        function addResizeHandles(element, paper) {
+            const view = paper.findViewByModel(element);
+            const handles = {};
+            const size = element.size();
+
+            const positions = {
+                nw: { x: 0, y: 0 },
+                ne: { x: size.width, y: 0 },
+                sw: { x: 0, y: size.height },
+                se: { x: size.width, y: size.height }
+            };
+
+            Object.keys(positions).forEach(dir => {
+                const p = positions[dir];
+                const handle = V('rect', {
+                    width: 10,
+                    height: 10,
+                    x: p.x - 5,
+                    y: p.y - 5,
+                    class: `resize-handle handle-${dir}`
+                });
+
+                view.el.appendChild(handle.node);
+                handles[dir] = handle;
+
+                handle.node.addEventListener('pointerdown', evt => startResize(evt, dir));
+            });
+
+            function updateHandles() {
+                const s = element.size();
+                handles.nw.attr({ x: -5, y: -5 });
+                handles.ne.attr({ x: s.width - 5, y: -5 });
+                handles.sw.attr({ x: -5, y: s.height - 5 });
+                handles.se.attr({ x: s.width - 5, y: s.height - 5 });
+            }
+
+            element.on('change:size', updateHandles);
+            updateHandles();
+
+            function startResize(evt, dir) {
+                evt.preventDefault();
+                evt.stopPropagation();
+
+                const start = element.size();
+                const startPos = element.position();
+                const sx = evt.clientX;
+                const sy = evt.clientY;
+
+                document.onpointermove = e => {
+                    const dx = e.clientX - sx;
+                    const dy = e.clientY - sy;
+
+                    let w = start.width;
+                    let h = start.height;
+                    let x = startPos.x;
+                    let y = startPos.y;
+
+                    if (dir.includes('e')) w = Math.max(40, start.width + dx);
+                    if (dir.includes('s')) h = Math.max(30, start.height + dy);
+                    if (dir.includes('w')) {
+                        w = Math.max(40, start.width - dx);
+                        x = startPos.x + dx;
+                    }
+                    if (dir.includes('n')) {
+                        h = Math.max(30, start.height - dy);
+                        y = startPos.y + dy;
+                    }
+
+                    element.position(x, y);
+                    element.resize(w, h);
+                };
+
+                document.onpointerup = () => {
+                    document.onpointermove = null;
+                    document.onpointerup = null;
+
+                    const size = element.size();
+                    const position = element.position();
+                    const nodeId = element.get('nodeId');
+
+                    savePosition(nodeId, position.x, position.y, size.width, size.height);
+                };
+            }
+        }
+
+        function zoom(factor, center) {
+            scale = Math.min(maxScale, Math.max(minScale, scale * factor));
+            paper.scale(scale, scale, center);
+        }
+
+        function createNode(x, y, text) {
+            return new joint.shapes.standard.Rectangle({
+                position: { x, y },
+                size: { width: 180, height: 50 },
+                attrs: {
+                    body: {
+                        rx: 8,
+                        ry: 8,
+                        fill: '#e3f2fd',
+                        stroke: '#1976d2',
+                        strokeWidth: 2
+                    },
+                    label: {
+                        text,
+                        fill: '#0d47a1',
+                        fontSize: 14,
+                        fontWeight: 'bold'
+                    }
+                }
+            });
+        }
+
+        function savePosition(code, x, y, w, h) {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/OrgChart/UpdatePosition'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , cache: false
+                , data: JSON.stringify({
+                    chartId: $scope.chartId
+                    , mode: $scope.mode
+                    , id: code
+                    , pos_x: parseInt(x)
+                    , pos_y: parseInt(y)
+                    , pos_w: parseInt(w)
+                    , pos_h: parseInt(h)
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+
+        $scope.LoadChange = function(){
+            location.href = '@Url.Page("Manage")?id=' + $scope.mode + "&chartId=" + $scope.chartId;
+        }
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/OrgChart/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    mode: $scope.mode
+                    , chartId: $scope.chartId
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lData = result.data;
+
+                        if ($scope.lData.length > 0) {
+                            $scope.is_lock = $scope.lData[0].is_lock;
+
+                            paper.setInteractivity({
+                                blankMove: $scope.is_lock == 0
+                                , elementMove: $scope.is_lock == 0
+                            });
+                        }
+
+                        const nodeMap = {};
+                        graph.clear();
+
+                        $scope.lData.forEach(item => {
+                            const rect = new joint.shapes.standard.Rectangle();
+
+                            rect.position(item.pos_x, item.pos_y);
+                            rect.resize(item.pos_w, item.pos_h);
+
+                            rect.attr({
+                                label: {
+                                    text: item.type == 'Department' ? item.title + '\n' + item.name : item.title + '\n' + item.position
+                                },
+                                body: {
+                                    fill: item.type == 'Department' ? '#FFF3CD' : '#f8f9fa',        // สีพื้น
+                                    stroke: item.type == 'Department' ? '#F59E0B' : '#333',      // สีเส้น
+                                    strokeWidth: 2,
+                                    rx: 6,                  // มุมโค้ง (optional)
+                                    ry: 6
+                                }
+                            });
+
+                            // ⭐ key สำคัญ
+                            rect.set('nodeId', item.id);
+
+                            rect.addTo(graph);
+
+                            //add
+                            nodeMap[item.id] = rect;
+                        });
+
+                        $scope.lData.forEach(item => {
+                            if (!item.parentId) return;
+
+                            const parent = nodeMap[item.parentId];
+                            const child = nodeMap[item.id];
+
+                            if (!parent || !child) return;
+
+                            const link = new joint.shapes.standard.Link();
+
+                            link.source(parent);
+                            link.target(child);
+                            link.router({ name: 'orthogonal' });   // ⭐ หัวใจ
+                            link.connector({ name: 'rounded' });   // มุมโค้งนิด ๆ ดูสวย
+                            link.attr({
+                                line: {
+                                    stroke: '#555',
+                                    strokeWidth: 2,
+                                    targetMarker: {
+                                        type: 'path',
+                                        d: 'M 10 -5 0 0 10 5 z'
+                                    }
+                                }
+                            });
+
+                            link.addTo(graph);
+                        });
+
+                        $scope.FitToPage();
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+        $scope.LoadDepartment = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Department/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    page: 1
+                    , row: 999
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.total = result.length
+                        $scope.lDepartment = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadDepartment();
+
+        $scope.AutoAlign = function () {
+            joint.layout.DirectedGraph.layout(graph, {
+                setLinkVertices: false,
+                rankDir: 'TB',   // TB = Top to Bottom (ผังองค์กร)
+                align: 'UL',
+                marginX: 50,
+                marginY: 50,
+                nodeSep: 50,
+                rankSep: 80,
+                setLinkVertices: false
+            });
+
+            //centerRoot(graph, paper);
+        }
+
+        function getRoot(graph) {
+            return graph.getElements().find(el =>
+                graph.getConnectedLinks(el, { inbound: true }).length === 0
+            );
+        }
+
+        function centerRoot(graph, paper) {
+            const root = getRoot(graph);
+            if (!root) return;
+
+            const rootPos = root.position();
+            const rootSize = root.size();
+
+            const paperWidth = paper.el.clientWidth;
+
+            const rootCenterX = rootPos.x + rootSize.width / 2;
+            const targetX = paperWidth / 2;
+
+            const dx = targetX - rootCenterX;
+
+            graph.getElements().forEach(el => {
+                const p = el.position();
+                el.position(p.x + dx, p.y);
+            });
+        }
+
+        $scope.SaveAll = function () {
+            $timeout(function () {
+                $scope.is_process_save = 1;
+            }, 0);
+
+            $timeout(function () {
+                graph.getElements().forEach(el => {
+                    var nodeId = el.get('nodeId');
+                    var position = el.position();
+                    var size = el.size();
+
+                    savePosition(nodeId, position.x, position.y, size.width, size.height);
+                });
+                $scope.is_process_save = 2;
+
+                $timeout(function () {
+                    $scope.is_process_save = 0;
+                }, 1500);
+            }, 1000);
+
+        }
+
+        $scope.Lock = function () {
+            $scope.is_lock = $scope.is_lock != 1 ? 1 : 0;
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/OrgChart/Lock'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , cache: false
+                , data: JSON.stringify({
+                    mode: $scope.mode
+                    , chartId: $scope.chartId
+                    , is_lock: $scope.is_lock
+                })
+                , success: function () {
+                    $timeout(function () {
+                        paper.setInteractivity({
+                            blankMove: $scope.is_lock == 0
+                            , elementMove: $scope.is_lock == 0
+                        });
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+
+        $scope.FitToPage = function () {
+            paper.scaleContentToFit({
+                padding: 40,
+                preserveAspectRatio: true,
+                minScale: -2,
+                maxScale: 3
+            });
+        }
+    });
+</script>

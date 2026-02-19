@@ -1,0 +1,106 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var token = User.AccessToken(Context);
+}
+<div ng-controller="ServiceEmployeeCtrl" id="tab_employee">
+    @* View *@
+    <div class=" position-relative">
+        <div>
+            <div class="row">
+                <div class="col-sm-4 mb-3">
+                    <div class="text-gray">
+                        รหัสพนักงาน
+                    </div>
+                    <div class="text-dark fs-5 ">{{ iData.employeeCode != '' ? iData.employeeCode : '-' }}</div>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-gray">
+                        ประเภท
+                    </div>
+                    <div class="text-dark fs-5 ">{{ iData.employeeDesc != '' ? iData.employeeDesc : '-' }}</div>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-gray">
+                        วันที่เริ่มงาน
+                    </div>
+                    <div class="text-dark fs-5 ">{{ iData.join_date != '' ? iData.join_date : '-' }}</div>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-gray">
+                        ตำแหน่ง
+                    </div>
+                    <div class="text-dark fs-5 ">{{ iData.positionDesc != '' ? iData.positionDesc : '-' }}</div>
+                </div>
+                <div class="col-sm-8 mb-3">
+                    <div class="text-gray">
+                        ฝ่าย/ส่วนงาน
+                    </div>
+                    <div class="text-dark fs-5 ">{{ iData.departmentDesc != '' ? iData.departmentDesc : '-' }}</div>
+                </div>
+                <div class="col-sm-8 mb-3">
+                    <div class="text-gray">
+                        อีเมล์บริษัท
+                    </div>
+                    <div class="text-dark fs-5 ">{{ iData.email != '' ? iData.email : '-' }}</div>
+                </div>
+               @*  <div class="col-sm-4 mb-3">
+                    <div class="text-gray">
+                        เบอร์ติดต่อภายใน
+                    </div>
+                    <div class="text-dark fs-5">{{ iData.ext != '' ? iData.ext : '-' }}</div>
+                </div> *@
+                <div class="col-sm-12 mb-3">
+                    <div class="text-gray">
+                        หัวหน้างาน
+                    </div>
+                    <div class="text-dark fs-5">
+                        <div >{{ iData.supervisorName != '' ? iData.supervisorName : '-' }}</div>
+                        <div>{{ iData.supervisorPosition }}</div>
+                        <div>{{ iData.supervisorDepartment }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div ng-show="can_edit == 1">
+            <a class="btn btn-light border-0" href="@Url.Page("/Service/FormUpdateDataEmployee")?mode=EDIT_EMPLOYEE&id={{userId}}" target="_blank">
+                <i class="far fa-edit me-1"></i> แก้ไข
+            </a>
+        </div>
+    </div>
+</div>
+<script>
+    $(".date").mask("00/00/0000");
+    $(".ext").mask("0000");
+    app.controller('ServiceEmployeeCtrl', function ($scope, $http, $timeout, $filter) {
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserEmployee',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.userId
+                    , create_by: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.iData = result.data;
+                        $scope.can_view = result.can_view;
+                        $scope.can_edit = result.can_edit;
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+
+        $scope.InitEmployee = function () {
+            $scope.userId = $scope.$parent.userId
+            $scope.LoadData();
+        }
+        $scope.InitEmployee();
+    });
+</script>

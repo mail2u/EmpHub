@@ -72,7 +72,7 @@
 <div ng-controller="CommentCtrl">
     <div class="mb-4 rounded p-2">
         <div ng-repeat="x in lComment" class="">
-            <div class="rounded shadow-sm p-3 mb-3 box-{{ x.mode }}">
+            <div class="rounded border p-3 mb-2 box-{{ x.mode }}">
                 <div class="d-flex">
                     <div class="flex-fill text-secondary">
                         @*    <span class="icon-profile" title="{{ x.create_by }}">
@@ -86,11 +86,11 @@
                         </div>
                     </div>
                     <div class="text-end small">
-                        <div class="fw-bolder">{{ x.mode }}</div>
+                        <div class="fw-bolder">ข้อความที่ #{{ $index + 1}}</div>
                         <div class="">{{ x.create_date }}</div>
                     </div>
                 </div>
-                <hr />
+                <hr class="mt-1 mb-2" />
                 <p class="box-comment-detail mb-4" ng-bind-html="x.detail"></p>
                 <div>
                     <div class="" ng-repeat="a in x.lAttach" title="{{ a.outputname }}">
@@ -106,8 +106,8 @@
                     </div>
                 </div>
                 <div class="text-end" ng-show="x.can_delete == 1">
-                    <div class="select text-danger small" ng-click="DeleteComment(x)">
-                        <i class="bi bi-trash"></i> ลบข้อความนี้
+                    <div class="btn btn-sm btn-warning-invert" ng-click="DeleteComment(x)">
+                        ลบข้อความนี้
                     </div>
                 </div>
             </div>
@@ -124,7 +124,7 @@
             </div>
             <div class="d-flex">
                 <button ng-click="AddComment()" class="btn btn-secondary text-nowrap me-2">
-                    บันทึก
+                    ส่งข้อความ
                 </button>
                 <label for="lFile" class="btn btn-light border select me-2">
                     <i class="fas fa-paperclip"></i>
@@ -149,6 +149,7 @@
         $scope.row = 20;
         $scope.lComment = [];
         $scope.lFile = [];
+        $scope.lAttachFile = [];
         $scope.lMode = ['Comment', 'Task'];
         $scope.mode = $scope.lMode[0];
 
@@ -213,7 +214,6 @@
                             $scope.LoadAttach($scope.lComment[i]);
                         }
 
-                        $scope.lAttachFile = [];
                         editor.setValue('');
                     }, 0);
                 }

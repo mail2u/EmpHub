@@ -43,7 +43,7 @@
                 </button>
             </div>
             <div class="me-2">
-                <button ng-click="Download()" class="btn btn-circle" title="Download">
+                <button ng-click="Download()" class="btn btn-circle" title="Download" ng-disabled="total == 0">
                     <i class="fas fa-arrow-down"></i>
                 </button>
             </div>
@@ -52,15 +52,17 @@
             </div>
         </div>
     </div>
-    <div class="text-end d-flex flex-nowrap align-items-center">
-        <span class="d-none d-md-block me-2">
-            {{ (total > 0 ? ((page - 1) * row) + 1 : 0) | number }} - {{ (page * row < total ? page * row : total) | number }} of {{ total | number }}
-        </span>
-        <button class="btn btn-circle me-1" ng-click="SetPage(page - 1)" ng-disabled="page <= 1" title="Previous Page">
-            <i class="fas fa-chevron-left"></i>
-        </button>
-        <button class="btn btn-circle" ng-click="SetPage(page + 1)" ng-disabled="page * row >= total" title="Next Page">
-            <i class="fas fa-chevron-right"></i>
-        </button>
+    <div class="text-end d-flex flex-nowrap align-items-end">
+        <div class="d-flex align-items-center">
+            <span class="d-none d-md-block me-2 text-nowrap">
+                {{ (total > 0 ? ((page - 1) * row) + 1 : 0) | number }} - {{ (page * row < total ? page * row : total) | number }} of {{ total | number }}
+            </span>
+            <button class="btn btn-circle me-1" ng-click="SetPage(page - 1)" ng-disabled="page <= 1" title="Previous Page">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="btn btn-circle" ng-click="SetPage(page + 1)" ng-disabled="page * row >= total" title="Next Page">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
     </div>
 </div>

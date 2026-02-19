@@ -4,114 +4,53 @@
 @{
     var token = User.AccessToken(Context);
 }
-<div ng-controller="ServicePersonalCtrl" class="mb-4">
-    @* View *@
+<div ng-controller="ServicePersonalCtrl" class="mb-4 text-dark">
     <div class="row">
-        <div class="col-sm-6">
-            <small class="text-orange">ข้อมูลที่ต้องการปรับปรุง</small>
-            <div class="p-3 bg-soft-orange rounded-4 h-100">
-                <div class="row">
-                    <div class="col-sm-5 mb-3">
-                        <small class="text-decoration-underline">
-                            ชื่อ-สกุล (ภาษาไทย)
-                        </small>
-                        <div class="fw-bolder">{{ iData.firstname_th != '' ? iData.firstname_th : '-' }} {{ iData.lastname_th }}</div>
-                    </div>
-                    <div class="col-sm-5 mb-3">
-                        <small class="text-decoration-underline">
-                            ชื่อ-สกุล (ภาษาอังกฤษ)
-                        </small>
-                        <div class="fw-bolder">{{ iData.firstname_en != '' ? iData.firstname_en : '-' }} {{ iData.lastname_en }}</div>
-                    </div>
-                    <div class="col-sm-2 mb-3">
-                        <small class="text-decoration-underline">
-                            ชื่อเล่น
-                        </small>
-                        <div class="fw-bolder">{{ iData.nickname != '' ? iData.nickname : '-' }}</div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-5 mb-3">
-                        <small class="text-decoration-underline">
-                            เบอร์ติดต่อ
-                        </small>
-                        <div class="fw-bolder">{{ iData.phoneNo != '' ? iData.phoneNo : '-' }}</div>
-                    </div>
-                    <div class="col-sm-5 mb-3">
-                        <small class="text-decoration-underline">
-                            วันเกิด
-                        </small>
-                        <div class="fw-bolder">{{ iData.birth_date != '' ? iData.birth_date : '-' }}</div>
-                    </div>
-                    <div class="col-sm-2 mb-3">
-                        <small class="text-decoration-underline">
-                            เพศ
-                        </small>
-                        <div class="fw-bolder">{{ iData.sex == 'Male' ? 'ชาย' : iData.sex == 'Female' ? 'หญิง' : '-'  }}</div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-5 mb-3">
-                        <small class="text-decoration-underline">
-                            อีเมล์
-                        </small>
-                        <div class="fw-bolder">{{ iData.email != '' ? iData.email : '-' }}</div>
-                    </div>
-                </div>
-            </div>
+        <div class="col-sm-5 mb-3">
+            <small class="text-decoration-underline">
+                ชื่อ-สกุล (ภาษาไทย)
+            </small>
+            <div class="fw-bolder">{{ iData.firstname_th != '' ? iData.firstname_th : '-' }} {{ iData.lastname_th }}</div>
         </div>
-        <div class="col-sm-6" ng-show="status == 'Pending'">
-            <small class="fw-bolder text-blue">ข้อมูลในระบบ</small>
-            <div class="p-3 bg-soft-blue rounded-4 h-100">
-                <div class="row">
-                    <div class="col-sm-5 mb-3">
-                        <small class="text-decoration-underline">
-                            ชื่อ-สกุล (ภาษาไทย)
-                        </small>
-                        <div class="fw-bolder">{{ iUser.firstname_th != '' ? iUser.firstname_th : '-' }} {{ iUser.lastname_th }}</div>
-                    </div>
-                    <div class="col-sm-5 mb-3">
-                        <small class="text-decoration-underline">
-                            ชื่อ-สกุล (ภาษาอังกฤษ)
-                        </small>
-                        <div class="fw-bolder">{{ iUser.firstname_en != '' ? iUser.firstname_en : '-' }} {{ iUser.lastname_en }}</div>
-                    </div>
-                    <div class="col-sm-2 mb-3">
-                        <small class="text-decoration-underline">
-                            ชื่อเล่น
-                        </small>
-                        <div class="fw-bolder">{{ iUser.nickname != '' ? iUser.nickname : '-' }}</div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-5 mb-3">
-                        <small class="text-decoration-underline">
-                            เบอร์ติดต่อ
-                        </small>
-                        <div class="fw-bolder">{{ iUser.phoneNo != '' ? iUser.phoneNo : '-' }}</div>
-                    </div>
-                    <div class="col-sm-5 mb-3">
-                        <small class="text-decoration-underline">
-                            วันเกิด
-                        </small>
-                        <div class="fw-bolder">{{ iUser.birth_date != '' ? iUser.birth_date : '-' }}</div>
-                    </div>
-                    <div class="col-sm-2 mb-3">
-                        <small class="text-decoration-underline">
-                            เพศ
-                        </small>
-                        <div class="fw-bolder">{{ iUser.sex == 'Male' ? 'ชาย' : iUser.sex == 'Female' ? 'หญิง' : '-'  }}</div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-5 mb-3">
-                        <small class="text-decoration-underline">
-                            อีเมล์
-                        </small>
-                        <div class="fw-bolder">{{ iUser.email != '' ? iUser.email : '-' }}</div>
-                    </div>
-                </div>
-            </div>
+        <div class="col-sm-2 mb-3">
+            <small class="text-decoration-underline">
+                ชื่อเล่น
+            </small>
+            <div class="fw-bolder">{{ iData.nickname != '' ? iData.nickname : '-' }}</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-5 mb-3">
+            <small class="text-decoration-underline">
+                ชื่อ-สกุล (ภาษาอังกฤษ)
+            </small>
+            <div class="fw-bolder">{{ iData.firstname_en != '' ? iData.firstname_en : '-' }} {{ iData.lastname_en }}</div>
+        </div>
+        <div class="col-sm-5 mb-3">
+            <small class="text-decoration-underline">
+                วันเกิด
+            </small>
+            <div class="fw-bolder">{{ iData.birth_date != '' ? iData.birth_date : '-' }}</div>
+        </div>
+        <div class="col-sm-2 mb-3">
+            <small class="text-decoration-underline">
+                เพศ
+            </small>
+            <div class="fw-bolder">{{ iData.sex == 'Male' ? 'ชาย' : iData.sex == 'Female' ? 'หญิง' : '-'  }}</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-5 mb-3">
+            <small class="text-decoration-underline">
+                เบอร์ติดต่อ
+            </small>
+            <div class="fw-bolder">{{ iData.phoneNo != '' ? iData.phoneNo : '-' }}</div>
+        </div>
+        <div class="col-sm-5 mb-3">
+            <small class="text-decoration-underline">
+                อีเมล์
+            </small>
+            <div class="fw-bolder">{{ iData.email != '' ? iData.email : '-' }}</div>
         </div>
     </div>
 </div>
@@ -120,7 +59,7 @@
 
         $scope.LoadData = function () {
             $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/ServicePersonal/DetailByRef',
+                url: '@webAPI.CurrentValue.APIEmpHub/api/ServicePersonal/Detail',
                 headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
@@ -131,8 +70,7 @@
                 }),
                 success: function (result) {
                     $timeout(async function () {
-                        $scope.iData = result.find(item=>item.mode=='edit');
-                        $scope.iUser = result.find(item=>item.mode=='original');
+                        $scope.iData = result;
                     }, 0);
                 }, error: AjaxError
             });

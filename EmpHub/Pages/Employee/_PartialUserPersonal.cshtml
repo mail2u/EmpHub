@@ -1,0 +1,103 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var token = User.AccessToken(Context);
+}
+<div ng-controller="ServicePersonalCtrl" id="tab_personal">
+    @* View *@
+    <div class="rounded-4 mb-2 bg-white position-relative">
+        <div class="position-absolute top-0 end-0 m-2" ng-show="can_edit == 1">
+            <a class="btn btn-light border-0" href="@Url.Page("/Service/FormUpdateDataPersonal")?mode=EDIT_PERSONAL&id={{userId}}" target="_blank">
+                <i class="far fa-edit me-1"></i> แก้ไข
+            </a>
+        </div>
+        <div class="text-center mb-4">
+            <img src="~/Images/icon-user.png" class="rounded-pill" width="200px" />
+        </div>
+        <div class="d-flex">
+            <div class="flex-fill">
+                <div class="row">
+                    <div class="col-sm-5 mb-3">
+                        <div class="text-gray">
+                            ชื่อ-สกุล (ภาษาไทย)
+                        </div>
+                        <div class="text-dark fs-5">{{ iData.firstname_th }} {{ iData.lastname_th }}</div>
+                    </div>
+                    <div class="col-sm-7 mb-3">
+                        <div class="text-gray">
+                            ชื่อเล่น
+                        </div>
+                        <div class="text-dark fs-5">{{ iData.nickname != '' ? iData.nickname : '-' }}</div>
+                    </div>
+                    <div class="col-sm-5 mb-3">
+                        <div class="text-gray">
+                            ชื่อ-สกุล (ภาษาอังกฤษ)
+                        </div>
+                        <div class="text-dark fs-5">{{ iData.firstname_en }} {{ iData.lastname_en }}</div>
+                    </div>
+                    <div class="col-sm-5 mb-3">
+                        <div class="text-gray">
+                            วันเกิด
+                        </div>
+                        <div class="text-dark fs-5">{{ iData.birth_date != '' ? iData.birth_date : '-' }}</div>
+                    </div>
+                    <div class="col-sm-2 mb-3">
+                        <div class="text-gray">
+                            เพศ
+                        </div>
+                        <div class="text-dark fs-5">{{ iData.sex == 'Male' ? 'ชาย' : iData.sex == 'Female' ? 'หญิง' : '-'  }}</div>
+                    </div>
+                    <div class="col-sm-5 mb-3">
+                        <div class="text-gray">
+                            เบอร์ติดต่อ
+                        </div>
+                        <div class="text-dark fs-5">{{ iData.phoneNo != '' ? iData.phoneNo : '-' }}</div>
+                    </div>
+                    <div class="col-sm-7">
+                        <div class="text-gray">
+                            อีเมล์
+                        </div>
+                        <div class="text-dark fs-5">{{ iData.email != '' ? iData.email : '-' }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(".date").mask("00/00/0000");
+    $(".phone").mask("000-000-0000");
+    app.controller('ServicePersonalCtrl', function ($scope, $http, $timeout, $filter) {
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserPersonal',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.userId
+                    , create_by: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.iData = result.data;
+                        $scope.can_view = result.can_view;
+                        $scope.can_edit = result.can_edit;
+
+                        $scope.$parent.fullname = $scope.iData.firstname_en + ' ' + $scope.iData.lastname_en;
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+
+        $scope.InitPersonal = function () {
+            $scope.userId = $scope.$parent.userId
+            $scope.LoadData();
+        }
+        $scope.InitPersonal();
+    });
+</script>

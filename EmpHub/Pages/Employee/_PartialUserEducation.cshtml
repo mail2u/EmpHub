@@ -1,0 +1,81 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var token = User.AccessToken(Context);
+}
+<div ng-controller="ServiceEducationCtrl" id="tab_education">
+    @* View *@
+    <div class="">
+        <div ng-show="lData.length > 0">
+            <div class="list-group list-group-flush">
+                <div class="list-group-item px-0" ng-repeat="x in lData">
+                    <div class="row">
+                        <div class="col-sm-8 mb-3">
+                            <div class="text-gray">
+                                หลักสูตรหรือวุฒิการศึกษา
+                            </div>
+                            <div class="text-dark fs-5">{{ x.levelName != '' ? x.levelName : '-' }}</div>
+                        </div>
+                        <div class="col-sm-4 mb-3">
+                            <div class="text-gray">
+                                ปีที่สำเร็จการศึกษา
+                            </div>
+                            <div class="text-dark fs-5">{{ x.year != '' ? x.year : '-' }}</div>
+                        </div>
+                        <div class="col-sm-12 mb-3">
+                            <div class="text-gray">
+                                สถาบันการศึกษา
+                            </div>
+                            <div class="text-dark fs-5">{{ x.institution != '' ? x.institution : '-' }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div ng-show="lData.length == 0 && can_edit == 1">
+            <a class="btn btn-light border-0" href="@Url.Page("/Service/FormUpdateDataEducation")?mode=EDIT_EDUCATION&id={{userId}}" target="_blank">
+                <i class="fas fa-plus me-2"></i> เพิ่มประวัติการศึกษา
+            </a>
+        </div>
+        <div ng-show="lData.length > 0 && can_edit == 1">
+            <a class="btn btn-light border-0" href="@Url.Page("/Service/FormUpdateDataEducation")?mode=EDIT_EDUCATION&id={{userId}}" target="_blank">
+                <i class="far fa-edit me-1"></i> แก้ไข
+            </a>
+        </div>
+    </div>
+</div>
+<script>
+    $(".year").mask("0000");
+    app.controller('ServiceEducationCtrl', function ($scope, $http, $timeout, $filter) {
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserEducation',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.userId
+                    , create_by: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.lData = result.data;
+                        $scope.can_view = result.can_view;
+                        $scope.can_edit = result.can_edit;
+                        $scope.status = $scope.lData.filter(x => x.status == 'Pending').length > 0 ? 'Pending' : 'Approve';
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+
+        $scope.InitEducation = function () {
+            $scope.userId = $scope.$parent.userId
+            $scope.LoadData();
+        }
+        $scope.InitEducation();
+    });
+</script>

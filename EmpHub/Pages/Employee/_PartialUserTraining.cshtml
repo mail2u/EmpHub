@@ -1,0 +1,92 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var token = User.AccessToken(Context);
+}
+<div ng-controller="ServiceTrainingCtrl" id="tab_training">
+    @* View *@
+    <div class="">
+        <div ng-show="lData.length > 0">
+            <div class="list-group list-group-flush">
+                <div class="list-group-item px-0" ng-repeat="x in lData">
+                    <div class="d-flex mb-3">
+                        <div class="flex-fill me-3">
+                            <div class="text-gray">
+                                ชื่อใบอนุญาต
+                            </div>
+                            <div class="text-dark fs-5">{{ x.license != '' ? x.license : '-' }}</div>
+                        </div>
+                        <div class="me-3">
+                            <div class="text-gray">
+                                วันที่ออกเอกสาร
+                            </div>
+                            <div class="text-dark fs-5">{{ x.issueDate != '' ? x.issueDate : '-' }}</div>
+                        </div>
+                        <div class="">
+                            <div class="text-gray">
+                                วันหมดอายุ
+                            </div>
+                            <div class="text-dark fs-5">{{ x.expireDate != '' ? x.expireDate : '-' }}</div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="text-gray">
+                            องค์กรที่ออกเอกสาร
+                        </div>
+                        <div class="text-dark fs-5">{{ x.organization != '' ? x.organization : '-' }}</div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="text-gray">
+                            รายละเอียด
+                        </div>
+                        <div class="text-dark fs-5">{{ x.description != '' ? x.description : '-' }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div ng-show="lData.length == 0 && can_edit == 1">
+            <a class="btn btn-light border-0" href="@Url.Page("/Service/FormUpdateDataTraining")?mode=EDIT_TRAINING&id={{userId}}" target="_blank">
+                <i class="fas fa-plus me-2"></i> เพิ่มใบอนุญาตหรือประกาศนียบัตร
+            </a>
+        </div>
+        <div ng-show="lData.length > 0 && can_edit == 1">
+            <a class="btn btn-light border-0" href="@Url.Page("/Service/FormUpdateDataTraining")?mode=EDIT_TRAINING&id={{userId}}" target="_blank">
+                <i class="far fa-edit me-1"></i> แก้ไข
+            </a>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ServiceTrainingCtrl', function ($scope, $http, $timeout, $filter) {
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserTraining',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.userId
+                    , create_by: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.lData = result.data;
+                        $scope.can_view = result.can_view;
+                        $scope.can_edit = result.can_edit;
+                        $scope.status = $scope.lData.filter(x => x.status == 'Pending').length > 0 ? 'Pending' : 'Approve';
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+
+        $scope.InitTraining = function () {
+            $scope.userId = $scope.$parent.userId
+            $scope.LoadData();
+        }
+        $scope.InitTraining();
+    });
+</script>

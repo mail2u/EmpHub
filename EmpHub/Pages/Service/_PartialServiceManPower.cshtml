@@ -1,0 +1,262 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var token = User.AccessToken(Context);
+}
+<div ng-controller="ServiceAddressCtrl" class="mb-4 text-dark">
+    <div class="row">
+        <div class="col-sm-6 mb-3 d-lg-flex align-items-center">
+            <div class="me-3">
+                <div class="text-dark text-nowrap fw-bolder">ตำแหน่งที่ต้องการ</div>
+                <div class="text-dark text-nowrap">Position Required</div>
+            </div>
+            <div class="text-blue">{{ iData.position != '' ? iData.position : '-' }}</div>
+        </div>
+        <div class="col-sm-6 mb-3 d-lg-flex align-items-center">
+            <div class="me-3">
+                <div class="text-dark text-nowrap fw-bolder">แผนก / ฝ่าย</div>
+                <div class="text-dark text-nowrap">Division / Department</div>
+            </div>
+            <div class="text-blue">{{ iData.department != '' ? iData.department : '-' }}</div>
+        </div>
+        <div class="col-sm-6 mb-3 d-lg-flex align-items-center">
+            <div class="me-3">
+                <div class="text-dark text-nowrap fw-bolder">วันที่ต้องการ</div>
+                <div class="text-dark text-nowrap">Date Required</div>
+            </div>
+            <div class="text-blue">{{ iData.required_date != '' ? iData.required_date : '-' }}</div>
+        </div>
+        <div class="col-sm-6 mb-3 d-lg-flex align-items-center">
+            <div class="me-3">
+                <div class="text-dark text-nowrap fw-bolder">จำนวนพนักงานที่ต้องการ</div>
+                <div class="text-dark text-nowrap">Number of Employee Required</div>
+            </div>
+            <div class="text-blue">{{ iData.num_employee != '' ? iData.num_employee : '-' }}</div>
+        </div>
+        <div class="col-sm-8 mb-3">
+            <div class="type_employment d-lg-flex align-items-center">
+                <div class="me-3">
+                    <div class="text-dark text-nowrap fw-bolder">ประเภทของการจ้างงาน</div>
+                    <div class="text-dark text-nowrap">Type of Employment</div>
+                </div>
+                <div class="flex-fill">
+                    <div class="d-lg-flex align-items-center text-blue">
+                        <div ng-show="iData.type_employment == 'permanent'">
+                            ประจำ / Permanent
+                        </div>
+                        <div ng-show="iData.type_employment == 'daily'">
+                            รายวัน / Daily
+                        </div>
+                        <div ng-show="iData.type_employment == 'monthly'">
+                            รายเดือน / Monthly
+                        </div>
+                        <div ng-show="iData.type_employment == 'outsource'">
+                            จ้างช่วงระยะเวลา / Temporarily, Outsource
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4 mb-3">
+            <div class="d-lg-flex align-items-center" ng-show="iData.type_employment == 'outsource'">
+                <div class="me-3">
+                    <div class="text-dark text-nowrap fw-bolder">ระยะเวลาการจ้าง</div>
+                    <div class="text-dark text-nowrap">Duration</div>
+                </div>
+                <div class="text-blue me-3">{{ iData.type_employment_desc != '' ? iData.type_employment_desc : '-' }}</div>
+            </div>
+        </div>
+        <div class="col-sm-12 mb-3">
+            <div class="type_requirement d-lg-flex">
+                <div class="me-3">
+                    <div class="text-dark text-nowrap fw-bolder">ประเภทของความต้องการ</div>
+                    <div class="text-dark text-nowrap">Type of Requirement</div>
+                </div>
+                <div class="d-lg-flex align-items-center flex-fill text-blue">
+                    <div ng-show="iData.type_requirement == 'external_recruit'">
+                        สรรหาภายนอก (External Recruit)
+                    </div>
+                    <div ng-show="iData.type_requirement == 'internal_recruit'">
+                        สรรหาภายใน (Internal Recruit)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12 mb-3">
+            <div class="type_reason">
+                <div class="">
+                    <div class="text-dark text-nowrap fw-bolder">เหตุผลการขอกำลังคนเพิ่ม</div>
+                    <div class="text-dark text-nowrap">Reason of Additional Manpower Requisition</div>
+                </div>
+                <div ng-show="iData.type_reason == 'additional_budget'" class="text-blue">
+                    จ้างตามงบประมาณ / Additional Budget
+                </div>
+                <div ng-show="iData.type_reason == 'additional_hire'" class="text-blue">
+                    จ้างเพิ่ม / Additional Hire : {{ iData.type_reason_additional_hire_desc }}
+                </div>
+                <div ng-show="iData.type_reason == 'replacement'" class="text-blue">
+                    ทดแทน / Replacement (Whom ?) : {{ iData.type_reason_replacement_desc }}
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12 mb-3">
+            <div class="text-dark fw-bolder">ลักษณะงานที่ทำโดยสังเขป</div>
+            <div class="text-dark">Description of Work</div>
+            <div class="text-blue">{{ iData.description_work }}</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="mb-2 ">
+                <div class="text-warning fw-bolder">คุณสมบัติ Qualification</div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3 mb-3">
+                    <div class="sex d-lg-flex">
+                        <div class="me-3">
+                            <div class="text-dark text-nowrap fw-bolder">เพศ</div>
+                            <div class="text-dark text-nowrap">Sex</div>
+                        </div>
+                        <div class="d-lg-flex align-items-center flex-fill">
+                            <div ng-show="iData.sex == 'male'" class="text-blue">
+                                ชาย / Male
+                            </div>
+                            <div ng-show="iData.sex == 'female'" class="text-blue">
+                                หญิง / Female
+                            </div>
+                            <div ng-show="iData.sex == ''" class="text-blue">
+                                ไม่ระบุ
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-2 d-lg-flex align-items-center mb-3">
+                    <div class="me-3">
+                        <div class="text-dark text-nowrap fw-bolder">อายุ</div>
+                        <div class="text-dark text-nowrap">Age</div>
+                    </div>
+                    <div class="text-blue">
+                        {{ iData.age }}
+                    </div>
+                </div>
+                <div class="col-sm-7 d-lg-flex align-items-center mb-3">
+                    <div class="me-3">
+                        <div class="text-dark text-nowrap fw-bolder">การศึกษา</div>
+                        <div class="text-dark text-nowrap">Education</div>
+                    </div>
+                    <div class="text-blue">
+                        {{ iData.education }}
+                    </div>
+                </div>
+                <div class="col-sm-12 d-lg-flex align-items-center mb-3">
+                    <div class="me-3">
+                        <div class="text-dark text-nowrap fw-bolder">สาขา</div>
+                        <div class="text-dark text-nowrap">Major</div>
+                    </div>
+                    <div class="text-blue">
+                        {{ iData.major }}
+                    </div>
+                </div>
+                <div class="col-sm-12 d-lg-flex align-items-center mb-3">
+                    <div class="me-3">
+                        <div class="text-dark text-nowrap fw-bolder">ความรู้ในงาน</div>
+                        <div class="text-dark text-nowrap">Knowledge</div>
+                    </div>
+                    <div class="text-blue">
+                        {{ iData.knowledge }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12 mb-3">
+            <div class="text-dark fw-bolder">ความสามารถพิเศษ / Speial Skill</div>
+            <div class="" ng-show="iData.skill_language == 1">
+                ภาษาต่างประเทศ / Foreign Language Command
+                <div class="text-blue">{{ iData.skill_language_desc }}</div>
+            </div>
+            <div class="mt-2" ng-show="iData.skill_computer == 1">
+                ความรู้เรื่องคอมพิวเตอร์ / Computer Knowledge
+                <div class="text-blue">{{ iData.skill_computer_desc }}</div>
+            </div>
+            <div class="mt-2" ng-show="iData.skill_other == 1">
+                อื่น ๆ / Other
+                <div class="text-blue">{{ iData.skill_other_desc }}</div>
+            </div>
+        </div>
+        <div class="col-sm-12 mb-3">
+            <div class="text-dark fw-bolder">ประสบการณ์ / Experience</div>
+            <div ng-show="iData.type_experience == 'no'">
+                ไม่มีประสบการณ์ / Inexperience
+            </div>
+            <div ng-show="iData.type_experience == 'yes'">
+                ประสบการณ์ขั้นต่ำ / Minimum Experience
+                <div class="text-blue">{{ iData.type_experience_yes_desc }}</div>
+            </div>
+            <div ng-show="iData.type_experience == 'other'">
+                อื่น ๆ / Other
+                <div class="text-blue">{{ iData.type_experience_other_desc }}</div>
+            </div>
+        </div>
+        <div>
+            <div class="text-dark fw-bolder">คำบรรยายลักษณะงาน (JOB DESCRIPTION)</div>
+            <a href="@Url.Page("/Service/FormJobDescription")?id={{ iData.refId }}" class="btn btn-light-dash bg-white" ng-show="iJD.refId == null && iJD.can_edit == 1" target="_blank">
+                <i class="fas fa-plus me-2"></i> เพิ่มรายละเอียด
+            </a>
+            <a href="@Url.Page("/Service/FormJobDescription")?id={{ iData.refId }}" class="btn btn-primary" ng-show="iJD.refId != null" target="_blank">
+                ดูรายละเอียด
+            </a>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ServiceAddressCtrl', function ($scope, $http, $timeout, $filter) {
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceManPower/Detail',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    refId: $scope.refId
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.iData = result;
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+
+        $scope.LoadJD = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceJobDescription/Detail',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    refId: $scope.refId
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.iJD = result.data;
+                        $scope.iJD.can_edit = result.can_edit;
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+
+        $scope.$parent.LoadManPower = function (x) {
+            $scope.refId = x.id;
+            $scope.userId = x.userId;
+            $scope.status = x.status;
+            $scope.LoadData();
+            $scope.LoadJD();
+        }
+    });
+</script>

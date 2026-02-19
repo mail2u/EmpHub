@@ -1,0 +1,70 @@
+﻿@page
+@model EmpHub.Pages.Service.NewModel
+@{
+    var token = User.AccessToken(HttpContext);
+}
+
+@section PageHeader {
+    <!-- [ page-header ] start -->
+    <div class="page-header">
+        <div class="page-header-left d-flex align-items-center">
+            <div class="page-header-title">
+                <h5 class="m-b-10">HR Service</h5>
+            </div>
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Page("/Index")">Home</a></li>
+                <li class="breadcrumb-item">New Request</li>
+            </ul>
+        </div>
+    </div>
+}
+
+<div ng-controller="ServiceCtrl">
+    <div class="rounded-4 p-3 bg-white shadow-sm border">
+        <div ng-repeat="c in lCategory">
+            <div class="fs-5">{{ c.cateDesc }}</div>
+            <div class="list-group list-group-flush">
+                <div class="list-group-item list-group-item-action text-dark select" ng-repeat="s in c.lSub" ng-click="Create(s)">
+                    {{ s.cateDesc }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ServiceCtrl', function ($scope, $http, $timeout, $filter) {
+
+        $scope.LoadCategory = function(){
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Category/AuthenList',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: '@User.UserId()'
+                    , sysId: 'HR'
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.lCategory = result;
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+        $scope.LoadCategory();
+        
+        $scope.Create = function(x){
+            if (x.cateCode == "NEED_MANPOWER") {
+                location.href = '@Url.Page("/Service/FormManpower")?mode=NEED_MANPOWER';
+            }else if (x.cateCode == "NEED_TRAINING") {
+                location.href = '@Url.Page("/Service/FormNeedTraining")?mode=NEED_TRAINING';
+            }else{
+                location.href = '@Url.Page("/Service/Create")';
+            }
+        }
+
+    })
+</Script>

@@ -1,0 +1,88 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var token = User.AccessToken(Context);
+}
+<div ng-controller="ServiceAddressCtrl" id="tab_address">
+    @* View *@
+    <div class="position-relative">
+        <div class="row">
+            <div class="col-sm-8 mb-3">
+                <div class="text-gray">
+                    บ้านเลขที่
+                </div>
+                <div class="text-dark fs-5">{{ iData.home != '' ? iData.home : '-' }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-gray">
+                    ถนน
+                </div>
+                <div class="text-dark fs-5">{{ iData.road != '' ? iData.road : '-' }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-gray">
+                    แขวง/ตำบล
+                </div>
+                <div class="text-dark fs-5">{{ iData.subDistrictName != '' ? iData.subDistrictName : '-' }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-gray">
+                    เขต/อำเภอ
+                </div>
+                <div class="text-dark fs-5">{{ iData.districtName != '' ? iData.districtName : '-' }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-gray">
+                    จังหวัด
+                </div>
+                <div class="text-dark fs-5">{{ iData.provinceName != '' ? iData.provinceName : '-' }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-gray">
+                    รหัสไปรษณีย์
+                </div>
+                <div class="text-dark fs-5">{{ iData.postcode != '' ? iData.postcode : '-' }}</div>
+            </div>
+        </div>
+        <div ng-show="can_edit == 1">
+            <a class="btn btn-light border-0" href="@Url.Page("/Service/FormUpdateDataAddress")?mode=EDIT_ADDRESS&id={{userId}}" target="_blank">
+                <i class="far fa-edit me-1"></i> แก้ไข
+            </a>
+        </div>
+    </div>
+</div>
+<script>
+    $(".postcode").mask("00000");
+
+    app.controller('ServiceAddressCtrl', function ($scope, $http, $timeout, $filter) {
+        
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserAddress',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.userId
+                    , create_by: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.iData = result.data;
+                        $scope.can_view = result.can_view;
+                        $scope.can_edit = result.can_edit;
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+
+        $scope.InitAddress = function () {
+            $scope.userId = $scope.$parent.userId
+            $scope.LoadData();
+        }
+        $scope.InitAddress();
+    });
+</script>

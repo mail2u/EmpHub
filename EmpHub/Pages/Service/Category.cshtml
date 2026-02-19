@@ -35,12 +35,20 @@
             <div class="list-group list-group-flush connected-apps-container overflow-auto" ui-sortable="sortableOptions" ng-model="lCategory" style="height:calc(100vh - 380px);">
                 <div class="list-group-item list-group-item-action rounded {{ x.categoryDesc == iCategory.categoryDesc ? 'active' : '' }}" ng-repeat="x in lCategory" ng-click="SelectCategory(x)">
                     <div class="d-flex align-items-center">
-                        <div class="d-flex align-items-center flex-fill">
+                        <div class="d-flex align-items-center flex-fill me-2">
                             <div style="width:30px" class="sort-handle select">
                                 <i class="bi bi-grip-vertical"></i>
                             </div>
-                            <div class="">{{ x.categoryDesc }}</div>
-                            <div>{{ x.description }}</div>
+                            <div>
+                                <div class="fw-bolder">{{ x.categoryDesc }}</div>
+                                <div class="text-primary">{{ x.categoryCode }}</div>
+                                <div ng-show="x.allow_every==1" class="small text-success">
+                                    อนุญาติให้ใช้งานได้ทุกคน
+                                </div>
+                                <div ng-show="x.allow_every!=1" class="small text-warning">
+                                    ใช้งานได้ตามสิทธิ์
+                                </div>
+                            </div>
                         </div>
                         <button class="btn btn-circle me-1" ng-click="EditCategory(x)">
                             <i class="fas fa-pen"></i>
@@ -67,7 +75,15 @@
                         <tr ng-repeat="x in lSubCategory">
                             <td>
                                 {{ x.subCategoryDesc }}
-                                <div class="text-primary" ng-show="x.subCategoryCode != ''"><i class="fas fa-code me-1"></i> {{ x.subCategoryCode }}</div>
+                                <div ng-show="x.allow_every==1" class="small text-success">
+                                    อนุญาติให้ใช้งานได้ทุกคน
+                                </div>
+                                <div ng-show="x.allow_every!=1" class="small text-warning">
+                                    ใช้งานได้ตามสิทธิ์
+                                </div>
+                                <div class="text-primary" ng-show="x.subCategoryCode != ''">
+                                    <i class="fas fa-code me-1"></i> {{ x.subCategoryCode }}
+                                </div>
                             </td>
                             <td width="50">
                                 <button class="btn btn-circle p-0" ng-click="EditSubCategory(x)">
@@ -98,13 +114,17 @@
                         <div>Title</div>
                         <input ng-model="iCategory.categoryDesc" class="form-control categoryDesc" maxlength="200" />
                     </div>
+                    <div class="mb-3">
+                        <div>Category Code</div>
+                        <input ng-model="iCategory.categoryCode" class="form-control categoryCode" maxlength="50" />
+                    </div>
                     @*  <div class="mb-3">
                     <div>Description</div>
                     <textarea ng-model="iCategory.description" class="form-control" maxlength="400" rows="4"></textarea>
                     </div> *@
-                    @*     <div class="mb-3">
-                    <div><input id="allow_every_sub" ng-model="iCategory.allow_every" type="checkbox" ng-true-value=1 ng-false-value=0 /> <label for="allow_every_sub">อนุญาติให้ใช้งาน (ทุกคน)</label></div>
-                    </div> *@
+                    <div class="mb-3">
+                        <div><input id="allow_every_sub" ng-model="iCategory.allow_every" type="checkbox" ng-true-value=1 ng-false-value=0 /> <label for="allow_every_sub">อนุญาติให้ใช้งาน (ทุกคน)</label></div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" ng-click="UpdateCategory()">Create</button>
@@ -133,10 +153,9 @@
                         <div>Process Code</div>
                         <input ng-model="iSubCategory.subCategoryCode" class="form-control" maxlength="50" />
                     </div>
-                    @*   <div class="mb-3">
-                    <div>Description</div>
-                    <textarea ng-model="iSubCategory.description" class="form-control" maxlength="400" rows="4"></textarea>
-                    </div> *@
+                    <div class="mb-3">
+                        <div><input id="allow_every_sub" ng-model="iSubCategory.allow_every" type="checkbox" ng-true-value=1 ng-false-value=0 /> <label for="allow_every_sub">อนุญาติให้ใช้งาน (ทุกคน)</label></div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger-invert" ng-click="DeleteSubCategory()" ng-show="iCategory.id > 0">ลบข้อมูล</button>

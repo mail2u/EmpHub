@@ -5,8 +5,14 @@ namespace EmpHub.Pages.Organization
 {
     public class IndexModel : PageModel
     {
-        public void OnGet()
+        public string id { get; set; }
+        public void OnGet(string id)
         {
+            if (String.IsNullOrEmpty(id))
+            {
+                this.id = "CEO";
+            }
+            else { this.id = id; }
         }
     }
 }
