@@ -1,0 +1,309 @@
+﻿@page
+@model EmpHub.Pages.Organization.DetailModel
+@{
+    var token = User.AccessToken(HttpContext);
+}
+<style>
+    .hidden {
+        display: none;
+    }
+
+    /* กัน cursor แปลก ๆ จาก joint */
+    .joint-element, .joint-cell {
+        cursor: default !important;
+    }
+</style>
+<div ng-controller="OrgChartCtrl" class="p-2">
+    <div class="d-flex align-items-center mb-3">
+        <div class="flex-fill">
+            <div class="fs-4 text-dark fw-bolder">
+                {{ iChart.title }}
+            </div>
+            <div class="text-gray">
+                {{ iChart.description }}
+            </div>
+        </div>
+    </div>
+    <div class="p-4 border bg-white rounded-4 d-flex justify-content-center shadow-sm">
+        <div id="paper" class="bg-white"></div>
+    </div>
+</div>
+<link rel="stylesheet" href="~/lib/jointjs/joint.min.css">
+<script src="https://unpkg.com/graphlib@2.1.8/dist/graphlib.min.js"></script>
+<script src="https://unpkg.com/dagre@0.8.5/dist/dagre.min.js"></script>
+<script src="~/lib/jointjs/lodash.min.js"></script>
+<script src="~/lib/jointjs/backbone-min.js"></script>
+<script src="~/lib/jointjs/joint.min.js"></script>
+<script>
+    app.controller('OrgChartCtrl', function ($scope, $http, $timeout, $filter, $document) {
+        $scope.chartId = '@Model.id';
+
+        let selectedElement = null;
+        let activeLink = null;
+        let scale = 1;
+        let panning = false;
+        let start = { x: 0, y: 0, tx: 0, ty: 0 };
+
+        const minScale = 0.3;
+        const maxScale = 2.5;
+        const graph = new joint.dia.Graph();
+
+        const paper = new joint.dia.Paper({
+            el: document.getElementById('paper'),
+            model: graph,
+            width: '100%',
+            height: 600,
+            gridSize: 10,
+            drawGrid: false,
+            interactive: {
+                blankMove: false,
+                elementMove: false,
+            },
+            background: { color: '#F5F5F5' },
+            defaultRouter: { name: 'orthogonal' },
+            defaultConnector: { name: 'straight', args: { cornerType: 'line' } },
+            defaultLink: new joint.shapes.standard.Link({
+                attrs: {
+                    line: { stroke: '#555', strokeWidth: 2 }
+                }
+            }),
+            linkPinning: false
+        });
+
+        paper.on('element:pointerdblclick', function (elementView, evt) {
+            evt.stopPropagation();   // กัน event ซ้อน
+            evt.preventDefault();
+
+            const model = elementView.model;
+            const chartId = model.get('link');
+
+            // 👉 เรียก function drill down
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/OrgChart/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    chartId: chartId
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        //length > 1 have child
+                        if(result.data.length > 1){
+                            //dill down
+                            location.href = '@Url.Page("Detail")?id=' + chartId;
+                        }
+
+                        }, 0);
+                    }
+                , error: AjaxError
+            });
+        });
+
+        paper.on('blank:mousewheel', function (evt, x, y, delta) {
+            // evt.preventDefault();
+
+            // const factor = delta > 0 ? 1.1 : 0.9;
+            // zoom(factor, { x, y });
+        });
+
+        paper.on('blank:pointerdown', function (evt, x, y) {
+            // selectedElement = null;
+            // start = {
+            //     mouseX: evt.clientX,
+            //     mouseY: evt.clientY,
+            //     x,
+            //     y,
+            //     t: paper.translate(),
+            //     scale: paper.scale().sx
+            // };
+        });
+
+        paper.on('blank:pointermove', function (evt, x, y) {
+            // if (!start) return;
+
+            // const dx = (evt.clientX - start.mouseX) + start.t.tx;
+            // const dy = (evt.clientY - start.mouseY) + start.t.ty;
+
+            // paper.translate(dx, dy);
+        });
+
+        paper.on('blank:pointerup', function () {
+            start = null;
+        });
+
+        function clamp(value, min, max) {
+            return Math.min(Math.max(value, min), max);
+        }
+
+        function getPanBounds() {
+            const paperSize = paper.getComputedSize();
+            const contentBBox = graph.getBBox(graph.getCells());
+
+            return {
+                minX: paperSize.width - contentBBox.x - contentBBox.width - 100,
+                maxX: -contentBBox.x + 100,
+                minY: paperSize.height - contentBBox.y - contentBBox.height - 100,
+                maxY: -contentBBox.y + 100
+            };
+        }
+
+        function zoom(factor, center) {
+            scale = Math.min(maxScale, Math.max(minScale, scale * factor));
+            paper.scale(scale, scale, center);
+        }
+
+        $scope.LoadDetail = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Chart/Detail'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    chartId: $scope.chartId
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.iChart = result;
+
+                        if ($scope.iChart.chartId == '') {
+                            alertWarning("Warning", "The diagram number is incorrect.", function () {
+                                location.href = '@Url.Page("Index")';
+                            })
+                        }
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadDetail();
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/OrgChart/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    chartId: $scope.chartId
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lData = result.data;
+
+                        const nodeMap = {};
+                        graph.clear();
+
+                        $scope.lData.forEach(item => {
+                            const rect = new joint.shapes.standard.Rectangle({
+                                markup: [
+                                    { tagName: 'rect', selector: 'body' },
+                                    { tagName: 'text', selector: 'label' },
+                                    { tagName: 'text', selector: 'subLabel' }
+                                ]
+                            });
+
+                            rect.position(item.pos_x, item.pos_y);
+                            rect.resize(item.pos_w, item.pos_h);
+
+                            rect.attr({
+                                label: {
+                                    text: item.title,
+                                    fill: item.color,
+                                    fontSize: item.font_size,
+                                    fontWeight: item.font_bold == 1 ? 'bold' : '',
+                                    refX: '50%',
+                                    refY: 20,
+                                    textAnchor: 'middle'
+                                },
+                                subLabel: {
+                                    text: item.description,
+                                    fill: item.sub_color,
+                                    fontSize: item.sub_font_size,
+                                    fontWeight: item.sub_font_bold == 1 ? 'bold' : '',
+                                    refX: '50%',
+                                    refY: 40,
+                                    textAnchor: 'middle'
+                                },
+                                body: {
+                                    fill: item.bg,
+                                    stroke: item.strokc,
+                                    strokeWidth: item.stroke_width,
+                                    rx: 6,                  // มุมโค้ง (optional)
+                                    ry: 6
+                                }
+                            });
+
+                            // ⭐ key สำคัญ
+                            rect.set('nodeId', item.id);
+                            rect.set('isElement', true);
+                            rect.set('link', item.link);
+
+                            rect.addTo(graph);
+
+                            //add
+                            nodeMap[item.id] = rect;
+                        });
+
+                        $scope.lData.forEach(item => {
+                            if (!item.parentId) return;
+
+                            const parent = nodeMap[item.parentId];
+                            const child = nodeMap[item.id];
+
+                            if (!parent || !child) return;
+
+                            const link = new joint.shapes.standard.Link();
+
+                            link.source(parent);
+                            link.target(child);
+                            link.router({ name: 'orthogonal' });   // ⭐ หัวใจ
+                            link.connector({ name: 'rounded' });   // มุมโค้งนิด ๆ ดูสวย
+                            link.attr({
+                                line: {
+                                    stroke: '#555',
+                                    strokeWidth: 2,
+                                    targetMarker: {
+                                        type: 'path',
+                                        d: 'M 10 -5 0 0 10 5 z'
+                                    }
+                                }
+                            });
+
+                            link.addTo(graph);
+                        });
+
+                        // paper.scaleContentToFit({
+                        //     padding: 40,
+                        //     preserveAspectRatio: true,
+                        //     minScale: 0,
+                        //     maxScale: 1
+                        // });
+
+                        //FitHeight
+                        const padding = 40;
+                        const bbox = graph.getBBox();
+                        const newWidth = bbox.width + (padding * 2);
+                        const newHeight = bbox.height + (padding * 2);
+
+                        paper.setDimensions(newWidth, newHeight);
+                        paper.translate(
+                            padding - bbox.x,
+                            padding - bbox.y
+                        );
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+    });
+</script>

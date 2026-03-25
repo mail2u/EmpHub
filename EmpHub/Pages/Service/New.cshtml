@@ -20,11 +20,14 @@
 }
 
 <div ng-controller="ServiceCtrl">
+    <div class="rounded-4 p-3 bg-white shadow-sm border mb-4">
+        <input ng-model="search" class="form-control" placeholder="Find..." />
+    </div>
     <div class="rounded-4 p-3 bg-white shadow-sm border">
         <div ng-repeat="c in lCategory">
             <div class="fs-5">{{ c.cateDesc }}</div>
             <div class="list-group list-group-flush">
-                <div class="list-group-item list-group-item-action text-dark select" ng-repeat="s in c.lSub" ng-click="Create(s)">
+                <div class="list-group-item list-group-item-action text-dark select" ng-repeat="s in c.lSub | filter : search" ng-click="Create(s)">
                     {{ s.cateDesc }}
                 </div>
             </div>
@@ -57,11 +60,21 @@
         $scope.LoadCategory();
         
         $scope.Create = function(x){
-            if (x.cateCode == "NEED_MANPOWER") {
-                location.href = '@Url.Page("/Service/FormManpower")?mode=NEED_MANPOWER';
-            }else if (x.cateCode == "NEED_TRAINING") {
-                location.href = '@Url.Page("/Service/FormNeedTraining")?mode=NEED_TRAINING';
-            }else{
+            if (x.cateCode == "FORM_REQUEST_MANPOWER") {
+                location.href = '@Url.Page("/Service/FormManpower")?mode=FORM_REQUEST_MANPOWER';
+            } else if (x.cateCode == "FORM_REQUEST_TRAINING") {
+                location.href = '@Url.Page("/Service/FormNeedTraining")?mode=FORM_REQUEST_TRAINING';
+            } else if (x.cateCode == "FORM_NEED_NEW_CARD") {
+                location.href = '@Url.Page("/Service/FormNewCard")?mode=FORM_NEED_NEW_CARD';
+            } else if (x.cateCode == "FORM_PARKING_STICKER") {
+                location.href = '@Url.Page("/Service/FormParkingSticker")?mode=FORM_PARKING_STICKER';
+            } else if (x.cateCode == "FORM_BUY_UNIFORM") {
+                location.href = '@Url.Page("/Service/FormBuyUniform")?mode=FORM_BUY_UNIFORM';
+            } else if (x.cateCode == "FORM_RESET_PASSWORD") {
+                location.href = '@Url.Page("/Service/FormResetPassword")?mode=FORM_RESET_PASSWORD';
+            } else if (x.cateCode == "FORM_SALARY_CERTIFICATE") {
+                location.href = '@Url.Page("/Service/FormSalaryCertificate")?mode=FORM_SALARY_CERTIFICATE';
+            } else {
                 location.href = '@Url.Page("/Service/Create")';
             }
         }

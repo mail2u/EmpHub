@@ -70,74 +70,75 @@
 <script src="~/lib/simditor/uploader.js"></script>
 <script src="~/lib/simditor/simditor.js"></script>
 <div ng-controller="CommentCtrl">
-    <div class="mb-4 rounded p-2">
-        <div ng-repeat="x in lComment" class="">
-            <div class="rounded border p-3 mb-2 box-{{ x.mode }}">
-                <div class="d-flex">
-                    <div class="flex-fill text-secondary">
-                        @*    <span class="icon-profile" title="{{ x.create_by }}">
-                        {{ x.create_by.split(' ')[0][0] + x.create_by.split(' ')[1][0] }}
-                        </span>  *@
-                        <div class="small fw-bolder">
+    <div ng-repeat="x in lComment" class="d-flex mb-4">
+        <div class="me-3">
+            <div class="overflow-hidden" style="width:40px; min-width:40px;">
+                <img src="~/Images/icon-user.png" class="rounded-pill" width="40px" />
+            </div>
+        </div>
+        <div class="flex-fill">
+            <div class="d-flex mb-2 align-items-center">
+                <div class="flex-fill">
+                    <div>
+                        <span class="text-dark fw-bolder">
                             {{ x.create_by }}
-                        </div>
-                        <div class="small">
-                            {{ x.create_department }}
-                        </div>
+                        </span>
+                        <i class="bi bi-dot"></i>
+                        <small>{{ x.create_date }}</small>
                     </div>
-                    <div class="text-end small">
-                        <div class="fw-bolder">ข้อความที่ #{{ $index + 1}}</div>
-                        <div class="">{{ x.create_date }}</div>
+                    <div class="text-gray">
+                        {{ x.create_position }} {{ x.create_department }}
                     </div>
                 </div>
-                <hr class="mt-1 mb-2" />
+                <div ng-show="x.can_delete == 1">
+                    <div class="btn btn-sm btn-warning-secondary" ng-click="DeleteComment(x)">
+                        Delete
+                    </div>
+                </div>
+            </div>
+            <div class="border p-2" style="border-radius:0px 10px 10px 10px; background-color: var(--bs-gray-100);">
                 <p class="box-comment-detail mb-4" ng-bind-html="x.detail"></p>
-                <div>
-                    <div class="" ng-repeat="a in x.lAttach" title="{{ a.outputname }}">
-                        <a class="btn btn-link" href="@webAPI.CurrentValue.APIEmpHub/api/File/DownloadFile?refId={{ a.refId }}&id={{ a.id }}" target="_blank" title="Download">
-                            <div class="d-flex align-items-center w-100">
-                                <img width="20" src="data:image/png;base64,{{a.imageBase64}}">
-                                <span class="text-truncate mx-2 flex-grow-1 w-100" style="min-width: 0;">
-                                    {{a.outputname }}
-                                </span>
-                                <i class="bi bi-download"></i>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-                <div class="text-end" ng-show="x.can_delete == 1">
-                    <div class="btn btn-sm btn-warning-invert" ng-click="DeleteComment(x)">
-                        ลบข้อความนี้
-                    </div>
+                <div class="" ng-repeat="a in x.lAttach" title="{{ a.outputname }}">
+                    <a class="btn btn-link" href="@webAPI.CurrentValue.APIEmpHub/api/File/DownloadFile?refId={{ a.refId }}&id={{ a.id }}" target="_blank" title="Download">
+                        <div class="d-flex align-items-center w-100">
+                            <img width="20" src="data:image/png;base64,{{a.imageBase64}}">
+                            <span class="text-truncate mx-2 flex-grow-1 w-100" style="min-width: 0;">
+                                {{a.outputname }}
+                            </span>
+                            <i class="bi bi-download"></i>
+                        </div>
+                    </a>
                 </div>
             </div>
         </div>
-        <div class="">
-            <div class="mb-3">
+    </div>
+    <div class="">
+        <div class="mb-3">
+            <div class="border rounded-4 overflow-hidden">
                 <textarea id="editor" class="form-control detail" rows="4" maxlength="4000" placeholder="ความคิดเห็น"></textarea>
-                <div class="badge bg-gray me-2 mt-2" ng-repeat="x in lAttachFile">
-                    {{ x.filename}} ({{ FileSizeDesc(x.filesize) }})
-                    <span class="select" ng-click="RemoveAttach($index)">
-                        <i class="fas fa-times text-danger"></i>
-                    </span>
+            </div>
+            <div class="badge bg-gray me-2 mt-2" ng-repeat="x in lAttachFile">
+                {{ x.filename}} ({{ FileSizeDesc(x.filesize) }})
+                <span class="select" ng-click="RemoveAttach($index)">
+                    <i class="fas fa-times text-danger"></i>
+                </span>
+            </div>
+        </div>
+        <div class="d-flex">
+            <button ng-click="AddComment()" class="btn btn-primary text-nowrap me-2">
+                POST
+            </button>
+            <label for="lFile" class="btn btn-light border select me-2">
+                <i class="fas fa-paperclip"></i>
+            </label>
+            <input class="d-none" base-sixty-four-input id="lFile" type="file" ng-model="lFile" ng-change="AddAttach()" multiple>
+            @if (User.Authen().Contains("[Work]"))
+            {
+                <div class="input-group">
+                    <span class="input-group-text">ประเภท</span>
+                    <select ng-model="mode" ng-options="x as x for x in lMode" class="form-select"></select>
                 </div>
-            </div>
-            <div class="d-flex">
-                <button ng-click="AddComment()" class="btn btn-secondary text-nowrap me-2">
-                    ส่งข้อความ
-                </button>
-                <label for="lFile" class="btn btn-light border select me-2">
-                    <i class="fas fa-paperclip"></i>
-                </label>
-                <input class="d-none" base-sixty-four-input id="lFile" type="file" ng-model="lFile" ng-change="AddAttach()" multiple>
-                @if (User.Authen().Contains("[Work]"))
-                {
-                    <div class="input-group">
-                        <span class="input-group-text">ประเภท</span>
-                        <select ng-model="mode" ng-options="x as x for x in lMode" class="form-select"></select>
-                    </div>
-                }
-            </div>
+            }
         </div>
     </div>
 </div>

@@ -6,12 +6,13 @@
 }
 <div ng-controller="ServicePersonalCtrl" id="tab_personal">
     @* View *@
-    <div class="rounded-4 mb-2 bg-white position-relative">
-        <div class="position-absolute top-0 end-0 m-2" ng-show="can_edit == 1">
+    <div class="rounded-4 position-relative">
+       @*  <div class="position-absolute top-0 end-0 m-2" ng-show="can_edit == 1">
             <a class="btn btn-light border-0" href="@Url.Page("/Service/FormUpdateDataPersonal")?mode=EDIT_PERSONAL&id={{userId}}" target="_blank">
                 <i class="far fa-edit me-1"></i> แก้ไข
             </a>
-        </div>
+        </div> *@
+
         <div class="text-center mb-4">
             <img src="~/Images/icon-user.png" class="rounded-pill" width="200px" />
         </div>
@@ -22,7 +23,6 @@
                         <div class="text-gray">
                             ชื่อ-สกุล (ภาษาไทย)
                         </div>
-                        <div class="text-dark fs-5">{{ iData.firstname_th }} {{ iData.lastname_th }}</div>
                     </div>
                     <div class="col-sm-7 mb-3">
                         <div class="text-gray">
@@ -34,7 +34,6 @@
                         <div class="text-gray">
                             ชื่อ-สกุล (ภาษาอังกฤษ)
                         </div>
-                        <div class="text-dark fs-5">{{ iData.firstname_en }} {{ iData.lastname_en }}</div>
                     </div>
                     <div class="col-sm-5 mb-3">
                         <div class="text-gray">

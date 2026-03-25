@@ -1,0 +1,72 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var token = User.AccessToken(Context);
+}
+<div ng-controller="ServiceSalaryCertificateCtrl">
+    <div class="bg-white rounded-4 border mb-4 overflow-hidden">
+        <div class="px-4 py-3 border-bottom d-flex align-items-center">
+            <div class="fs-5 fw-bolder text-dark flex-fill">Request Salary Cerfiticate</div>
+        </div>
+        <div class="p-4">
+            <table class="table table-borderless">
+                <tbody>
+                    <tr>
+                        <td width="200">
+                            <div class="text-dark text-nowrap fw-bolder">ภาษาที่ขอ</div>
+                            <div class="text-dark text-nowrap">Language</div>
+                        </td>
+                        <td>
+                            {{ iForm.lang_th }} {{ iForm.lang_en }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="text-dark text-nowrap fw-bolder">หมายเหตุ</div>
+                            <div class="text-dark text-nowrap">description</div>
+                        </td>
+                        <td>
+                            {{ iForm.description }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ServiceSalaryCertificateCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.LoadDetail = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormSalaryCertificateDetail',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        refId: $scope.refId
+                    }),
+                    success: function (result) {
+                        $timeout(async function () {
+                            $scope.iForm = result;
+                            resolve(true);
+                        }, 0);
+                    }, error: function () {
+                        resolve(false);
+                    }
+                });
+            });
+        }
+
+        $scope.$parent.LoadFormSalaryCertificate = async function (x) {
+            $scope.refId = x.id;
+            $scope.userId = x.userId;
+            $scope.status = x.status;
+
+            await $scope.LoadDetail();
+        }
+    });
+</script>

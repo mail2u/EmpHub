@@ -107,8 +107,8 @@
                         </a>
                         <ul class="nxl-submenu">
                             <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Organization/Index")">Company</a></li>
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Organization/Team")">Team</a></li>
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Organization/Manage")?id=CEO&chartId=TIPOrgChart1">Manage</a></li>
+                           @*  <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Organization/Team")">Team</a></li> *@
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Organization/Inquire")?id=CEO&chartId=TIPOrgChart1"><i class="bi bi-gear me-1"></i> Manage</a></li>
                         </ul>
                     </li>
                     @*   <li class="nxl-item nxl-hasmenu">
@@ -144,11 +144,11 @@
                             <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/Index")">My Request</a></li>
                             <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/Approve")">Approve</a></li>
                             <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/Work")">Work</a></li>
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/Inquire")">Inquire</a></li>
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/Category")">Category</a></li>
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/Process")">Process</a></li>
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/Role")">Role</a></li>
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/UserAuthen")">Authen</a></li>
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/Inquire")"><i class="bi bi-search me-1"></i> Inquire</a></li>
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/Category")"><i class="bi bi-gear me-1"></i> Category</a></li>
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/Process")"><i class="bi bi-gear me-1"></i> Process</a></li>
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/Role")"><i class="bi bi-gear me-1"></i> Role</a></li>
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/UserAuthen")"><i class="bi bi-gear me-1"></i> Authen</a></li>
                         </ul>
                     </li>
                     <li class="nxl-item nxl-hasmenu">
@@ -157,10 +157,10 @@
                             <span class="nxl-mtext">Employees</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                         </a>
                         <ul class="nxl-submenu">
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Employee/Index")">All Employee</a></li>
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Candidate/Index")">Candidate</a></li>
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Employee/Index")">Employee Directory</a></li>
                             <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Onboarding/Index")">Onboarding</a></li>
                             <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Offboarding/Index")">Offboarding</a></li>
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/EmpManage/Index")">Management</a></li>
                         </ul>
                     </li>
                     <li class="nxl-item nxl-hasmenu">
@@ -299,7 +299,7 @@
                     <div class="card-body">
                         <i class="feather-sunrise fs-4 text-dark"></i>
                         <h6 class="mt-4 text-dark fw-bolder">Core HR</h6>
-                        <p class="fs-11 my-3 text-dark">เป็นระบบศูนย์กลางในการบริหารจัดการข้อมูลทรัพยากรบุคคลขององค์กร โดยทำหน้าที่รวบรวม จัดเก็บ และบริหารข้อมูลพนักงานตั้งแต่เริ่มเข้าทำงาน ระหว่างการทำงาน จนถึงการสิ้นสุดการจ้างงาน เพื่อให้ข้อมูลมีความถูกต้อง เป็นปัจจุบัน และสามารถนำไปใช้ร่วมกับระบบอื่นได้อย่างมีประสิทธิภาพ</p>
+                        <p class="fs-11 my-3 text-dark">A centralized system for managing employee data across the organization, covering the entire lifecycle from onboarding to offboarding, ensuring accurate, up-to-date information that can be efficiently integrated with other systems</p>
                     </div>
                 </div>
             </div>
@@ -346,109 +346,15 @@
             <!--! [Start] Header Right !-->
             <div class="header-right ms-auto">
                 <div class="d-flex align-items-center">
-                    @*  <div class="dropdown nxl-h-item nxl-header-language d-none d-sm-flex">
-                    <a href="javascript:void(0);" class="nxl-head-link me-0 nxl-language-link" data-bs-toggle="dropdown" data-bs-auto-close="outside">
-                    <img src="~/assets/vendors/img/flags/4x3/us.svg" alt="" class="img-fluid wd-20" />
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-end nxl-h-dropdown nxl-language-dropdown">
-                    <div class="dropdown-divider mt-0"></div>
-                    <div class="language-items-wrapper">
-                    <div class="select-language px-4 py-2 hstack justify-content-between gap-4">
-                    <div class="lh-lg">
-                    <h6 class="mb-0">Select Language</h6>
-                    <p class="fs-11 text-muted mb-0">12 languages avaiable!</p>
-                    </div>
-                    <a href="javascript:void(0);" class="avatar-text avatar-md" data-bs-toggle="tooltip" title="Add Language">
-                    <i class="feather-plus"></i>
-                    </a>
-                    </div>
-                    <div class="dropdown-divider"></div>
-                    <div class="row px-4 pt-3">
-                    <div class="col-sm-4 col-6 language_select">
-                    <a href="javascript:void(0);" class="d-flex align-items-center gap-2">
-                    <div class="avatar-image avatar-sm"><img src="~/assets/vendors/img/flags/1x1/sa.svg" alt="" class="img-fluid" /></div>
-                    <span>Arabic</span>
-                    </a>
-                    </div>
-                    <div class="col-sm-4 col-6 language_select">
-                    <a href="javascript:void(0);" class="d-flex align-items-center gap-2">
-                    <div class="avatar-image avatar-sm"><img src="~/assets/vendors/img/flags/1x1/bd.svg" alt="" class="img-fluid" /></div>
-                    <span>Bengali</span>
-                    </a>
-                    </div>
-                    <div class="col-sm-4 col-6 language_select">
-                    <a href="javascript:void(0);" class="d-flex align-items-center gap-2">
-                    <div class="avatar-image avatar-sm"><img src="~/assets/vendors/img/flags/1x1/ch.svg" alt="" class="img-fluid" /></div>
-                    <span>Chinese</span>
-                    </a>
-                    </div>
-                    <div class="col-sm-4 col-6 language_select">
-                    <a href="javascript:void(0);" class="d-flex align-items-center gap-2">
-                    <div class="avatar-image avatar-sm"><img src="~/assets/vendors/img/flags/1x1/nl.svg" alt="" class="img-fluid" /></div>
-                    <span>Dutch</span>
-                    </a>
-                    </div>
-                    <div class="col-sm-4 col-6 language_select active">
-                    <a href="javascript:void(0);" class="d-flex align-items-center gap-2">
-                    <div class="avatar-image avatar-sm"><img src="~/assets/vendors/img/flags/1x1/us.svg" alt="" class="img-fluid" /></div>
-                    <span>English</span>
-                    </a>
-                    </div>
-                    <div class="col-sm-4 col-6 language_select">
-                    <a href="javascript:void(0);" class="d-flex align-items-center gap-2">
-                    <div class="avatar-image avatar-sm"><img src="~/assets/vendors/img/flags/1x1/fr.svg" alt="" class="img-fluid" /></div>
-                    <span>French</span>
-                    </a>
-                    </div>
-                    <div class="col-sm-4 col-6 language_select">
-                    <a href="javascript:void(0);" class="d-flex align-items-center gap-2">
-                    <div class="avatar-image avatar-sm"><img src="~/assets/vendors/img/flags/1x1/de.svg" alt="" class="img-fluid" /></div>
-                    <span>German</span>
-                    </a>
-                    </div>
-                    <div class="col-sm-4 col-6 language_select">
-                    <a href="javascript:void(0);" class="d-flex align-items-center gap-2">
-                    <div class="avatar-image avatar-sm"><img src="~/assets/vendors/img/flags/1x1/in.svg" alt="" class="img-fluid" /></div>
-                    <span>Hindi</span>
-                    </a>
-                    </div>
-                    <div class="col-sm-4 col-6 language_select">
-                    <a href="javascript:void(0);" class="d-flex align-items-center gap-2">
-                    <div class="avatar-image avatar-sm"><img src="~/assets/vendors/img/flags/1x1/ru.svg" alt="" class="img-fluid" /></div>
-                    <span>Russian</span>
-                    </a>
-                    </div>
-                    <div class="col-sm-4 col-6 language_select">
-                    <a href="javascript:void(0);" class="d-flex align-items-center gap-2">
-                    <div class="avatar-image avatar-sm"><img src="~/assets/vendors/img/flags/1x1/es.svg" alt="" class="img-fluid" /></div>
-                    <span>Spanish</span>
-                    </a>
-                    </div>
-                    <div class="col-sm-4 col-6 language_select">
-                    <a href="javascript:void(0);" class="d-flex align-items-center gap-2">
-                    <div class="avatar-image avatar-sm"><img src="~/assets/vendors/img/flags/1x1/tr.svg" alt="" class="img-fluid" /></div>
-                    <span>Turkish</span>
-                    </a>
-                    </div>
-                    <div class="col-sm-4 col-6 language_select">
-                    <a href="javascript:void(0);" class="d-flex align-items-center gap-2">
-                    <div class="avatar-image avatar-sm"><img src="~/assets/vendors/img/flags/1x1/pk.svg" alt="" class="img-fluid" /></div>
-                    <span>Urdo</span>
-                    </a>
-                    </div>
-                    </div>
-                    </div>
-                    </div>
-                    </div> *@
-                    <div class="nxl-h-item d-none d-sm-flex">
+                 @*    <div class="nxl-h-item d-none d-sm-flex">
                         <div class="full-screen-switcher">
                             <a href="javascript:void(0);" class="nxl-head-link me-0" onclick="$('body').fullScreenHelper('toggle');">
                                 <i class="feather-maximize maximize"></i>
                                 <i class="feather-minimize minimize"></i>
                             </a>
                         </div>
-                    </div>
-                    <div class="dropdown nxl-h-item">
+                    </div> *@
+                    @* <div class="dropdown nxl-h-item">
                         <a href="javascript:void(0);" class="nxl-head-link me-0" data-bs-toggle="dropdown" role="button" data-bs-auto-close="outside">
                             <i class="feather-clock"></i>
                             <span class="badge bg-success nxl-h-badge">2</span>
@@ -470,8 +376,8 @@
                                 <a href="javascript:void(0);" class="fs-13 fw-semibold text-dark">Alls Timesheets</a>
                             </div>
                         </div>
-                    </div>
-                    <div class="dropdown nxl-h-item">
+                    </div> *@
+                    @* <div class="dropdown nxl-h-item">
                         <a class="nxl-head-link me-3" data-bs-toggle="dropdown" href="#" role="button" data-bs-auto-close="outside">
                             <i class="feather-bell"></i>
                             <span class="badge bg-danger nxl-h-badge">3</span>
@@ -533,10 +439,14 @@
                                 <a href="javascript:void(0);" class="fs-13 fw-semibold text-dark">Alls Notifications</a>
                             </div>
                         </div>
-                    </div>
+                    </div> *@
                     <div class="dropdown nxl-h-item">
-                        <a href="javascript:void(0);" data-bs-toggle="dropdown" role="button" data-bs-auto-close="outside">
-                            <img src="~/assets/images/avatar/1.png" alt="user-image" class="img-fluid user-avtar me-0" />
+                        <a href="javascript:void(0);" class="d-flex" data-bs-toggle="dropdown" role="button" data-bs-auto-close="outside">
+                            <img src="~/assets/images/avatar/1.png" alt="user-image" class="img-fluid user-avtar me-2" />
+                            <div>
+                                <div class="text-dark fw-bolder">@User.UserName()</div>
+                                <div class="text-gray">@User.Position() @User.Department()</div>
+                            </div>
                         </a>
                         <div class="dropdown-menu dropdown-menu-end nxl-h-dropdown nxl-user-dropdown">
                             <div class="dropdown-header">
@@ -646,11 +556,11 @@
                                 </div>
                             </div> *@
                          @*    <div class="dropdown-divider"></div> *@
-                            <a href="javascript:void(0);" class="dropdown-item">
+                            <a href="@Url.Page("/Employee/Detail")/@User.UserId()" class="dropdown-item">
                                 <i class="feather-user"></i>
                                 <span>Profile Details</span>
                             </a>
-                            <a href="javascript:void(0);" class="dropdown-item">
+                            @* <a href="javascript:void(0);" class="dropdown-item">
                                 <i class="feather-activity"></i>
                                 <span>Activity Feed</span>
                             </a>
@@ -665,7 +575,7 @@
                             <a href="javascript:void(0);" class="dropdown-item">
                                 <i class="feather-settings"></i>
                                 <span>Account Settings</span>
-                            </a>
+                            </a> *@
                             <div class="dropdown-divider"></div>
                             <a href="@Url.Page("/Account/logout")" class="dropdown-item">
                                 <i class="feather-log-out"></i>
@@ -735,12 +645,20 @@
     <script>
         function toggleSubmenu(id) {
             const submenu = document.getElementById(id);
-            submenu.classList.toggle("collapse");
+            submenu.classList.add("minimenu");
         }
 
         //enable tooltip bootstrap
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+        window.addEventListener("load", (event) => {
+            var theme = localStorage.getItem('nexel-classic-dashboard-menu-mini-theme');
+
+            if (theme == 'menu-mini-theme') {
+                document.documentElement.classList.add("minimenu");
+            }
+        });
 
     </script>
     <script>

@@ -1,0 +1,1209 @@
+﻿@page
+@model EmpHub.Pages.Employee.EditModel
+@{
+    ViewData["Title"] = "EmpHub";
+    var token = User.AccessToken(HttpContext);
+}
+<div class="w-100" ng-controller="DataCtrl">
+    @section PageHeader {
+        <div class="px-4 pt-4">
+            <ul class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="@Url.Page("Index")">Employee Directory</a></li>
+                <li class="breadcrumb-item">Edit Profile</li>
+            </ul>
+        </div>
+    }
+    <div class="fs-3 fw-bolder text-dark">Edit Employee Profile</div>
+    <div class="mb-4">Update personal and professional details for employee ID <a href="@Url.Page("Detail")/@Model.id" target="_blank" class="text-blue">#{{ iEmployee.employeeCode }}</a></div>
+    <div class="d-flex">
+        <div class="flex-fill me-4">
+            @* Personal Information *@
+            <div class="rounded-4 border bg-white mb-4 p-4 pb-2">
+                <div class="text-dark fs-5 fw-bolder d-flex align-items-center mb-3">
+                    <i class="bi bi-person-fill fs-4 me-2 text-blue"></i> Personal Information 
+                    <span ng-show="iPersonal.is_change == 1" class="text-warning">
+                        <i class="bi bi-pen-fill ms-2"></i>
+                    </span>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark fs-5">Firstname (TH)</div>
+                        <input ng-model="iPersonal.firstname_th" class="form-control firstname_th" ng-change="iPersonal.is_change = 1" />
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark fs-5">Lastname (TH)</div>
+                        <input ng-model="iPersonal.lastname_th" class="form-control lastname_th" ng-change="iPersonal.is_change = 1" />
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark fs-5">Firstname (EN)</div>
+                        <input ng-model="iPersonal.firstname_en" class="form-control" ng-change="iPersonal.is_change = 1" />
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark fs-5">Lastname (EN)</div>
+                        <input ng-model="iPersonal.lastname_en" class="form-control" ng-change="iPersonal.is_change = 1" />
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark fs-5">Nickname</div>
+                        <input ng-model="iPersonal.nickname" class="form-control" ng-change="iPersonal.is_change = 1" />
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark fs-5">Birth Date</div>
+                        <input class="form-control icon-calendar date"
+                               ng-model="iPersonal.birth_date_select"
+                               ng-model-options="{ updateOn: 'blur' }"
+                               moment-picker="iPersonal.birth_date_select"
+                               locale="th"
+                               format="DD/MM/YYYY"
+                               min-view="month"
+                               max-view="month" required ng-blur="iPersonal.is_change = 1" />
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark fs-5">Phone No</div>
+                        <input ng-model="iPersonal.phoneNo" class="form-control" ng-change="iPersonal.is_change = 1" />
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark fs-5">Email</div>
+                        <input ng-model="iPersonal.email" class="form-control" ng-change="iPersonal.is_change = 1" />
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark fs-5">Sex</div>
+                        <div class="d-flex align-items-center p-2">
+                            <div class="me-4">
+                                <input ng-model="iPersonal.sex" type="radio" value="Male" id="ra_male" ng-change="iPersonal.is_change = 1" />
+                                <label for="ra_male">ชาย</label>
+                            </div>
+                            <div>
+                                <input ng-model="iPersonal.sex" type="radio" value="Female" id="ra_female" ng-change="iPersonal.is_change = 1" />
+                                <label for="ra_female">หญิง</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @* Address *@
+            <div class="rounded-4 border bg-white mb-4 p-4 pb-2">
+                <div class="text-dark fs-5 fw-bolder d-flex align-items-center mb-3">
+                    <i class="bi bi-geo-alt-fill fs-4 me-2 text-blue"></i> Address Information
+                    <span ng-show="iAddress.is_change == 1" class="text-warning">
+                        <i class="bi bi-pen-fill ms-2"></i>
+                    </span>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark fs-5">Home</div>
+                        <input ng-model="iAddress.home" class="form-control" maxlength="200" ng-change="iAddress.is_change = 1" />
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark fs-5">Road</div>
+                        <input ng-model="iAddress.road" class="form-control" maxlength="100" ng-change="iAddress.is_change = 1" />
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark fs-5">Tambon</div>
+                        <input ng-model="iAddress.subDistrictName" class="form-select bg-light-blue" data-bs-toggle="modal" data-bs-target="#addressModal" readonly />
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark fs-5">Amphur</div>
+                        <input ng-model="iAddress.districtName" class="form-select bg-light-blue" data-bs-toggle="modal" data-bs-target="#addressModal" readonly />
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark fs-5">Province</div>
+                        <input ng-model="iAddress.provinceName" class="form-select bg-light-blue" data-bs-toggle="modal" data-bs-target="#addressModal" readonly />
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark fs-5">Postcode</div>
+                        <input ng-model="iAddress.postcode" class="form-control postcode" ng-change="iAddress.is_change = 1" />
+                    </div>
+                </div>
+            </div>
+            @* Job Information *@
+            <div class="rounded-4 border bg-white mb-4 p-4 pb-2">
+                <div class="text-dark fs-5 fw-bolder d-flex align-items-center mb-3">
+                    <i class="bi bi-briefcase-fill fs-4 me-2 text-blue"></i> Job Information
+                    <span ng-show="iEmployee.is_change == 1" class="text-warning">
+                        <i class="bi bi-pen-fill ms-2"></i>
+                    </span>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark fs-5">Employee ID</div>
+                        <input ng-model="iEmployee.employeeCode" class="form-control" maxlength="6" ng-change="iEmployee.is_change = 1" />
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark fs-5">Employment Type</div>
+                        <select ng-model="iEmployee.employeeType" class="form-select" ng-options="x.code as x.desc_th for x in lEmployeeType" ng-change="iEmployee.is_change = 1"></select>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark fs-5">Department</div>
+                        <select ng-model="iEmployee.departmentCode" class="form-select" ng-options="x.code as x.desc_th + ' (' + x.desc_en + ')' for x in lDepartment" ng-change="iEmployee.is_change = 1"></select>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark fs-5">Position</div>
+                        <select ng-model="iEmployee.positionCode" class="form-select" ng-options="x.code as x.desc_th + ' (' + x.desc_en + ')' for x in lPosition" ng-change="iEmployee.is_change = 1"></select>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark fs-5">Hire Date</div>
+                        <input class="form-control icon-calendar date"
+                               ng-model="iEmployee.join_date_select"
+                               ng-model-options="{ updateOn: 'blur' }"
+                               moment-picker="iEmployee.join_date_select"
+                               locale="th"
+                               format="DD/MM/YYYY"
+                               min-view="month"
+                               max-view="month" required ng-blur="iEmployee.is_change = 1" />
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark fs-5">Reporting To</div>
+                        <input ng-model="iEmployee.supervisorName" class="form-select bg-light-blue" data-bs-toggle="modal" data-bs-target="#supervisorModal" readonly />
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark fs-5">Email</div>
+                        <input ng-model="iEmployee.email" class="form-control email" ng-change="iEmployee.is_change = 1" />
+                    </div>
+                    @*     <div class="col-sm-4 mb-3">
+                    <div class="text-dark fs-5">เบอร์ติดต่อภายใน</div>
+                    <input ng-model="iData.ext" class="form-control ext" maxlength="10" />
+                    </div> *@
+                </div>
+            </div>
+            @* Education *@
+            <div class="rounded-4 border bg-white mb-4 p-4 pb-2">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="text-dark fs-5 fw-bolder flex-fill">
+                        <i class="fas fa-graduation-cap fs-4 me-2 text-blue"></i> Education
+                        <span ng-show="iEducation.is_change == 1" class="text-warning">
+                            <i class="bi bi-pen-fill ms-2"></i>
+                        </span>
+                    </div>
+                    <div class="select text-blue fw-bolder" ng-click="AddEducation()">
+                        <i class="bi bi-plus-lg me-1"></i> Add Degree
+                    </div>
+                </div>
+                <div class="p-3 pb-1 mb-4 border rounded-3 position-relative {{ x.mode == 'delete' ? 'bg-light' : '' }}" ng-repeat="x in lEducation">
+                    <div class="row">
+                        <div class="col-sm-5 mb-3">
+                            <div class="text-gray">
+                                DEGREE
+                            </div>
+                            <input ng-model="x.levelName" class="form-control" ng-change="iEducation.is_change = 1; x.is_change = 1;" ng-disabled="x.mode == 'delete'" />
+                        </div>
+                        <div class="col-sm-5 mb-3">
+                            <div class="text-gray">
+                                INSTITUTION
+                            </div>
+                            <input ng-model="x.institution" class="form-control" maxlength="200" ng-change="iEducation.is_change = 1; x.is_change = 1;" ng-disabled="x.mode == 'delete'" />
+                        </div>
+                        <div class="col-sm-2 mb-3">
+                            <div class="text-gray text-truncate" title="YEAR">
+                                YEAR
+                            </div>
+                            <input ng-model="x.year" class="form-control" year ng-change="iEducation.is_change = 1; x.is_change = 1;" ng-disabled="x.mode == 'delete'" />
+                        </div>
+                    </div>
+                    <div class="position-absolute" style="top:-20px; right:-15px;" ng-show="x.mode != 'delete'">
+                        <div class="btn btn-circle border bg-white text-warning" ng-click="DeleteEducation(x)">
+                            <i class="bi bi-x-circle fs-4"></i>
+                        </div>
+                    </div>
+                    <div class="position-absolute" style="top:-20px; right:-15px;" ng-show="x.mode == 'delete'">
+                        <div class="btn btn-circle border bg-white text-blue" ng-click="UndoEducation(x)">
+                            <i class="bi bi-arrow-counterclockwise fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @* Job Experience *@
+            <div class="rounded-4 border bg-white mb-4 p-4 pb-2">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="text-dark fs-5 fw-bolder flex-fill">
+                        <i class="fas fa-feather-alt fs-4 me-2 text-blue"></i> Job Experience
+                        <span ng-show="iJobExperience.is_change == 1" class="text-warning">
+                            <i class="bi bi-pen-fill ms-2"></i>
+                        </span>
+                    </div>
+                    <div class="select text-blue fw-bolder" ng-click="AddJobExperience()">
+                        <i class="bi bi-plus-lg me-1"></i> Add Experience
+                    </div>
+                </div>
+                <div class="p-3 pb-1 mb-4 border rounded-3 position-relative {{ x.mode == 'delete' ? 'bg-light' : '' }}" ng-repeat="x in lJobExperience">
+                    <div class="row">
+                        <div class="col-sm-4 mb-3">
+                            <div class="text-gray">
+                                COMPANY
+                            </div>
+                            <input ng-model="x.company" class="form-control" maxlength="200" ng-change="iJobExperience.is_change = 1; x.is_change = 1;" ng-disabled="x.mode == 'delete'" />
+                        </div>
+                        <div class="col-sm-4 mb-3">
+                            <div class="text-gray">
+                                PREVIOUS ROLE
+                            </div>
+                            <input ng-model="x.position" class="form-control" ng-change="iJobExperience.is_change = 1; x.is_change = 1;" ng-disabled="x.mode == 'delete'" />
+                        </div>
+                        <div class="col-sm-2 mb-3">
+                            <div class="text-gray text-truncate" title="GRADUATION YEAR">
+                                FROM
+                            </div>
+                            <input class="form-control"
+                               ng-model="x.from_date"
+                               moment-picker="x.from_date"
+                               locale="th"
+                               format="MMM YYYY"
+                               max-date="x.end_date"
+                               min-view="year"
+                               max-view="month" required change="iJobExperience.is_change = 1; x.is_change = 1;" ng-disabled="x.mode == 'delete'" />
+                        </div>
+                        <div class="col-sm-2 mb-3">
+                            <div class="text-gray text-truncate" title="GRADUATION YEAR">
+                                TO 
+                            </div>
+                            <input class="form-control"
+                               ng-model="x.end_date"
+                               moment-picker="x.end_date"
+                               locale="th"
+                               format="MMM YYYY"
+                               min-date="x.from_date"
+                               min-view="year"
+                               max-view="month" required change="iJobExperience.is_change = 1; x.is_change = 1;" ng-disabled="x.mode == 'delete'" />
+                        </div>
+                    </div>
+                    <div class="position-absolute" style="top:-20px; right:-15px;" ng-show="x.mode != 'delete'">
+                        <div class="btn btn-circle border bg-white text-warning" ng-click="DeleteJobExperience(x)">
+                            <i class="bi bi-x-circle fs-4"></i>
+                        </div>
+                    </div>
+                    <div class="position-absolute" style="top:-20px; right:-15px;" ng-show="x.mode == 'delete'">
+                        <div class="btn btn-circle border bg-white text-blue" ng-click="UndoJobExperience(x)">
+                            <i class="bi bi-arrow-counterclockwise fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @* Training *@
+            <div class="rounded-4 border bg-white mb-4 p-4 pb-2">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="text-dark fs-5 fw-bolder flex-fill">
+                        <i class="bi bi-patch-check fs-4 me-2 text-blue"></i> Training
+                        <span ng-show="iTraining.is_change == 1" class="text-warning">
+                            <i class="bi bi-pen-fill ms-2"></i>
+                        </span>
+                    </div>
+                    <div class="select text-blue fw-bolder" ng-click="AddTraining()">
+                        <i class="bi bi-plus-lg me-1"></i> Add Training
+                    </div>
+                </div>
+               <div class="p-3 pb-1 mb-4 border rounded-3 position-relative {{ x.mode == 'delete' ? 'bg-light' : '' }}" ng-repeat="x in lTraining">
+                    <div class="row">
+                        <div class="col-sm-5 mb-3">
+                            <div class="text-gray">
+                                COURSE NAME
+                            </div>
+                            <input ng-model="x.license" class="form-control" ng-change="iTraining.is_change = 1; x.is_change = 1;" ng-disabled="x.mode == 'delete'" />
+                        </div>
+                        <div class="col-sm-5 mb-3">
+                            <div class="text-gray">
+                                PROVIDER
+                            </div>
+                            <input ng-model="x.organization" class="form-control" maxlength="200" ng-change="iTraining.is_change = 1; x.is_change = 1;" ng-disabled="x.mode == 'delete'" />
+                        </div>
+                        <div class="col-sm-2 mb-3">
+                            <div class="text-gray text-truncate" title="GRADUATION YEAR">
+                                ISSUE
+                            </div>
+                            <input class="form-control"
+                               ng-model="x.issue_date"
+                               moment-picker="x.issue_date"
+                               locale="th"
+                               format="DD/MM/YYYY"
+                               min-view="year"
+                               max-view="month" required change="iTraining.is_change = 1; x.is_change = 1;" ng-disabled="x.mode == 'delete'" />
+                        </div>
+                    </div>
+                    <div class="position-absolute" style="top:-20px; right:-15px;" ng-show="x.mode != 'delete'">
+                        <div class="btn btn-circle border bg-white text-warning" ng-click="DeleteTraining(x)">
+                            <i class="bi bi-x-circle fs-4"></i>
+                        </div>
+                    </div>
+                    <div class="position-absolute" style="top:-20px; right:-15px;" ng-show="x.mode == 'delete'">
+                        <div class="btn btn-circle border bg-white text-blue" ng-click="UndoTraining(x)">
+                            <i class="bi bi-arrow-counterclockwise fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="d-grid">
+                <button class="btn btn-primary" ng-click="SendRequest()"
+                        ng-disabled="iPersonal.is_change != 1 && iAddress.is_change != 1 && iEmployee.is_change != 1 && iEducation.is_change != 1 && iJobExperience.is_change != 1 && iTraining.is_change != 1">
+                    Send Request
+                </button>
+            </div>
+        </div>
+        @* Document *@
+        <div class="" style="width:300px; min-width:300px;">
+            <div class="rounded-4 bg-white border mb-4 p-4">
+                <div class="d-flex align-items-center">
+                    <div class="text-dark fs-5 fw-bolder d-flex align-items-center flex-fill">
+                        <i class="bi bi-folder-fill fs-4 me-2 text-blue"></i> Document
+                    </div>
+                    <div>
+                        <div class="btn btn-circle" ng-click="AddDocument()">
+                            <i class="bi bi-plus-circle-fill text-blue fs-5"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="border border-dash text-gray-500 text-center p-3 rounded-3 mt-3">
+                    <i class="bi bi-cloud-arrow-up-fill fs-3"></i>
+                    <div class="fw-bolder">Click to upload or drag & drop</div>
+                    <div class="">PDF, DOCX up to 10MB</div>
+                </div>
+            </div>
+            @* System Log *@
+            <div class="rounded-4 bg-light-blue border border-blue mb-4 p-4 d-flex">
+                <div class="text-blue me-3">
+                    <i class="bi bi-info-circle-fill fs-5"></i>
+                </div>
+                <div>
+                    <div class="text-blue mb-2">System Audit Log</div>
+                    <div class="text-dark">Last profile update was made on {{ iProfile.update_date }} by {{ iProfile.update_by }} </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @* Modal *@
+    @* Address *@
+    <div id="addressModal" class="modal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div>
+                        <div class="mb-2">
+                            <input ng-model="filter_name" class="form-control" />
+                            <div class="list-group list-group-flush overflow-auto" style="max-height: 400px;">
+                                <div class="list-group-item list-group-item-action d-flex align-items-center justify-content-between" ng-repeat="x in lMasterAddress | filter : filter_name | limitTo : 50">
+                                    <div class="p-2">
+                                        <nav aria-label="breadcrumb">
+                                            <ol class="breadcrumb mb-0">
+                                                <li class="breadcrumb-item active">{{ x.subDistrictName }}</li>
+                                                <li class="breadcrumb-item active">{{ x.districtName }}</li>
+                                                <li class="breadcrumb-item active">{{ x.provinceName }}</li>
+                                                <li class="breadcrumb-item active">{{ x.postcode }}</li>
+                                            </ol>
+                                        </nav>
+                                    </div>
+                                    <div>
+                                        <button ng-click="SelectAddress(x)" class="btn btn-circle">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <button class="btn btn-light" data-bs-dismiss="modal" aria-label="Close">
+                                ปิด
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @* Employee *@
+
+    <div id="supervisorModal" class="modal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div>
+                        <div class="mb-2">
+                            <input ng-model="filter_name" class="form-control" placeholder="Find..." />
+                            <div class="list-group list-group-flush overflow-auto" style="max-height: 400px;">
+                                <div class="list-group-item list-group-item-action d-flex align-items-center justify-content-between" ng-repeat="x in lEmployee | filter : filter_name">
+                                    <div>
+                                        <div class="text-dark fs-5 text-secondary">
+                                            {{ x.firstname_th + ' ' + x.lastname_th }} <span ng-show="x.nickname != ''">({{ x.nickname }})</span>
+                                        </div>
+                                        <div class="text-dark fs-5 text-secondary">
+                                            {{ x.firstname + ' ' + x.lastname }}
+                                        </div>
+                                        <small class="text-dark">
+                                            {{ x.positionDesc }} {{ x.departmentDesc }}
+                                        </small>
+                                    </div>
+                                    <div>
+                                        <button ng-click="SelectSupervisor(x)" class="btn btn-circle">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <button class="btn btn-light" data-bs-dismiss="modal" aria-label="Close">
+                                ปิด
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(".date").mask('00/00/0000');
+    app.controller('DataCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.userId = '@Model.id';
+        $scope.mode = 'EDIT_PROFILE';
+        $scope.iEducation = {is_change : 0};
+        $scope.iJobExperience = {is_change : 0};
+        $scope.iTraining = {is_change : 0};
+
+        $scope.LoadPersonal = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserPersonal',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.userId
+                    , create_by: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.iPersonal = result.data;
+                        $scope.iPersonal.is_change = 0;
+                        $scope.can_view = result.can_view;
+                        $scope.can_edit = result.can_edit;
+                        
+                        if($scope.iPersonal.birth_date){
+                            $scope.iPersonal.birth_date_select = moment($scope.iPersonal.birth_date);
+                        }
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+        $scope.LoadPersonal();
+
+        // Employee
+
+        $scope.LoadMasterEmployee = function () {
+            if (!$scope.lEmployeeType) {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                    , headers: { 'authorization': 'Bearer @token' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , dataType: 'json'
+                    , cache: false
+                    , data: JSON.stringify({
+                        groupName: 'employeeType'
+                    })
+                    , success: function (result) {
+                        $timeout(function () {
+                            $scope.lEmployeeType = result;
+                        }, 0);
+                    }
+                    , error: AjaxError
+                });
+            }
+            if (!$scope.lDepartment) {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Department/DataList'
+                    , headers: { 'authorization': 'Bearer @token' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , dataType: 'json'
+                    , cache: false
+                    , data: JSON.stringify({
+                        page: 1
+                        , row: 99
+                    })
+                    , success: function (result) {
+                        $timeout(function () {
+                            $scope.lDepartment = result;
+                        }, 0);
+                    }
+                    , error: AjaxError
+                });
+            }
+            if (!$scope.lPosition) {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Position/DataList'
+                    , headers: { 'authorization': 'Bearer @token' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , dataType: 'json'
+                    , cache: false
+                    , data: JSON.stringify({
+                        page: 1
+                        , row: 99
+                    })
+                    , success: function (result) {
+                        $timeout(function () {
+                            $scope.lPosition = result;
+                        }, 0);
+                    }
+                    , error: AjaxError
+                });
+            }
+            if (!$scope.lEmployee) {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/User/DataList'
+                    , headers: { 'authorization': 'Bearer @token' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , dataType: 'json'
+                    , cache: false
+                    , data: JSON.stringify({
+                        page: 1
+                        , row: 999
+                    })
+                    , success: function (result) {
+                        $timeout(function () {
+                            $scope.lEmployee = result.data;
+                        }, 0);
+                    }
+                    , error: AjaxError
+                });
+            }
+        }
+        $scope.LoadMasterEmployee();
+
+        $scope.LoadEmployee = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserEmployee',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.userId
+                    , create_by: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.iEmployee = result.data;
+                        $scope.iEmployee.is_change = 0;
+
+                        if($scope.iEmployee.join_date){
+                            $scope.iEmployee.join_date_select = moment($scope.iEmployee.join_date);
+                        }
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+        $scope.LoadEmployee();
+
+        $scope.SelectSupervisor = function (x) {
+            $scope.iEmployee.supervisorId = x.userId;
+            $scope.iEmployee.supervisorName = x.firstname_th + ' ' + x.lastname_th;
+            $scope.iEmployee.supervisorPosition = x.positionDesc;
+            $scope.iEmployee.supervisorDepartment = x.departmentDesc;
+            $scope.iEmployee.is_change = 1;
+            $("#supervisorModal").modal('hide');
+        }
+
+        // Address
+
+        $scope.LoadMasterAddress = function () {
+            if (!$scope.lMasterAddress) {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/Address'
+                    , headers: { 'authorization': 'Bearer @token' }
+                    , type: 'post'
+                    , dataType: 'json'
+                    , cache: false
+                    , success: function (result) {
+                        $timeout(function () {
+                            $scope.lMasterAddress = result;
+                        }, 0);
+                    }
+                    , error: AjaxError
+                });
+            }
+        }
+        $scope.LoadMasterAddress();
+
+        $scope.LoadAddress = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserAddress',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.userId
+                    , create_by: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.iAddress = result.data;
+                        $scope.iAddress.is_change = 0;
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+        $scope.LoadAddress();
+
+        $scope.SelectAddress = function (x) {
+            $scope.iAddress.subDistrictCode = x.subDistrictCode;
+            $scope.iAddress.subDistrictName = x.subDistrictName;
+            $scope.iAddress.districtCode = x.districtCode;
+            $scope.iAddress.districtName = x.districtName;
+            $scope.iAddress.provinceCode = x.provinceCode;
+            $scope.iAddress.provinceName = x.provinceName;
+            $scope.iAddress.postcode = x.postcode;
+            $scope.iAddress.is_change = 1;
+
+            $("#addressModal").modal('hide');
+        }
+
+        // Education
+
+        $scope.LoadEducation = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserEducation',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.userId
+                    , create_by: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.iEducation = { is_change: 0 };
+                        $scope.lEducation = result.data;
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+        $scope.LoadEducation();
+
+        $scope.AddEducation = function () {
+            $timeout(function () {
+                $scope.lEducation.splice($scope.lEducation.length, 0, { educationId: '', mode: "modify" });
+                $scope.iEducation.is_change = 1;
+            }, 0);
+        }
+
+        $scope.DeleteEducation = function (x) {
+            $timeout(function () {
+                if(x.educationId == ''){
+                    var index = $scope.lEducation.indexOf(x);
+                    $scope.lEducation.splice(index,1);
+                }else{
+                    x.mode = 'delete';
+                    $scope.iEducation.is_change = 1;
+                }
+            }, 0);
+        }
+        
+        $scope.UndoEducation = function (x) {
+            $timeout(function () {
+                x.mode = '';
+            }, 0);
+        }
+
+        // Job Experience
+
+        $scope.LoadJobExperience = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserJobExperience',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.userId
+                    , create_by: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.iJobExperience = { is_change: 0 };
+                        $scope.lJobExperience = result.data;
+
+                        if ($scope.lJobExperience.length > 0) {
+                            $scope.lJobExperience = $scope.lJobExperience.map(x => {
+                                if(x.fromDate){
+                                    x.from_date = moment(x.fromDate, "DD/MM/YYYY");
+                                }
+                                if(x.endDate){
+                                    x.end_date = moment(x.endDate, "DD/MM/YYYY");
+                                }
+
+                                return x;
+                            });
+                        }
+
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+        $scope.LoadJobExperience();
+
+        $scope.AddJobExperience = function () {
+            $timeout(function () {
+                $scope.lJobExperience.splice($scope.lJobExperience.length, 0, { jobId: '',  mode: "modify" });
+                $scope.iJobExperience.is_change = 1;
+            }, 0);
+        }
+
+        $scope.DeleteJobExperience = function (x) {
+            $timeout(function () {
+                 if(x.jobId == ''){
+                    var index = $scope.lJobExperience.indexOf(x);
+                    $scope.lJobExperience.splice(index,1);
+                }else{
+                    x.mode = 'delete';
+                    $scope.iJobExperience.is_change = 1;
+                }
+            }, 0);
+        }
+        
+        $scope.UndoJobExperience = function (x) {
+            $timeout(function () {
+                x.mode = '';
+            }, 0);
+        }
+
+        // Training
+
+        $scope.LoadTraining = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserTraining',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.userId
+                    , create_by: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.iTraining = { is_change: 0 };
+                        $scope.lTraining = result.data;
+
+                        if ($scope.lTraining.length > 0) {
+                            $scope.lTraining = $scope.lTraining.map(x => {
+                                if(x.issueDate){
+                                    x.issue_date = moment(x.issueDate, "DD/MM/YYYY");
+                                }
+
+                                return x;
+                            });
+                        }
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+        $scope.LoadTraining();
+
+        $scope.AddTraining = function () {
+            $timeout(function () {
+                $scope.lTraining.splice($scope.lTraining.length, 0, { trainingId: '', mode: "modify" });
+                $scope.iTraining.is_change = 1;
+            }, 0);
+        }
+
+        $scope.DeleteTraining = function (x) {
+            $timeout(function () {
+                 if(x.trainingId == ''){
+                    var index = $scope.lTraining.indexOf(x);
+                    $scope.lTraining.splice(index,1);
+                }else{
+                    x.mode = 'delete';
+                    $scope.iTraining.is_change = 1;
+                }
+            }, 0);
+        }
+        
+        $scope.UndoTraining = function (x) {
+            $timeout(function () {
+                x.mode = '';
+            }, 0);
+        }
+
+        // Request
+
+        $scope.SendRequest = async function(){
+            var id = await $scope.CreateService();
+            var flag = true;
+
+            if ($scope.iPersonal.is_change == 1){
+                var check = await $scope.CreatePersonal(id);
+                flag = check == true ? flag : false;
+            }
+            if ($scope.iAddress.is_change == 1) {
+                var check = await $scope.CreateAddress(id);
+                flag = check == true ? flag : false;
+            }
+            if ($scope.iEmployee.is_change == 1) {
+                var check = await $scope.CreateEmployee(id);
+                flag = check == true ? flag : false;
+            }
+            if ($scope.iEducation.is_change == 1) {
+                var check = await $scope.CreateEducation(id);
+                flag = check == true ? flag : false;
+            }
+            if ($scope.iJobExperience.is_change == 1) {
+                var check = await $scope.CreateJobExperience(id);
+                flag = check == true ? flag : false;
+            }
+            if ($scope.iTraining.is_change == 1) {
+                var check = await $scope.CreateTraining(id);
+                flag = check == true ? flag : false;
+            }
+
+            if(flag){
+                await $scope.ServiceRequest(id);
+            }else{
+                await $scope.CancelService(id);
+            }
+        }
+
+        $scope.LoadCategory = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Category/CategoryByCode',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    subCategoryCode: $scope.mode
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        if (result.length > 0) {
+                            $scope.iCategory = result[0];
+
+                            $scope.iData = {};
+                            $scope.iData.categoryId = $scope.iCategory.cateId;
+                            $scope.iData.categoryCode = $scope.iCategory.categoryCode;
+                            $scope.iData.categoryDesc = $scope.iCategory.categoryDesc;
+                            $scope.iData.subCategoryId = $scope.iCategory.subCateId;
+                            $scope.iData.subCategoryCode = $scope.iCategory.subCategoryCode;
+                            $scope.iData.subCategoryDesc = $scope.iCategory.subCategoryDesc;
+                            $scope.iData.userId = $scope.userId;
+                            $scope.iData.createBy = '@User.UserId()';
+                        }else{
+
+                        }
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+        $scope.LoadCategory();
+
+        $scope.CreateService = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Service/Create',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify($scope.iData),
+                    success: function (result) {
+                        $timeout(async function () {
+                            resolve(result.id);
+                        }, 0);
+                    }, error: function (jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "Create Service Error",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+
+        $scope.ServiceRequest = function (id) {
+            return new Promise((resolve) => {
+                $scope.iData.id = id;
+                $scope.iData.userBy = '@User.UserId()';
+
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Service/Request',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify($scope.iData),
+                    success: function (result) {
+                        $timeout(async function () {
+                            alertSuccess("Send Request", "Successful", function () {
+                                location.href = '@Url.Page("/Service/Detail")/' + id;
+                            });
+
+                            resolve(result.serviceNo)
+                        }, 0);
+                    }, error: function (jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "Service Request Error",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+
+        $scope.CancelService = function (id) {
+            return new Promise((resolve) => {
+                $scope.iData.id = id;
+                $scope.iData.userBy = '@User.UserId()';
+                $scope.iData.description = 'Error Auto Cancel';
+
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Service/Cancel',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify($scope.iData),
+                    success: function (result) {
+                        $timeout(async function () {
+                            alertSuccess("Send Request Error", "The transaction failed to save. Please check.", function () {
+                                location.href = '@Url.Page("/Service/Detail")/' + id;
+                            });
+                            resolve(result.serviceNo)
+                        }, 0);
+                    }, error: function (jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "Cancel Service Error",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+
+        $scope.CreatePersonal = function (id) {
+            return new Promise((resolve) => {
+                $scope.iPersonal.id = id;
+                $scope.iPersonal.refId = id;
+
+                if ($scope.iPersonal.birth_date_select) {
+                    $scope.iPersonal.birth_date = $scope.iPersonal.birth_date_select.format("DD/MM/YYYY");
+                }
+
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServicePersonal/Save',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify($scope.iPersonal),
+                    success: function () {
+                        $timeout(async function () {
+                            resolve(true);
+                        }, 0);
+                    }, error: function (jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "Save Personal Error",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+
+        $scope.CreateAddress = function(id){
+            return new Promise((resolve) => {
+                $scope.iAddress.id = id;
+                $scope.iAddress.refId = id;
+
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceAddress/Save',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify($scope.iAddress),
+                    success: function () {
+                        $timeout(async function () {
+                           resolve(true);
+                        }, 0);
+                    }, error: function(jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "Save Address Error",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+
+        $scope.CreateEmployee = function (id) {
+            return new Promise((resolve) => {
+                $scope.iEmployee.id = id;
+                $scope.iEmployee.refId = id;
+
+                if ($scope.iEmployee.birth_date_select) {
+                    $scope.iEmployee.birth_date = $scope.iEmployee.birth_date_select.format("DD/MM/YYYY");
+                }
+
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceEmployee/Save',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify($scope.iEmployee),
+                    success: function () {
+                        $timeout(async function () {
+                            resolve(true);
+                        }, 0);
+                    }, error: function (jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "Save Employee Error",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+
+        $scope.CreateEducation = function (id) {
+            return new Promise((resolve) => {
+                $scope.lEducation = $scope.lEducation.map(item => {
+                    item.refId = id;
+
+                    if(item.is_change == 1 && item.mode != 'delete'){
+                        item.mode = item.educationId == '' ? 'add' : 'modify'; 
+                    }
+
+                    return item;
+                });
+
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceEducation/Save',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify($scope.lEducation),
+                    success: function () {
+                        $timeout(async function () {
+                            resolve(true);
+                        }, 0);
+                    }, error: function (jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "Save Education Error",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+
+        $scope.CreateJobExperience = function (id) {
+            return new Promise((resolve) => {
+                $scope.lJobExperience = $scope.lJobExperience.map(item=>{
+                    item.refId = id;
+                    
+                    if(item.is_change == 1 && item.mode != 'delete'){
+                        item.mode = item.jobId == '' ? 'add' : 'modify'; 
+                    }
+                    
+                    item.fromDate = item.from_date ? item.from_date.format("DD/MM/YYYY") : null;
+                    item.endDate = item.end_date ? item.end_date.format("DD/MM/YYYY") : null;
+
+                    return item;
+                });
+
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceJobExperience/Save',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify($scope.lJobExperience),
+                    success: function () {
+                        $timeout(async function () {
+                            resolve(true);
+                        }, 0);
+                    }, error: function (jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "Save JobExperience Error",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+
+        $scope.CreateTraining = function (id) {
+            return new Promise((resolve) => {
+                $scope.lTraining = $scope.lTraining.map(item => {
+                    item.refId = id;
+                    
+                    if(item.is_change == 1 && item.mode != 'delete'){
+                        item.mode = item.trainingId == '' ? 'add' : 'modify'; 
+                    }
+                    
+                    item.issueDate = item.issue_date ? item.issue_date.format("DD/MM/YYYY") : null;
+
+                    return item;
+                });
+
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceTraining/Save',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify($scope.lTraining),
+                    success: function () {
+                        $timeout(async function () {
+                            resolve(true);
+                        }, 0);
+                    }, error: function (jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "Save Training Error",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+    });
+</script>

@@ -3,117 +3,108 @@
 @{
     var token = User.AccessToken(HttpContext);
 }
+<style>
+    .nxl-container .nxl-content .main-content {
+        padding:0px;
+    }
+    
+</style>
 
-@section PageHeader {
-    <!-- [ page-header ] start -->
-    <div class="page-header">
-        <div class="page-header-left d-flex align-items-center">
-            <div class="page-header-title">
-                <h5 class="m-b-10">HR Service</h5>
-            </div>
-            <ul class="breadcrumb">
-                <li class="breadcrumb-item"><a href="@Url.Page("/Index")">Home</a></li>
-                <li class="breadcrumb-item" id="serviceNo"></li>
-            </ul>
-        </div>
-    </div>
-}
 
 <div ng-controller="ServiceCtrl">
-    <div class="container-fluid">
-        <div class="bg-white p-4 rounded-4 border shadow-sm">
-            <div class="d-flex">
-                <div class="" style="width:250px; min-width:250px;">
-                    <div class="mb-2">
-                        <small class="text-gray">
-                            เลขบริการ
-                        </small>
-                        <div class="fw-bolder text-secondary">
-                            {{ iData.serviceNo }}
-                        </div>
-                    </div>
-                    <div class="mb-2">
-                        <small class="text-gray">
-                            สถาน
-                        </small>
-                        <div class="fw-bolder text-secondary">
-                            {{ iData.statusDesc }}
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <small class="text-gray">
-                            ผู้ขอรับบริการ
-                        </small>
-                        <div class="fw-bolder text-secondary">
-                            {{ iData.userName }}
-                        </div>
-                        <div class="text-secondary">
-                            {{ iData.userPosition }} {{ iData.userDepartment }}
-                        </div>
-                    </div>
-                    <div class="mb-2">
-                        <small class="text-gray">
-                            วันที่ขอรับบริการ
-                        </small>
-                        <div class="fw-bolder text-secondary">
-                            {{ iData.createDate }}
-                        </div>
-                    </div>
+    <div class="page-header">
+        <div class="page-header-left d-flex align-items-center w-100">
+            <div class="px-4 py-2 flex-fill">
+                <ul class="breadcrumb mb-2">
+                    <li class="breadcrumb-item"><a href="@Url.Page("Index")">Requests</a></li>
+                    <li class="breadcrumb-item">{{ iData.serviceNo }}</li>
+                </ul>
+                <div class="fs-5 fw-bolder text-dark">{{ iData.categoryDesc }} #{{ iData.serviceNo }}</div>
+                <div class="d-flex">
+                    <div class="badge badge-{{iData.status}}">{{ iData.statusDesc }}</div><i class="bi bi-dot"></i><div class="small">Submitted {{ iData.createDate }}</div>
                 </div>
-                <div class="flex-fill px-2">
-                    @* Detail *@
-                    <div class="mb-2">
-                        <small class="text-gray">
-                            ความประสงค์
-                        </small>
-                        <div class="fw-bolder text-secondary fs-5">
-                            {{ iData.categoryDesc }} / {{ iData.subCategoryDesc }}
-                        </div>
+            </div>
+            <div class="btn btn-light me-2">
+                <i class="bi bi-clock-history me-2"></i> View History
+            </div>
+            <div class="btn btn-light">
+                <i class="bi bi-printer-fill"></i>
+            </div>
+        </div>
+    </div>
+    <div class="p-4 m-2">
+        <div class="d-flex">
+            <div class="flex-fill me-4">
+                <div ng-show="iData.subCategoryCode == 'EDIT_PROFILE'">
+                    <partial name="_PartialServiceProfile" />
+                </div>
+                <div ng-show="iData.subCategoryCode == 'FORM_NEED_NEW_CARD'">
+                    <partial name="_PartialServiceNewCard" />
+                </div>
+                <div ng-show="iData.subCategoryCode == 'FORM_PARKING_STICKER'">
+                    <partial name="_PartialServiceParkingSticker" />
+                </div>
+                <div ng-show="iData.subCategoryCode == 'FORM_BUY_UNIFORM'">
+                    <partial name="_PartialServiceBuyUniform" />
+                </div>
+                <div ng-show="iData.subCategoryCode == 'FORM_RESET_PASSWORD'">
+                    <partial name="_PartialServiceResetPassword" />
+                </div>
+                <div ng-show="iData.subCategoryCode == 'FORM_SALARY_CERTIFICATE'">
+                    <partial name="_PartialServiceSalaryCertificate" />
+                </div>
+                @* Feedback *@
+                <div class="bg-white rounded-4 border mb-4">
+                    <div class="px-4 py-3 border-bottom">
+                        <div class="fs-5 fw-bolder text-dark">Comment</div>
                     </div>
-                    <div class="bg-light rounded-4 p-3 mb-3">
-                        <div ng-show="iData.subCategoryCode == 'EDIT_ADDRESS'">
-                            <partial name="_PartialServiceAddress" />
-                        </div>
-                        <div ng-show="iData.subCategoryCode == 'EDIT_EDUCATION'">
-                            <partial name="_PartialServiceEducation" />
-                        </div>
-                        <div ng-show="iData.subCategoryCode == 'EDIT_EMPLOYEE'">
-                            <partial name="_PartialServiceEmployee" />
-                        </div>
-                        <div ng-show="iData.subCategoryCode == 'EDIT_JOB'">
-                            <partial name="_PartialServiceJobExperience" />
-                        </div>
-                        <div ng-show="iData.subCategoryCode == 'EDIT_PERSONAL'">
-                            <partial name="_PartialServicePersonal" />
-                        </div>
-                        <div ng-show="iData.subCategoryCode == 'EDIT_TRAINING'">
-                            <partial name="_PartialServiceTraining" />
-                        </div>
-                        <div ng-show="iData.subCategoryCode == 'NEED_MANPOWER'">
-                            <partial name="_PartialServiceManPower" />
-                        </div>
-                    </div>
-                    @* Action *@
-                    <div class="d-flex mb-3">
-                        <div ng-show="iData.can_approve == 1" class="btn btn-success me-2" ng-click="Approve()" style="width:120px;">
-                            <i class="bi bi-check2-circle me-1"></i> อนุมัติ
-                        </div>
-                        <div ng-show="iData.can_approve == 1" class="btn btn-danger-invert me-2" ng-click="Reject()" style="width:120px;">
-                            ไม่อนุมัติ
-                        </div>
-                        <div ng-show="iData.can_cancel == 1" class="btn btn-warning-invert me-2" ng-click="Cancel()" style="width:120px;">
-                            ยกเลิก
-                        </div>
-                    </div>
-                    @* Comment *@
-                    <div>
-                        <div class="">ความคิดเห็น</div>
+                    <div class="p-4">
                         <partial name="Shared/_PartialComment" />
                     </div>
                 </div>
-                <div class="" style="width:250px;min-width:250px;">
-                    <partial name="Shared/_PartialTrack" />
+            </div>
+            <div class="" style="width:300px; min-width:300px;">
+                @* Review Action *@
+                <div class="bg-white rounded-4 border mb-4 p-4" ng-show="iData.can_cancel == 1 || iData.can_approve == 1 || iData.can_work == 1">
+                    <div class="fw-bolder text-gray mb-4">REVIEW ACTIONS</div>
+                    <div class="d-grid gap-2">
+                        <button ng-show="iData.can_approve == 1" class="btn btn-primary" ng-click="Approve()">
+                            <i class="bi bi-check-circle-fill me-2"></i> Approve
+                        </button>
+                        <button ng-show="iData.can_work == 1" class="btn btn-success" ng-click="Work()">
+                            <i class="bi bi-arrow-right-circle me-2"></i> Process
+                        </button>
+                        <button ng-show="iData.can_approve == 1 || iData.can_work == 1" class="btn btn-danger-secondary" ng-click="Reject()">
+                            <i class="bi bi-x-circle-fill me-2"></i> Reject Request
+                        </button>
+                        <button ng-show="iData.can_cancel == 1" class="btn btn-warning-secondary" ng-click="Cancel()">
+                            Cancel
+                        </button>
+                    </div>
                 </div>
+                @* Request Info *@
+                <div class="bg-white rounded-4 border mb-4 p-4">
+                    <div class="fw-bolder text-gray mb-4">REQUEST INFO</div>
+                    <div class="d-flex mb-3">
+                        <div class="overflow-hidden me-2" style="width:40px; min-width:40px;">
+                            <img src="~/Images/icon-user.png" class="rounded-pill" width="40px" />
+                        </div>
+                        <div class="flex-fill">
+                            <div class="text-dark fw-bolder">{{ iData.createName }}</div>
+                            <div class="text-gray">{{ iData.createPosition }} {{ iData.createDepartment }}</div>
+                        </div>
+                    </div>
+                    <div class="d-flex">
+                        <div class="flex-fill">Submitted</div>
+                        <div class="text-dark">{{ iData.createDate }}</div>
+                    </div>
+                  @*   <div class="d-flex">
+                        <div class="flex-fill">Priority</div>
+                        <div class="text-blue">High</div>
+                    </div> *@
+                </div>
+                @* Approval Workflow *@
+                <partial name="Shared/_PartialTrack" />
             </div>
         </div>
     </div>
@@ -143,26 +134,23 @@
                         $scope.LoadTrack($scope.id);
                         $scope.LoadComment($scope.id);
 
-                        if ($scope.iData.subCategoryCode == 'EDIT_ADDRESS') {
-                            $scope.LoadAddress($scope.iData);
+                        if ($scope.iData.subCategoryCode == 'EDIT_PROFILE') {
+                            $scope.LoadProfile($scope.iData);
                         }
-                        else if ($scope.iData.subCategoryCode == 'EDIT_EDUCATION') {
-                            $scope.LoadEducation($scope.iData);
+                        else if ($scope.iData.subCategoryCode == 'FORM_NEED_NEW_CARD') {
+                            $scope.LoadFormNeedNewCard($scope.iData);
                         }
-                        else if ($scope.iData.subCategoryCode == 'EDIT_EMPLOYEE') {
-                            $scope.LoadEmployee($scope.iData);
+                        else if ($scope.iData.subCategoryCode == 'FORM_PARKING_STICKER') {
+                            $scope.LoadFormParkingSticker($scope.iData);
                         }
-                        else if ($scope.iData.subCategoryCode == 'EDIT_JOB') {
-                            $scope.LoadJobExperience($scope.iData);
+                        else if ($scope.iData.subCategoryCode == 'FORM_BUY_UNIFORM') {
+                            $scope.LoadFormBuyUniform($scope.iData);
                         }
-                        else if ($scope.iData.subCategoryCode == 'EDIT_PERSONAL') {
-                            $scope.LoadPersonal($scope.iData);
+                        else if ($scope.iData.subCategoryCode == 'FORM_RESET_PASSWORD') {
+                            $scope.LoadFormResetPassword($scope.iData);
                         }
-                        else if ($scope.iData.subCategoryCode == 'EDIT_TRAINING') {
-                            $scope.LoadTraining($scope.iData);
-                        }
-                        else if ($scope.iData.subCategoryCode == 'NEED_MANPOWER') {
-                            $scope.LoadManPower($scope.iData);
+                        else if ($scope.iData.subCategoryCode == 'FORM_SALARY_CERTIFICAET') {
+                            $scope.LoadFormSalaryCertificate($scope.iData);
                         }
                     }, 0);
                 },
@@ -175,9 +163,8 @@
         }
         $scope.LoadData();
 
-
         $scope.Approve = function () {
-            alertConfirm("อนุมัติ", "ยืนยันการอนุมัติรายการ", function () {
+            alertConfirm("Approval Confirmed", "Do you want to approve this request?", function () {
                 showPreloader();
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/Service/Approve',
@@ -193,7 +180,7 @@
                         $timeout(function () {
                             hidePreloader();
 
-                            alertSuccess("อนุมัติรายการสำเร็จ", "บันทึกการทำรายการเรียบร้อยแล้ว", () => {
+                            alertSuccess("Approval Successful", "The request has been approved successfully.", () => {
                                 if (window.opener && typeof window.opener.ReloadApprove === 'function') {
                                     if (!window.opener.ReloadApprove()) { window.opener.ReloadApprove(); }
                                 }
@@ -208,16 +195,15 @@
         }
 
         $scope.Reject = async function () {
-            const result = await Swal.fire({
-                title: "ยืนยันปฏิเสธรายการ",
+            await Swal.fire({
+                title: "Rejection Confirmed",
                 input: "textarea",
                 inputPlaceholder: "กรุณาระบุเหตุผล",
                 confirmButtonText: "ยืนยัน",
                 cancelButtonText: "ปิด",
                 showCancelButton: true
-            });
+            }).then((result) => {
 
-            if (result.isConfirmed) {
                 if (result.value) {
                     showPreloader();
 
@@ -230,13 +216,13 @@
                         data: JSON.stringify({
                             id: $scope.id
                             , userBy: '@User.UserId()'
-                            , description : result.value
+                            , description: result.value
                         }),
                         success: function () {
                             $timeout(function () {
                                 hidePreloader();
 
-                                alertSuccess("ปฏิเสธรายการสำเร็จ", "บันทึกการทำรายการเรียบร้อยแล้ว", () => {
+                                alertSuccess("Rejection Completed", "The request has been rejected.", () => {
                                     if (window.opener && typeof window.opener.ReloadApprove === 'function') {
                                         if (!window.opener.ReloadApprove()) { window.opener.ReloadApprove(); }
                                     }
@@ -248,11 +234,11 @@
                         error: AjaxError
                     });
                 }
-            }
+            });
         }
 
         $scope.Cancel = function () {
-            alertConfirm("ยกเลิก", "ยืนยันการยกเลิกรายการ", function () {
+            alertConfirm("Cancellation Confirmed", "Do you want to cancel this request?", function () {
                 showPreloader();
 
                 $.ajax({
@@ -269,9 +255,39 @@
                         $timeout(function () {
                             hidePreloader();
 
-                            alertSuccess("ยกเลิกรายการสำเร็จ", "บันทึกการทำรายการเรียบร้อยแล้ว", () => {
+                            alertSuccess("Cancellation Successful", "The request has been cancelled successfully.", () => {
                                 if (window.opener && typeof window.opener.ReloadRequest === 'function') {
                                     if (!window.opener.ReloadRequest()) { window.opener.ReloadRequest(); }
+                                }
+                                location.href = '@Url.Page("Index")';
+                            });
+                        }, 0);
+                    },
+                    error: AjaxError
+                });
+            });
+        }
+
+        $scope.Work = function () {
+            alertConfirm("Process Confirmed", "Do you want to process this request?", function () {
+                showPreloader();
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Service/Work',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify({
+                        id: $scope.id
+                        , userBy: '@User.UserId()'
+                    }),
+                    success: function (result) {
+                        $timeout(function () {
+                            hidePreloader();
+
+                            alertSuccess("Processed Successful", "The request has been processed successfully.", () => {
+                                if (window.opener && typeof window.opener.ReloadApprove === 'function') {
+                                    if (!window.opener.ReloadWork()) { window.opener.ReloadWork(); }
                                 }
                                 window.close();
                                 $scope.LoadData();
@@ -282,5 +298,6 @@
                 });
             });
         }
+
     });
 </script>

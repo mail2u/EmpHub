@@ -4,74 +4,108 @@
 @{
     var token = User.AccessToken(Context);
 }
-<div ng-controller="ServiceJobExperienceCtrl" class="mb-4 text-dark">
-    <div class="list-group-item px-0 d-flex" ng-repeat="x in lData">
-        <div style="width:20px" class="me-2 fw-bolder">
-            #{{ $index + 1 }}.
-        </div>
-        <div class="flex-fill">
-            <div class="row">
-                <div class="col-sm-8 mb-3">
-                    <small class="text-decoration-underline">
-                        บริษัท
-                    </small>
-                    <div class="fw-bolder">{{ x.company != '' ? x.company : '-' }}</div>
+<div ng-controller="ServiceJobExperienceCtrl">
+    <div class="bg-white rounded-4 border mb-4 overflow-hidden" ng-show="lJobExperience.length > 0">
+        <div class="px-4 py-3 border-bottom d-flex align-items-center">
+            <div class="fs-5 fw-bolder text-dark flex-fill">Job Experience</div>
+            <div>
+                <div class="badge bg-light-green px-2 me-2" ng-show="total_add > 0">
+                    {{ total_add }} Addition
                 </div>
-                <div class="col-sm-2 mb-3">
-                    <small class="text-decoration-underline">
-                        วันที่เริ่ม
-                    </small>
-                    <div class="fw-bolder">{{ x.fromDate != '' ? x.fromDate : '-' }}</div>
+                <div class="badge bg-light-blue px-2 me-2" ng-show="total_modify > 0">
+                    {{ total_modify }} Modification
                 </div>
-                <div class="col-sm-2 mb-3">
-                    <small class="text-decoration-underline">
-                        วันที่สิ้นสุด
-                    </small>
-                    <div class="fw-bolder">{{ x.endDate != '' ? x.endDate : '-' }}</div>
-                </div>
-                <div class="col-sm-8 mb-3">
-                    <small class="text-decoration-underline">
-                        ตำแหน่ง
-                    </small>
-                    <div class="fw-bolder">{{ x.position != '' ? x.position : '-' }}</div>
-                </div>
-                <div class="col-sm-12 mb-3">
-                    <small class="text-decoration-underline">
-                        รายละเอียดการทำงาน
-                    </small>
-                    <div class="fw-bolder">{{ x.description != '' ? x.description : '-' }}</div>
+                <div class="badge bg-light-red px-2 me-2" ng-show="total_delete > 0">
+                    {{ total_delete }} Deletion
                 </div>
             </div>
+        </div>
+        <div class="">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th class="bg-light ps-4">PREVIOUS ROLE</th>
+                        <th class="bg-light">COMPANY</th>
+                        <th class="bg-light">YEAR</th>
+                        <th class="bg-light">ACTION</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="x in lJobExperience">
+                        <td class="ps-4 text-{{ x.mode }}">{{ x.position }}</td>
+                        <td class="text-{{ x.mode }}">{{ x.company }}</td>
+                        <td class="text-{{ x.mode }}">{{ x.from_date }} - {{ x.end_date }}</td>
+                        <td>
+                            <div class="badge bg-light-green px-2 me-2" ng-show="x.mode == 'add'">
+                                Addition
+                            </div>
+                            <div class="badge bg-light-blue px-2 me-2" ng-show="x.mode == 'modify'">
+                                Modification
+                            </div>
+                            <div class="badge bg-light-red px-2 me-2" ng-show="x.mode == 'delete'">
+                                Deletion
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 <script>
     app.controller('ServiceJobExperienceCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.LoadModify = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceJobExperience/Detail',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        refId: $scope.refId
+                    }),
+                    success: function (result) {
+                        $timeout(async function () {
+                            $scope.lJobExperience = result;
 
-        $scope.LoadData = function () {
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceJobExperience/Detail',
-                headers: { 'authorization': 'Bearer @token' },
-                type: "POST",
-                contentType: 'application/json',
-                dataType: 'json',
-                cache: false,
-                data: JSON.stringify({
-                    refId: $scope.refId
-                }),
-                success: function (result) {
-                    $timeout(async function () {
-                        $scope.lData = result;
-                    }, 0);
-                }, error: AjaxError
+                            if($scope.lJobExperience.length > 0){
+                                $scope.lJobExperience = $scope.lJobExperience.map(item=>{
+
+                                    if(item.fromDate){
+                                        var from_date = moment(item.fromDate, "DD/MM/YYYY");
+                                        item.from_date = from_date.format('MMM YYYY');
+                                    }
+                                    if(item.endDate){
+                                        var end_date = moment(item.endDate, "DD/MM/YYYY");
+                                        item.end_date = end_date.format('MMM YYYY');
+                                    }
+
+                                    return item;
+                                });
+                            }
+                            resolve(true);
+                        }, 0);
+                    }, error: function () {
+                        resolve(false);
+                    }
+                });
             });
         }
 
-        $scope.$parent.LoadJobExperience = function (x) {
+        $scope.$parent.LoadJobExperience = async function (x) {
             $scope.refId = x.id;
             $scope.userId = x.userId;
             $scope.status = x.status;
-            $scope.LoadData();
+
+            await $scope.LoadModify();
+
+            $timeout(function () {
+                $scope.total_add = ($scope.lJobExperience.filter(item => item.mode == "add")).length;
+                $scope.total_modify = ($scope.lJobExperience.filter(item => item.mode == "modify")).length;
+                $scope.total_delete = ($scope.lJobExperience.filter(item => item.mode == "delete")).length;
+            }, 0);
         }
     });
 </script>

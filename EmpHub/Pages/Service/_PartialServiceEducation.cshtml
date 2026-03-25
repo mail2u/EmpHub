@@ -4,68 +4,92 @@
 @{
     var token = User.AccessToken(Context);
 }
-<div ng-controller="ServiceEducationCtrl" class="mb-4">
-    <div class="mb-2" ng-repeat="x in lData">
-        <div style="width:20px" class="me-2 fw-bolder">
-            #{{ $index + 1 }}.
-        </div>
-        <div>
-            <div class="row">
-                <div class="col-sm-8 mb-3">
-                    <small class="text-decoration-underline">
-                        หลักสูตรหรือวุฒิการศึกษา
-                    </small>
-                    <div class="fw-bolder">{{ x.levelName != '' ? x.levelName : '-' }}</div>
+<div ng-controller="ServiceEducationCtrl">
+    <div class="bg-white rounded-4 border mb-4 overflow-hidden" ng-show="lEducation.length > 0">
+        <div class="px-4 py-3 border-bottom d-flex align-items-center">
+            <div class="fs-5 fw-bolder text-dark flex-fill">Education</div>
+            <div>
+                <div class="badge bg-light-green px-2 me-2" ng-show="total_add > 0">
+                    {{ total_add }} Addition
                 </div>
-                <div class="col-sm-4 mb-3">
-                    <small class="text-decoration-underline">
-                        ปีที่สำเร็จการศึกษา
-                    </small>
-                    <div class="fw-bolder">{{ x.year != '' ? x.year : '-' }}</div>
+                <div class="badge bg-light-blue px-2 me-2" ng-show="total_modify > 0">
+                    {{ total_modify }} Modification
                 </div>
-                <div class="col-sm-12 mb-3">
-                    <small class="text-decoration-underline">
-                        สถาบันการศึกษา
-                    </small>
-                    <div class="fw-bolder">{{ x.institution != '' ? x.institution : '-' }}</div>
-                </div>
-                <div class="col-sm-12 mb-3">
-                    <small class="text-decoration-underline">
-                        เพิ่มกิจกรรม เกียรตินิยม รางวัล หรือโครงการพิเศษที่ประสบความสำเร็จระหว่างการศึกษา
-                    </small>
-                    <div class="fw-bolder">{{ x.description != '' ? x.description : '-' }}</div>
+                <div class="badge bg-light-red px-2 me-2" ng-show="total_delete > 0">
+                    {{ total_delete }} Deletion
                 </div>
             </div>
+        </div>
+        <div class="">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th class="bg-light ps-4">DEGREE</th>
+                        <th class="bg-light">INSTITUTION</th>
+                        <th class="bg-light">GRADUATION YEAR</th>
+                        <th class="bg-light">ACTION</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="x in lEducation">
+                        <td class="ps-4 text-{{ x.mode }}">{{ x.levelName }}</td>
+                        <td class="text-{{ x.mode }}">{{ x.institution }}</td>
+                        <td class="text-{{ x.mode }}">{{ x.year }}</td>
+                        <td>
+                            <div class="badge bg-light-green px-2 me-2" ng-show="x.mode == 'add'">
+                                Addition
+                            </div>
+                            <div class="badge bg-light-blue px-2 me-2" ng-show="x.mode == 'modify'">
+                                Modification
+                            </div>
+                            <div class="badge bg-light-red px-2 me-2" ng-show="x.mode == 'delete'">
+                                Deletion
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 <script>
     app.controller('ServiceEducationCtrl', function ($scope, $http, $timeout, $filter) {
-
-        $scope.LoadData = function () {
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceEducation/Detail',
-                headers: { 'authorization': 'Bearer @token' },
-                type: "POST",
-                contentType: 'application/json',
-                dataType: 'json',
-                cache: false,
-                data: JSON.stringify({
-                    refId: $scope.refId
-                }),
-                success: function (result) {
-                    $timeout(async function () {
-                        $scope.lData = result;
-                    }, 0);
-                }, error: AjaxError
+        $scope.LoadModify = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceEducation/Detail',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        refId: $scope.refId
+                    }),
+                    success: function (result) {
+                        $timeout(async function () {
+                            $scope.lEducation = result;
+                            resolve(true);
+                        }, 0);
+                    }, error: function () {
+                        resolve(false);
+                    }
+                });
             });
         }
 
-        $scope.$parent.LoadEducation = function (x) {
+        $scope.$parent.LoadEducation = async function (x) {
             $scope.refId = x.id;
             $scope.userId = x.userId;
             $scope.status = x.status;
-            $scope.LoadData();
+
+            await $scope.LoadModify();
+
+            $timeout(function () {
+                $scope.total_add = ($scope.lEducation.filter(item => item.mode == "add")).length;
+                $scope.total_modify = ($scope.lEducation.filter(item => item.mode == "modify")).length;
+                $scope.total_delete = ($scope.lEducation.filter(item => item.mode == "delete")).length;
+            }, 0);
         }
     });
 </script>

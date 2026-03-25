@@ -1,0 +1,444 @@
+﻿@page
+@model EmpHub.Pages.Candidate.IndexModel
+@{
+    var token = User.AccessToken(HttpContext);
+}
+
+@section PageHeader {
+    <!-- [ page-header ] start -->
+    <div class="page-header">
+        <div class="page-header-left d-flex align-items-center">
+            <div class="page-header-title">
+                <h5 class="m-b-10">Candidate</h5>
+            </div>
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Page("/Index")">Home</a></li>
+                <li class="breadcrumb-item">Request</li>
+            </ul>
+        </div>
+    </div>
+}
+<style>
+    tr.cancel > td {
+        color: var(--bs-gray);
+    }
+
+    tr.pending > td {
+        color: var(--bs-blue);
+    }
+
+    tr.reject > td {
+        color: var(--bs-danger);
+    }
+
+    tr.approve > td {
+        color: var(--bs-green);
+    }
+
+    tr.alert > td {
+        background-color: var(--light-blue);
+        font-weight: bolder;
+        color: var(--tip-blue);
+    }
+
+    .box-list.cancel {
+        color: var(--bs-gray);
+    }
+
+    .box-list.reject {
+        color: var(--bs-danger);
+        background-color: var(--light-red);
+    }
+
+    .box-list.approve {
+        color: var(--bs-green);
+        background-color: var(--light-green);
+    }
+
+    .box-list.alert {
+        background-color: var(--light-blue);
+        font-weight: bolder;
+        color: var(--tip-blue);
+    }
+
+    .box-list.request {
+        background-color: var(--light-gray);
+    }
+</style>
+<div ng-controller="CandidateCtrl">
+    <div class="d-md-flex mb-2">
+        <div class="overflow-auto flex-fill">
+            <div class="flex-fill d-flex flex-nowrap align-items-center">
+                <div class="btn btn-link text-nowrap {{ iStatus == '' ? 'active' : '' }}" ng-click="SelectStatus('')">
+                    All <span class="badge ms-1" ng-show="sum_all > 0">{{ sum_all | number }}</span>
+                </div> |
+                <div class="btn btn-link border-0 text-nowrap {{ iStatus == 'Approve' ? 'active' : '' }}" ng-click="SelectStatus('Approve')">
+                    Wait Approval <span class="badge ms-1" ng-show="sum_approve > 0">{{ sum_approve | number }}</span>
+                </div>
+                <div class="btn btn-link border-0 text-nowrap {{ iStatus == 'Reject' ? 'active' : '' }}" ng-click="SelectStatus('Reject')">
+                    <span ng-show="alert_reject > 0" class="ms-1 badge rounded-circle bg-danger p-1">
+                        <span class="visually-hidden">unread messages</span>
+                    </span>
+                    Reject <span class="badge ms-1" ng-show="sum_reject > 0">{{ sum_reject | number }}</span>
+                </div>
+                <div class="btn btn-link border-0 text-nowrap {{ iStatus == 'Work' ? 'active' : '' }}" ng-click="SelectStatus('Work')">
+                    <span ng-show="alert_work > 0" class="ms-1 badge rounded-circle bg-danger p-1">
+                        <span class="visually-hidden">unread messages</span>
+                    </span>
+                    Pending <span class="badge ms-1" ng-show="sum_work > 0">{{ sum_work | number }}</span>
+                </div>
+                <div class="btn btn-link border-0 text-nowrap {{ iStatus == 'Complete' ? 'active' : '' }}" ng-click="SelectStatus('Complete')">
+                    <span ng-show="alert_complete > 0" class="ms-1 badge rounded-circle bg-danger p-1">
+                        <span class="visually-hidden">unread messages</span>
+                    </span>
+                    Complete <span class="badge ms-1" ng-show="sum_complete > 0">{{ sum_complete | number }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="d-none d-sm-block">
+            <a class="btn btn-primary" href="@Url.Page("Create")">
+                <i class="fas fa-plus me-2"></i> New Request
+            </a>
+        </div>
+    </div>
+    <div class="rounded-3 p-3 bg-white shadow-sm border mb-4">
+        <div class="d-flex mb-1">
+            <div class="flex-fill">
+                <div class="d-flex align-items-end">
+                    <div class="me-2">
+                        <small>Service No</small>
+                        <div class="d-flex">
+                            <input class="form-control form-control-sm" ng-model="serviceNo" my-enter="LoadData()" />
+                        </div>
+                    </div>
+                    <div class="me-2">
+                        <small>Firstname</small>
+                        <div class="d-flex">
+                            <input class="form-control form-control-sm" ng-model="firstname" my-enter="LoadData()" />
+                        </div>
+                    </div>
+                    <div class="me-2">
+                        <small>Lastname</small>
+                        <div class="d-flex">
+                            <input class="form-control form-control-sm" ng-model="lastname" my-enter="LoadData()" />
+                        </div>
+                    </div>
+                    <div class="me-2">
+                        <small>Request Date</small>
+                        <div class="d-flex">
+                            <input class="form-control form-control-sm icon-calendar date"
+                                   ng-model="createDate"
+                                   ng-model-options="{ updateon: 'blur' }"
+                                   moment-picker="createDate"
+                                   locale="th"
+                                   format="DD/MM/YYYY"
+                                   min-view="month"
+                                   max-view="month"
+                                   start-view="month"
+                                   my-enter="LoadData()" />
+                        </div>
+                    </div>
+                    <div class="me-2">
+                        <button ng-click="LoadData()" class="btn btn-circle" title="Search">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    <div class="me-2">
+                        <button ng-click="Download()" class="btn btn-circle" title="Download" ng-disabled="total == 0">
+                            <i class="fas fa-arrow-down"></i>
+                        </button>
+                    </div>
+                    <div class="flex-fill">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @* Web View *@
+    <div class="mb-4">
+        <div style="min-height:calc(100vh - 410px);" class="position-relative">
+            <table class="table table-tip ">
+                <thead>
+                    <tr>
+                        <th width="50"></th>
+                        <th class="select" width="120" ng-click="SetSort('serviceNo')">
+                            Service No
+                            <i ng-show="sortBy.indexOf('serviceNo') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                        </th>
+                        <th class="select" ng-click="SetSort('firstname')">
+                            Firstname
+                            <i ng-show="sortBy.indexOf('firstname') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                        </th>
+                        <th class="select" ng-click="SetSort('lastname')">
+                            Lastname
+                            <i ng-show="sortBy.indexOf('lastname') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                        </th>
+                        <th class="select" ng-click="SetSort('status')">
+                            Status
+                            <i ng-show="sortBy.indexOf('status') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                        </th>
+                        <th class="select" ng-click="SetSort('createBy')">
+                            Request By
+                            <i ng-show="sortBy.indexOf('createBy') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                        </th>
+                        <th class="select" ng-click="SetSort('orderDate1')">
+                            Request Date
+                            <i ng-show="sortBy.indexOf('orderDate1') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                        </th>
+                        <th class="select text-nowrap" ng-click="SetSort('orderDate2')">
+                            Action Date
+                            <i ng-show="sortBy.indexOf('orderDate2') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="x in lData" class="{{ x.statusCss }} {{ x.is_not_read == 1 ? 'fw-bolder' : '' }}">
+                        <td class="text-center">
+                            <span ng-show="x.status == 'Reject'" class="text-danger" title="ปฏิเสธ">
+                                <i class="bi bi-x-circle"></i>
+                            </span>
+                            <span ng-show="x.status.includes('Pending')" class="text-blue" title="รออนุม้ติ">
+                                <i class="bi bi-record-circle"></i>
+                            </span>
+                            <span ng-show="x.status == 'Approve'" class="text-green" title="อนุมัติ">
+                                <i class="bi bi-check2-circle"></i>
+                            </span>
+                        </td>
+                        <td class="select text-nowrap position-relative" ng-click="ShowDetail(x)">
+                            <span ng-show="x.is_alert > 0" class="positionposition-absolute top-50 start-0 translate-middle badge rounded-circle bg-danger p-1">
+                                <span class="visually-hidden">unread messages</span>
+                            </span>
+                            {{ x.serviceNo != '' ? x.serviceNo : 'แบบร่าง' }}
+                        </td>
+                        <td class="select text-nowrap" ng-click="ShowDetail(x)">
+                            {{ x.firstname }}
+                        </td>
+                        <td class="select text-nowrap" ng-click="ShowDetail(x)">
+                            {{ x.lastname }}
+                        </td>
+                        <td class="select text-nowrap" ng-click="ShowDetail(x)">
+                            {{ x.statusDesc }}
+                        </td>
+                        <td class="select text-nowrap" ng-click="ShowDetail(x)">
+                            {{ x.createName }}
+                        </td>
+                        <td class="select text-nowrap" ng-click="ShowDetail(x)">
+                            {{ x.createDate }}
+                        </td>
+                        <td class="select text-nowrap" ng-click="ShowDetail(x)">
+                            {{ x.actionDate }}
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3">
+                            <div class="text-light-gray">Showing {{ ((page - 1) * row) + 1 }} to {{ (page * row) > total ? total : page * row }} of {{ total }} requests</div>
+                        </td>
+                        <td colspan="5">
+                            <div class="d-flex">
+                                <div class="flex-fill"></div>
+                                <button class="btn btn-circle me-2" ng-click="LoadData(page - 1)" ng-disabled="page <= 1">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <button class="btn btn-circle" ng-click="LoadData(page + 1)" ng-disabled="page * row >= total">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('CandidateCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.is_not_read = 99;
+        $scope.createBy = '';
+        $scope.iStatus = '';
+
+        $scope.page = 1;
+        $scope.row = 10;
+        $scope.lData = [];
+        
+        $scope.LoadData = function(page = 1){
+            $scope.page = page;
+            var createDate = '';
+
+            if($scope.createDate != null){
+                createDate = $scope.createDate.format("DD/MM/YYYY");
+            }
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Candidate/DataList',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userBy: '@User.UserId()'
+                    , page: $scope.page
+                    , row: $scope.row
+                    , sortBy: $scope.sortBy
+                    , status: $scope.iStatus
+                    , serviceNo: $scope.serviceNo
+                    , firstname: $scope.firstname
+                    , lastname: $scope.lastname
+                    , createName: $scope.createName
+                    , createDate: createDate
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.lData = result.data;
+                        $scope.total = result.total;
+                    }, 0);
+                },
+                error: AjaxError
+            });
+            
+            // $.ajax({
+            //     url: '@webAPI.CurrentValue.APIEmpHub/api/Candidate/RequestSummary', 
+            //     headers: { 'authorization': 'Bearer @token' },
+            //     type: "POST",
+            //     contentType: 'application/json',
+            //     dataType: 'json',
+            //     cache: false,
+            //     data: JSON.stringify({
+            //         userBy: '@User.UserId()'
+            //         , serviceNo: $scope.serviceNo
+            //         , firstname: $scope.firstname
+            //         , lastname: $scope.lastname
+            //         , createName: $scope.createName
+            //         , createDate: createDate
+            //     }),
+            //     success: function (result) {
+            //         $timeout(function () {
+            //             $scope.sum_approve = 0;
+            //             $scope.sum_reject = 0;
+            //             $scope.sum_work = 0;
+            //             $scope.sum_complete = 0;
+                        
+            //             $scope.alert_approve = 0;
+            //             $scope.alert_reject = 0;
+            //             $scope.alert_work = 0;
+            //             $scope.alert_complete = 0;
+
+            //             var find = result.find(x => x.status == 'Approve');
+            //             if (find) { 
+            //                 $scope.sum_approve = find.total; 
+            //                 $scope.alert_approve = find.alert_total; 
+            //             }
+            //             find = result.find(x => x.status == 'Reject');
+            //             if (find) { 
+            //                 $scope.sum_reject = find.total; 
+            //                 $scope.alert_reject = find.alert_total; 
+            //             }
+            //             find = result.find(x => x.status == 'Work');
+            //             if (find) { 
+            //                 $scope.sum_work = find.total; 
+            //                 $scope.alert_work = find.alert_total; 
+            //             }
+            //             find = result.find(x => x.status == 'Complete');
+            //             if (find) { 
+            //                 $scope.sum_complete = find.total; 
+            //                 $scope.alert_complete = find.alert_total; 
+            //             }
+
+            //             $scope.sum_all = $scope.sum_approve
+            //                 + $scope.sum_reject
+            //                 + $scope.sum_work
+            //                 + $scope.sum_complete;
+            //         }, 0);
+            //     },
+            //     error: AjaxError
+            // });
+        }
+        $scope.LoadData();
+
+        $scope.SelectStatus = function (status) {
+            $scope.iStatus = status;
+            $scope.LoadData();
+        }
+
+        $scope.SetPage = function (page) {
+            $scope.LoadData(page);
+        }
+        
+        $scope.SetSort = function(sortBy){
+            if ($scope.sortBy != null && $scope.sortBy.indexOf(sortBy) > -1) {
+                if ($scope.sortBy.indexOf("-") > -1) {
+                    $scope.sortBy = sortBy;
+                }else{
+                    $scope.sortBy = '-' + sortBy;
+                }
+            }else{
+                $scope.sortBy = sortBy;
+            }
+            $scope.LoadData();
+        }
+
+        $scope.ShowDetail = function(x){
+            x.is_not_read = 0;
+            window.open('@Url.Page("Detail")/' + x.id, '_blank');
+        }
+        
+        window.parent.ReloadRequest = function () {
+            $scope.LoadData();
+        }
+        
+        $scope.Download = function(){
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Service/RequestList',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    createBy: $scope.createBy
+                    , userBy: '@User.UserId()'
+                    , page: 1
+                    , row: $scope.total
+                    , sortBy: $scope.sortBy
+                    , status: $scope.iStatus
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        var lData = result.data;
+                        
+                        if (lData.length > 0) {
+                            var JSData = [[
+                                { 'text': 'Service No' }
+                                , { 'text': 'Category' }
+                                , { 'text': 'Status' }
+                                , { 'text': 'Request By' }
+                                , { 'text': 'Request Date' }
+                                , { 'text': 'Action Date' }
+                            ]];
+
+                            for (var i = 0; i < lData.length; i++) {
+                                var iData = lData[i];
+
+                                JSData.splice(JSData.length, 0, [
+                                    { 'text': iData.serviceNo }
+                                    , { 'text': iData.categoryDesc }
+                                    , { 'text': iData.statusDesc }
+                                    , { 'text': iData.createName }
+                                    , { 'text': iData.createDate }
+                                    , { 'text': iData.actionDate }
+                                ]);
+                            }
+
+                            var dt = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+                            ExportFile(JSData, 'รายการคำขอ_' + dt);
+                        }
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+    })
+</Script>

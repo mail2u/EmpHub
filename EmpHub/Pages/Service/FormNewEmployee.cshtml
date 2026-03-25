@@ -1,0 +1,335 @@
+﻿@page
+@model EmpHub.Pages.Service.FormNewEmployeeModel
+@{
+    var token = User.AccessToken(HttpContext);
+}
+<style>
+    .main-content {
+        min-height: calc(100vh - 150px) !important;
+    }
+
+</style>
+<div ng-controller="ServiceEducationCtrl" id="tab_education">
+    @* Header *@
+    <partial name="_PartialFormHeader" />
+    @* View *@
+    <div class="rounded-4 mb-3 bg-white shadow-sm p-4">
+        <div class="text-center fs-4 fw-bolder mb-4 text-dark">
+            ใบขอกำลังคน / Manpower Requisition Form
+        </div>
+        <div class="row">
+            <div class="col-sm-6 mb-3 d-lg-flex">
+                <div class="me-3">
+                    <div class="text-dark text-nowrap fw-bolder">ตำแหน่งที่ต้องการ</div>
+                    <div class="text-dark text-nowrap">Position Required</div>
+                </div>
+                <input ng-model="iData.position" class="form-control form-control-input position" maxlength="50" />
+            </div>
+            <div class="col-sm-6 mb-3 d-lg-flex">
+                <div class="me-3">
+                    <div class="text-dark text-nowrap fw-bolder">แผนก / ฝ่าย</div>
+                    <div class="text-dark text-nowrap">Division / Department</div>
+                </div>
+                <input ng-model="iData.department" class="form-control form-control-input department" maxlength="50" />
+            </div>
+            <div class="col-sm-4 mb-3 d-lg-flex">
+                <div class="me-3">
+                    <div class="text-dark text-nowrap fw-bolder">วันที่ต้องการ</div>
+                    <div class="text-dark text-nowrap">Date Required</div>
+                </div>
+                <input class="form-control form-control-input icon-calendar date required_date_select"
+                       ng-model="iData.required_date_select"
+                       ng-model-options="{ updateOn: 'blur' }"
+                       moment-picker="iData.required_date_select"
+                       locale="th"
+                       format="DD/MM/YYYY"
+                       min-view="month"
+                       max-view="month" required />
+            </div>
+            <div class="col-sm-4"></div>
+            <div class="col-sm-4 mb-3 d-lg-flex">
+                <div class="me-3">
+                    <div class="text-dark text-nowrap fw-bolder">จำนวนพนักงานที่ต้องการ</div>
+                    <div class="text-dark text-nowrap">Number of Employee Required</div>
+                </div>
+                <input ng-model="iData.num_employee" class="form-control form-control-input num_employee" maxlength="50" />
+            </div>
+            <div class="col-sm-12 mb-3">
+                <div class="type_employment d-lg-flex align-items-center">
+                    <div class="me-3">
+                        <div class="text-dark text-nowrap fw-bolder">ประเภทของการจ้างงาน</div>
+                        <div class="text-dark text-nowrap">Type of Employment</div>
+                    </div>
+                    <div class="flex-fill">
+                        <div class="d-lg-flex align-items-center">
+                            <div class="me-4 text-nowrap">
+                                <input type="radio" ng-model="iData.type_employment" value="permanent" /> ประจำ / Permanent
+                            </div>
+                            <div class="me-4 text-nowrap">
+                                <input type="radio" ng-model="iData.type_employment" value="daily" /> รายวัน / Daily
+                            </div>
+                            <div class="me-4 text-nowrap">
+                                <input type="radio" ng-model="iData.type_employment" value="monthly" /> รายเดือน / Monthly
+                            </div>
+                            <div class="me-4 text-nowrap">
+                                <input type="radio" ng-model="iData.type_employment" value="outsource" /> จ้างช่วงระยะเวลา / Temporarily, Outsource
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-lg-flex" ng-show="iData.type_employment == 'outsource'">
+                        <div class="me-3">
+                            <div class="text-dark text-nowrap fw-bolder">ระยะเวลาการจ้าง</div>
+                            <div class="text-dark text-nowrap">Duration</div>
+                        </div>
+                        <input ng-model="iData.type_employment_desc" class="form-control form-control-input type_employment_desc" maxlength="50" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 mb-3">
+                <div class="type_requirement d-lg-flex">
+                    <div class="me-3">
+                        <div class="text-dark text-nowrap fw-bolder">ประเภทของความต้องการ</div>
+                        <div class="text-dark text-nowrap">Type of Requirement</div>
+                    </div>
+                    <div class="d-lg-flex align-items-center flex-fill">
+                        <div class="me-4">
+                            <input type="radio" ng-model="iData.type_requirement" value="external_recruit" /> สรรหาภายนอก (External Recruit)
+                        </div>
+                        <div>
+                            <input type="radio" ng-model="iData.type_requirement" value="internal_recruit" /> สรรหาภายใน (Internal Recruit)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12 mb-3">
+            <div class="type_reason">
+                <div class="mb-2">
+                    <div class="text-dark text-nowrap fw-bolder">เหตุผลการขอกำลังคนเพิ่ม</div>
+                    <div class="text-dark text-nowrap">Reason of Additional Manpower Requisition</div>
+                </div>
+                <div>
+                    <input type="radio" ng-model="iData.type_reason" value="additional_budget" /> จ้างตามงบประมาณ / Additional Budget
+                </div>
+                <div>
+                    <input type="radio" ng-model="iData.type_reason" value="additional_hire" /> จ้างเพิ่ม / Additional Hire
+                    <input ng-model="iData.type_reason_additional_hire_desc" class="form-control form-control-input type_reason_additional_hire_desc mb-2" ng-show="iData.type_reason == 'additional_hire'" maxlength="200" />
+                </div>
+                <div>
+                    <input type="radio" ng-model="iData.type_reason" value="replacement" /> ทดแทน / Replacement (Whom ?)
+                    <input ng-model="iData.type_reason_replacement_desc" class="form-control form-control-input type_reason_replacement_desc mb-2" ng-show="iData.type_reason == 'replacement'" maxlength="200" />
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12 mb-3">
+            <div class="text-dark fw-bolder">ลักษณะงานที่ทำโดยสังเขป</div>
+            <div class="text-dark">Description of Work</div>
+            <textarea ng-model="iData.description_work" class="form-control form-control-input description_work" maxlength="2000" rows="5"></textarea>
+        </div>
+        <div class="">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="mb-2 ">
+                        <div class="text-warning fw-bolder">คุณสมบัติ Qualification</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4 mb-3">
+                            <div class="sex d-lg-flex">
+                                <div class="me-3">
+                                    <div class="text-dark text-nowrap fw-bolder">เพศ</div>
+                                    <div class="text-dark text-nowrap">Sex</div>
+                                </div>
+                                <div class="d-lg-flex align-items-center flex-fill">
+                                    <div class="me-3">
+                                        <input type="radio" ng-model="iData.sex" value="male" /> ชาย / Male
+                                    </div>
+                                    <div class="me-4">
+                                        <input type="radio" ng-model="iData.sex" value="female" /> หญิง / Female
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2 d-lg-flex mb-3">
+                            <div class="me-3">
+                                <div class="text-dark text-nowrap fw-bolder">อายุ</div>
+                                <div class="text-dark text-nowrap">Age</div>
+                            </div>
+                            <input ng-model="iData.age" class="form-control form-control-input age" maxlength="50" />
+                        </div>
+                        <div class="col-sm-6 d-lg-flex mb-3">
+                            <div class="me-3">
+                                <div class="text-dark text-nowrap fw-bolder">การศึกษา</div>
+                                <div class="text-dark text-nowrap">Education</div>
+                            </div>
+                            <input ng-model="iData.education" class="form-control form-control-input education" maxlength="100" />
+                        </div>
+                        <div class="col-sm-12 d-lg-flex mb-3">
+                            <div class="me-3">
+                                <div class="text-dark text-nowrap fw-bolder">สาขา</div>
+                                <div class="text-dark text-nowrap">Major</div>
+                            </div>
+                            <input ng-model="iData.major" class="form-control form-control-input major" maxlength="100" />
+                        </div>
+                        <div class="col-sm-12 d-lg-flex mb-3">
+                            <div class="me-3">
+                                <div class="text-dark text-nowrap fw-bolder">ความรู้ในงาน</div>
+                                <div class="text-dark text-nowrap">Knowledge</div>
+                            </div>
+                            <input ng-model="iData.knowledge" class="form-control form-control-input knowledge" maxlength="2000" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-3">
+                    <div class="text-dark fw-bolder mb-2">ความสามารถพิเศษ / Speial Skill</div>
+                    <div class="d-flex align-items-center">
+                        <input type="checkbox" ng-model="iData.skill_language" ng-true-value="1" ng-false-value="0" />
+                        <div class="text-nowrap px-3">ภาษาต่างประเทศ / Foreign Language Command</div>
+                    </div>
+                    <input ng-model="iData.skill_language_desc" class="form-control form-control-input" ng-show="iData.skill_language == 1" maxlength="400" />
+                    <div class="d-flex align-items-center mt-2">
+                        <input type="checkbox" ng-model="iData.skill_computer" ng-true-value="1" ng-false-value="0" />
+                        <div class="text-nowrap px-3">ความรู้เรื่องคอมพิวเตอร์ / Computer Knowledge</div>
+                    </div>
+                    <input ng-model="iData.skill_computer_desc" class="form-control form-control-input" ng-show="iData.skill_computer == 1" maxlength="400" />
+                    <div class="d-flex align-items-center mt-2">
+                        <input type="checkbox" ng-model="iData.skill_other" ng-true-value="1" ng-false-value="0" />
+                        <div class="text-nowrap px-3">อื่น ๆ / Other</div>
+                    </div>
+                    <input ng-model="iData.skill_other_desc" class="form-control form-control-input" ng-show="iData.skill_other == 1" maxlength="400" />
+                </div>
+                <div class="col-sm-12 mb-3">
+                    <div class="text-dark fw-bolder mb-2">ประสบการณ์ / Experience</div>
+                    <div class="d-flex align-items-center">
+                        <input type="radio" ng-model="iData.type_experience" value="no" />
+                        <div class="text-nowrap px-3">ไม่มีประสบการณ์ / Inexperience</div>
+                    </div>
+                    <div class="d-flex align-items-center mt-2">
+                        <input type="radio" ng-model="iData.type_experience" value="yes" />
+                        <div class="text-nowrap px-3">ประสบการณ์ขั้นต่ำ / Minimum Experience</div>
+                    </div>
+                    <input ng-model="iData.type_experience_yes_desc" class="form-control form-control-input" ng-show="iData.type_experience == 'yes'" maxlength="400" />
+                    <div class="d-flex align-items-center mt-2">
+                        <input type="radio" ng-model="iData.type_experience" value="other" />
+                        <div class="text-nowrap px-3">อื่น ๆ / Other</div>
+                    </div>
+                    <input ng-model="iData.type_experience_other_desc" class="form-control form-control-input" ng-show="iData.type_experience == 'other'" maxlength="400" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-end">
+        <div class="btn btn-primary" ng-click="Save()">
+            <i class="far fa-paper-plane me-2"></i> Send Request
+        </div>
+    </div>
+</div>
+<script>
+    $(".num_employee").mask("00");
+    $(".age").mask("00");
+    $(".date").mask("00/00/0000")
+    app.controller('ServiceEducationCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.mode = '@Model.mode';
+
+        // $scope.lStatus = [{ value: 'modify', key: 'เพิ่ม/แก้ไข' }, { value: 'delete', key: 'ลบข้อมูล' }]
+
+        $scope.LoadMaster = function () {
+            if (!$scope.lEduction) {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                    , headers: { 'authorization': 'Bearer @token' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , dataType: 'json'
+                    , cache: false
+                    , data: JSON.stringify({
+                        groupName: 'educationCode'
+                    })
+                    , success: function (result) {
+                        $timeout(function () {
+                            $scope.lEduction = result;
+                        }, 0);
+                    }
+                    , error: AjaxError
+                });
+            }
+        }
+
+        $scope.Validate = function () {
+            var flag = true;
+            // JS_Reset($(".firstname_th"));
+            // JS_Reset($(".lastname_th"));
+
+            // if($scope.iData.firstname_th == ''){
+            //     flag = false;
+            //     JS_Require($(".firstname_th"));
+            // }
+            // if($scope.iData.lastname_th == ''){
+            //     flag = false;
+            //     JS_Require($(".lastname_th"));
+            // }
+
+            return flag;
+        }
+
+        $scope.Save = async function () {
+            if ($scope.Validate()) {
+                alertConfirm("ยืนยันการทำรายการ", "ท่านต้องการส่งใบคำขอ", async function () {
+                    var id = await $scope.CreateService();
+
+                    if (id) {
+                        $scope.iData.id = id;
+                        $scope.iData.refId = id;
+
+                        var flag = await $scope.CreateManPower();
+
+                        if (flag) {
+                            var serviceNo = await $scope.ServiceRequest();
+
+                            if (serviceNo) {
+                                alertSuccess("ทำรายการสำเร็จ", "ระบบบันทึกใบคำขอของท่านเรียบร้อย", function () {
+                                    location.href = '@Url.Page("/Service/Index")';
+                                });
+                            } else {
+                                $scope.CancelService();
+                            }
+                        } else {
+                            $scope.CancelService();
+                        }
+                    }
+                });
+            } else {
+                alertWarning("แจ้งเตือน", "กรุณากรอกข้อมูลให้ครบ");
+            }
+        }
+
+        $scope.CreateManPower = function () {
+            return new Promise((resolve) => {
+                if ($scope.iData.required_date_select != '' && $scope.iData.required_date_select != undefined){
+                    $scope.iData.required_date = $scope.iData.required_date_select.format("DD/MM/YYYY");
+                }
+
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceManPower/Save',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify($scope.iData),
+                    success: function () {
+                        $timeout(async function () {
+                            resolve(true);
+                        }, 0);
+                    }, error: function (jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "ระบบเกิดข้อผิดพลาด",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+    });
+</script>

@@ -70,7 +70,11 @@ main {
     border-radius: 15px;
 }
 
-.border-secondary {
+.border-blue {
+    border-color: var(--bs-blue) !important;
+}
+
+.border-tip {
     border-color: var(--tip-blue) !important;
     box-shadow: 5px 5px 0 var(--tip-blue) !important;
 }
@@ -235,8 +239,29 @@ main {
     color: var(--bs-danger);
 }
 
+.badge-Approve1 {
+    background-color: #fdf3cb;
+    color: #bd692f;
+    border-radius: 25px !important;
+}
+
+.badge-Work {
+    background-color: #fdf3cb;
+    color: #bd692f;
+    border-radius: 25px !important;
+}
+
+.nav > .nav-link {
+    color: var(--bs-gray-600);
+}
+
+.nav > .nav-link.active {
+    color: var(--bs-blue);
+}
+
 .btn {
     color: var(--dark-gray);
+    border-radius: 10px !important;
 }
 
 .btn-default {
@@ -327,9 +352,10 @@ main {
 }
 
 .btn-secondary-invert:hover, .btn-secondary-invert:active, .btn-secondary-invert:focus {
-    color: var(--tip-blue);
-    background-color: var(--bs-white);
-    opacity: 0.8;
+    color: var(--tip-blue) !important;
+    background-color: var(--bs-white) !important;
+    border: 1px solid var(--tip-blue) !important;
+    opacity: 0.8 !important;
 }
 
 .btn-primary:disabled, .btn-secondary:disabled, .btn-danger:disabled {
@@ -360,6 +386,26 @@ main {
 .btn-danger-invert:hover {
     background-color: var(--bs-red);
     color: white !important;
+}
+
+.btn-danger-secondary {
+    background-color: var(--light-red);
+    color: var(--bs-red) !important;
+}
+
+.btn-danger-secondary:hover {
+    background-color: var(--light-red);
+    color: var(--bs-red) !important;
+    opacity: 0.6;
+}
+
+.btn-warning-secondary {
+    background-color: var(--light-orange) !important;
+    color: var(--bs-orange) !important;
+}
+
+.btn-warning-secondary:hover {
+    box-shadow: 0px 0px 5px var(--bs-orange) !important;
 }
 
 .btn-warning-invert {
@@ -511,7 +557,12 @@ main {
 
 .bg-light-green {
     background-color: var(--light-green) !important;
-    color: var(--dark-gray);
+    color: var(--bs-green);
+}
+
+.bg-light-red {
+    background-color: var(--light-red) !important;
+    color: var(--bs-red);
 }
 
 .bg-soft-orange {
@@ -540,7 +591,7 @@ main {
 
 .bg-light-blue {
     background-color: var(--light-blue);
-    color: var(--dark-gray);
+    color: var(--bs-blue);
 }
 
 .bg-soft-blue {
@@ -751,8 +802,19 @@ main {
     }
 }
 
-.table-tip{
-    margin-bottom:0;
+.table-tip {
+    margin-bottom: 0;
+    border: 1px solid var(--bs-gray-200);
+    border-collapse: separate; /* สำคัญมาก */
+    border-spacing: 0;
+    border-radius: 10px;
+    overflow: hidden; /* ทำให้มุมโค้งเห็นผล */
+}
+
+.table-tip > thead > tr > th {
+    background-color: #f8fafc;
+    color: var(--bs-gray-600);
+    padding: 10px 15px;
 }
 
 .table-tip > tbody > tr:hover {
@@ -825,6 +887,10 @@ tr.alert > td {
     margin: -100px 0 0 -100px; /* is width and height divided by two */
 }
 
+.border-dash{
+    border-style: dashed !important;
+    border-width: 2px !important;
+}
 
 .border-ranbow {
     --angle: 0deg;

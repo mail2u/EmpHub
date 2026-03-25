@@ -2,76 +2,102 @@
     var token = User.AccessToken(Context);
 }
 <style>
-
-    .box {
-        margin-left: 0;
+    .circle-1{
+        background-color: #17c666;
+        color: white;
+        border: 2px solid white;
     }
 
-    .box-cancel {
-        color: var(--bs-danger);
-        border-left: 2px solid var(--bs-danger) !important;
+    .circle-2 {
+        background-color: var(--bs-blue);
+        color: white;
+        border: 2px solid white;
     }
 
-    .box-current {
-        color: var(--bs-blue);
-        border-left: 2px solid var(--bs-blue) !important;
+    .circle-3 {
+        background-color: var(--bs-gray-200);
+        color: white;
+        border: 2px solid white;
     }
 
-    .box-complete {
-        border-left: 2px solid var(--tip-blue) !important;
+    .circle-4 {
+        background-color: var(--bs-red);
+        color: white;
+        border: 2px solid white;
     }
 
-    .box-info {
-        color: var(--tip-blue);
-        border-left: 2px solid var(--tip-blue) !important;
-    }
-
-    .box-future {
-        color: var(--gray) !important;
-        border-left: 2px dashed var(--gray) !important;
+    .circle-0 {
+        background-color: var(--bs-gray-200);
+        color: var(--bs-gray-500);
+        border: 2px solid white;
     }
 
 </style>
 <div ng-controller="TrackCtrl">
-    <div class="mb-3">
-        <div class="p-2 ps-3 bg-light text-dark">ติดตามสถานะ</div>
-        <div class="p-3 pe-0">
-            <div ng-repeat="x in lTrack" class="ps-3 pe-2 mt-3 d-flex align-items-center position-relative box {{ x.is_action == 3 ? 'box-complete' : x.is_action == 2 ? 'box-current' : x.is_action == -2 ? 'box-cancel' : x.is_action == 1 ? 'box-info' : 'box-future' }}">
-                <span class="position-absolute stage" style="left:-9px; top:-20px;">
-                    <i class="bi bi-circle" ng-show="x.is_action == 3"></i>
-                    <i class="bi bi-record-circle" ng-show="x.is_action == 2"></i>
-                    <i class="bi bi-check2-circle text-green" ng-show="x.is_action == 1"></i>
-                    <i class="bi bi-circle" ng-show="x.is_action == 0"></i>
-                    <i class="bi bi-x-circle" ng-show="x.is_action == -2"></i>
-                </span>
-                <div class="">
-                    <div class="fw-bolder">{{ x.statusDesc }}</div>
-                    <div ng-show="x.actionName != ''" class=" small p-2">
-                        <div class="d-flex">
-                            <i class="bi bi-person-circle me-1"></i>
-                            <div>
-                                <div class="fw-bolder">{{ x.actionName }}</div>
-                                <div>{{ x.position }} {{ x.department }}</div>
-                            </div>
-                        </div>
-                        <div ng-show="x.actionDate != ''">
-                            <i class="bi bi-clock"></i> {{ x.actionDate }}
-                        </div>
-                        <div ng-show="x.description != ''">
-                            <i class="bi bi-pen"></i> {{ x.description }}
-                        </div>
-                    </div>
-                    <div ng-show="x.actionName == ''" class=" small p-2">
-                        <div ng-repeat="u in x.lUser" class="d-flex mb-2">
-                            <i class="bi bi-person-circle me-1"></i>
-                            <div>
-                                <div>{{ u.actionName }}</div>
-                                <div>{{ u.position }} {{ u.department }}</div>
-                            </div>
-                        </div>
+
+    <div class="bg-white rounded-4 border mb-4 p-4 pb-0">
+        <div class="fw-bolder text-gray mb-4">APPROVAL WORKFLOW</div>
+        <div ng-repeat="x in lTrack" class="d-flex">
+            <div class="d-flex justify-content-center position-relative me-2" style="width:25px; min-width:25px;">
+                <div class="vr" ng-show="$index != lTrack.length - 1"></div>
+                <div class="position-absolute start-50 translate-middle-x" style="top:-2px;">
+                    <div class="d-flex justify-content-center align-items-center rounded-circle circle-{{ x.is_action }}" style="width: 25px; height: 25px;">
+                        <span ng-show="x.is_action == 1"><i class="bi bi-check-lg"></i></span>
+                        <span ng-show="x.is_action == 3 || x.is_action == 4"><i class="bi bi-x"></i></span>
+                        <span ng-show="x.is_action == 0 || x.is_action == 2">{{ $index + 1 }}</span>
                     </div>
                 </div>
             </div>
+            <div class="flex-fill mb-4">
+                <div class="text-dark fw-bolder">{{ x.statusDesc }}</div>
+                <div ng-show="x.actionName != ''">
+                    <div class="text-dark">{{ x.actionName }}</div>
+                    <div class="text-gray">{{ x.position }} {{ x.department }}</div>
+                    <div class="text-gray" ng-show="x.actionDate != ''">{{ x.actionDate }}</div>
+                    <div class="text-gray" ng-show="x.description != ''">{{ x.description }}</div>
+                </div>
+                <div ng-show="x.actionName == ''">
+                    <div ng-repeat="u in x.lUser" class="mb-2">
+                        <div class="text-dark">{{ u.actionName }}</div>
+                        <div class="text-gray">{{ u.position }} {{ u.department }}</div>
+                    </div>
+                </div>
+            </div>
+            
+            @*  <span class="position-absolute stage" style="left:-9px; top:-20px;">
+                <i class="bi bi-circle" ng-show="x.is_action == 3"></i>
+                <i class="bi bi-record-circle" ng-show="x.is_action == 2"></i>
+                <i class="bi bi-check2-circle text-green" ng-show="x.is_action == 1"></i>
+                <i class="bi bi-circle" ng-show="x.is_action == 0"></i>
+                <i class="bi bi-x-circle" ng-show="x.is_action == -2"></i>
+            </span>
+            <div class="">
+                <div class="fw-bolder">{{ x.statusDesc }}</div>
+                <div ng-show="x.actionName != ''" class=" small p-2">
+                    <div class="d-flex">
+                        <i class="bi bi-person-circle me-1"></i>
+                        <div>
+                            
+                            <div>{{ x.position }} {{ x.department }}</div>
+                        </div>
+                    </div>
+                    <div ng-show="x.actionDate != ''">
+                        <i class="bi bi-clock"></i> {{ x.actionDate }}
+                    </div>
+                    <div ng-show="x.description != ''">
+                        <i class="bi bi-pen"></i> {{ x.description }}
+                    </div>
+                </div>
+                <div ng-show="x.actionName == ''" class=" small p-2">
+                    <div ng-repeat="u in x.lUser" class="d-flex mb-2">
+                        <i class="bi bi-person-circle me-1"></i>
+                        <div>
+                            <div>{{ u.actionName }}</div>
+                            <div>{{ u.position }} {{ u.department }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div> *@
         </div>
     </div>
 </div>

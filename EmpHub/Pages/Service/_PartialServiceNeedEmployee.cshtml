@@ -4,7 +4,7 @@
 @{
     var token = User.AccessToken(Context);
 }
-<div ng-controller="ServiceJobExperienceCtrl" class="mb-4 text-dark">
+<div ng-controller="ServiceNeedEmployeeCtrl" class="mb-4 text-dark">
     <div class="list-group-item px-0 d-flex" ng-repeat="x in lData">
         <div style="width:20px" class="me-2 fw-bolder">
             #{{ $index + 1 }}.
@@ -46,7 +46,7 @@
     </div>
 </div>
 <script>
-    app.controller('ServiceJobExperienceCtrl', function ($scope, $http, $timeout, $filter) {
+    app.controller('ServiceNeedEmployeeCtrl', function ($scope, $http, $timeout, $filter) {
 
         $scope.LoadData = function () {
             $.ajax({

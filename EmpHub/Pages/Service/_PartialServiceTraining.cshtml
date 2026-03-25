@@ -4,74 +4,92 @@
 @{
     var token = User.AccessToken(Context);
 }
-<div ng-controller="ServiceTrainingCtrl" class="mb-4 text-dark">
-    <div class="list-group-item px-0 d-flex" ng-repeat="x in lData">
-        <div style="width:20px" class="me-2 fw-bolder">
-            #{{ $index + 1 }}.
-        </div>
-        <div class="flex-fill">
-            <div class="row">
-                <div class="col-sm-8 mb-3">
-                    <small class="text-decoration-underline">
-                        ชื่อใบอนุญาต
-                    </small>
-                    <div class="fw-bolder">{{ x.license != '' ? x.license : '-' }}</div>
+<div ng-controller="ServiceTrainingCtrl">
+    <div class="bg-white rounded-4 border mb-4 overflow-hidden" ng-show="lTraining.length > 0">
+        <div class="px-4 py-3 border-bottom d-flex align-items-center">
+            <div class="fs-5 fw-bolder text-dark flex-fill">Training</div>
+            <div>
+                <div class="badge bg-light-green px-2 me-2" ng-show="total_add > 0">
+                    {{ total_add }} Addition
                 </div>
-                <div class="col-sm-2 mb-3">
-                    <small class="text-decoration-underline">
-                        วันที่ออกเอกสาร
-                    </small>
-                    <div class="fw-bolder">{{ x.issueDate != '' ? x.issueDate : '-' }}</div>
+                <div class="badge bg-light-blue px-2 me-2" ng-show="total_modify > 0">
+                    {{ total_modify }} Modification
                 </div>
-                <div class="col-sm-2 mb-3">
-                    <small class="text-decoration-underline">
-                        วันหมดอายุ
-                    </small>
-                    <div class="fw-bolder">{{ x.expireDate != '' ? x.expireDate : '-' }}</div>
-                </div>
-                <div class="col-sm-12 mb-3">
-                    <small class="text-decoration-underline">
-                        องค์กรที่ออกเอกสาร
-                    </small>
-                    <div class="fw-bolder">{{ x.organization != '' ? x.organization : '-' }}</div>
-                </div>
-                <div class="col-sm-12 mb-3">
-                    <small class="text-decoration-underline">
-                        รายละเอียด
-                    </small>
-                    <div class="fw-bolder">{{ x.description != '' ? x.description : '-' }}</div>
+                <div class="badge bg-light-red px-2 me-2" ng-show="total_delete > 0">
+                    {{ total_delete }} Deletion
                 </div>
             </div>
+        </div>
+        <div class="">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th class="bg-light ps-4">COURSE NAME</th>
+                        <th class="bg-light">PROVIDER</th>
+                        <th class="bg-light">ISSUE</th>
+                        <th class="bg-light">ACTION</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="x in lTraining">
+                        <td class="ps-4 text-{{ x.mode }}">{{ x.license }}</td>
+                        <td class="text-{{ x.mode }}">{{ x.organization }}</td>
+                        <td class="text-{{ x.mode }}">{{ x.issueDate }}</td>
+                        <td>
+                            <div class="badge bg-light-green px-2 me-2" ng-show="x.mode == 'add'">
+                                Addition
+                            </div>
+                            <div class="badge bg-light-blue px-2 me-2" ng-show="x.mode == 'modify'">
+                                Modification
+                            </div>
+                            <div class="badge bg-light-red px-2 me-2" ng-show="x.mode == 'delete'">
+                                Deletion
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 <script>
     app.controller('ServiceTrainingCtrl', function ($scope, $http, $timeout, $filter) {
-
-        $scope.LoadData = function () {
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceTraining/Detail',
-                headers: { 'authorization': 'Bearer @token' },
-                type: "POST",
-                contentType: 'application/json',
-                dataType: 'json',
-                cache: false,
-                data: JSON.stringify({
-                    refId: $scope.refId
-                }),
-                success: function (result) {
-                    $timeout(async function () {
-                        $scope.lData = result;
-                    }, 0);
-                }, error: AjaxError
+        $scope.LoadModify = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceTraining/Detail',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        refId: $scope.refId
+                    }),
+                    success: function (result) {
+                        $timeout(async function () {
+                            $scope.lTraining = result;
+                            resolve(true);
+                        }, 0);
+                    }, error: function () {
+                        resolve(false);
+                    }
+                });
             });
         }
 
-        $scope.$parent.LoadTraining = function (x) {
+        $scope.$parent.LoadTraining = async function (x) {
             $scope.refId = x.id;
             $scope.userId = x.userId;
             $scope.status = x.status;
-            $scope.LoadData();
+
+            await $scope.LoadModify();
+
+            $timeout(function () {
+                $scope.total_add = ($scope.lTraining.filter(item => item.mode == "add")).length;
+                $scope.total_modify = ($scope.lTraining.filter(item => item.mode == "modify")).length;
+                $scope.total_delete = ($scope.lTraining.filter(item => item.mode == "delete")).length;
+            }, 0);
         }
     });
 </script>

@@ -4,73 +4,154 @@
 @{
     var token = User.AccessToken(Context);
 }
-<div ng-controller="ServiceAddressCtrl" class="mb-4 text-dark">
-    <div class="row">
-        <div class="col-sm-8 mb-3">
-            <small class="text-decoration-underline">
-                บ้านเลขที่
-            </small>
-            <div class="fw-bolder">{{ iData.home != '' ? iData.home : '-' }}</div>
+<div ng-controller="ServiceAddressCtrl">
+    <div class="bg-white rounded-4 border mb-4 overflow-hidden" ng-show="iAddress.refId">
+        <div class="px-4 py-3 border-bottom d-flex align-items-center">
+            <div class="fs-5 fw-bolder text-dark flex-fill">Address</div>
+            <div>
+                <div class="badge bg-light-blue px-2">
+                    {{ total_modify }} Modification
+                </div>
+            </div>
         </div>
-        <div class="col-sm-4 mb-3">
-            <small class="text-decoration-underline">
-                ถนน
-            </small>
-            <div class="fw-bolder">{{ iData.road != '' ? iData.road : '-' }}</div>
-        </div>
-        <div class="col-sm-4 mb-3">
-            <small class="text-decoration-underline">
-                แขวง/ตำบล
-            </small>
-            <div class="fw-bolder">{{ iData.subDistrictName != '' ? iData.subDistrictName : '-' }}</div>
-        </div>
-        <div class="col-sm-4 mb-3">
-            <small class="text-decoration-underline">
-                เขต/อำเภอ
-            </small>
-            <div class="fw-bolder">{{ iData.districtName != '' ? iData.districtName : '-' }}</div>
-        </div>
-        <div class="col-sm-4 mb-3">
-            <small class="text-decoration-underline">
-                จังหวัด
-            </small>
-            <div class="fw-bolder">{{ iData.provinceName != '' ? iData.provinceName : '-' }}</div>
-        </div>
-        <div class="col-sm-4 mb-3">
-            <small class="text-decoration-underline">
-                รหัสไปรษณีย์
-            </small>
-            <div class="fw-bolder">{{ iData.postcode != '' ? iData.postcode : '-' }}</div>
+        <div class="">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th class="bg-light ps-4">FIELD</th>
+                        <th class="bg-light">CURRENT VALUE</th>
+                        <th class="bg-light">PROPOSED VALUE / ACTION</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="ps-4">HOME</td>
+                        <td>{{ iUserAddress.home }}</td>
+                        <td class="{{ iUserAddress.home != iAddress.home ? 'text-blue fw-bolder' : '' }}">
+                            {{ iAddress.home }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ps-4">ROAD</td>
+                        <td>{{ iUserAddress.road }}</td>
+                        <td class="{{ iUserAddress.road != iAddress.road ? 'text-blue fw-bolder' : '' }}">
+                            {{ iAddress.road }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ps-4">SUB DISTRICT</td>
+                        <td>{{ iUserAddress.subDistrictName }}</td>
+                        <td class="{{ iUserAddress.subDistrictName != iAddress.subDistrictName ? 'text-blue fw-bolder' : '' }}">
+                            {{ iAddress.subDistrictName }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ps-4">DISTRICT</td>
+                        <td>{{ iUserAddress.districtName }}</td>
+                        <td class="{{ iUserAddress.districtName != iAddress.districtName ? 'text-blue fw-bolder' : '' }}">
+                            {{ iAddress.districtName }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ps-4">PROVINCE</td>
+                        <td>{{ iUserAddress.provinceName }}</td>
+                        <td class="{{ iUserAddress.provinceName != iAddress.provinceName ? 'text-blue fw-bolder' : '' }}">
+                            {{ iAddress.provinceName }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ps-4">POSTCODE</td>
+                        <td>{{ iUserAddress.postcode }}</td>
+                        <td class="{{ iUserAddress.postcode != iAddress.postcode ? 'text-blue fw-bolder' : '' }}">
+                            {{ iAddress.postcode }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 <script>
     app.controller('ServiceAddressCtrl', function ($scope, $http, $timeout, $filter) {
-
-        $scope.LoadData = function () {
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceAddress/Detail',
-                headers: { 'authorization': 'Bearer @token' },
-                type: "POST",
-                contentType: 'application/json',
-                dataType: 'json',
-                cache: false,
-                data: JSON.stringify({
-                    refId: $scope.refId
-                }),
-                success: function (result) {
-                    $timeout(async function () {
-                        $scope.iData = result;
-                    }, 0);
-                }, error: AjaxError
+        $scope.LoadModify = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceAddress/Detail',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        refId: $scope.refId
+                    }),
+                    success: function (result) {
+                        $timeout(async function () {
+                            $scope.iAddress = result;
+                            resolve(true);
+                        }, 0);
+                    }, error: function () {
+                        resolve(false);
+                    }
+                });
             });
         }
 
-        $scope.$parent.LoadAddress = function (x) {
+        $scope.LoadCurrent = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserAddress',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        userId: $scope.userId
+                    }),
+                    success: function (result) {
+                        $timeout(async function () {
+                            $scope.iUserAddress = result.data;
+                            resolve(true);
+                        }, 0);
+                    }, error: function () {
+                        resolve(false);
+                    }
+                });
+            });
+        }
+
+
+        $scope.$parent.LoadAddress = async function (x) {
             $scope.refId = x.id;
             $scope.userId = x.userId;
             $scope.status = x.status;
-            $scope.LoadData();
+
+            await $scope.LoadCurrent();
+            await $scope.LoadModify();
+
+            $timeout(function () {
+                $scope.total_modify = 0;
+
+                if ($scope.iUserAddress.home != $scope.iAddress.home) {
+                    $scope.total_modify++;
+                }
+                if ($scope.iUserAddress.road != $scope.iAddress.road) {
+                    $scope.total_modify++;
+                }
+                if ($scope.iUserAddress.subDistrictName != $scope.iAddress.subDistrictName) {
+                    $scope.total_modify++;
+                }
+                if ($scope.iUserAddress.districtName != $scope.iAddress.districtName) {
+                    $scope.total_modify++;
+                }
+                if ($scope.iUserAddress.provinceName != $scope.iAddress.provinceName) {
+                    $scope.total_modify++;
+                }
+                if ($scope.iUserAddress.postcode != $scope.iAddress.postcode) {
+                    $scope.total_modify++;
+                }
+            }, 0);
         }
     });
 </script>

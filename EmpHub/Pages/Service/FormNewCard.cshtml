@@ -1,0 +1,189 @@
+﻿@page
+@model EmpHub.Pages.Service.FormNewCardModel
+@{
+    var token = User.AccessToken(HttpContext);
+}
+<style>
+    .main-content {
+        min-height: calc(100vh - 150px) !important;
+    }
+
+    .input-error{
+        color: red;
+        border-color: red;
+    }
+</style>
+<div ng-controller="FormCtrl" id="tab_education">
+    @* Header *@
+    <partial name="_PartialFormHeader" />
+    @* View *@
+    <div class="d-flex justify-content-center">
+        <div class="rounded-4 mb-3 bg-white shadow-sm p-4" style="width:600px;">
+            <div class="text-center fs-4 fw-bolder mb-4 text-dark">
+                แจ้งขอทำบัตรพนักงานใหม่
+            </div>
+            <table class="table table-borderless">
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="text-dark text-nowrap fw-bolder">สาเหตุ</div>
+                            <div class="text-dark text-nowrap">Cause</div>
+                        </td>
+                        <td>
+                            <select ng-model="iForm.cause" class="form-select cause" ng-options="x for x in lCause"></select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="text-dark text-nowrap fw-bolder">หมายเหตุ</div>
+                            <div class="text-dark text-nowrap">Description</div>
+                        </td>
+                        <td>
+                            <textarea ng-model="iForm.description" class="form-control description" rows=5 maxlength="2000"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="text-dark text-nowrap fw-bolder">ภาพถ่าย</div>
+                            <div class="text-dark text-nowrap">Photo</div>
+                        </td>
+                        <td>
+                            <label for="iFile" class="btn btn-secondary-invert file">
+                                {{ iForm.filename != '' ? iForm.filename : 'เลือกไฟล์ภาพ' }}
+                            </label>
+                            <input ng-show="1 == 2" id="iFile" data-file type="file" ng-model="iFile" base-sixty-four-input ng-change="AddFile()" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="d-flex justify-content-end">
+                <div class="btn btn-primary" ng-click="Save()">
+                    <i class="far fa-paper-plane me-2"></i> Send Request
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('FormCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.mode = '@Model.mode';
+        $scope.lCause = ['ชำรุด', 'สูญหาย', 'อื่นๆ'];
+        $scope.iData = {};
+        $scope.iForm = { cause: '', description: '', filename: '', filetype: '' };
+
+        $scope.AddFile = function(){
+            if (iFile) {
+                $scope.iForm.filename = $scope.iFile.filename;
+                $scope.iForm.filetype = $scope.iFile.filetype;
+                $scope.iForm.base64 = $scope.iFile.base64;
+            }
+        }
+
+        $scope.Validate = function () {
+            var flag = true;
+            JS_Reset($(".cause"));
+            JS_Reset($(".description"));
+            JS_Reset($(".file"));
+
+            if ($scope.iForm.cause == '') {
+                flag = false;
+                JS_Require($(".cause"));
+            }
+            if ($scope.iForm.description == '') {
+                flag = false;
+                JS_Require($(".description"));
+            }
+            if ($scope.iForm.filename == '') {
+                flag = false;
+                JS_Require($(".file"));
+            }
+
+            return flag;
+        }
+
+        $scope.Save = async function () {
+            if ($scope.Validate()) {
+                alertConfirm("ยืนยันการทำรายการ", "ท่านต้องการส่งใบคำขอ", async function () {
+                    var id = await $scope.CreateService();
+
+                    if (id) {
+                        $scope.iData.id = id;
+                        $scope.iForm.refId = id;
+                        $scope.iFile.refId = id;
+
+                        var flag = await $scope.CreateForm();
+                        flag = $scope.CreateAttach();
+
+                        if (flag) {
+                            var serviceNo = await $scope.ServiceRequest();
+
+                            if (serviceNo) {
+                                alertSuccess("ทำรายการสำเร็จ", "ระบบบันทึกใบคำขอของท่านเรียบร้อย", function () {
+                                    location.href = '@Url.Page("/Service/Index")';
+                                });
+                            } else {
+                                $scope.CancelService();
+                            }
+                        } else {
+                            $scope.CancelService();
+                        }
+                    }
+                });
+            } else {
+                alertWarning("แจ้งเตือน", "กรุณากรอกข้อมูลให้ครบ");
+            }
+        }
+
+        $scope.CreateForm = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormNewCardCreate',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify($scope.iForm),
+                    success: function () {
+                        $timeout(async function () {
+                            resolve(true);
+                        }, 0);
+                    }, error: function (jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "ระบบเกิดข้อผิดพลาด",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+
+        $scope.CreateAttach = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/File/Create',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify($scope.iFile),
+                    success: function () {
+                        $timeout(async function () {
+                            resolve(true);
+                        }, 0);
+                    }, error: function (jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "ระบบเกิดข้อผิดพลาด",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+    });
+</script>

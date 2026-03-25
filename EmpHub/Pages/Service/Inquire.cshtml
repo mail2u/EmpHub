@@ -27,7 +27,7 @@
                     All <span class="badge ms-1" ng-show="sum_all > 0">{{ sum_all | number }}</span>
                 </div> |
                 <div class="btn btn-link border-0 text-nowrap {{ iStatus == 'Approve' ? 'active' : '' }}" ng-click="SelectStatus('Approve')">
-                    Await Approval <span class="badge ms-1" ng-show="sum_approve > 0">{{ sum_approve | number }}</span>
+                    Wait Approval <span class="badge ms-1" ng-show="sum_approve > 0">{{ sum_approve | number }}</span>
                 </div>
                 <div class="btn btn-link border-0 text-nowrap {{ iStatus == 'Reject' ? 'active' : '' }}" ng-click="SelectStatus('Reject')">
                     <span ng-show="alert_reject > 0" class="ms-1 badge rounded-circle bg-danger p-1">
@@ -50,12 +50,10 @@
             </div>
         </div>
     </div>
-    <div class="rounded-4 p-3 bg-white shadow-sm border">
+    <div class="rounded-4 p-3 bg-white shadow-sm border mb-4">
         <partial name="Service/_PartialNavBar" />
-        <div class="bg-white rounded p-1">
-            <partial name="_PartialInquireDataList"></partial>
-        </div>
     </div>
+    <partial name="_PartialInquireDataList"></partial>
 </div>
 <script>
     app.controller('ServiceCtrl', function ($scope, $http, $timeout, $filter) {

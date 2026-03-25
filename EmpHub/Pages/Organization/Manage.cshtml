@@ -31,41 +31,186 @@
     }
 
 </style>
-<div ng-controller="OrgChartCtrl" class="">
-    <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item">Organization</li>
-            <li class="breadcrumb-item active" aria-current="page">Organization Structure</li>
-        </ol>
-    </nav>
-    <div class="mb-2 text-end bg-white p-2 border shadow-sm rounded-3 d-flex">
-        @*  <button class="btn btn-default {{ mode == 'edit' ? 'active' : '' }}" ng-click="toggleMode()">
-        <i class="bi bi-pen"></i> ปรับแต่ง
-        </button> *@
-        <select ng-model="chartId" ng-options="x.value as x.key for x in lChart" class="form-select me-2" style="width:200px;" ng-change="LoadChange()"></select>
-        <select ng-model="mode" ng-options="x.code as x.desc_th for x in lDepartment | orderBy : 'desc_th'" class="form-select me-2" style="width:400px;" ng-change="LoadChange()"></select>
-        <div class="btn btn-default me-2" ng-click="AutoAlign()">
-            <i class="fas fa-sitemap me-2"></i> Auto
+<div ng-controller="OrgChartCtrl">
+    <div class="d-flex align-items-center mb-3">
+        <div class="flex-fill">
+            <div class="fs-4 text-dark fw-bolder">
+                {{ iChart.title }}
+            </div>
+            <div class="text-gray">
+                {{ iChart.description }}
+            </div>
         </div>
-        <div class="btn btn-default me-2" ng-click="FitToPage()">
-            <i class="fas fa-expand-arrows-alt me-2"></i> Fit
+       <div class="btn btn-light bg-white me-2" ng-click="AutoAlign()" title="Automatic sorting">
+            <i class="fas fa-sitemap me-2"></i> Automatic sorting
         </div>
-        <div class="btn btn-primary me-2" ng-click="SaveAll()">
+        <div class="btn btn-light bg-white me-2" ng-click="FitToPage()" title="Fits the screen perfectly">
+            <i class="fas fa-expand-arrows-alt me-2"></i> Fits the screen
+        </div>
+        <div ng-show="is_lock != 1" class="btn btn-light bg-white me-2" ng-click="Lock()" title="Lock">
+            <i class="fas fa-lock-open me-2"></i> Lock
+        </div>
+        <div ng-show="is_lock == 1" class="btn btn-gray me-2" ng-click="Lock()" title="Unlock">
+            <i class="fas fa-lock me-2"></i> Unlock
+        </div>
+        <div class="btn btn-light bg-white me-2">
+            <i class="bi bi-eye-fill me-2"></i> Preview
+        </div>
+        <div class="btn btn-primary" ng-click="SaveAll()" title="Save Change">
             <i ng-show="is_process_save == 0" class="far fa-save me-2"></i>
             <i ng-show="is_process_save == 1" class="spinner-border spinner-border-sm text-light me-2" role="status">
                 <span class="visually-hidden">Loading...</span>
             </i>
             <i ng-show="is_process_save == 2" class="fas fa-check text-success me-2"></i>
-            Save
-        </div>
-        <div ng-show="is_lock != 1" class="btn btn-default" ng-click="Lock()">
-            <i class="fas fa-lock-open me-2"></i> Lock
-        </div>
-        <div ng-show="is_lock == 1" class="btn btn-gray" ng-click="Lock()">
-            <i class="fas fa-lock me-2"></i> Lock
+            Save All
         </div>
     </div>
-    <div id="paper" class="p-3 border bg-white rounded-4"></div>
+    <div  class="d-flex">
+        @* Paper *@
+        <div class="flex-fill me-4">
+            <div id="paper" class="p-3 border rounded-4 overflow-hidden"></div>
+        </div>
+        @* Detail *@
+        <div class="p-4 bg-white p-2 border rounded-4 position-relative" style="width:350px">
+            <div ng-show="iNode == null">
+                <div class="mb-3">
+                    <div class="text-dark fs-5 fw-bolder">Theme</div>
+                </div>
+                <small>label</small>
+                <div class="row mb-2">
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark">COLOR</div>
+                        <input ng-model="iChart.color" class="form-control" maxlength="10" placeholder="#000" />
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark">SIZE</div>
+                        <input ng-model="iChart.font_size" class="form-control" type="number" />
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark">BOLD</div>
+                        <input ng-model="iChart.font_bold" type="checkbox" class="btn-check" id="chart_font_bold" ng-true-value="1" ng-false-value="0" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="chart_font_bold">Active</label>
+                    </div>
+                </div>
+                <small>sub-label</small>
+                <div class="row mb-2">
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark">COLOR</div>
+                        <input ng-model="iChart.sub_color" class="form-control" maxlength="10" placeholder="#000" />
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark">SIZE</div>
+                        <input ng-model="iChart.sub_font_size" class="form-control" type="number" />
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark">BOLD</div>
+                        <input ng-model="iChart.sub_font_bold" type="checkbox" class="btn-check" id="chart_sub_font_bold" ng-true-value="1" ng-false-value="0" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="chart_sub_font_bold">Active</label>
+                    </div>
+                </div>
+                <small>body</small>
+                <div class="row">
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark">BG</div>
+                        <input ng-model="iChart.bg" class="form-control" maxlength="10" placeholder="#f8f9fa" />
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark">STROKE</div>
+                        <input ng-model="iChart.stroke" class="form-control" maxlength="10" placeholder="#333" />
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark">BORDER</div>
+                        <input ng-model="iChart.stroke_width" class="form-control" type="number" />
+                    </div>
+                </div>
+                <div class="d-grid">
+                    <button class="btn btn-primary" ng-click="UpdateChart(iChart)">
+                        Save Change
+                    </button>
+                </div>
+            </div>
+            <div ng-show="iNode != null">
+                <div class="mb-3">
+                    <div class="text-dark fs-5 fw-bolder">Element</div>
+                </div>
+                <div class="mb-3">
+                    <div class="text-dark">TITLE</div>
+                    <input ng-model="iNode.title" class="form-control" maxlength="200" />
+                </div>
+                 <div class="mb-3">
+                    <div class="text-dark">DESCRIPTION</div>
+                    <textarea ng-model="iNode.description" class="form-control" rows="5" maxlength="2000" ></textarea>
+                </div>
+                <small>label</small>
+                <div class="row">
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark">COLOR</div>
+                        <input ng-model="iNode.color" class="form-control" maxlength="10" placeholder="#000" />
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark">SIZE</div>
+                        <input ng-model="iNode.font_size" class="form-control" type="number" />
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark">BOLD</div>
+                        <input ng-model="iNode.font_bold" type="checkbox" class="btn-check" id="node_font_bold" ng-true-value="1" ng-false-value="0" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="node_font_bold">Active</label>
+                    </div>
+                </div>
+                <small>sub label</small>
+                <div class="row">
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark">COLOR</div>
+                        <input ng-model="iNode.sub_color" class="form-control" maxlength="10" placeholder="#000" />
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark">SIZE</div>
+                        <input ng-model="iNode.sub_font_size" class="form-control" type="number" />
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark">BOLD</div>
+                        <input ng-model="iNode.sub_font_bold" type="checkbox" class="btn-check" id="node_sub_font_bold" ng-true-value="1" ng-false-value="0" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="node_sub_font_bold">Active</label>
+                    </div>
+                </div>
+                <small>body</small>
+                <div class="row">
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark">BG</div>
+                        <input ng-model="iNode.bg" class="form-control" maxlength="10" placeholder="#f8f9fa" />
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark">STROKE</div>
+                        <input ng-model="iNode.stroke" class="form-control" maxlength="10" placeholder="#333" />
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark">LINE</div>
+                        <input ng-model="iNode.stroke_width" class="form-control" type="number" />
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-dark">LINK</div>
+                        <select ng-model="iNode.link" class="form-control" ng-options="l.chartId as l.title for l in lChart"></select>
+                    </div>
+                </div>
+                <div class="d-grid">
+                    <button class="btn btn-primary" ng-disabled="iNode.title == ''" ng-click="UpdateNode(iNode)">
+                        Save Change
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @* Toast *@
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="saveToast" class="toast align-items-center text-bg-success border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body">
+                    Save Success
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
 </div>
 <link rel="stylesheet" href="~/lib/jointjs/joint.min.css">
 <script src="~/lib/jointjs/graphlib.min.js"></script>
@@ -75,15 +220,16 @@
 <script src="~/lib/jointjs/joint.min.js"></script>
 <script>
     app.controller('OrgChartCtrl', function ($scope, $http, $timeout, $filter, $document) {
-        $scope.chartId = "@Model.chartId";
-        $scope.mode = '@Model.id';
+        $scope.chartId = "@Model.id";
         $scope.is_lock = 0;
         $scope.is_process_save = 0;
 
-        $scope.lChart = [{ value: 'TIPOrgChart1', key: 'Company' }, { value: 'TIPOrgChart2', key: 'Team' }];
-
+        let isLoading = false;
         let selectedElement = null;
         let resizeState = null;
+        let addBtn = null;
+        let deleteBtn = null;
+        let previewLink = null;
         let scale = 1;
         let start = { x: 0, y: 0, mouseX: 0, mouseY: 0, scale: 0 };
         const EDGE = 8; // ระยะขอบ (px)
@@ -92,19 +238,20 @@
         const maxScale = 2.5;
         const graph = new joint.dia.Graph();
 
+
         const paper = new joint.dia.Paper({
             el: document.getElementById('paper'),
             model: graph,
             width: '100%',
-            height: 'calc(100vh - 300px)',
+            height: 'calc(100vh - 140px)',
             gridSize: 10,
             drawGrid: true,
             interactive: {
                 blankMove: true,
                 elementResize: true
             },
-            background: { color: '#F5F5F5' },
-            defaultRouter: { name: 'orthogonal' },
+            background: { color: '#eff4ff' },
+            defaultRouter: { name: 'orthogonal',args: { padding: 20 } },
             defaultConnector: { name: 'straight', args: { cornerType: 'line' } },
             defaultLink: new joint.shapes.standard.Link({
                 attrs: {
@@ -115,6 +262,8 @@
         });
 
         paper.on('element:pointerdblclick', function (elementView, evt) {
+            console.log('element:pointerdblclick');
+
             evt.stopPropagation();   // กัน event ซ้อน
             evt.preventDefault();
 
@@ -129,15 +278,14 @@
                 , dataType: 'json'
                 , cache: false
                 , data: JSON.stringify({
-                    mode: nodeId
-                    , chartId: $scope.chartId
+                    chartId: $scope.chartId
                 })
                 , success: function (result) {
                     $timeout(function () {
                         //length > 1 have child
                         if (result.data.length > 1) {
                             if ($scope.mode == nodeId) {
-                                var find = $scope.lData.find(item => item.id == nodeId);
+                                var find = $scope.lNode.find(item => item.id == nodeId);
                                 //dill up
                                 location.href = '@Url.Page("Manage")?id=' + find.parentId + "&chartId=" + $scope.chartId;
                             } else {
@@ -153,21 +301,76 @@
         });
 
         paper.on('element:pointerdown', function (elementView) {
-            if ($scope.is_lock == 1) { return; }
-            selectedElement = elementView.model;
+            console.log('element:pointerdown');
 
-            if (window.activeHandles) {
-                window.activeHandles.remove();
+            if ($scope.is_lock == 1) { return; }
+
+            const model = elementView.model;
+
+            if(model.get('isElement')){
+                clearTools();
+
+                const nodeId = model.get('nodeId');
+
+                $scope.iNode = $scope.lNode.find(x => x.id === nodeId);
+                selectedElement = model;
+
+                addResizeHandles(elementView.model, paper);
+                showTools(elementView);
             }
-            addResizeHandles(elementView.model, paper);
+            else if (model.get('isAddButton')) {
+                var parentId = model.get('parentId');
+                var pos_x = model.get('pos_x');
+                var pos_y = model.get('pos_y');
+
+                if (selectedElement) {
+                    var position = selectedElement.position();
+                    var pos_y = position.y;
+                    var color = selectedElement.get('color');
+                    var font_size = selectedElement.get('font_size');
+                    var font_bold = selectedElement.get('font_bold');
+                    var sub_color = selectedElement.get('sub_color');
+                    var sub_font_size = selectedElement.get('sub_font_size');
+                    var sub_font_bold = selectedElement.get('sub_font_bold');
+                    var bg = selectedElement.get('bg');
+                    var stroke = selectedElement.get('stroke');
+                    var stroke_width = selectedElement.get('stroke_width');
+                }
+
+                var iData = {
+                    chartId: $scope.chartId
+                    , parentId: parentId
+                    , title: 'New Element'
+                    , pos_x: pos_x
+                    , pos_y: pos_y
+                    , pos_w: 100
+                    , pos_h: 50
+                    , color: color
+                    , font_size: font_size
+                    , font_bold: font_bold
+                    , sub_color: sub_color
+                    , sub_font_size: sub_font_size
+                    , sub_font_bold: sub_font_bold
+                    , bg: bg
+                    , stroke: stroke
+                    , stroke_width: stroke_width
+                };
+
+                $scope.CreateNode(iData);
+            }
+            else if(model.get('isDeleteButton')){
+                $scope.DeleteNode($scope.iNode);
+            }
         });
 
         paper.on('element:pointerup', function (elementView, evt, x, y) {
+            console.log('element:pointerup');
+
             const model = elementView.model;
             const size = model.size();
             const position = model.position();
             const nodeId = model.get('nodeId');
-            const target = $scope.lData.find(x => x.id === nodeId);
+            const target = $scope.lNode.find(x => x.id === nodeId);
 
             if (target) {
                 target.pos_x = position.x;
@@ -177,14 +380,23 @@
             savePosition(nodeId, position.x, position.y, size.width, size.height);
         });
 
-        paper.on('element:pointermove', ev => {
-            if (ev.model === selectedElement) {
-                const bbox = ev.getBBox();
+        paper.on('element:pointermove', function(elementView) {
+            console.log('element:pointermove');
+            
+            const model = elementView.model;
+
+            if (model === selectedElement && model.get('isElement')) {
+                const bbox = elementView.getBBox();
                 const paperOffset = paper.el.getBoundingClientRect();
+                updatePositionTools(selectedElement);
             }
         });
 
+        /* blank */
+
         paper.on('blank:mousewheel', function (evt, x, y, delta) {
+            console.log('blank:mousewheel');
+
             evt.preventDefault();
 
             const factor = delta > 0 ? 1.1 : 0.9;
@@ -192,7 +404,8 @@
         });
 
         paper.on('blank:pointerdown', function (evt, x, y) {
-            selectedElement = null;
+            console.log('blank:pointerdown');
+
             start = {
                 mouseX: evt.clientX,
                 mouseY: evt.clientY, 
@@ -201,9 +414,13 @@
                 t: paper.translate(),
                 scale: paper.scale().sx
             };
+            
+            clearTools();
         });
 
         paper.on('blank:pointermove', function (evt, x, y) {
+            console.log('blank:pointermove');
+
             if (!start) return;
 
             const dx = (evt.clientX - start.mouseX) + start.t.tx;
@@ -213,8 +430,12 @@
         });
 
         paper.on('blank:pointerup', function () {
+            console.log('blank:pointerup');
+
             start = null;
         });
+
+        /* cell */
 
         //ตรวจจับเมาส์อยู่ที่ขอบไหม + เปลี่ยน cursor
         paper.on('cell:mousemove', function (view, evt, x, y) {
@@ -269,6 +490,10 @@
                 Math.max(120, resizeState.size.width + dx),
                 Math.max(50, resizeState.size.height + dy)
             );
+
+            if (previewLink) {
+                previewLink.target({ x, y });
+            }
         });
 
         //จบ resize
@@ -282,9 +507,100 @@
             if (resizeState) evt.stopPropagation();
         });
 
+        graph.on('change:target', function (link) {
+            console.log('change:target');
+
+            const source = link.getSourceElement();
+            const target = link.getTargetElement();
+            
+            if (source && target) {
+                console.log('เชื่อมสำเร็จ', source.id, '->', target.id);
+
+                var iData = {
+                    chartId: $scope.chartId
+                    , id: target.get('nodeId')
+                    , parentId: source.get('nodeId')
+                };
+
+                console.log(iData);
+
+                $scope.LinkNode(iData);
+            }
+        });
+
+        /* ลบเส้น */
+        graph.on('remove', function (cell) {
+            if(isLoading) return;
+            if (!cell.isLink()) return;
+
+            const sourceId = cell.get('parentId');
+            const targetId = cell.get('id');
+
+            console.log(sourceId);
+            console.log(targetId);
+
+            var iData = {
+                chartId: $scope.chartId
+                , id: targetId
+                , parentId: ''
+            };
+
+            $scope.LinkNode(iData);
+        });
+
+        /* link */
+
+        paper.on('link:pointerdown', function (linkView) {
+            clearTools();
+
+            const tools = new joint.dia.ToolsView({
+                tools: [
+                    new joint.linkTools.Remove({
+                        distance: '50%',
+                        markup: [{
+                            tagName: 'circle',
+                            selector: 'button',
+                            attributes: {
+                                r: 15,
+                                fill: '#fff',
+                                stroke: '#ff4d4f',
+                                'stroke-width': 2,
+                                cursor: 'pointer'
+                            }
+                        }, {
+                            tagName: 'text',
+                            selector: 'label',
+                            textContent: '×',
+                            attributes: {
+                                fill: '#ff4d4f',
+                                'font-size': 18,
+                                'font-weight': 'bold',
+                                textAnchor: 'middle',
+                                textVerticalAnchor: 'middle',
+                                x: -6,
+                                y: 5
+                            }
+                        }]
+                    })
+                ]
+            });
+
+            linkView.addTools(tools);
+        });
+
         function addResizeHandles(element, paper) {
             const view = paper.findViewByModel(element);
+
+            // 👉 ถ้ามีของเก่า ลบทิ้งก่อน
+            if (window.activeHandles) {
+                window.activeHandles.remove();
+                window.activeHandles = null;
+            }
+
             const handles = {};
+            const nodes = [];
+            const listeners = [];
+
             const size = element.size();
 
             const positions = {
@@ -305,9 +621,14 @@
                 });
 
                 view.el.appendChild(handle.node);
-                handles[dir] = handle;
 
-                handle.node.addEventListener('pointerdown', evt => startResize(evt, dir));
+                handles[dir] = handle;
+                nodes.push(handle.node);
+                
+                const fn = evt => startResize(evt, dir);
+                handle.node.addEventListener('pointerdown', fn);
+
+                listeners.push({ node: handle.node, fn });
             });
 
             function updateHandles() {
@@ -365,33 +686,178 @@
                     savePosition(nodeId, position.x, position.y, size.width, size.height);
                 };
             }
+            // 👉 จุดสำคัญ: return object สำหรับ remove
+            const handleManager = {
+                remove: function () {
+
+                    // remove DOM
+                    nodes.forEach(n => {
+                        if (n && n.parentNode) {
+                            n.parentNode.removeChild(n);
+                        }
+                    });
+
+                    // remove event
+                    listeners.forEach(l => {
+                        l.node.removeEventListener('pointerdown', l.fn);
+                    });
+
+                    // remove event from element
+                    element.off('change:size', updateHandles);
+                }
+            };
+
+            window.activeHandles = handleManager;
+
+            return handleManager;
+        }
+
+        function showTools(element) {
+            const pos = element.model.position();
+            const size = element.model.size();
+
+            // Add Button
+            if (addBtn) {
+                addBtn.remove();
+                addBtn = null;
+            }
+
+            addBtn = new joint.shapes.standard.Circle();
+            addBtn.resize(30, 30);
+            addBtn.attr({
+                body: {
+                    stroke: '#4a6cf7',
+                    strokeWidth: 2,
+                    strokeDasharray: '3,3',
+                    fill: '#fff',
+                    cursor: 'pointer'
+                },
+                label: {
+                    text: '+',
+                    fill: '#4a6cf7',
+                    fontSize: 16,
+                    fontWeight: 'bold'
+                }
+            });
+
+            addBtn.position(
+                pos.x + size.width + 20,
+                pos.y + size.height / 2 - 15
+            );
+
+            const position = addBtn.position();
+
+            addBtn.set('isAddButton', true);
+            addBtn.set('parentId', element.model.get('nodeId'));
+            addBtn.set('pos_x', position.x);
+            addBtn.set('pos_y', position.y);
+            addBtn.addTo(graph);
+
+            //Delete Button
+            if (deleteBtn) {
+                deleteBtn.remove();
+                deleteBtn = null;
+            }
+
+            deleteBtn = new joint.shapes.standard.Circle();
+            deleteBtn.resize(30, 30);
+            deleteBtn.attr({
+                body: {
+                    fill: '#fff',
+                    stroke: '#ff4d4f',
+                    strokeWidth: 2,
+                    cursor: 'pointer'
+                },
+                label: {
+                    text: '×',
+                    fill: '#ff4d4f',
+                    fontSize: 18,
+                    fontWeight: 'bold'
+                }
+            });
+
+            deleteBtn.position(
+                pos.x + size.width - 15,
+                pos.y - 15
+            );
+
+            deleteBtn.set('isDeleteButton', true);
+            deleteBtn.set('parentId', element.model.get('nodeId'));
+            deleteBtn.addTo(graph);
+
+            //Add Connect
+            const connectTool = new joint.elementTools.Connect({
+                x: '50%',
+                y: '100%',
+                offset: 10,
+                markup: [{
+                    tagName: 'circle',
+                    selector: 'handle',
+                    attributes: {
+                        r: 6,
+                        fill: '#4a6cf7',
+                        cursor: 'pointer'
+                    }
+                }]
+            });
+            const toolsView = new joint.dia.ToolsView({
+                tools: [connectTool]
+            });
+
+            element.addTools(toolsView);
+            element.showTools();
+        }
+
+        function updatePositionTools(element) {
+            const pos = element.position();
+            const size = element.size();
+
+            if (addBtn){
+                addBtn.position(
+                    pos.x + size.width + 20,
+                    pos.y + size.height / 2 - 15
+                );
+
+                const position = addBtn.position();
+
+                addBtn.set('pos_x', position.x);
+                addBtn.set('pos_y', position.y);
+            }
+            if (deleteBtn){
+                deleteBtn.position(
+                    pos.x + size.width - 15,
+                    pos.y - 15
+                );
+            }
+        }
+
+        function clearTools(){
+            selectedElement = null;
+            $scope.iNode = null;
+            $scope.$apply();
+
+            // 👉 ลบ connect + resize tools
+            paper.removeTools();
+
+            if (window.activeHandles) {
+                window.activeHandles.remove();
+                window.activeHandles = null;
+            }
+
+            if (addBtn) {
+                addBtn.remove();
+                addBtn = null;
+            }
+
+            if (deleteBtn) {
+                deleteBtn.remove();
+                deleteBtn = null;
+            }
         }
 
         function zoom(factor, center) {
             scale = Math.min(maxScale, Math.max(minScale, scale * factor));
             paper.scale(scale, scale, center);
-        }
-
-        function createNode(x, y, text) {
-            return new joint.shapes.standard.Rectangle({
-                position: { x, y },
-                size: { width: 180, height: 50 },
-                attrs: {
-                    body: {
-                        rx: 8,
-                        ry: 8,
-                        fill: '#e3f2fd',
-                        stroke: '#1976d2',
-                        strokeWidth: 2
-                    },
-                    label: {
-                        text,
-                        fill: '#0d47a1',
-                        fontSize: 14,
-                        fontWeight: 'bold'
-                    }
-                }
-            });
         }
 
         function savePosition(code, x, y, w, h) {
@@ -412,6 +878,7 @@
                 })
                 , success: function (result) {
                     $timeout(function () {
+
                     }, 0);
                 }
                 , error: AjaxError
@@ -422,7 +889,61 @@
             location.href = '@Url.Page("Manage")?id=' + $scope.mode + "&chartId=" + $scope.chartId;
         }
 
+        $scope.LoadDetail = function(){
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Chart/Detail'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    chartId: $scope.chartId
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.iChart = result;
+
+                        if($scope.iChart.chartId == ''){
+                            alertWarning("Warning","The diagram number is incorrect.",function(){
+                                location.href = '@Url.Page("Index")';
+                            })
+                        }
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadDetail();
+
+        $scope.LoadChart = function (page = 1) {
+            $scope.page = page;
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Chart/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    page: $scope.page
+                    , row: $scope.row
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lChart = result;
+                        $scope.lChart.splice(0, 0, { chartId: '', title: '--no link--' });
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadChart();
+
         $scope.LoadData = function () {
+            isLoading = true;
+
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/OrgChart/DataList'
                 , headers: { 'authorization': 'Bearer @token' }
@@ -436,116 +957,249 @@
                 })
                 , success: function (result) {
                     $timeout(function () {
-                        $scope.lData = result.data;
+                        $scope.lNode = result.data;
+                        
+                        const nodeMap = {};
+                        graph.clear();
 
-                        if ($scope.lData.length > 0) {
-                            $scope.is_lock = $scope.lData[0].is_lock;
+                        if ($scope.lNode.length > 0) {
+                            $scope.is_lock = $scope.lNode[0].is_lock;
 
                             paper.setInteractivity({
                                 blankMove: $scope.is_lock == 0
                                 , elementMove: $scope.is_lock == 0
                             });
-                        }
+                            
+                            $scope.lNode.forEach(item => {
+                                const rect = new joint.shapes.standard.Rectangle({
+                                markup: [
+                                    { tagName: 'rect', selector: 'body' },
+                                    { tagName: 'text', selector: 'label' },
+                                    { tagName: 'text', selector: 'subLabel' }
+                                ]});
 
-                        const nodeMap = {};
-                        graph.clear();
+                                rect.position(item.pos_x, item.pos_y);
+                                rect.resize(item.pos_w, item.pos_h);
 
-                        $scope.lData.forEach(item => {
-                            const rect = new joint.shapes.standard.Rectangle();
-
-                            rect.position(item.pos_x, item.pos_y);
-                            rect.resize(item.pos_w, item.pos_h);
-
-                            rect.attr({
-                                label: {
-                                    text: item.type == 'Department' ? item.title + '\n' + item.name : item.title + '\n' + item.position
-                                },
-                                body: {
-                                    fill: item.type == 'Department' ? '#FFF3CD' : '#f8f9fa',        // สีพื้น
-                                    stroke: item.type == 'Department' ? '#F59E0B' : '#333',      // สีเส้น
-                                    strokeWidth: 2,
-                                    rx: 6,                  // มุมโค้ง (optional)
-                                    ry: 6
-                                }
-                            });
-
-                            // ⭐ key สำคัญ
-                            rect.set('nodeId', item.id);
-
-                            rect.addTo(graph);
-
-                            //add
-                            nodeMap[item.id] = rect;
-                        });
-
-                        $scope.lData.forEach(item => {
-                            if (!item.parentId) return;
-
-                            const parent = nodeMap[item.parentId];
-                            const child = nodeMap[item.id];
-
-                            if (!parent || !child) return;
-
-                            const link = new joint.shapes.standard.Link();
-
-                            link.source(parent);
-                            link.target(child);
-                            link.router({ name: 'orthogonal' });   // ⭐ หัวใจ
-                            link.connector({ name: 'rounded' });   // มุมโค้งนิด ๆ ดูสวย
-                            link.attr({
-                                line: {
-                                    stroke: '#555',
-                                    strokeWidth: 2,
-                                    targetMarker: {
-                                        type: 'path',
-                                        d: 'M 10 -5 0 0 10 5 z'
+                                rect.attr({
+                                    label: {
+                                        text: item.title,
+                                        fill: item.color,
+                                        fontSize: item.font_size,
+                                        fontWeight: item.font_bold == 1 ? 'bold' : '',
+                                        refX: '50%',
+                                        refY: 20,
+                                        textAnchor: 'middle'
+                                    },
+                                    subLabel: {
+                                        text: item.description,
+                                        fill: item.sub_color,
+                                        fontSize: item.sub_font_size,
+                                        fontWeight: item.sub_font_bold == 1 ? 'bold' : '',
+                                        refX: '50%',
+                                        refY: 40,
+                                        textAnchor: 'middle'
+                                    },
+                                    body: {
+                                        fill: item.bg,
+                                        stroke: item.strokc,
+                                        strokeWidth: item.stroke_width,
+                                        rx: 6,                  // มุมโค้ง (optional)
+                                        ry: 6
                                     }
-                                }
+                                });
+
+                                // ⭐ key สำคัญ
+                                rect.set('nodeId', item.id);
+                                rect.set('isElement', true);
+                                rect.set('color', item.color);
+                                rect.set('font_size', item.font_size);
+                                rect.set('font_bold', item.font_bold);
+                                rect.set('sub_color', item.sub_color);
+                                rect.set('sub_font_size', item.sub_font_size);
+                                rect.set('sub_font_bold', item.sub_font_bold);
+                                rect.set('bg', item.bg);
+                                rect.set('stroke', item.stroke);
+                                rect.set('stroke_width', item.stroke_width);
+
+                                rect.addTo(graph);
+
+                                //add
+                                nodeMap[item.id] = rect;
                             });
 
-                            link.addTo(graph);
-                        });
+                            $scope.lNode.forEach(item => {
+                                if (!item.parentId) return;
 
-                        $scope.FitToPage();
-                    }, 0);
+                                const parent = nodeMap[item.parentId];
+                                const child = nodeMap[item.id];
+
+                                if (!parent || !child) return;
+
+                                const link = new joint.shapes.standard.Link();
+
+                                link.source(parent);
+                                link.target(child);
+                                link.router({ name: 'orthogonal' });   // ⭐ หัวใจ
+                                link.connector({ name: 'rounded' });   // มุมโค้งนิด ๆ ดูสวย
+                                link.attr({
+                                    line: {
+                                        stroke: '#555',
+                                        strokeWidth: 2,
+                                        targetMarker: null
+                                        // targetMarker: {
+                                        //     type: 'path',
+                                        //     d: 'M 10 -5 0 0 10 5 z'
+                                        // } //หัวลูกศร
+                                    }
+                                });
+                                
+                                link.set('id', item.id);
+                                link.set('parentId', item.parentId);
+
+                                link.addTo(graph);
+                            });
+                        }
+                        else{
+                            const addBtn = new joint.shapes.standard.Circle();
+
+                            // ขนาดวงกลม
+                            addBtn.resize(40, 40);
+
+                            // กำหนด style
+                            addBtn.attr({
+                                body: {
+                                    stroke: '#4a6cf7',
+                                    strokeWidth: 2,
+                                    strokeDasharray: '5,5', // เส้นประ
+                                    fill: 'transparent'
+                                },
+                                label: {
+                                    text: '+',
+                                    fill: '#4a6cf7',
+                                    fontSize: 24,
+                                    fontWeight: 'bold'
+                                }
+                            });
+                            
+                            // วางกลาง paper
+                            const center = getCenterWorld();
+                            const pos_x = center.x - 20;
+                            const pos_y = center.y - 20;
+                            
+                            addBtn.set('isAddButton', true)
+                            addBtn.set('parentId', '');
+                            addBtn.set('pos_x', pos_x);
+                            addBtn.set('pos_y', pos_y);
+
+                            addBtn.position(pos_x, pos_y);
+
+                            addBtn.addTo(graph);
+                        }
+                        isLoading = false;
+                    }, 100);
                 }
                 , error: AjaxError
             });
         }
         $scope.LoadData();
 
-        $scope.LoadDepartment = function () {
+        $scope.CreateNode = function (iData) {
             $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/Department/DataList'
+                url: '@webAPI.CurrentValue.APIEmpHub/api/OrgChart/Create'
                 , headers: { 'authorization': 'Bearer @token' }
                 , type: 'post'
                 , contentType: 'application/json'
                 , dataType: 'json'
                 , cache: false
-                , data: JSON.stringify({
-                    page: 1
-                    , row: 999
-                })
+                , data: JSON.stringify(iData)
                 , success: function (result) {
                     $timeout(function () {
-                        $scope.total = result.length
-                        $scope.lDepartment = result;
+                        $scope.LoadData();
                     }, 0);
                 }
                 , error: AjaxError
             });
         }
-        $scope.LoadDepartment();
-
+        
+        $scope.UpdateNode = function (iData) {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/OrgChart/Update'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , cache: false
+                , data: JSON.stringify(iData)
+                , success: function () {
+                    $timeout(function () {
+                        showSaveSuccess();
+                        $scope.LoadData();
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        
+        $scope.DeleteNode = function (iData) {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/OrgChart/Delete'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , cache: false
+                , data: JSON.stringify(iData)
+                , success: function () {
+                    $timeout(function () {
+                        $scope.LoadData();
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        
+        $scope.LinkNode = function (iData) {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/OrgChart/UpdateParent'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , cache: false
+                , data: JSON.stringify(iData)
+                , success: function () {
+                    $timeout(function () {
+                        $scope.LoadData();
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        
+        $scope.UpdateChart = function (iData) {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Chart/Update'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , cache: false
+                , data: JSON.stringify(iData)
+                , success: function () {
+                    $timeout(function () {
+                        $scope.LoadData();
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        
         $scope.AutoAlign = function () {
             joint.layout.DirectedGraph.layout(graph, {
                 setLinkVertices: false,
                 rankDir: 'TB',   // TB = Top to Bottom (ผังองค์กร)
-                align: 'UL',
-                marginX: 50,
-                marginY: 50,
-                nodeSep: 50,
-                rankSep: 80,
+                //align: 'UL',
+                // marginX: 50,
+                // marginY: 50,
+                nodeSep: 40,
+                rankSep: 50,
                 setLinkVertices: false
             });
 
@@ -578,6 +1232,25 @@
             });
         }
 
+        function getCenterWorld() {
+            const rect = paper.el.getBoundingClientRect();
+            const t = paper.translate();
+            const scale = paper.scale().sx;
+
+            return {
+                x: (rect.width / 2 - t.tx) / scale,
+                y: (rect.height / 2 - t.ty) / scale
+            };
+        }
+
+        function showSaveSuccess() {
+            var toastEl = document.getElementById('saveToast');
+            var toast = new bootstrap.Toast(toastEl, {
+                delay: 2000 // 2 วินาทีแล้วหาย
+            });
+            toast.show();
+        }
+
         $scope.SaveAll = function () {
             $timeout(function () {
                 $scope.is_process_save = 1;
@@ -592,6 +1265,7 @@
                     savePosition(nodeId, position.x, position.y, size.width, size.height);
                 });
                 $scope.is_process_save = 2;
+                showSaveSuccess();
 
                 $timeout(function () {
                     $scope.is_process_save = 0;

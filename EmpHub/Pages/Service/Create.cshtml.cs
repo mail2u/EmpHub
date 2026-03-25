@@ -5,8 +5,10 @@ namespace EmpHub.Pages.Service
 {
     public class CreateModel : PageModel
     {
-        public void OnGet()
+        string cateCode { get; set; }
+        public void OnGet(string cateCode)
         {
+            this.cateCode = cateCode;
         }
     }
 }

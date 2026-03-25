@@ -20,7 +20,7 @@
 }
 
 <div ng-controller="ServiceCtrl">
-    <div class="d-md-flex">
+    <div class="d-md-flex mb-2">
         <div class="fs-4 me-3">My Request</div>
         <div class="overflow-auto flex-fill">
             <div class="flex-fill d-flex flex-nowrap align-items-center">
@@ -28,7 +28,7 @@
                     All <span class="badge ms-1" ng-show="sum_all > 0">{{ sum_all | number }}</span>
                 </div> |
                 <div class="btn btn-link border-0 text-nowrap {{ iStatus == 'Approve' ? 'active' : '' }}" ng-click="SelectStatus('Approve')">
-                    Await Approval <span class="badge ms-1" ng-show="sum_approve > 0">{{ sum_approve | number }}</span>
+                    Wait Approval <span class="badge ms-1" ng-show="sum_approve > 0">{{ sum_approve | number }}</span>
                 </div>
                 <div class="btn btn-link border-0 text-nowrap {{ iStatus == 'Reject' ? 'active' : '' }}" ng-click="SelectStatus('Reject')">
                     <span ng-show="alert_reject > 0" class="ms-1 badge rounded-circle bg-danger p-1">
@@ -51,17 +51,15 @@
             </div>
         </div>
         <div class="d-none d-sm-block">
-            <a class="btn btn-sm btn-primary" href="@Url.Page("New")">
+            <a class="btn btn-primary" href="@Url.Page("New")">
                 <i class="fas fa-plus me-2"></i> New Request
             </a>
         </div>
     </div>
-    <div class="rounded-4 p-3 bg-white shadow-sm border">
+    <div class="rounded-3 p-3 bg-white shadow-sm border mb-4">
         <partial name="Service/_PartialNavBar" />
-        <div class="bg-white rounded p-1">
-            <partial name="_PartialRequestDataList"></partial>
-        </div>
     </div>
+    <partial name="_PartialRequestDataList"></partial>
 </div>
 <script>
     app.controller('ServiceCtrl', function ($scope, $http, $timeout, $filter) {
@@ -69,6 +67,7 @@
         $scope.createBy = '';
         $scope.iStatus = '';
 
+        $scope.page = 1;
         $scope.row = 10;
         $scope.lData = [];
         

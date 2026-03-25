@@ -47,12 +47,10 @@
             </div>
         </div>
     </div>
-    <div class="rounded-4 p-3 bg-white shadow-sm border">
+    <div class="rounded-3 p-3 bg-white shadow-sm border mb-4">
         <partial name="Service/_PartialNavBar" />
-        <div class="bg-white rounded p-1">
-            <partial name="_PartialApproveDataList"></partial>
-        </div>
     </div>
+    <partial name="_PartialApproveDataList"></partial>
 </div>
 <script>
     app.controller('ServiceCtrl', function ($scope, $http, $timeout, $filter) {

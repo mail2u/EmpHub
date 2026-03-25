@@ -4,83 +4,168 @@
 @{
     var token = User.AccessToken(Context);
 }
-<div ng-controller="ServicePersonalCtrl" class="mb-4 text-dark">
-    <div class="row">
-        <div class="col-sm-5 mb-3">
-            <small class="text-decoration-underline">
-                ชื่อ-สกุล (ภาษาไทย)
-            </small>
-            <div class="fw-bolder">{{ iData.firstname_th != '' ? iData.firstname_th : '-' }} {{ iData.lastname_th }}</div>
+<div ng-controller="ServicePersonalCtrl">
+    <div class="bg-white rounded-4 border mb-4 overflow-hidden" ng-show="iPersonal.refId">
+        <div class="px-4 py-3 border-bottom d-flex align-items-center">
+            <div class="fs-5 fw-bolder text-dark flex-fill">Personal Infomation</div>
+            <div>
+                <div class="badge bg-light-blue px-2">
+                    {{ total_modify }} Modification
+                </div>
+            </div>
         </div>
-        <div class="col-sm-2 mb-3">
-            <small class="text-decoration-underline">
-                ชื่อเล่น
-            </small>
-            <div class="fw-bolder">{{ iData.nickname != '' ? iData.nickname : '-' }}</div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-5 mb-3">
-            <small class="text-decoration-underline">
-                ชื่อ-สกุล (ภาษาอังกฤษ)
-            </small>
-            <div class="fw-bolder">{{ iData.firstname_en != '' ? iData.firstname_en : '-' }} {{ iData.lastname_en }}</div>
-        </div>
-        <div class="col-sm-5 mb-3">
-            <small class="text-decoration-underline">
-                วันเกิด
-            </small>
-            <div class="fw-bolder">{{ iData.birth_date != '' ? iData.birth_date : '-' }}</div>
-        </div>
-        <div class="col-sm-2 mb-3">
-            <small class="text-decoration-underline">
-                เพศ
-            </small>
-            <div class="fw-bolder">{{ iData.sex == 'Male' ? 'ชาย' : iData.sex == 'Female' ? 'หญิง' : '-'  }}</div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-5 mb-3">
-            <small class="text-decoration-underline">
-                เบอร์ติดต่อ
-            </small>
-            <div class="fw-bolder">{{ iData.phoneNo != '' ? iData.phoneNo : '-' }}</div>
-        </div>
-        <div class="col-sm-5 mb-3">
-            <small class="text-decoration-underline">
-                อีเมล์
-            </small>
-            <div class="fw-bolder">{{ iData.email != '' ? iData.email : '-' }}</div>
+        <div class="">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th class="bg-light ps-4">FIELD</th>
+                        <th class="bg-light">CURRENT VALUE</th>
+                        <th class="bg-light">PROPOSED VALUE / ACTION</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="ps-4">FULLNAME (TH)</td>
+                        <td>{{ iUserPersonal.firstname_th }} {{ iUserPersonal.lastname_th }}</td>
+                        <td class="{{ iUserPersonal.firstname_th != iPersonal.firstname_th
+                            || iUserPersonal.lastname_th != iPersonal.lastname_th ? 'text-blue fw-bolder' : '' }}">
+                            {{ iPersonal.firstname_th }} {{ iPersonal.lastname_th }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ps-4">FULLNAME (EN)</td>
+                        <td>{{ iUserPersonal.firstname_en }} {{ iUserPersonal.lastname_en }}</td>
+                        <td class="{{ iUserPersonal.firstname_en != iPersonal.firstname_en
+                            || iUserPersonal.lastname_en != iPersonal.lastname_en ? 'text-blue fw-bolder' : '' }}">
+                            {{ iPersonal.firstname_en }} {{ iPersonal.lastname_en }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ps-4">NICKNAME</td>
+                        <td>{{ iUserPersonal.nickname }}</td>
+                        <td class="{{ iUserPersonal.nickname != iPersonal.nickname ? 'text-blue fw-bolder' : '' }}">
+                            {{ iPersonal.nickname }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ps-4">BIRTH DATE</td>
+                        <td>{{ iUserPersonal.birth_date }}</td>
+                        <td class="{{ iUserPersonal.birth_date != iPersonal.birth_date ? 'text-blue fw-bolder' : '' }}">
+                            {{ iPersonal.birth_date }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ps-4">SEX</td>
+                        <td>{{ iUserPersonal.sex }}</td>
+                        <td class="{{ iUserPersonal.sex != iPersonal.sex ? 'text-blue fw-bolder' : '' }}">
+                            {{ iPersonal.sex }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ps-4">PHONE NO</td>
+                        <td>{{ iUserPersonal.phoneNo }}</td>
+                        <td class="{{ iUserPersonal.phoneNo != iPersonal.phoneNo ? 'text-blue fw-bolder' : '' }}">
+                            {{ iPersonal.phoneNo }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ps-4">EMAIL</td>
+                        <td>{{ iUserPersonal.email }}</td>
+                        <td class="{{ iUserPersonal.email != iPersonal.email ? 'text-blue fw-bolder' : '' }}">
+                            {{ iPersonal.email }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 <script>
     app.controller('ServicePersonalCtrl', function ($scope, $http, $timeout, $filter) {
-
-        $scope.LoadData = function () {
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/ServicePersonal/Detail',
-                headers: { 'authorization': 'Bearer @token' },
-                type: "POST",
-                contentType: 'application/json',
-                dataType: 'json',
-                cache: false,
-                data: JSON.stringify({
-                    refId: $scope.refId
-                }),
-                success: function (result) {
-                    $timeout(async function () {
-                        $scope.iData = result;
-                    }, 0);
-                }, error: AjaxError
+        $scope.LoadModify = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServicePersonal/Detail',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        refId: $scope.refId
+                    }),
+                    success: function (result) {
+                        $timeout(async function () {
+                            $scope.iPersonal = result;
+                            resolve(true);
+                        }, 0);
+                    }, error: function () {
+                        resolve(false);
+                    }
+                });
             });
         }
 
-        $scope.$parent.LoadPersonal = function (x) {
+        $scope.LoadCurrent = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserPersonal',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        userId: $scope.userId
+                    }),
+                    success: function (result) {
+                        $timeout(async function () {
+                            $scope.iUserPersonal = result.data;
+                            resolve(true);
+                        }, 0);
+                    }, error: function () {
+                        resolve(false);
+                    }
+                });
+            });
+        }
+
+
+        $scope.$parent.LoadPersonal = async function (x) {
             $scope.refId = x.id;
             $scope.userId = x.userId;
             $scope.status = x.status;
-            $scope.LoadData();
+
+            await $scope.LoadCurrent();
+            await $scope.LoadModify();
+
+            $timeout(function () {
+                $scope.total_modify = 0;
+
+                if ($scope.iUserPersonal.firstname_th != $scope.iPersonal.firstname_th
+                    || $scope.iUserPersonal.lastname_th != $scope.iPersonal.lastname_th) {
+                    $scope.total_modify++;
+                }
+                if ($scope.iUserPersonal.firstname_en != $scope.iPersonal.firstname_en
+                    || $scope.iUserPersonal.lastname_en != $scope.iPersonal.lastname_en) {
+                    $scope.total_modify++;
+                }
+                if ($scope.iUserPersonal.nickname != $scope.iPersonal.nickname) {
+                    $scope.total_modify++;
+                }
+                if ($scope.iUserPersonal.birth_date != $scope.iPersonal.birth_date) {
+                    $scope.total_modify++;
+                }
+                if ($scope.iUserPersonal.sex != $scope.iPersonal.sex) {
+                    $scope.total_modify++;
+                }
+                if ($scope.iUserPersonal.phoneNo != $scope.iPersonal.phoneNo) {
+                    $scope.total_modify++;
+                }
+                if ($scope.iUserPersonal.email != $scope.iPersonal.email) {
+                    $scope.total_modify++;
+                }
+            }, 0);
         }
-        });
+    });
 </script>
