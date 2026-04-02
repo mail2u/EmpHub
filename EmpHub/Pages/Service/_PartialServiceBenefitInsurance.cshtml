@@ -1,0 +1,245 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var token = User.AccessToken(Context);
+}
+<div ng-controller="ServiceBenefitInsuranceCtrl">
+    <div class="bg-white rounded-4 border mb-4 overflow-hidden">
+        <div class="px-4 py-3 border-bottom d-flex align-items-center">
+            <div class="fs-5 fw-bolder text-dark flex-fill">ใบผู้รับประโยชน์ (Beneficiary Form)</div>
+        </div>
+        <div class="p-4">
+            <div class="row">
+                <div class="col-sm-8 mb-3 d-flex align-items-center">
+                    <div class="me-3">
+                        <div class="text-dark text-nowrap fw-bolder">ชื่อผู้ถือกรมธรรม์ (ชื่อองค์กร/บริษัท)</div>
+                        <div class="text-dark text-nowrap">(Policyholder)</div>
+                    </div>
+                    <div class="fw-bolder text-primary">บริษัท ทิพยประกันชีวิต จากัด(มหาชน)</div>
+                </div>
+                <div class="col-sm-4 mb-3 d-flex align-items-center">
+                    <div class="me-3">
+                        <div class="text-dark text-nowrap fw-bolder">กรมธรรม์เลขที่</div>
+                        <div class="text-dark text-nowrap">(Policy No.)</div>
+                    </div>
+                    <div class="fw-bolder text-primary">{{ iForm.policyNo }}</div>
+                </div>
+                <div class="col-sm-4 mb-3 d-flex align-items-center">
+                    <div class="me-3">
+                        <div class="text-dark text-nowrap fw-bolder">รหัสพนักงาน</div>
+                        <div class="text-dark text-nowrap">(Employee no.)</div>
+                    </div>
+                    <div class="fw-bolder text-primary">{{ iForm.employeeCode }}</div>
+                </div>
+                <div class="col-sm-8 mb-3 d-flex align-items-center">
+                    <div class="me-3">
+                        <div class="text-dark text-nowrap fw-bolder">ชื่อ – นามสกุล ผู้สมัครเอาประกัน (นาย / นาง / นางสาว )</div>
+                        <div class="text-dark text-nowrap">(Name of Employee Mr. , Mrs, , Ms.)</div>
+                    </div>
+                    <div class="fw-bolder text-primary">{{ iForm.fullname }}</div>
+                </div>
+                <div class="col-sm-4 mb-3 d-flex align-items-center">
+                    <div class="me-3">
+                        <div class="text-dark text-nowrap fw-bolder">เกิดวันที่</div>
+                        <div class="text-dark text-nowrap">(Date of Birth)</div>
+                    </div>
+                    <div class="fw-bolder text-primary">{{ iForm.birth_date }}</div>
+                </div>
+                <div class="col-sm-4 mb-3 d-flex align-items-center">
+                    <div class="me-3">
+                        <div class="text-dark text-nowrap fw-bolder">วันเริ่มทางาน</div>
+                        <div class="text-dark text-nowrap">(Date of employment)</div>
+                    </div>
+                    <div class="fw-bolder text-primary">{{ iForm.join_date }}</div>
+                </div>
+                <div class="col-sm-4 mb-3 d-flex align-items-center">
+                    <div class="me-3">
+                        <div class="text-dark text-nowrap fw-bolder">ตาแหน่ง</div>
+                        <div class="text-dark text-nowrap">(Position)</div>
+                    </div>
+                    <div class="fw-bolder text-primary">{{ iForm.position }}</div>
+                </div>
+            </div>
+            <div class="d-flex">
+                <div class="me-3">
+                    <div class="text-dark text-nowrap fw-bolder">ผู้รับประโยชน์</div>
+                    <div class="text-dark text-nowrap">(Beneficiary)</div>
+                </div>
+                <div class="flex-fill">
+                </div>
+            </div>
+            <table class="table table-borderless">
+                <tbody>
+                    @* Benefit 1 *@
+                    <tr>
+                        <td class="align-middle" width="20">
+                            1
+                        </td>
+                        <td class="fw-bolder text-primary">
+                            {{ iForm.benefitname1 }}
+                        </td>
+                        <td class="align-middle" width="50">
+                            อายุ
+                        </td>
+                        <td class="fw-bolder text-primary" width="100">
+                            {{ iForm.benefitage1 }}
+                        </td>
+                        <td class="align-middle" width="50">
+                            ปี
+                        </td>
+                        <td class="align-middle">
+                            เกี่ยวข้องเป็น
+                        </td>
+                        <td class="fw-bolder text-primary" width="150">
+                            {{ iForm.benefitrelation1 }}
+                        </td>
+                        <td class="align-middle">
+                            จำนวน
+                        </td>
+                        <td class="fw-bolder text-primary" width="100">
+                            {{ iForm.benefitpercent1 }}
+                        </td>
+                        <td class="align-middle">
+                            %
+                        </td>
+                    </tr>
+                    @* Benefit 2 *@
+                    <tr ng-show="iForm.benefitname2 != ''">
+                        <td class="align-middle">
+                            2
+                        </td>
+                        <td class="fw-bolder text-primary">
+                            {{ iForm.benefitname2 }}
+                        </td>
+                        <td class="align-middle">
+                            อายุ
+                        </td>
+                        <td class="fw-bolder text-primary" width="100">
+                            {{ iForm.benefitage2 }}
+                        </td>
+                        <td class="align-middle">
+                            ปี
+                        </td>
+                        <td class="align-middle">
+                            เกี่ยวข้องเป็น
+                        </td>
+                        <td class="fw-bolder text-primary" width="150">
+                            {{ iForm.benefitrelation2 }}
+                        </td>
+                        <td class="align-middle">
+                            จำนวน
+                        </td>
+                        <td class="fw-bolder text-primary" width="100">
+                            {{ iForm.benefitpercent2 }}
+                        </td>
+                        <td class="align-middle">
+                            %
+                        </td>
+                    </tr>
+                    @* Benefit 3 *@
+                    <tr ng-show="iForm.benefitname3 != ''">
+                        <td class="align-middle">
+                            3
+                        </td>
+                        <td class="fw-bolder text-primary">
+                            {{ iForm.benefitname3 }}
+                        </td>
+                        <td class="align-middle">
+                            อายุ
+                        </td>
+                        <td class="fw-bolder text-primary" width="100">
+                            {{ iForm.benefitage3 }}
+                        </td>
+                        <td class="align-middle">
+                            ปี
+                        </td>
+                        <td class="align-middle">
+                            เกี่ยวข้องเป็น
+                        </td>
+                        <td class="fw-bolder text-primary" width="150">
+                            {{ iForm.benefitrelation3 }}
+                        </td>
+                        <td class="align-middle">
+                            จำนวน
+                        </td>
+                        <td class="fw-bolder text-primary" width="100">
+                            {{ iForm.benefitpercent3 }}
+                        </td>
+                        <td class="align-middle">
+                            %
+                        </td>
+                    </tr>
+                    @* Benefit 4 *@
+                    <tr ng-show="iForm.benefitname4 != ''">
+                        <td class="align-middle">
+                            4
+                        </td>
+                        <td class="fw-bolder text-primary">
+                            {{ iForm.benefitname4 }}
+                        </td>
+                        <td class="align-middle">
+                            อายุ
+                        </td>
+                        <td class="fw-bolder text-primary" width="100">
+                            {{ iForm.benefitage4 }}
+                        </td>
+                        <td class="align-middle">
+                            ปี
+                        </td>
+                        <td class="align-middle">
+                            เกี่ยวข้องเป็น
+                        </td>
+                        <td class="fw-bolder text-primary" width="150">
+                            {{ iForm.benefitrelation4 }}
+                        </td>
+                        <td class="align-middle">
+                            จำนวน
+                        </td>
+                        <td class="fw-bolder text-primary" width="100">
+                            {{ iForm.benefitpercent4 }}
+                        </td>
+                        <td class="align-middle">
+                            %
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ServiceBenefitInsuranceCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.LoadDetail = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormBenefitInsuranceDetail',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        refId: $scope.refId
+                    }),
+                    success: function (result) {
+                        $timeout(async function () {
+                            $scope.iForm = result;
+                            resolve(true);
+                        }, 0);
+                    }, error: function () {
+                        resolve(false);
+                    }
+                });
+            });
+        }
+
+        $scope.$parent.LoadFormBenefitInsurance = async function (x) {
+            $scope.refId = x.id;
+            $scope.userId = x.userId;
+            $scope.status = x.status;
+
+            await $scope.LoadDetail();
+        }
+    });
+</script>

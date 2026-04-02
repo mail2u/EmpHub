@@ -1,0 +1,485 @@
+﻿@page
+@model EmpHub.Pages.Service.FormBenefitInsuranceModel
+@{
+    var token = User.AccessToken(HttpContext);
+}
+<style>
+    .main-content {
+        min-height: calc(100vh - 150px) !important;
+    }
+</style>
+<div ng-controller="FormCtrl" id="tab_education">
+    @* Header *@
+    <partial name="_PartialFormHeader" />
+    @* View *@
+    <div class="rounded-4 mb-3 bg-white shadow-sm p-4">
+        <div class="text-center fs-4 fw-bolder mb-4 text-dark">
+            ใบผู้รับประโยชน์ (Beneficiary Form)
+        </div>
+        <div class="row">
+            <div class="col-sm-8 mb-3 d-lg-flex">
+                <div class="me-3">
+                    <div class="text-dark text-nowrap fw-bolder">ชื่อผู้ถือกรมธรรม์ (ชื่อองค์กร/บริษัท)</div>
+                    <div class="text-dark text-nowrap">(Policyholder)</div>
+                </div>
+                <input class="form-control" value="บริษัท ทิพยประกันชีวิต จากัด(มหาชน)" disabled />
+            </div>
+            <div class="col-sm-4 mb-3 d-lg-flex">
+                <div class="me-3">
+                    <div class="text-dark text-nowrap fw-bolder">กรมธรรม์เลขที่</div>
+                    <div class="text-dark text-nowrap">(Policy No.)</div>
+                </div>
+                <input ng-model="iForm.policyNo" class="form-control  policyNo" maxlength="50" />
+            </div>
+            <div class="col-sm-4 mb-3 d-lg-flex">
+                <div class="me-3">
+                    <div class="text-dark text-nowrap fw-bolder">รหัสพนักงาน</div>
+                    <div class="text-dark text-nowrap">(Employee no.)</div>
+                </div>
+                <input ng-model="iForm.employeeCode" class="form-control  employeeCode" maxlength="50" />
+            </div>
+            <div class="col-sm-8 mb-3 d-lg-flex">
+                <div class="me-3">
+                    <div class="text-dark text-nowrap fw-bolder">ชื่อ – นามสกุล ผู้สมัครเอาประกัน (นาย / นาง / นางสาว )</div>
+                    <div class="text-dark text-nowrap">(Name of Employee Mr. , Mrs, , Ms.)</div>
+                </div>
+                <input ng-model="iForm.fullname" class="form-control  fullname" maxlength="100" />
+            </div>
+            <div class="col-sm-4 mb-3 d-lg-flex">
+                <div class="me-3">
+                    <div class="text-dark text-nowrap fw-bolder">เกิดวันที่</div>
+                    <div class="text-dark text-nowrap">(Date of Birth)</div>
+                </div>
+                <input class="form-control  icon-calendar date birth_date"
+                ng-model="iForm.birth_date_select"
+                ng-model-options="{ updateOn: 'blur' }"
+                moment-picker="iForm.birth_date_select"
+                locale="th"
+                format="DD/MM/YYYY"
+                min-view="month"
+                max-view="month" required />
+            </div>
+            <div class="col-sm-4 mb-3 d-lg-flex">
+                <div class="me-3">
+                    <div class="text-dark text-nowrap fw-bolder">วันเริ่มทางาน</div>
+                    <div class="text-dark text-nowrap">(Date of employment)</div>
+                </div>
+                <input class="form-control  icon-calendar date join_date"
+                       ng-model="iForm.join_date_select"
+                       ng-model-options="{ updateOn: 'blur' }"
+                       moment-picker="iForm.join_date_select"
+                       locale="th"
+                       format="DD/MM/YYYY"
+                       min-view="month"
+                       max-view="month" required />
+            </div>
+            <div class="col-sm-4 mb-3 d-lg-flex">
+                <div class="me-3">
+                    <div class="text-dark text-nowrap fw-bolder">ตาแหน่ง</div>
+                    <div class="text-dark text-nowrap">(Position)</div>
+                </div>
+                <input ng-model="iForm.position" class="form-control  position" maxlength="100" />
+            </div>
+        </div>
+        <div class="d-flex">
+            <div class="me-3">
+                <div class="text-dark text-nowrap fw-bolder">ผู้รับประโยชน์</div>
+                <div class="text-dark text-nowrap">(Beneficiary)</div>
+            </div>
+            <div class="flex-fill">
+                <table class="table table-borderless">
+                    <tbody>
+                        @* Benefit 1 *@
+                        <tr>
+                            <td class="align-middle" width="20">
+                                1
+                            </td>
+                            <td>
+                                <input ng-model="iForm.benefitname1" class="form-control benefitname1" />
+                            </td>
+                            <td class="align-middle" width="50">
+                                อายุ
+                            </td>
+                            <td width="100">
+                                <input ng-model="iForm.benefitage1" class="form-control benefitage1 age" />
+                            </td>
+                            <td class="align-middle" width="50">
+                                ปี
+                            </td>
+                            <td class="align-middle">
+                                เกี่ยวข้องเป็น
+                            </td>
+                            <td width="150">
+                                <input ng-model="iForm.benefitrelation1" class="form-control benefitrelation1" />
+                            </td>
+                            <td class="align-middle">
+                                จำนวน
+                            </td>
+                            <td width="100">
+                                <input ng-model="iForm.benefitpercent1" class="form-control benefitpercent1" type="number" />
+                            </td>
+                            <td class="align-middle">
+                                %
+                            </td>
+                        </tr>
+                        @* Benefit 2 *@
+                        <tr>
+                            <td class="align-middle">
+                                2
+                            </td>
+                            <td>
+                                <input ng-model="iForm.benefitname2" class="form-control benefitname2" />
+                            </td>
+                            <td class="align-middle">
+                                อายุ
+                            </td>
+                            <td>
+                                <input ng-model="iForm.benefitage2" class="form-control benefitage2 age" />
+                            </td>
+                            <td class="align-middle">
+                                ปี
+                            </td>
+                            <td class="align-middle">
+                                เกี่ยวข้องเป็น
+                            </td>
+                            <td>
+                                <input ng-model="iForm.benefitrelation2" class="form-control benefitrelation2" />
+                            </td>
+                            <td class="align-middle">
+                                จำนวน
+                            </td>
+                            <td>
+                                <input ng-model="iForm.benefitpercent2" class="form-control benefitpercent2" type="number" />
+                            </td>
+                            <td class="align-middle">
+                                %
+                            </td>
+                        </tr>
+                        @* Benefit 3 *@
+                        <tr>
+                            <td class="align-middle">
+                                3
+                            </td>
+                            <td>
+                                <input ng-model="iForm.benefitname3" class="form-control benefitname3" />
+                            </td>
+                            <td class="align-middle">
+                                อายุ
+                            </td>
+                            <td>
+                                <input ng-model="iForm.benefitage3" class="form-control benefitage3 age" />
+                            </td>
+                            <td class="align-middle">
+                                ปี
+                            </td>
+                            <td class="align-middle">
+                                เกี่ยวข้องเป็น
+                            </td>
+                            <td>
+                                <input ng-model="iForm.benefitrelation3" class="form-control benefitrelation3" />
+                            </td>
+                            <td class="align-middle">
+                                จำนวน
+                            </td>
+                            <td>
+                                <input ng-model="iForm.benefitpercent3" class="form-control benefitpercent3" type="number" />
+                            </td>
+                            <td class="align-middle">
+                                %
+                            </td>
+                        </tr>
+                        @* Benefit 4 *@
+                        <tr>
+                            <td class="align-middle">
+                                4
+                            </td>
+                            <td>
+                                <input ng-model="iForm.benefitname4" class="form-control benefitname4" />
+                            </td>
+                            <td class="align-middle">
+                                อายุ
+                            </td>
+                            <td>
+                                <input ng-model="iForm.benefitage4" class="form-control benefitage4 age" />
+                            </td>
+                            <td class="align-middle">
+                                ปี
+                            </td>
+                            <td class="align-middle">
+                                เกี่ยวข้องเป็น
+                            </td>
+                            <td>
+                                <input ng-model="iForm.benefitrelation4" class="form-control benefitrelation4" />
+                            </td>
+                            <td class="align-middle">
+                                จำนวน
+                            </td>
+                            <td>
+                                <input ng-model="iForm.benefitpercent4" class="form-control benefitpercent4" type="number" />
+                            </td>
+                            <td class="align-middle">
+                                %
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-end">
+        <div class="btn btn-primary" ng-click="Save()">
+            <i class="far fa-paper-plane me-2"></i> Send Request
+        </div>
+    </div>
+</div>
+<script>
+    $(".age").mask("00");
+    $(".date").mask("00/00/0000")
+    app.controller('FormCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.mode = '@Model.mode';
+        $scope.iData = {};
+        $scope.iForm = { 
+            policyNo: ''
+            , employeeCode: ''
+            , fullname: ''
+            , birth_date: ''
+            , join_date: ''
+            , position: ''
+            , benefitname1: ''
+            , benefitage1: 0
+            , benefitrelation1: ''
+            , benefitpercent1: 0
+            , benefitname2: ''
+            , benefitage2: 0
+            , benefitrelation2: ''
+            , benefitpercent2: 0
+            , benefitname3: ''
+            , benefitage3: 0
+            , benefitrelation3: ''
+            , benefitpercent3: 0
+            , benefitname4: ''
+            , benefitage4: 0
+            , benefitrelation4: ''
+            , benefitpercent4: 0
+            , create_by:'@User.UserId()'
+        }
+
+        $scope.Validate = function () {
+            var flag = true;
+            JS_Reset($(".policyNo"));
+            JS_Reset($(".employeeCode"));
+            JS_Reset($(".fullname"));
+            JS_Reset($(".birth_date"));
+            JS_Reset($(".join_date"));
+            JS_Reset($(".position"));
+            JS_Reset($(".benefitname1"));
+            JS_Reset($(".benefitage1"));
+            JS_Reset($(".benefitrelation1"));
+            JS_Reset($(".benefitpercent1"));
+            JS_Reset($(".benefitname2"));
+            JS_Reset($(".benefitage2"));
+            JS_Reset($(".benefitrelation2"));
+            JS_Reset($(".benefitpercent2"));
+            JS_Reset($(".benefitname3"));
+            JS_Reset($(".benefitage3"));
+            JS_Reset($(".benefitrelation3"));
+            JS_Reset($(".benefitpercent3"));
+            JS_Reset($(".benefitname4"));
+            JS_Reset($(".benefitage4"));
+            JS_Reset($(".benefitrelation4"));
+            JS_Reset($(".benefitpercent4"));
+
+            if($scope.iForm.birth_date_select){
+                $scope.iForm.birth_date = $scope.iForm.birth_date_select.format('DD/MM/YYYY');
+            }
+            if($scope.iForm.join_date_select){
+                $scope.iForm.join_date = $scope.iForm.join_date_select.format('DD/MM/YYYY');
+            }
+            
+            if ($scope.iForm.policyNo == '') {
+                flag = false;
+                JS_Require($(".policyNo"));
+            }
+            if ($scope.iForm.employeeCode == '') {
+                flag = false;
+                JS_Require($(".employeeCode"));
+            }
+            if ($scope.iForm.fullname == '') {
+                flag = false;
+                JS_Require($(".fullname"));
+            }
+            if ($scope.iForm.birth_date == '') {
+                flag = false;
+                JS_Require($(".birth_date"));
+            }
+            if ($scope.iForm.join_date == '') {
+                flag = false;
+                JS_Require($(".join_date"));
+            }
+            if ($scope.iForm.position == '') {
+                flag = false;
+                JS_Require($(".position"));
+            }
+
+            var totalPercent = parseFloat($scope.iForm.benefitpercent1)
+                + parseFloat($scope.iForm.benefitpercent2)
+                + parseFloat($scope.iForm.benefitpercent3)
+                + parseFloat($scope.iForm.benefitpercent4);
+
+            if(totalPercent != 100){
+                JS_Require($(".benefitpercent1"));
+            }
+
+            /* Benefit 1 */
+            if ($scope.iForm.benefitname1 != '' 
+            || parseFloat($scope.iForm.benefitage1) > 0
+            || $scope.iForm.benefitrelation1 != ''
+            || parseFloat($scope.iForm.benefitpercent1) > 0){
+                 if ($scope.iForm.benefitname1 == '') {
+                    flag = false;
+                    JS_Require($(".benefitname1"));
+                }
+                if ($scope.iForm.benefitage1 == '') {
+                    flag = false;
+                    JS_Require($(".benefitage1"));
+                }
+                if ($scope.iForm.benefitrelation1 == '') {
+                    flag = false;
+                    JS_Require($(".benefitrelation1"));
+                }
+                if ($scope.iForm.benefitpercent1 <= 0 || totalPercent != 100) {
+                    flag = false;
+                    JS_Require($(".benefitpercent1"));
+                }
+            }
+            
+            /* Benefit 2 */
+            if ($scope.iForm.benefitname2 != '' 
+            || parseFloat($scope.iForm.benefitage2) > 0
+            || $scope.iForm.benefitrelation2 != ''
+            || parseFloat($scope.iForm.benefitpercent2) > 0){
+                 if ($scope.iForm.benefitname2 == '') {
+                    flag = false;
+                    JS_Require($(".benefitname2"));
+                }
+                if ($scope.iForm.benefitage2 == '') {
+                    flag = false;
+                    JS_Require($(".benefitage2"));
+                }
+                if ($scope.iForm.benefitrelation2 == '') {
+                    flag = false;
+                    JS_Require($(".benefitrelation2"));
+                }
+                if ($scope.iForm.benefitpercent2 <= 0 || totalPercent != 100) {
+                    flag = false;
+                    JS_Require($(".benefitpercent2"));
+                }
+            }
+
+            /* Benefit 3 */
+            if ($scope.iForm.benefitname3 != '' 
+            || parseFloat($scope.iForm.benefitage3) > 0
+            || $scope.iForm.benefitrelation3 != ''
+            || parseFloat($scope.iForm.benefitpercent3) > 0){
+                 if ($scope.iForm.benefitname3 == '') {
+                    flag = false;
+                    JS_Require($(".benefitname3"));
+                }
+                if ($scope.iForm.benefitage3 == '') {
+                    flag = false;
+                    JS_Require($(".benefitage3"));
+                }
+                if ($scope.iForm.benefitrelation3 == '') {
+                    flag = false;
+                    JS_Require($(".benefitrelation3"));
+                }
+                if ($scope.iForm.benefitpercent3 <= 0 || totalPercent != 100) {
+                    flag = false;
+                    JS_Require($(".benefitpercent3"));
+                }
+            }
+
+            /* Benefit 4 */
+            if ($scope.iForm.benefitname4 != '' 
+            || parseFloat($scope.iForm.benefitage4) > 0
+            || $scope.iForm.benefitrelation4 != ''
+            || parseFloat($scope.iForm.benefitpercent4) > 0){
+                 if ($scope.iForm.benefitname4 == '') {
+                    flag = false;
+                    JS_Require($(".benefitname4"));
+                }
+                if ($scope.iForm.benefitage4 == '') {
+                    flag = false;
+                    JS_Require($(".benefitage4"));
+                }
+                if ($scope.iForm.benefitrelation4 == '') {
+                    flag = false;
+                    JS_Require($(".benefitrelation4"));
+                }
+                if ($scope.iForm.benefitpercent4 <= 0 || totalPercent != 100) {
+                    flag = false;
+                    JS_Require($(".benefitpercent4"));
+                }
+            }
+
+            return flag;
+        }
+
+        $scope.Save = async function () {
+            if ($scope.Validate()) {
+                alertConfirm("ยืนยันการทำรายการ", "ท่านต้องการส่งใบคำขอ", async function () {
+                    var id = await $scope.CreateService();
+
+                    if (id) {
+                        $scope.iData.id = id;
+                        $scope.iForm.refId = id;
+
+                        var flag = await $scope.CreateForm();
+
+                        if (flag) {
+                            var serviceNo = await $scope.ServiceRequest();
+
+                            if (serviceNo) {
+                                alertSuccess("ทำรายการสำเร็จ", "ระบบบันทึกใบคำขอของท่านเรียบร้อย", function () {
+                                    location.href = '@Url.Page("/Service/Index")';
+                                });
+                            } else {
+                                $scope.CancelService();
+                            }
+                        } else {
+                            $scope.CancelService();
+                        }
+                    }
+                });
+            } else {
+                alertWarning("แจ้งเตือน", "กรุณากรอกข้อมูลให้ครบ");
+            }
+        }
+
+        $scope.CreateForm = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormBenefitInsuranceCreate',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify($scope.iForm),
+                    success: function () {
+                        $timeout(async function () {
+                            resolve(true);
+                        }, 0);
+                    }, error: function (jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "ระบบเกิดข้อผิดพลาด",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+    });
+</script>

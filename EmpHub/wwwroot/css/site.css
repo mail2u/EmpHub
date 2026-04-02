@@ -770,20 +770,21 @@ main {
     padding: 5px;
 }
 
+.fs-6 {
+    font-size: 1rem !important;
+}
 
 /* Calendar */
 .icon-clock {
     background-image: url('../images/clock.png');
     background-repeat: no-repeat;
     background-position: right 5px center;
-    z-index: 1060;
 }
 
 .icon-calendar {
     background-image: url('../images/calendar.png');
     background-repeat: no-repeat;
     background-position: right 5px center;
-    z-index: 1060;
 }
 
 @media (min-width: 992px) {

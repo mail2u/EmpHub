@@ -53,6 +53,30 @@
                 <div ng-show="iData.subCategoryCode == 'FORM_SALARY_CERTIFICATE'">
                     <partial name="_PartialServiceSalaryCertificate" />
                 </div>
+                <div ng-show="iData.subCategoryCode == 'FORM_EMPLOYEE_CERTIFICATE'">
+                    <partial name="_PartialServiceEmployeeCertificate" />
+                </div>
+                <div ng-show="iData.subCategoryCode == 'FORM_REQUEST_TRAINING'">
+                    <partial name="_PartialServiceRequestTraining" />
+                </div>
+                <div ng-show="iData.subCategoryCode == 'FORM_REQUEST_MANPOWER'">
+                    <partial name="_PartialServiceManPower" />
+                </div>
+                <div ng-show="iData.subCategoryCode == 'FORM_BENEFIT_FUND'">
+                    <partial name="_PartialServiceBenefitFund" />
+                </div>
+                <div ng-show="iData.subCategoryCode == 'FORM_BENEFIT_INSURANCE'">
+                    <partial name="_PartialServiceBenefitInsurance" />
+                </div>
+                <div ng-show="iData.subCategoryCode == 'FORM_PERFORMANCE_LV1'">
+                    <partial name="_PartialServicePerformanceLv1" />
+                </div>
+                <div ng-show="iData.subCategoryCode == 'FORM_PERFORMANCE_LV2'">
+                    <partial name="_PartialServicePerformanceLv2" />
+                </div>
+                <div ng-show="iData.subCategoryCode == 'FORM_MOVE_EMPLOYEE'">
+                    <partial name="_PartialServiceMoveEmployee" />
+                </div>
                 @* Feedback *@
                 <div class="bg-white rounded-4 border mb-4">
                     <div class="px-4 py-3 border-bottom">
@@ -149,8 +173,32 @@
                         else if ($scope.iData.subCategoryCode == 'FORM_RESET_PASSWORD') {
                             $scope.LoadFormResetPassword($scope.iData);
                         }
-                        else if ($scope.iData.subCategoryCode == 'FORM_SALARY_CERTIFICAET') {
+                        else if ($scope.iData.subCategoryCode == 'FORM_SALARY_CERTIFICATE') {
                             $scope.LoadFormSalaryCertificate($scope.iData);
+                        }
+                        else if ($scope.iData.subCategoryCode == 'FORM_EMPLOYEE_CERTIFICATE') {
+                            $scope.LoadFormEmployeeCertificate($scope.iData);
+                        }
+                        else if ($scope.iData.subCategoryCode == 'FORM_REQUEST_TRAINING') {
+                            $scope.LoadFormRequestTraining($scope.iData);
+                        }
+                        else if ($scope.iData.subCategoryCode == 'FORM_REQUEST_MANPOWER') {
+                            $scope.LoadFormRequestManpower($scope.iData);
+                        }
+                        else if ($scope.iData.subCategoryCode == 'FORM_BENEFIT_FUND') {
+                            $scope.LoadFormBenefitFund($scope.iData);
+                        }
+                        else if ($scope.iData.subCategoryCode == 'FORM_BENEFIT_INSURANCE') {
+                            $scope.LoadFormBenefitInsurance($scope.iData);
+                        }
+                        else if ($scope.iData.subCategoryCode == 'FORM_PERFORMANCE_LV1') {
+                            $scope.LoadFormPerformanceLv1($scope.iData);
+                        }
+                        else if ($scope.iData.subCategoryCode == 'FORM_PERFORMANCE_LV2') {
+                            $scope.LoadFormPerformanceLv2($scope.iData);
+                        }
+                        else if ($scope.iData.subCategoryCode == 'FORM_MOVE_EMPLOYEE') {
+                            $scope.LoadFormMoveEmployee($scope.iData);
                         }
                     }, 0);
                 },

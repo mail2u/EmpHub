@@ -4,10 +4,10 @@
 @{
     var token = User.AccessToken(Context);
 }
-<div ng-controller="ServiceSalaryCertificateCtrl">
+<div ng-controller="ServiceEmployeeCertificateCtrl">
     <div class="bg-white rounded-4 border mb-4 overflow-hidden">
         <div class="px-4 py-3 border-bottom d-flex align-items-center">
-            <div class="fs-5 fw-bolder text-dark flex-fill">Request Salary Cerfiticate</div>
+            <div class="fs-5 fw-bolder text-dark flex-fill">Request Employee Cerfiticate</div>
         </div>
         <div class="p-4">
             <table class="table table-borderless">
@@ -38,11 +38,11 @@
     </div>
 </div>
 <script>
-    app.controller('ServiceSalaryCertificateCtrl', function ($scope, $http, $timeout, $filter) {
+    app.controller('ServiceEmployeeCertificateCtrl', function ($scope, $http, $timeout, $filter) {
         $scope.LoadDetail = function () {
             return new Promise((resolve) => {
                 $.ajax({
-                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormSalaryCertificateDetail',
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormEmployeeCertificateDetail',
                     headers: { 'authorization': 'Bearer @token' },
                     type: "POST",
                     contentType: 'application/json',
@@ -63,7 +63,7 @@
             });
         }
 
-        $scope.$parent.LoadFormSalaryCertificate = async function (x) {
+        $scope.$parent.LoadFormEmployeeCertificate = async function (x) {
             $scope.refId = x.id;
             $scope.userId = x.userId;
             $scope.status = x.status;

@@ -36,7 +36,7 @@
                             <div class="text-dark text-nowrap">attach image</div>
                         </td>
                         <td>
-                            <div class="d-flex">
+                            <div class="d-flex" ng-show="iFile != null">
                                 <a class="select d-flex align-items-center rounded-3 bg-light-gray shadow-sm p-2" href="@webAPI.CurrentValue.APIEmpHub/api/File/DownloadFile?refId={{ iFile.refId }}&id={{ iFile.id }}" target="_blank" title="Download">
                                     <div class="me-2">
                                         <img width="40" src="data:image/png;base64,{{iFile.imageBase64}}">

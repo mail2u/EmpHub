@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace EmpHub.Pages.Service
 {
-    public class FormNeedEmployeeModel : PageModel
+    public class FormRequestTrainingModel : PageModel
     {
         public string mode { get; set; }
         public void OnGet(string mode)
