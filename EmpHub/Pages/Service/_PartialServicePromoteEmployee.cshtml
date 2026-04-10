@@ -1,0 +1,128 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var token = User.AccessToken(Context);
+}
+<style>
+    input[type="radio"]:disabled {
+        background-color: #0d6efd !important;
+        border-color: #0d6efd !important;
+        background-image: none !important;
+        opacity: 1 !important;
+    }
+</style>
+<div ng-controller="ServicePromoteEmployeeCtrl">
+    <div class="bg-white rounded-4 border mb-4 overflow-hidden p-4">
+        <div class="px-4 py-3 border-bottom d-flex align-items-center">
+            <div class="fs-5 fw-bolder text-dark flex-fill">
+                แบบเสนอขอปรับเลื่อนตาแหน่งงานบุคลากร
+            </div>
+        </div>
+        <div class="p-4 fs-6 text-dark">
+            <div class="fs-5 fw-bolder mb-4 bg-light p-2">
+                ข้อมูลบุคลากรที่ขอเสนอปรับเลื่อนตาแหน่งงาน
+            </div>
+            <div class="row fs-5">
+                <div class="col-sm-6 mb-3 d-flex">
+                    <div class="text-nowrap me-2">ชื่อ-สกุล</div><input ng-model="iForm.fullname" class="form-text text-blue fullname" maxlength="100" readonly />
+                </div>
+                <div class="col-sm-6 mb-3 d-flex">
+                    <div class="text-nowrap me-2">ตำแหน่ง</div><input ng-model="iForm.position" class="form-text text-blue position" maxlength="50" readonly />
+                </div>
+                <div class="col-sm-6 mb-3 d-flex">
+                    <div class="text-nowrap me-2">ส่วน</div><input ng-model="iForm.section" class="form-text text-blue section" maxlength="50" readonly />
+                </div>
+                <div class="col-sm-6 mb-3 d-flex">
+                    <div class="text-nowrap me-2">ฝ่าย</div><input ng-model="iForm.department" class="form-text text-blue department" maxlength="50" readonly />
+                </div>
+                <div class="col-sm-6 mb-3 d-flex">
+                    <div class="text-nowrap me-2">วันที่เริ่มงาน</div><input ng-model="iForm.join_date" class="form-text text-blue join_date" maxlength="50" readonly />
+                </div>
+                <div class="col-sm-6 mb-3 d-flex">
+                    <div class="text-nowrap me-2">อายุงาน (ปี)</div><input ng-model="iForm.year" class="form-text text-blue join_date" maxlength="50" readonly />
+                </div>
+                <div class="col-sm-12 mb-3 d-flex text-nowrap">
+                    <div class="text-nowrap me-2">ผลการปฏิบัติงานของบุคลากร 2 ปี ย้อนหลัง :</div>
+                    <div class="fw-bolder text-decoration-underline text-nowrap me-2">ย้อนหลัง 1 ปี</div> ได้เกรด <input ng-model="iForm.grade1" class="form-text text-blue text-center grade1 mx-2" style="width:50px" maxlength="2" readonly />
+                    <div class="fw-bolder text-decoration-underline text-nowrap me-2">ย้อนหลัง 2 ปี</div> ได้เกรด <input ng-model="iForm.grade2" class="form-text text-blue text-center grade2 mx-2" style="width:50px" maxlength="2" readonly />
+                </div>
+            </div>
+            <div class="fs-5 mb-4">
+                เห็นสมควรเรียนเสนอ เพื่อพิจารณา <b>ปรับเลื่อนตาแหน่งงาน</b> บุคลากร ดังนี้
+            </div>
+            <div class="fs-5 mb-4">
+                <table class="table table-bolder">
+                    <thead>
+                        <tr class="">
+                            <td class="fw-bolder bg-light" width="200">เปลี่ยนแปลงจาก</td>
+                            <td class="fw-bolder bg-light text-center">ตำแหน่งงาน</td>
+                            <td class="fw-bolder bg-light text-center">ฝ่าย</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="align-middle">ปัจจุบัน</td>
+                            <td class="align-middle text-blue">
+                                {{ iForm.position_current }}
+                            </td>
+                            <td class="align-middle text-blue">
+                                {{ iForm.department_current }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="align-middle">ใหม่</td>
+                            <td class="align-middle text-blue">
+                                {{ iForm.position_new }}
+                            </td>
+                            <td class="align-middle text-blue">
+                                {{ iForm.department_new }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="fs-5 fw-bolder mb-3">
+                เหตุผลที่เสนอปรับเลื่อนตาแหน่งงาน
+            </div>
+            <div class="align-middle text-blue" style="min-height:200px;">
+                {{ iForm.description }}
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ServicePromoteEmployeeCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.LoadDetail = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormPromoteEmployeeDetail',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        refId: $scope.refId
+                    }),
+                    success: function (result) {
+                        $timeout(async function () {
+                            $scope.iForm = result;
+                            resolve(true);
+                        }, 0);
+                    }, error: function () {
+                        resolve(false);
+                    }
+                });
+            });
+        }
+
+        $scope.$parent.LoadFormPromoteEmployee = async function (x) {
+            $scope.refId = x.id;
+            $scope.userId = x.userId;
+            $scope.status = x.status;
+
+            await $scope.LoadDetail();
+        }
+    });
+</script>

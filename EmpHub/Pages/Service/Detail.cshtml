@@ -77,6 +77,30 @@
                 <div ng-show="iData.subCategoryCode == 'FORM_MOVE_EMPLOYEE'">
                     <partial name="_PartialServiceMoveEmployee" />
                 </div>
+                <div ng-show="iData.subCategoryCode == 'FORM_HIRING_EMPLOYEE'">
+                    <partial name="_PartialServiceHiringEmployee" />
+                </div>
+                <div ng-show="iData.subCategoryCode == 'FORM_PDPA_EMPLOYEE'">
+                    <partial name="_PartialServicePdpaEmployee" />
+                </div>
+                <div ng-show="iData.subCategoryCode == 'FORM_WFH_EMPLOYEE'">
+                    <partial name="_PartialServiceWfhEmployee" />
+                </div>
+                <div ng-show="iData.subCategoryCode == 'FORM_AGREEMENT_EMPLOYEE'">
+                    <partial name="_PartialServiceAgreementEmployee" />
+                </div>
+                <div ng-show="iData.subCategoryCode == 'FORM_PREPARE_EMPLOYEE'">
+                    <partial name="_PartialServicePrepareEmployee" />
+                </div>
+                <div ng-show="iData.subCategoryCode == 'FORM_PROBATION_REPORT'">
+                    <partial name="_PartialServiceProbationReport" />
+                </div>
+                <div ng-show="iData.subCategoryCode == 'FORM_PROMOTE_EMPLOYEE'">
+                    <partial name="_PartialServicePromoteEmployee" />
+                </div>
+                <div ng-show="iData.subCategoryCode == 'FORM_IDP'">
+                    <partial name="_PartialServiceIDP" />
+                </div>
                 @* Feedback *@
                 <div class="bg-white rounded-4 border mb-4">
                     <div class="px-4 py-3 border-bottom">
@@ -158,47 +182,77 @@
                         $scope.LoadTrack($scope.id);
                         $scope.LoadComment($scope.id);
 
-                        if ($scope.iData.subCategoryCode == 'EDIT_PROFILE') {
-                            $scope.LoadProfile($scope.iData);
-                        }
-                        else if ($scope.iData.subCategoryCode == 'FORM_NEED_NEW_CARD') {
-                            $scope.LoadFormNeedNewCard($scope.iData);
-                        }
-                        else if ($scope.iData.subCategoryCode == 'FORM_PARKING_STICKER') {
-                            $scope.LoadFormParkingSticker($scope.iData);
-                        }
-                        else if ($scope.iData.subCategoryCode == 'FORM_BUY_UNIFORM') {
-                            $scope.LoadFormBuyUniform($scope.iData);
-                        }
-                        else if ($scope.iData.subCategoryCode == 'FORM_RESET_PASSWORD') {
-                            $scope.LoadFormResetPassword($scope.iData);
-                        }
-                        else if ($scope.iData.subCategoryCode == 'FORM_SALARY_CERTIFICATE') {
-                            $scope.LoadFormSalaryCertificate($scope.iData);
-                        }
-                        else if ($scope.iData.subCategoryCode == 'FORM_EMPLOYEE_CERTIFICATE') {
-                            $scope.LoadFormEmployeeCertificate($scope.iData);
-                        }
-                        else if ($scope.iData.subCategoryCode == 'FORM_REQUEST_TRAINING') {
-                            $scope.LoadFormRequestTraining($scope.iData);
-                        }
-                        else if ($scope.iData.subCategoryCode == 'FORM_REQUEST_MANPOWER') {
-                            $scope.LoadFormRequestManpower($scope.iData);
-                        }
-                        else if ($scope.iData.subCategoryCode == 'FORM_BENEFIT_FUND') {
-                            $scope.LoadFormBenefitFund($scope.iData);
-                        }
-                        else if ($scope.iData.subCategoryCode == 'FORM_BENEFIT_INSURANCE') {
-                            $scope.LoadFormBenefitInsurance($scope.iData);
-                        }
-                        else if ($scope.iData.subCategoryCode == 'FORM_PERFORMANCE_LV1') {
-                            $scope.LoadFormPerformanceLv1($scope.iData);
-                        }
-                        else if ($scope.iData.subCategoryCode == 'FORM_PERFORMANCE_LV2') {
-                            $scope.LoadFormPerformanceLv2($scope.iData);
-                        }
-                        else if ($scope.iData.subCategoryCode == 'FORM_MOVE_EMPLOYEE') {
-                            $scope.LoadFormMoveEmployee($scope.iData);
+                        switch ($scope.iData.subCategoryCode) {
+                            case 'EDIT_PROFILE':
+                                $scope.LoadProfile($scope.iData);
+                                break;
+                            case 'FORM_NEED_NEW_CARD':
+                                $scope.LoadFormNeedNewCard($scope.iData);
+                                break;
+                            case 'FORM_PARKING_STICKER':
+                                $scope.LoadFormParkingSticker($scope.iData);
+                                break;
+                            case 'FORM_BUY_UNIFORM':
+                                $scope.LoadFormBuyUniform($scope.iData);
+                                break;
+                            case 'FORM_RESET_PASSWORD':
+                                $scope.LoadFormResetPassword($scope.iData);
+                                break;
+                            case 'FORM_SALARY_CERTIFICATE':
+                                $scope.LoadFormSalaryCertificate($scope.iData);
+                                break;
+                            case 'FORM_EMPLOYEE_CERTIFICATE':
+                                $scope.LoadFormEmployeeCertificate($scope.iData);
+                                break;
+                            case 'FORM_REQUEST_TRAINING':
+                                $scope.LoadFormRequestTraining($scope.iData);
+                                break;
+                            case 'FORM_REQUEST_MANPOWER':
+                                $scope.LoadFormRequestManpower($scope.iData);
+                                break;
+                            case 'FORM_BENEFIT_FUND':
+                                $scope.LoadFormBenefitFund($scope.iData);
+                                break;
+                            case 'FORM_BENEFIT_INSURANCE':
+                                $scope.LoadFormBenefitInsurance($scope.iData);
+                                break;
+                            case 'FORM_PERFORMANCE_LV1':
+                                $scope.LoadFormPerformanceLv1($scope.iData);
+                                break;
+                            case 'FORM_PERFORMANCE_LV2':
+                                $scope.LoadFormPerformanceLv2($scope.iData);
+                                break;
+                            case 'FORM_MOVE_EMPLOYEE':
+                                $scope.LoadFormMoveEmployee($scope.iData);
+                                break;
+                            case 'FORM_HIRING_EMPLOYEE':
+                                $scope.LoadFormHiringEmployee($scope.iData);
+                                break;
+                            case 'FORM_PDPA_EMPLOYEE':
+                                $scope.LoadFormPdpaEmployee($scope.iData);
+                                break;
+                            case 'FORM_WFH_EMPLOYEE':
+                                $scope.LoadFormWfhEmployee($scope.iData);
+                                break;
+                            case 'FORM_AGREEMENT_EMPLOYEE':
+                                $scope.LoadFormAgreementEmployee($scope.iData);
+                                break;
+                            case 'FORM_PREPARE_EMPLOYEE':
+                                $scope.LoadFormPrepareEmployee($scope.iData);
+                                break;
+                            case 'FORM_PROBATION_REPORT':
+                                $scope.LoadFormProbationReport($scope.iData);
+                                break;
+                            case 'FORM_PROMOTE_EMPLOYEE':
+                                $scope.LoadFormPromoteEmployee($scope.iData);
+                                break;
+                            case 'FORM_IDP':
+                                $scope.LoadFormIDP($scope.iData);
+                                break;
+                            case 'AAA':
+                                $scope.AAA($scope.iData);
+                                break;
+                            default:
                         }
                     }, 0);
                 },

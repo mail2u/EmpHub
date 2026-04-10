@@ -1,0 +1,232 @@
+﻿@page
+@model EmpHub.Pages.Service.FormProbationReportModel
+@{
+    var token = User.AccessToken(HttpContext);
+}
+<style>
+    .main-content {
+        min-height: calc(100vh - 150px) !important;
+    }
+
+    .box-group {
+        padding: 15px;
+        border: 1px solid white;
+        border-radius: 15px;
+    }
+
+        .box-group.input-error {
+            border: 1px solid red;
+        }
+</style>
+<div ng-controller="FormCtrl" id="tab_education">
+    @* Header *@
+    <partial name="_PartialFormHeader" />
+    @* View *@
+    <div class="rounded-4 mb-3 bg-white shadow-sm text-dark" style="padding:25px 120px;">
+        <div class="text-center fs-4 fw-bolder mb-4 text-dark">
+            แบบรายงานผลการปฏิบัติงานช่วงระยะเวลาทดลองงาน
+        </div>
+        <div class="fs-5 mb-4">
+            <span style="padding-left:100px"></span>
+            ข้าพเจ้า (นาย/นาง/นางสาว) <input ng-model="iForm.fullname" class="form-text fullname" style="width:400px" maxlength="100" /> ได้รับอนุมัติจากบริษัทฯ ให้ดำเนินการ
+            ปฏิบัติงานเป็นเวลา <input ng-model="iForm.period" class="form-text period" style="width:100px" maxlength="50" /> เดือน/ วัน 
+            โดยเริ่มเข้าปฏิบัติงานตั้งแต่วันที่ <input ng-model="iForm.join_date" class="form-text join_date date" style="width:100px" maxlength="50" />
+            ในตำแหน่ง <input ng-model="iForm.position" class="form-text position" style="width:300px" maxlength="50" />
+            สังกัดสายงาน/ฝ่าย <input ng-model="iForm.department" class="form-text department" style="width:400px" maxlength="50" />
+        </div>
+        <div class="fs-5 my-3 bg-light p-3">
+            โปรดบันทึกรายงานการปฏิบัติงานของท่านในช่วงระหว่างทดลองงานโดยละเอียดตามข้อเท็จจริง เพื่อนำไปประกอบการประเมินผลการปฏิบัติงานในช่วงระยะเวลาทดลองงาน เพื่อพิจารณาบรรจุเป็นพนักงานประจำต่อไป
+        </div>
+        <div class="fs-5">
+            1.	ลักษณะหน้าที่ที่ได้รับมอบหมาย
+            <textarea ng-model="iForm.answer1" class="form-control answer1" rows=5 maxlength="4000"></textarea>
+        </div>
+        <div class="fs-5">
+            2.	ผู้บังคับบัญชาโดยตรงของท่าน คือ
+            <input ng-model="iForm.answer2" class="form-control answer2" maxlength="100" />
+        </div>
+        <div class="fs-5">
+            3.	หน้าที่และความรับผิดชอบหลักที่ปฏิบัติจริง
+            <textarea ng-model="iForm.answer3" class="form-control answer3" rows=5 maxlength="4000"></textarea>
+        </div>
+        <div class="fs-5">
+            4.	หน้าที่และความรับผิดชอบพิเศษ ที่ท่านได้รับมอบหมายและได้ปฏิบัติจริง
+            <textarea ng-model="iForm.answer4" class="form-control answer4" rows=5 maxlength="4000"></textarea>
+        </div>
+        <div class="fs-5">
+            5.	ปัญหาและอุปสรรคในการปฏิบัติงานช่วงระหว่างการทดลองงาน
+            <textarea ng-model="iForm.answer5" class="form-control answer5" rows=5 maxlength="4000"></textarea>
+        </div>
+        <div class="fs-5">
+            การแก้ไข
+            <textarea ng-model="iForm.answer5_fixed" class="form-control answer5_fixed" rows=5 maxlength="4000"></textarea>
+        </div>
+        <div class="fs-5">
+            6.	ปัญหาและอุปสรรคระหว่างเพื่อนร่วมงาน
+            <textarea ng-model="iForm.answer6" class="form-control answer6" rows=5 maxlength="4000"></textarea>
+        </div>
+        <div class="fs-5">
+            การแก้ไข
+            <textarea ng-model="iForm.answer6_fixed" class="form-control answer6_fixed" rows=5 maxlength="4000"></textarea>
+        </div>
+        <div class="fs-5">
+            7.	ความคิดเห็นโดยทั่วไป ในการปฏิบัติงานช่วงระยะเวลาทดลองงานของท่านที่เกี่ยวข้องกับทางบริษัทฯ เพื่อใช้ประกอบการพิจารณาบรรจุเข้าเป็นพนักงานประจำ
+            <textarea ng-model="iForm.answer7" class="form-control answer7" rows=5 maxlength="4000"></textarea>
+        </div>
+    </div>
+    <div class="d-flex justify-content-end">
+        <div class="btn btn-primary" ng-click="Save()">
+            <i class="far fa-paper-plane me-2"></i> Send Request
+        </div>
+    </div>
+</div>
+<script>
+    $(".day").mask("00");
+    $(".score").mask("00");
+    $(".date").mask("00/00/0000");
+    app.controller('FormCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.mode = '@Model.mode';
+        $scope.iData = {};
+        $scope.iForm = {
+            fullname:''
+            , position:''
+            , department:''
+            , period:''
+            , join_date:''
+            , answer1: ''
+            , answer2: ''
+            , answer3: ''
+            , answer4: ''
+            , answer5: ''
+            , answer5_fixed: ''
+            , answer6: ''
+            , answer6_fixed: ''
+            , answer7: ''
+            , create_by:'@User.UserId()'
+        }
+
+        $scope.Validate = function () {
+            var flag = true;
+            JS_Reset($(".fullname"));
+            JS_Reset($(".position"));
+            JS_Reset($(".department"));
+            JS_Reset($(".period"));
+            JS_Reset($(".join_date"));
+            JS_Reset($(".answer1"));
+            JS_Reset($(".answer2"));
+            JS_Reset($(".answer3"));
+            JS_Reset($(".answer4"));
+            JS_Reset($(".answer5"));
+            JS_Reset($(".answer6"));
+            JS_Reset($(".answer7"));
+
+            if ($scope.iForm.fullname == '') {
+                flag = false;
+                JS_Require($(".fullname"));
+            }
+            if ($scope.iForm.position == '') {
+                flag = false;
+                JS_Require($(".position"));
+            }
+            if ($scope.iForm.department == '') {
+                flag = false;
+                JS_Require($(".department"));
+            }
+            if ($scope.iForm.period == '') {
+                flag = false;
+                JS_Require($(".period"));
+            }
+            if ($scope.iForm.join_date == '') {
+                flag = false;
+                JS_Require($(".join_date"));
+            }
+            if ($scope.iForm.answer1 == '') {
+                flag = false;
+                JS_Require($(".answer1"));
+            }
+            if ($scope.iForm.answer2 == '') {
+                flag = false;
+                JS_Require($(".answer2"));
+            }
+            if ($scope.iForm.answer3 == '') {
+                flag = false;
+                JS_Require($(".answer3"));
+            }
+            if ($scope.iForm.answer4 == '') {
+                flag = false;
+                JS_Require($(".answer4"));
+            }
+            if ($scope.iForm.answer5 == '') {
+                flag = false;
+                JS_Require($(".answer5"));
+            }
+            if ($scope.iForm.answer6 == '') {
+                flag = false;
+                JS_Require($(".answer6"));
+            }
+            if ($scope.iForm.answer7 == '') {
+                flag = false;
+                JS_Require($(".answer7"));
+            }
+
+            return flag;
+        }
+
+        $scope.Save = async function () {
+            if ($scope.Validate()) {
+                alertConfirm("ยืนยันการทำรายการ", "ท่านต้องการส่งใบคำขอ", async function () {
+                    var id = await $scope.CreateService();
+
+                    if (id) {
+                        $scope.iData.id = id;
+                        $scope.iForm.refId = id;
+
+                        var flag = await $scope.CreateForm();
+
+                        if (flag) {
+                            var serviceNo = await $scope.ServiceRequest();
+
+                            if (serviceNo) {
+                                alertSuccess("ทำรายการสำเร็จ", "ระบบบันทึกใบคำขอของท่านเรียบร้อย", function () {
+                                    location.href = '@Url.Page("/Service/Index")';
+                                });
+                            } else {
+                                $scope.CancelService();
+                            }
+                        } else {
+                            $scope.CancelService();
+                        }
+                    }
+                });
+            } else {
+                alertWarning("แจ้งเตือน", "กรุณากรอกข้อมูลให้ครบ");
+            }
+        }
+
+        $scope.CreateForm = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormProbationReportCreate',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify($scope.iForm),
+                    success: function () {
+                        $timeout(async function () {
+                            resolve(true);
+                        }, 0);
+                    }, error: function (jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "ระบบเกิดข้อผิดพลาด",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+    });
+</script>

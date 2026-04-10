@@ -1,0 +1,82 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var token = User.AccessToken(Context);
+}
+<style>
+    input[type="radio"]:disabled {
+        background-color: #0d6efd !important;
+        border-color: #0d6efd !important;
+        background-image: none !important;
+        opacity: 1 !important;
+    }
+</style>
+<div ng-controller="ServiceAgreementEmployeeCtrl">
+    <div class="bg-white rounded-4 border mb-4 overflow-hidden p-4">
+        <div class="px-4 py-3 border-bottom d-flex align-items-center">
+            <div class="fs-5 fw-bolder text-dark flex-fill">
+                เอกสารลงนามรับทราบเกี่ยวกับ<br />
+                บริษัท ทิพยประกันชีวิต จำกัด (มหาชน)
+            </div>
+        </div>
+        <div class="p-4 fs-6 text-dark">
+            <div class="fs-5 mb-3">
+                <span style="padding-left:100px"></span>
+                ข้าพเจ้า <input ng-model="iForm.fullname" class="form-text text-center text-blue" style="width:400px" maxlength="100" readonly />
+                ตำแหน่ง <input ng-model="iForm.position" class="form-text text-center text-blue" style="width:300px" maxlength="50" readonly />
+                สังกัดฝ่ายงาน <input ng-model="iForm.department" class="form-text text-center text-blue" style="width:300px" maxlength="50" readonly />
+                เริ่มงานวันที่ <input ng-model="iForm.join_date" class="form-text text-center text-blue" style="width:150px" maxlength="50" readonly />
+                ได้รับเอกสาร และได้อ่านมีความเข้าใจข้อความอย่างถ่องแท้โดยตลอดแล้วใน ระเบียบข้อบังคับเกี่ยวกับการทำงาน นโยบายและแนวปฏิบัติที่เกี่ยวข้องกับการดูแลกิจการที่ดี นโยบายการดูแลความขัดแย้งทางผลประโยชน์นโยบายความคุ้มครองข้อมูลส่วนบุคคลสำหรับพนักงาน จรรยาบรรณและจริยธรรมทางธุรกิจ ระเบียบการใช้งานเทคโนโลยีสารสนเทศ นโยบายและกรอบการบริหารความเสี่ยง คู่มือพนักงาน คู่มืออัตลักษณ์องค์กร ข้อบังคับกองทุนสำรองเลี้ยงชีพ ของบริษัท ทิพยประกันชีวิต จำกัด (มหาชน) พร้อมทั้งยึดถือเป็นแนวปฏิบัติอย่างเคร่งครัดในการทำหน้าที่ของข้าพเจ้าในทุกกรณี จึงลงลายมือชื่อไว้เป็นหลักฐาน ดังนี้
+            </div>
+            <div class="fs-5 mb-3" style="padding-left:100px">
+                1. ระเบียบข้อบังคับการเกี่ยวกับการทำงาน<br />
+                2. นโยบายและแนวปฏิบัติที่เกี่ยวข้องกับการดูแลกิจการที่ดี<br />
+                3. จรรยาบรรณและจริยธรรมทางธุรกิจ<br />
+                4. ระเบียบการใช้งานเทคโนโลยีสารสนเทศ<br />
+                5. นโยบายและกรอบการบริหารความเสี่ยง<br />
+                6. คู่มือพนักงาน<br />
+                7. คู่มืออัตลักษณ์องค์กร (CI)<br />
+                8. ข้อบังคับกองทุนสำรองเลี้ยงชีพ<br />
+                9. ขอบเขตหน้าที่และความรับผิดชอบงานตำแหน่งงาน (Job Description)<br />
+                10. ตัวชี้วัดความสำเร็จของผลงานในช่วงระหว่างทดลองงาน (KPIs)<br />
+                11. แผนการเรียนรู้และพัฒนาสำหรับพนักงานใหม่ (On-Boarding Program)
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ServiceAgreementEmployeeCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.LoadDetail = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormAgreementEmployeeDetail',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        refId: $scope.refId
+                    }),
+                    success: function (result) {
+                        $timeout(async function () {
+                            $scope.iForm = result;
+                            resolve(true);
+                        }, 0);
+                    }, error: function () {
+                        resolve(false);
+                    }
+                });
+            });
+        }
+
+        $scope.$parent.LoadFormAgreementEmployee = async function (x) {
+            $scope.refId = x.id;
+            $scope.userId = x.userId;
+            $scope.status = x.status;
+
+            await $scope.LoadDetail();
+        }
+    });
+</script>

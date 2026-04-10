@@ -443,6 +443,24 @@ main {
     color: var(--bs-blue);
 }
 
+.form-text {
+    width:100%;
+    border: none;
+    border-radius: 0;
+    border-bottom: 1px solid var(--bs-gray);
+    padding: 0px 5px;
+    background-color: var(--bs-gray-100);
+}
+
+.form-text:focus {
+    background-color: var(--light-blue);
+}
+
+.form-text.input-error {
+    background-color: var(--light-red);
+    border-bottom: 1px solid red;
+}
+
 .text-Approve1, .text-Approve2, .text-Approve3, .text-Approve4 {
     color: var(--bs-blue);
 }

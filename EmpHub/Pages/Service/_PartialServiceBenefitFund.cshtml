@@ -16,22 +16,22 @@
             </div>
             <div class="row">
                 <div class="col-sm-6 mb-3">
-                    ข้าพเจ้า <span class="fw-bolder text-dark ms-3">{{ iForm.fullname }}</span>
+                    ข้าพเจ้า <span class="text-blue ms-3">{{ iForm.fullname }}</span>
                 </div>
                 <div class="col-sm-6 mb-3">
-                    บัตรประจำตัวประชาชนเลขที่ <span class="fw-bolder text-dark ms-3">{{ iForm.idcard }}</span>
+                    บัตรประจำตัวประชาชนเลขที่ <span class="text-blue ms-3">{{ iForm.idcard }}</span>
                 </div>
             </div>
             <div style="padding-left:50px;" class="mode box-group mb-3">
                 <div class="mb-1">
-                    <input ng-model="iForm.mode" type="radio" value="new" disabled /> ขอแสดงเจตนาระบุตัวผู้รับประโยชน์จากกองทุน
+                    <input ng-model="iForm.mode" type="radio" value="new" ng-disabled="iForm.mode != 'new'" /> ขอแสดงเจตนาระบุตัวผู้รับประโยชน์จากกองทุน
                 </div>
                 <div>
-                    <input ng-model="iForm.mode" type="radio" value="change" disabled /> ขอเปลี่ยนแปลงผู้รับประโยชน์จากกองทุน  โดยยกเลิกหนังสือแสดงเจตนาฉบับเดิม
+                    <input ng-model="iForm.mode" type="radio" value="change" ng-disabled="iForm.mode != 'change'" /> ขอเปลี่ยนแปลงผู้รับประโยชน์จากกองทุน  โดยยกเลิกหนังสือแสดงเจตนาฉบับเดิม
                 </div>
             </div>
             <div class="mb-3 d-flex align-items-center">
-                เมื่อข้าพเจ้าถึงแก่ความตาย  ข้าพเจ้าประสงค์ให้จ่ายเงินกองทุนแก่บุคคลจำนวน <span class="text-center mx-3 fw-bolder text-dark" style="width:80px;">{{ iForm.total }}</span> คนดังมีรายชื่อดังต่อไปนี้
+                เมื่อข้าพเจ้าถึงแก่ความตาย  ข้าพเจ้าประสงค์ให้จ่ายเงินกองทุนแก่บุคคลจำนวน <span class="text-center mx-3 text-blue" style="width:80px;">{{ iForm.total }}</span> คนดังมีรายชื่อดังต่อไปนี้
             </div>
             <table class="table table-borderless">
                 <tbody>
@@ -39,19 +39,19 @@
                         <td class="align-middle" width="20">
                             1
                         </td>
-                        <td class="fw-bolder text-dark">
+                        <td class="text-blue">
                             {{ iForm.benefitname1 }}
                         </td>
                         <td class="align-middle">
                             เกี่ยวข้องเป็น
                         </td>
-                        <td class="fw-bolder text-dark" width="200">
+                        <td class="text-blue" width="200">
                             {{ iForm.benefitrelation1 }}
                         </td>
                         <td class="align-middle">
                             จำนวน
                         </td>
-                        <td class="fw-bolder text-dark" width="100">
+                        <td class="text-blue" width="100">
                             {{ iForm.benefitpercent1 }}
                         </td>
                         <td class="align-middle">
@@ -62,19 +62,19 @@
                         <td class="align-middle" width="20">
                             2
                         </td>
-                        <td class="fw-bolder text-dark">
+                        <td class="text-blue">
                             {{ iForm.benefitname2 }}
                         </td>
                         <td class="align-middle">
                             เกี่ยวข้องเป็น
                         </td>
-                        <td class="fw-bolder text-dark" width="200">
+                        <td class="text-blue" width="200">
                             {{ iForm.benefitrelation2 }}
                         </td>
                         <td class="align-middle">
                             จำนวน
                         </td>
-                        <td class="fw-bolder text-dark" width="100">
+                        <td class="text-blue" width="100">
                             {{ iForm.benefitpercent2 }}
                         </td>
                         <td class="align-middle">
@@ -85,19 +85,19 @@
                         <td class="align-middle" width="20">
                             3
                         </td>
-                        <td class="fw-bolder text-dark">
+                        <td class="text-blue">
                             {{ iForm.benefitname3 }}
                         </td>
                         <td class="align-middle">
                             เกี่ยวข้องเป็น
                         </td>
-                        <td class="fw-bolder text-dark" width="200">
+                        <td class="text-blue" width="200">
                             {{ iForm.benefitrelation3 }}
                         </td>
                         <td class="align-middle">
                             จำนวน
                         </td>
-                        <td class="fw-bolder text-dark" width="100">
+                        <td class="text-blue" width="100">
                             {{ iForm.benefitpercent3 }}
                         </td>
                         <td class="align-middle">

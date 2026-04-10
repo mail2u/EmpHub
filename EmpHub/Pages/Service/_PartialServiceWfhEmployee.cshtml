@@ -1,0 +1,158 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var token = User.AccessToken(Context);
+}
+<style>
+    input[type="radio"]:disabled {
+        background-color: #0d6efd !important;
+        border-color: #0d6efd !important;
+        background-image: none !important;
+        opacity: 1 !important;
+    }
+</style>
+<div ng-controller="ServiceWfhEmployeeCtrl">
+    <div class="bg-white rounded-4 border mb-4 overflow-hidden p-4">
+        <div class="px-4 py-3 border-bottom d-flex align-items-center">
+            <div class="fs-5 fw-bolder text-dark flex-fill">
+                ข้อตกลงทำงานนอกสถานประกอบกิจการ<br />
+                หรือนอกสำนักงานของนายจ้างหรือทำงานผ่านการใช้เทคโนโลยีสารสนเทศในสถานที่ใด ๆ
+            </div>
+        </div>
+        <div class="p-4 fs-6 text-dark">
+            <div class="fs-5 mb-3">
+                <span style="padding-left:100px"></span>
+                ข้อตกลงนี้ ทำขึ้นเพื่อการปฏิบัติงานนอกสถานประกอบกิจการหรือนอกสำนักงานของนายจ้าง/ทำงานผ่านการใช้เทคโนโลยีสารสนเทศในสถานที่ใด ๆ
+                ระหว่าง <b>บริษัท ทิพยประกันชีวิต จำกัด (มหาชน)</b> โดย นายนพพร บุญลาโภ ผู้รับมอบอำนาจกระทำการแทนนายจ้าง สำนักงานตั้งอยู่เลขที่ 63/2 อาคาร
+                บมจ.ทิพยประกันภัย ชั้น 1, 3, 4, 5 และ 6 ถนนพระราม 9 แขวงห้วยขวาง เขตห้วยขวาง กรุงเทพมหานคร 10310 ซึ่งต่อไปในข้อตกลงนี้เรียกว่า <b>“นายจ้าง”</b>
+                ฝ่ายหนึ่ง กับ นาย/นาง/นางสาว  <input ng-model="iForm.fullname" class="form-text fullname text-blue" style="width:400px" maxlength="100" readonly /> ซึ่งต่อไปในข้อตกลงนี้เรียกว่า <b>“ลูกจ้าง”</b> อีกฝ่ายหนึ่ง
+            </div>
+            <div class="fs-5 mb-3">
+                <span style="padding-left:100px"></span>
+                นายจ้างและลูกจ้างได้ตกลงกันมีข้อความดังต่อไปนี้
+            </div>
+            <div class="fs-5 answer1 box-group">
+                <span style="padding-left:100px"></span>
+                ข้อ 1 นายจ้างและลูกจ้างตกลงทำงาน
+                <div>
+                    <span style="padding-left:150px"></span>
+                    <input type="radio" name="answer1" ng-model="iForm.answer1" value="home" ng-disabled="iForm.answer1 != 'home'" />
+                    ที่บ้านหรือที่พักอาศัยของลูกจ้าง ตั้งอยู่เลขที่
+                    <input ng-model="iForm.address" class="form-text address ms-2 text-blue" style="width:500px" maxlength="200" readonly />
+                </div>
+                <div>
+                    <span style="padding-left:150px"></span>
+                    <input type="radio" name="answer1" ng-model="iForm.answer1" value="other" ng-disabled="iForm.answer1 != 'other'" />
+                    ใช้เทคโนโลยีสารสนเทศในสถานที่ใด ๆ
+                </div>
+            </div>
+            <div class="fs-5">
+                <span style="padding-left:100px"></span>
+                ข้อ 2 ระยะเวลาการทำงานที่ตกลงกัน ให้เป็นไปตามระเบียบว่าด้วยการปฏิบัติงานจากที่พักอาศัยฯ พ.ศ. 2567 โดยเริ่มตั้งแต่วันที่
+                <input ng-model="iForm.start_date" class="form-text start_date ms-2 text-blue" style="width:150px" maxlength="50" readonly /> เป็นต้นไป
+                ทั้งนี้ รายละเอียดระยะเวลาการทำงานอาจมีการเปลี่ยนแปลงได้ในอนาคต โดยนายจ้างจะแจ้งให้ลูกจ้างทราบเมื่อมีการเปลี่ยนแปลง และหากมีการยกเลิกระเบียบว่าด้วยการ
+                ปฏิบัติงานจากที่พักอาศัย ให้ถือว่าเป็นการยกเลิกข้อตกลงนี้โดยปริยาย
+            </div>
+            <div class="fs-5">
+                <span style="padding-left:100px"></span>
+                ข้อ 3 วันเวลาทำงาน เวลาพัก ณ แผนก/ฝ่ายงานที่ลูกจ้างทำงานอยู่ก่อนทำข้อตกลงนี้ถือเป็นวันทำงานปกติ เวลาทำงานปกติ เวลาพัก ของลูกจ้างขณะ
+                ทำงาน ณ ที่บ้านหรือที่พักอาศัยของลูกจ้าง ในกรณีลูกจ้างไม่สามารถทำงานได้ในวันและเวลาใด ให้ลูกจ้างแจ้งให้นายจ้างทราบทุกครั้ง โดยแจ้งผ่านระบบ HUMATRIX
+                ให้ทราบโดยเร็ว ทั้งนี้ ตามระเบียบข้อบังคับเกี่ยวกับการทำงานของนายจ้าง หรือตามที่นายจ้างและลูกจ้างตกลงกัน
+            </div>
+            <div class="fs-5">
+                <span style="padding-left:100px"></span>
+                ข้อ 4 การลงเวลาเข้าทำงานและลงเวลาออกทำงานในแต่ละวัน ลูกจ้างจะต้องลงเวลาทำงานตามหลักเกณฑ์ที่กำหนดไว้ในระเบียบ ว่าด้วยการปฏิบัติงานจากที่พักอาศัยฯ พ.ศ. 2567
+            </div>
+            <div class="fs-5">
+                <span style="padding-left:100px"></span>
+                ข้อ 5 กรณีการทำงานล่วงเวลาและการทำงานในวันหยุดจะต้องได้รับความยินยอมจากลูกจ้างก่อนเป็นคราว ๆ ไป
+            </div>
+            <div class="fs-5">
+                <span style="padding-left:100px"></span>
+                ข้อ 6 วิธีการลาและการอนุญาตการลาประเภทต่าง ๆ ให้เป็นไปตามกฎ ระเบียบ ข้อบังคับ เกี่ยวกับการทำงานของนายจ้าง เหมือนลูกจ้าง
+                ปฏิบัติงานในสถานประกอบกิจการหรือในสำนักงานของนายจ้าง
+            </div>
+            <div class="fs-5">
+                <span style="padding-left:100px"></span>
+                ข้อ 7 ขอบเขตหน้าที่การทำงานของลูกจ้าง
+                <div>
+                    <span style="padding-left:150px"></span>
+                    7.1 ระหว่างลูกจ้างทำงาน ณ สถานที่ตกลง ให้ลูกจ้างปฏิบัติงานตามที่ได้รับมอบหมายให้เป็นไปตามที่นายจ้างกำหนด
+                </div>
+                <div>
+                    <span style="padding-left:150px"></span>
+                    7.2 ในระหว่างที่ลูกจ้างทำงานตามข้อตกลงนี้ ให้ผู้บังคับบัญชาสูงสุดของหน่วยงานเป็นหัวหน้างานผู้ควบคุมงาน หรือตรวจงาน การทำงานของลูกจ้าง
+                </div>
+            </div>
+            <div class="fs-5">
+                <span style="padding-left:100px"></span>
+                ข้อ 8 การจัดหาเครื่องมือหรืออุปกรณ์การทำงานรวมทั้งค่าใช้จ่ายต่าง ๆ ที่จำเป็น อันเนื่องจากการทำงาน ให้เป็นไปตามที่กำหนดไว้ในระเบียบ
+                ว่าด้วย การปฏิบัติงานจากที่พักอาศัยฯ พ.ศ. 2567
+            </div>
+            <div class="fs-5 mb-3 answer2 box-group p-0">
+                <span style="padding-left:100px"></span>
+                ข้อ 9 การยินยอมในการติดต่อสื่อสารนอกเวลาการทำงาน
+                <input type="radio" name="answer2" ng-model="iForm.answer2" value="Yes" ng-disabled="iForm.answer2 != 'Yes'" /> <b>ยินยอม</b>
+                <input type="radio" name="answer2" ng-model="iForm.answer2" value="No" ng-disabled="iForm.answer2 != 'No'" /> <b>ไม่ยินยอม</b>
+                <div>
+                    <span style="padding-left:150px"></span>
+                    ทั้งนี้ ไม่ใช่การทำงานล่วงเวลาและการทำงานในวันหยุดตามข้อ 5
+                </div>
+            </div>
+            <div class="fs-5">
+                <span style="padding-left:100px"></span>
+                ข้อ 10 บรรดาสิทธิใด ๆ ที่ลูกจ้างมีสิทธิได้รับอยู่ก่อนทำข้อตกลงนี้ ลูกจ้างยังคงมีสิทธิได้รับเช่นเดิม
+            </div>
+            <div class="fs-5">
+                <span style="padding-left:100px"></span>
+                ข้อ 11 นอกจากข้อตกลงนี้ ลูกจ้างจะต้องปฏิบัติตามกฎ ระเบียบ ข้อบังคับเกี่ยวกับการทำงานของนายจ้าง และคำสั่งอันชอบด้วยกฎหมายของ
+                นายจ้างเช่นเดียวกับที่ลูกจ้างทำงานในสถานประกอบกิจการหรือในสำนักงานของนายจ้างโดยเคร่งครัด หากลูกจ้างฝ่าฝืนหรือไม่ปฏิบัติตาม นายจ้าง
+                จะพิจารณาตามกฎ ระเบียบ ข้อบังคับเกี่ยวกับการทำงานของนายจ้าง
+            </div>
+            <div class="fs-5 mb-3">
+                <span style="padding-left:100px"></span>
+                ข้อ 12 ข้อตกลงฉบับนี้สิ้นสุดลง เมื่อครบระยะเวลาตามที่กำหนดหรือนายจ้างและลูกจ้างตกลงกัน
+            </div>
+            <div class="fs-5">
+                <span style="padding-left:100px"></span>
+                นายจ้างและลูกจ้างได้อ่านข้อตกลงฉบับนี้โดยละเอียดตลอดแล้ว เข้าใจถูกต้องตรงประสงค์ และขอรับรองว่าเป็นความจริงทุกประการจึงได้ลงลายมือชื่อ พร้อมทั้งประทับตรา (ถ้ามี) ไว้เป็นสำคัญต่อหน้าพยาน
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ServiceWfhEmployeeCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.LoadDetail = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormWfhEmployeeDetail',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        refId: $scope.refId
+                    }),
+                    success: function (result) {
+                        $timeout(async function () {
+                            $scope.iForm = result;
+                            resolve(true);
+                        }, 0);
+                    }, error: function () {
+                        resolve(false);
+                    }
+                });
+            });
+        }
+
+        $scope.$parent.LoadFormWfhEmployee = async function (x) {
+            $scope.refId = x.id;
+            $scope.userId = x.userId;
+            $scope.status = x.status;
+
+            await $scope.LoadDetail();
+        }
+    });
+</script>

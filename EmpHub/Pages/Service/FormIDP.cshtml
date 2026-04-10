@@ -1,4 +1,458 @@
 ﻿@page
 @model EmpHub.Pages.Service.FormIDPModel
 @{
+    var token = User.AccessToken(HttpContext);
 }
+<style>
+    .main-content {
+        min-height: calc(100vh - 150px) !important;
+    }
+
+    .box-group {
+        padding: 15px;
+        border: 1px solid white;
+        border-radius: 15px;
+    }
+
+        .box-group.input-error {
+            border: 1px solid red;
+        }
+</style>
+<div ng-controller="FormCtrl" id="tab_education">
+    @* Header *@
+    <partial name="_PartialFormHeader" />
+    @* View *@
+    <div class="rounded-4 mb-3 bg-white shadow-sm text-dark" style="padding:25px 120px;">
+        <div class="text-center fs-4 fw-bolder mb-4 text-dark">
+            Individual Development Plan
+        </div>
+        <div class="row fs-5">
+            <div class="col-sm-4 mb-3 d-flex">
+                <div class="text-nowrap me-2">Name</div><input ng-model="iForm.fullname" class="form-text fullname" maxlength="100" />
+            </div>
+            <div class="col-sm-4 mb-3 d-flex">
+                <div class="text-nowrap me-2">Department</div><input ng-model="iForm.department" class="form-text department" maxlength="50" />
+            </div>
+            <div class="col-sm-4 mb-3 d-flex">
+                <div class="text-nowrap me-2">Date</div>
+                <input class="form-text icon-calendar join_date date mx-2"
+                       ng-model="iForm.join_date_select"
+                       ng-model-options="{ updateOn: 'blur' }"
+                       moment-picker="iForm.join_date_select"
+                       locale="th"
+                       format="DD/MM/YYYY"
+                       min-view="month"
+                       max-view="month" required />
+            </div>
+        </div>
+        <table class="table table-bolder border">
+            <tbody>
+                <tr>
+                    <td colspan="2" class="fs-5 text-white" style="background-color:#c00000;">
+                        Assess:
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:300px;">
+                        <div class="fw-bolder mb-2">Development Objective:</div>
+                        <div>
+                            <input type="radio" id="objective_strength" name="objective" ng-model="iForm.objective" value="Strength" />
+                            <label for="objective_strength">Strength</label>
+                        </div>
+                        <div>
+                            <input type="radio" id="objective_growth" name="objective" ng-model="iForm.objective" value="Growth Opportunity" />
+                            <label for="objective_growth">Growth Opportunity</label>
+                        </div>
+                     @*    * ใส่เครืองหมาย X เพื่อระบุว่าเป็น Strength หรือ
+                        Growth Opportunity *@
+                    </td>
+                    <td>
+                        <textarea ng-model="iForm.answer1_desc" class="form-control answer1_desc" rows="5" maxlength="4000" placeholder="* ระบุหัวข้อที่จะพัฒนาให้ชัดเจน เช่น Competency อะไร / ความรู้ด้านใด เป็นต้น"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="fs-5 text-dark" style="background-color:#ffc000">
+                        Acquire:
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="fw-bolder fs-6">Formal Learning:</span> การเพิ่มพูนความรู้หรือทักษะด้วยการเรียนรู้อย่างเป็นทางการ เช่น การอบรม การอ่านหนังสือ หรือการเรียนรู้จาก web-based /           E-Learning เป็นต้น
+                    </td>
+                    <td>
+                        <textarea ng-model="iForm.answer2_desc" class="form-control answer2_desc mb-3" rows="5" maxlength="4000" placeholder="* ขึ้นต้นด้วยคำกริยาว่าจะทำอะไร เช่น - เข้าอบรมหัวข้อ....- อ่านหนังสือชื่อ... - อบรม E-Learning หัวข้อ...เป็นต้น"></textarea>
+                        <input class="form-text answer2_date date mx-2" placeholder="* ระบุวันที่ที่จะทำกิจกรรมนี้"
+                               ng-model="iForm.answer2_date_select"
+                               ng-model-options="{ updateOn: 'blur' }"
+                               moment-picker="iForm.answer2_date_select"
+                               locale="th"
+                               format="DD/MM/YYYY"
+                               min-view="month"
+                               max-view="month" required style="width:200px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="fw-bolder fs-6">Learning from others:</span> การเรียนรู้จากผู้ที่เชี่ยวชาญในเรื่องนี้ อาจจะเป็นบุคคลภายในหรือภายนอกหน่วยงาน/บริษัท ก็ได้
+                    </td>
+                    <td>
+                        <textarea ng-model="iForm.answer3_desc" class="form-control answer3_desc mb-3" rows="5" maxlength="4000" placeholder="* ขึ้นต้นด้วยคำกริยาว่าจะทำอะไร เช่น - ขอให้คุณ...ช่วยสอนเรื่อง....  - สังเกตุการณ์จากคุณ...ในเรื่อง.... เป็นต้น"></textarea>
+                        <input class="form-text answer3_date date mx-2" placeholder="* ระบุวันที่ที่จะทำกิจกรรมนี้"
+                               ng-model="iForm.answer3_date_select"
+                               ng-model-options="{ updateOn: 'blur' }"
+                               moment-picker="iForm.answer3_date_select"
+                               locale="th"
+                               format="DD/MM/YYYY"
+                               min-view="month"
+                               max-view="month" required style="width:200px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="fw-bolder fs-6">Measurement:</span>  หมายถึงวิธีวัดที่ทำให้ตนเองและผู้อื่นทราบว่ามีความรู้ในเรื่องที่ต้องการพัฒนาแล้ว
+                    </td>
+                    <td>
+                        <textarea ng-model="iForm.answer4_desc" class="form-control answer4_desc mb-3" rows="5" maxlength="4000" placeholder="* เลือกจากวิธีวัดข้อใดข้อหนึ่งดังนี้   -ได้รับใบรับรองหรือประกาศนียบัตร   - ผ่านการทดสอบ
+- นำความรู้มาสรุปหรือนำเสนอให้กับ...
+                        "></textarea>
+                        <input class="form-text answer4_date date mx-2" placeholder="* ระบุวันที่ที่จะทำกิจกรรมนี้"
+                               ng-model="iForm.answer4_date_select"
+                               ng-model-options="{ updateOn: 'blur' }"
+                               moment-picker="iForm.answer4_date_select"
+                               locale="th"
+                               format="DD/MM/YYYY"
+                               min-view="month"
+                               max-view="month" required style="width:200px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="fw-bolder fs-6">Support needed:</span> หากมีอุปสรรคในการศึกษาเรียนรู้ทักษะใหม่ ท่านต้องการการสนับสนุนจากใคร ในเรื่องใด
+                    </td>
+                    <td>
+                        <textarea ng-model="iForm.answer5_desc" class="form-control answer5_desc" rows="5" maxlength="4000" placeholder="* ระบุความช่วยเหลือที่ท่านต้องการให้ชัดเจน (ถ้าต้องการ) เช่น ต้องการช่วยเหลือเรื่องอะไร จากใคร เมื่อใด
+ถ้าไม่ต้องการ ให้ใส่ว่า 'ไม่มี'"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="fs-5 text-dark" style="background-color:#ffff00;">
+                        Apply:
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="fw-bolder fs-6">1st Application:</span> หมายถึงการนำทักษะหรือความรู้ที่ได้เรียนรู้แล้วไปใช้ในการทำงานจริง ในช่องนี้ให้เลือกเวทีที่ง่ายต่อการประยุกต์ใช้ครั้งแรกก่อน
+                    </td>
+                    <td>
+                        <textarea ng-model="iForm.answer6_desc" class="form-control answer6_desc mb-3" rows="5" maxlength="4000" placeholder="* ระบุชื่องาน โครงการ ชื่อคน หรือชื่อลูกค้า ที่ต้องการนำทักษะใหม่ไปประยุกต์ใช้ เช่น - ตัดสินใจเรื่อง... - สอนงานพนักงานชี่อ…เรื่อง....
+ - ประสานงานกับแผนก....เรื่อง.... - วางแผนโครงการ.... เป็นต้น"></textarea>
+                        <input class="form-text answer6_date date mx-2" placeholder="* ระบุวันที่ที่จะทำกิจกรรมนี้"
+                               ng-model="iForm.answer6_date_select"
+                               ng-model-options="{ updateOn: 'blur' }"
+                               moment-picker="iForm.answer6_date_select"
+                               locale="th"
+                               format="DD/MM/YYYY"
+                               min-view="month"
+                               max-view="month" required style="width:200px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="fw-bolder fs-6">1st Measurement:</span> วิธีวัดความสำเร็จหลังจากที่ได้นำทักษะใหม่ไปใช้จริงแล้ว
+                    </td>
+                    <td>
+                        <textarea ng-model="iForm.answer7_a_desc" class="form-control answer7_a_desc mb-3" rows="5" maxlength="4000" placeholder="*  A: การวัดความคืบหน้าของการพัฒนา: ให้ระบุผลลัพธ์ที่ต้องการเห็นหลังจากนำทักษะใหม่ไปใช้อย่างเจาะจง เช่น จำนวนโครงการที่วางแผน จำนวนเรื่องที่ตัดสินใจ จำนวนพนักงานที่สอนงาน จำนวนงานที่ได้ประสานงานสำเร็จ เป็นต้น "></textarea>
+                        <textarea ng-model="iForm.answer7_b_desc" class="form-control answer7_b_desc" rows="5" maxlength="4000" placeholder="* B: การวัดผลลัพธ์: ให้ระบุผลลัพธ์ด้านงานที่เกิดขึ้นจากได้นำไปใช้สำเร็จแล้วตามข้อ A. ในแง่ของ ปริมาณ คุณภาพ ต้นทุน หรือ เวลา ในการทำงาน "></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="fw-bolder fs-6">1st Support Needed:</span> หากมีอุปสรรคในการนำทักษะใหม่ไปใช้ในการทำงานจริง ท่านต้องการ         การสนับสนุนจากใคร ในเรื่องใด
+                    </td>
+                    <td>
+                        <textarea ng-model="iForm.answer8_desc" class="form-control answer8_desc mb-3" rows="5" maxlength="4000" placeholder="* ระบุความช่วยเหลือที่ท่านต้องการให้ชัดเจน (ถ้าต้องการ) เ ช่น ต้องการช่วยเหลือเรื่องอะไร จากใคร เมื่อใด ถ้าไม่ต้องการ ให้ใส่ว่า " ไม่มี""></textarea>
+                       
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="fw-bolder fs-6">2nd Application:</span> หมายถึงการนำทักษะหรือความรู้ที่ได้เรียนรู้แล้วไปประยุกต์ใช้ในการทำงานจริง ในช่องนี้ให้เลือกเวทีที่ท้าทายกว่าเวทีแรก (ถ้าเป็นไปได้)
+                    </td>
+                    <td>
+                        <textarea ng-model="iForm.answer9_desc" class="form-control answer9_desc mb-3" rows="5" maxlength="4000" placeholder="* ระบุชื่องาน โครงการ ชื่อคน หรือชื่อลูกค้า ที่ต้องการนำทักษะใหม่ไปประยุกต์ใช้ เช่น - ตัดสินใจเรื่อง... - สอนงานพนักงานชี่อ...เรื่อง....  - ประสานงานกับแผนก....เรื่อง.... - วางแผนโครงการ.... เป็นต้น"></textarea>
+                        <input class="form-text answer9_date date mx-2" placeholder="* ระบุวันที่ที่จะทำกิจกรรมนี้"
+                               ng-model="iForm.answer9_date_select"
+                               ng-model-options="{ updateOn: 'blur' }"
+                               moment-picker="iForm.answer9_date_select"
+                               locale="th"
+                               format="DD/MM/YYYY"
+                               min-view="month"
+                               max-view="month" required style="width:200px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="fw-bolder fs-6">2nd Measurement:</span> วิธีวัดความสำเร็จหลังจากที่ได้นำทักษะใหม่ไปใช้จริงแล้ว
+                    </td>
+                    <td>
+                        <textarea ng-model="iForm.answer10_a_desc" class="form-control answer10_a_desc mb-3" rows="5" maxlength="4000" placeholder="*  A: การวัดความคืบหน้าของการพัฒนา: ให้ระบุผลลัพธ์ที่ต้องการเห็นหลังจากนำทักษะใหม่ไปใช้อย่างเจาะจง เช่น จำนวนโครงการที่วางแผน จำนวนเรื่องที่ตัดสินใจ จำนวนพนักงานที่สอนงาน จำนวนงานที่ได้ประสานงานสำเร็จ เป็นต้น "></textarea>
+                        <textarea ng-model="iForm.answer10_b_desc" class="form-control answer10_b_desc" rows="5" maxlength="4000" placeholder="* B: การวัดผลลัพธ์: ให้ระบุผลลัพธ์ด้านงานที่เกิดขึ้นจากได้นำไปใช้สำเร็จแล้วตามข้อ A. ในแง่ของ ปริมาณ คุณภาพ ต้นทุน หรือ เวลา ในการทำงาน "></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="fw-bolder fs-6">2nd Support Needed:</span> หากมีอุปสรรคในการนำทักษะใหม่ไปใช้ในการทำงานจริง ท่านต้องการ         การสนับสนุนจากใคร ในเรื่องใด
+                    </td>
+                    <td>
+                        <textarea ng-model="iForm.answer11_desc" class="form-control answer11_desc" rows="5" maxlength="4000" placeholder="* ระบุความช่วยเหลือที่ท่านต้องการให้ชัดเจน (ถ้าต้องการ) เ ช่น ต้องการช่วยเหลือเรื่องอะไร จากใคร เมื่อใด ถ้าไม่ต้องการ ให้ใส่ว่า 'ไม่มี'"></textarea>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="d-flex justify-content-end">
+        <div class="btn btn-primary" ng-click="Save()">
+            <i class="far fa-paper-plane me-2"></i> Send Request
+        </div>
+    </div>
+</div>
+<script>
+    $(".day").mask("00");
+    $(".score").mask("00");
+    $(".date").mask("00/00/0000");
+    app.controller('FormCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.mode = '@Model.mode';
+        $scope.iData = {};
+        $scope.iForm = {
+            fullname:''
+            , department: ''
+            , join_date: ''
+            , objective: ''
+            , answer1_desc: ''
+            , answer2_desc: ''
+            , answer2_date: ''
+            , answer3_desc: ''
+            , answer3_date: ''
+            , answer4_desc: ''
+            , answer4_date: ''
+            , answer5_desc: ''
+            , answer6_desc: ''
+            , answer6_date: ''
+            , answer7_a_desc: ''
+            , answer7_b_desc: ''
+            , answer8_desc: ''
+            , answer9_desc: ''
+            , answer9_date: ''
+            , answer10_a_desc: ''
+            , answer10_b_desc: ''
+            , answer11_desc: ''
+            , create_by:'@User.UserId()'
+        }
+
+        $scope.Validate = function () {
+            var flag = true;
+            JS_Reset($(".fullname"));
+            JS_Reset($(".department"));
+            JS_Reset($(".join_date"));
+            JS_Reset($(".objective"));
+            JS_Reset($(".answer1_desc"));
+            JS_Reset($(".answer2_desc"));
+            JS_Reset($(".answer2_date"));
+            JS_Reset($(".answer3_desc"));
+            JS_Reset($(".answer3_date"));
+            JS_Reset($(".answer4_desc"));
+            JS_Reset($(".answer4_date"));
+            JS_Reset($(".answer5_desc"));
+            JS_Reset($(".answer6_desc"));
+            JS_Reset($(".answer6_date"));
+            JS_Reset($(".answer7_a_desc"));
+            JS_Reset($(".answer7_b_desc"));
+            JS_Reset($(".answer8_desc"));
+            JS_Reset($(".answer9_desc"));
+            JS_Reset($(".answer9_date"));
+            JS_Reset($(".answer10_a_desc"));
+            JS_Reset($(".answer10_b_desc"));
+            JS_Reset($(".answer11_desc"));
+
+            if ($scope.iForm.join_date_select) {
+                $scope.iForm.join_date = $scope.iForm.join_date_select.format('DD/MM/YYYY');
+            }else{
+                $scope.iForm.join_date = '';
+            }
+            if ($scope.iForm.answer2_date_select) {
+                $scope.iForm.answer2_date = $scope.iForm.answer2_date_select.format('DD/MM/YYYY');
+            }else{
+                $scope.iForm.answer2_date = '';
+            }
+            if ($scope.iForm.answer3_date_select) {
+                $scope.iForm.answer3_date = $scope.iForm.answer3_date_select.format('DD/MM/YYYY');
+            }else{
+                $scope.iForm.answer3_date = '';
+            }
+            if ($scope.iForm.answer4_date_select) {
+                $scope.iForm.answer4_date = $scope.iForm.answer4_date_select.format('DD/MM/YYYY');
+            }else{
+                $scope.iForm.answer4_date = '';
+            }
+            if ($scope.iForm.answer6_date_select) {
+                $scope.iForm.answer6_date = $scope.iForm.answer6_date_select.format('DD/MM/YYYY');
+            }else{
+                $scope.iForm.answer6_date = '';
+            }
+            if ($scope.iForm.answer9_date_select) {
+                $scope.iForm.answer9_date = $scope.iForm.answer9_date_select.format('DD/MM/YYYY');
+            } else {
+                $scope.iForm.answer9_date = '';
+            }
+
+            if ($scope.iForm.fullname == '') {
+                flag = false;
+                JS_Require($(".fullname"));
+            }
+            if ($scope.iForm.department == '') {
+                flag = false;
+                JS_Require($(".department"));
+            }
+            if ($scope.iForm.join_date == '') {
+                flag = false;
+                JS_Require($(".join_date"));
+            }
+            if ($scope.iForm.objective == '') {
+                flag = false;
+                JS_Require($(".objective"));
+            }
+            if ($scope.iForm.answer1_desc == '') {
+                flag = false;
+                JS_Require($(".answer1_desc"));
+            }
+            if ($scope.iForm.answer2_desc == '') {
+                flag = false;
+                JS_Require($(".answer2_desc"));
+            }
+            if ($scope.iForm.answer2_date == '') {
+                flag = false;
+                JS_Require($(".answer2_date"));
+            }
+            if ($scope.iForm.answer3_desc == '') {
+                flag = false;
+                JS_Require($(".answer3_desc"));
+            }
+            if ($scope.iForm.answer3_date == '') {
+                flag = false;
+                JS_Require($(".answer3_date"));
+            }
+            if ($scope.iForm.answer4_desc == '') {
+                flag = false;
+                JS_Require($(".answer4_desc"));
+            }
+            if ($scope.iForm.answer4_date == '') {
+                flag = false;
+                JS_Require($(".answer4_date"));
+            }
+            if ($scope.iForm.answer5_desc == '') {
+                flag = false;
+                JS_Require($(".answer5_desc"));
+            }
+            if ($scope.iForm.answer6_desc == '') {
+                flag = false;
+                JS_Require($(".answer6_desc"));
+            }
+            if ($scope.iForm.answer6_date == '') {
+                flag = false;
+                JS_Require($(".answer6_date"));
+            }
+            if ($scope.iForm.answer7_a_desc == '') {
+                flag = false;
+                JS_Require($(".answer7_a_desc"));
+            }
+            if ($scope.iForm.answer7_b_desc == '') {
+                flag = false;
+                JS_Require($(".answer7_b_desc"));
+            }
+            if ($scope.iForm.answer8_desc == '') {
+                flag = false;
+                JS_Require($(".answer8_desc"));
+            }
+            if ($scope.iForm.answer9_desc == '') {
+                flag = false;
+                JS_Require($(".answer9_desc"));
+            }
+            if ($scope.iForm.answer9_date == '') {
+                flag = false;
+                JS_Require($(".answer9_date"));
+            }
+            if ($scope.iForm.answer10_a_desc == '') {
+                flag = false;
+                JS_Require($(".answer10_a_desc"));
+            }
+            if ($scope.iForm.answer10_b_desc == '') {
+                flag = false;
+                JS_Require($(".answer10_b_desc"));
+            }
+            if ($scope.iForm.answer11_desc == '') {
+                flag = false;
+                JS_Require($(".answer11_desc"));
+            }
+
+            return flag;
+        }
+
+        $scope.Save = async function () {
+            if ($scope.Validate()) {
+                alertConfirm("ยืนยันการทำรายการ", "ท่านต้องการส่งใบคำขอ", async function () {
+                    var id = await $scope.CreateService();
+
+                    if (id) {
+                        $scope.iData.id = id;
+                        $scope.iForm.refId = id;
+
+                        var flag = await $scope.CreateForm();
+
+                        if (flag) {
+                            var serviceNo = await $scope.ServiceRequest();
+
+                            if (serviceNo) {
+                                alertSuccess("ทำรายการสำเร็จ", "ระบบบันทึกใบคำขอของท่านเรียบร้อย", function () {
+                                    location.href = '@Url.Page("/Service/Index")';
+                                });
+                            } else {
+                                $scope.CancelService();
+                            }
+                        } else {
+                            $scope.CancelService();
+                        }
+                    }
+                });
+            } else {
+                alertWarning("แจ้งเตือน", "กรุณากรอกข้อมูลให้ครบ");
+            }
+        }
+
+        $scope.CreateForm = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormIDPCreate',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify($scope.iForm),
+                    success: function () {
+                        $timeout(async function () {
+                            resolve(true);
+                        }, 0);
+                    }, error: function (jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "ระบบเกิดข้อผิดพลาด",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+    });
+
+</script>

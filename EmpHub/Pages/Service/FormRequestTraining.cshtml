@@ -25,25 +25,30 @@
             <div class="fw-bolder text-dark mb-3 fs-5">
                 1. รายละเอียดผู้เข้ารับการฝึกอบรม / สัมมนา
             </div>
-            <div class="mb-3">
+            <div class="mb-3 ">
                 <div class="text-dark fw-bolder">ชื่อ-สกุล</div>
-                <input ng-model="iForm.fullname" class="form-control" readonly />
+                <div class="input-group">
+                    <input ng-model="iForm.fullname" class="form-control fullname bg-light" readonly />
+                    <div class="btn btn-primary" ng-click="ShowUser()">
+                        <i class="bi bi-person-plus-fill"></i>
+                    </div>
+                </div>
             </div>
             <div class="mb-3">
                 <div class="text-dark fw-bolder">ตาแหน่ง</div>
-                <input ng-model="iForm.position" class="form-control" readonly />
+                <input ng-model="iForm.position" class="form-control bg-light" readonly />
             </div>
             <div class="mb-3">
                 <div class="text-dark fw-bolder">แผนก/ส่วน</div>
-                <input ng-model="iForm.part" class="form-control" readonly />
+                <input ng-model="iForm.section" class="form-control bg-light" readonly />
             </div>
             <div class="mb-3">
                 <div class="text-dark fw-bolder">ฝ่าย</div>
-                <input ng-model="iForm.department" class="form-control" readonly />
+                <input ng-model="iForm.department" class="form-control bg-light" readonly />
             </div>
             <div class="mb-4">
                 <div class="text-dark fw-bolder">สายงาน</div>
-                <input ng-model="iForm.division" class="form-control" readonly />
+                <input ng-model="iForm.division" class="form-control bg-light" readonly />
             </div>
             <div class="fw-bolder text-dark mb-3 fs-5">
                 2. รายละเอียดหลักสูตรการฝึกอบรม / สัมมนา (แนบเอกสาร Course Outline)
@@ -82,7 +87,7 @@
                 3. การปฏิบัติภายหลังเสร็จสิ้นการฝึกอบรม / สัมมนา
             </div>
             <div class="d-flex align-items-center">
-                <input type="checkbox" ng-model="iForm.option1" class="me-2" id="option1" ng-true-value="1" ng-false-value="0" /> <label for="option1">ทารายงานเสนอผู้บังคับบัญชา</label>
+                <input type="checkbox" ng-model="iForm.option1" class="me-2" id="option1" ng-true-value="1" ng-false-value="0" /> <label for="option1">มารายงานเสนอผู้บังคับบัญชา</label>
             </div>
             <div class="d-flex align-items-center">
                 <input type="checkbox" ng-model="iForm.option2" class="me-2" id="option2" ng-true-value="1" ng-false-value="0" /> <label for="option2">บรรยายสรุปเสนอผู้บังคับบัญชาโดยตรงรับทราบ</label>
@@ -104,6 +109,25 @@
             </div>
         </div>
     </div>
+    @* modal *@
+    <div class="modal" id="UserModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body overflow-auto" style="max-height:calc(100vh - 200px);">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item list-group-item-action select" ng-repeat="x in lUser" ng-click="SelectUser(x)">
+                            <div class="text-primary fw-bolder">
+                                {{ x.employeeName }}
+                            </div>
+                            <div>
+                                {{ x.positionDesc }} {{ x.departmentDesc }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <script>
     app.controller('FormCtrl', function ($scope, $http, $timeout, $filter) {
@@ -111,6 +135,7 @@
         $scope.iData = {};
         $scope.iForm = {
             userId: ''
+            , fullname: ''
             , license: ''
             , objectives: ''
             , organization: ''
@@ -125,8 +150,42 @@
             , option4_desc: ''
         };
 
+        $scope.LoadUser = function(){
+            if ($scope.lUser == undefined) {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserSub',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify({
+                        userId: '@User.UserId()'
+                    }),
+                    success: function (result) {
+                        $timeout(async function () {
+                            $scope.lUser = result
+                        }, 0);
+                    }, error: AjaxError
+                });
+            }
+        }
+
+        $scope.ShowUser = function(){
+            $scope.LoadUser();
+            $("#UserModal").modal('show');
+        }
+
+        $scope.SelectUser = function (x) {
+            $("#UserModal").modal('hide');
+            $scope.iForm.userId = x.userId;
+            $scope.iForm.fullname = x.employeeName;
+            $scope.iForm.position = x.positionDesc;
+            $scope.iForm.department = x.departmentDesc;
+        }
+
         $scope.Validate = function () {
             var flag = true;
+            JS_Reset($(".fullname"));
             JS_Reset($(".license"));
             JS_Reset($(".objectives"));
             JS_Reset($(".organization"));
@@ -138,6 +197,10 @@
 
             console.log($scope.iForm);
 
+            if ($scope.iForm.fullname == '') {
+                flag = false;
+                JS_Require($(".fullname"));
+            }
             if ($scope.iForm.license == '') {
                 flag = false;
                 JS_Require($(".license"));

@@ -7,7 +7,7 @@
 <div ng-controller="ServicePerformanceLv1Ctrl">
     <div class="bg-white rounded-4 border mb-4 overflow-hidden">
         <div class="px-4 py-3 border-bottom d-flex align-items-center">
-            <div class="fs-5 fw-bolder text-dark flex-fill">แบบประเมินผลการปฏิบัติงาน สำหรับผู้จัดการส่วนขึ้นไป</div>
+            <div class="fs-5 fw-bolder text-dark flex-fill">แบบประเมินผลการปฏิบัติงาน สำหรับพนักงาน - เจ้าหน้าที่</div>
         </div>
         <div class="p-4">
             
@@ -17,13 +17,13 @@
                     ชื่อ-นามสกุล
                 </div>
                 <div class="col-sm-4 mb-3">
-                    <div class="text-primary">{{ iForm.fullname }}</div>
+                    <div class="text-blue">{{ iForm.fullname }}</div>
                 </div>
                 <div class="col-sm-2 mb-3">
                     ตำแหน่ง
                 </div>
                 <div class="col-sm-4 mb-3">
-                    <div class="text-primary">{{ iForm.position }}</div>
+                    <div class="text-blue">{{ iForm.position }}</div>
                 </div>
             </div>
             <div class="row">
@@ -31,13 +31,13 @@
                     ส่วน
                 </div>
                 <div class="col-sm-4 mb-3">
-                    <div class="text-primary">{{ iForm.section }}</div>
+                    <div class="text-blue">{{ iForm.section }}</div>
                 </div>
                 <div class="col-sm-2 mb-3">
                     ฝ่าย
                 </div>
                 <div class="col-sm-4 mb-3">
-                    <div class="text-primary">{{ iForm.department }}</div>
+                    <div class="text-blue">{{ iForm.department }}</div>
                 </div>
             </div>
             <div class="row">
@@ -45,14 +45,14 @@
                     วันเริ่มงาน
                 </div>
                 <div class="col-sm-4 mb-3">
-                    <div class="text-primary">{{ iForm.join_date }}</div>
+                    <div class="text-blue">{{ iForm.join_date }}</div>
                 </div>
                 <div class="col-sm-2 mb-3">
                     ช่วงเวลาประเมิน
                 </div>
                 <div class="col-sm-4 mb-3">
-                    <span class="text-primary">{{ iForm.probation_start_date }}</span>-
-                    <span class="text-primary">{{ iForm.probation_end_date }}</span>
+                    <span class="text-blue">{{ iForm.probation_start_date }}</span>-
+                    <span class="text-blue">{{ iForm.probation_end_date }}</span>
                 </div>
             </div>
             <div class="row mt-4">
@@ -64,19 +64,19 @@
                 <div class="col-sm-9 mb-3">
                     <div class="row">
                         <div class="col-sm-4 mb-2">
-                            สาย <span class="text-primary">{{ iForm.late }}</span> ครั้ง
+                            สาย <span class="text-blue">{{ iForm.late }}</span> ครั้ง
                         </div>
                         <div class="col-sm-4 mb-2">
-                            ลาไม่รับค่าจ้าง <span class="text-primary">{{ iForm.absence }}</span> ครั้ง
+                            ลาไม่รับค่าจ้าง <span class="text-blue">{{ iForm.absence }}</span> ครั้ง
                         </div>
                         <div class="col-sm-4 mb-2">
-                            ลากิจ <span class="text-primary">{{ iForm.personal_leave }}</span> ครั้ง
+                            ลากิจ <span class="text-blue">{{ iForm.personal_leave }}</span> ครั้ง
                         </div>
                         <div class="col-sm-4 mb-2">
-                            ลาป่วย <span class="text-primary">{{ iForm.sick_leave }}</span> ครั้ง
+                            ลาป่วย <span class="text-blue">{{ iForm.sick_leave }}</span> ครั้ง
                         </div>
                         <div class="col-sm-4 mb-2">
-                            จำนวนใบเตือน <span class="text-primary">{{ iForm.warning }}</span> ครั้ง
+                            จำนวนใบเตือน <span class="text-blue">{{ iForm.warning }}</span> ครั้ง
                         </div>
                     </div>
                 </div>
@@ -108,7 +108,7 @@
                                 15
                             </td>
                             <td class="text-center align-middle">
-                                <div class="text-primary">{{ iForm.answer1 }}</div>
+                                <div class="text-blue">{{ iForm.answer1 }}</div>
                             </td>
                             <td class="text-center align-middle">
                                 {{ iForm.answer1 * 15 }}
@@ -125,7 +125,7 @@
                                 15
                             </td>
                             <td class="text-center align-middle">
-                                <div class="text-primary">{{ iForm.answer2 }}</div>
+                                <div class="text-blue">{{ iForm.answer2 }}</div>
                             </td>
                             <td class="text-center align-middle">
                                 {{ iForm.answer2 * 15 }}
@@ -142,7 +142,7 @@
                                 10
                             </td>
                             <td class="text-center align-middle">
-                                <div class="text-primary">{{ iForm.answer3 }}</div>
+                                <div class="text-blue">{{ iForm.answer3 }}</div>
                             </td>
                             <td class="text-center align-middle">
                                 {{ iForm.answer3 * 10 }}
@@ -159,7 +159,7 @@
                                 10
                             </td>
                             <td class="text-center align-middle">
-                                <div class="text-primary">{{ iForm.answer4 }}</div>
+                                <div class="text-blue">{{ iForm.answer4 }}</div>
                             </td>
                             <td class="text-center align-middle">
                                 {{ iForm.answer4 * 10 }}
@@ -176,7 +176,7 @@
                                 10
                             </td>
                             <td class="text-center align-middle">
-                                <div class="text-primary">{{ iForm.answer5 }}</div>
+                                <div class="text-blue">{{ iForm.answer5 }}</div>
                             </td>
                             <td class="text-center align-middle">
                                 {{ iForm.answer5 * 10 }}
@@ -193,7 +193,7 @@
                                 10
                             </td>
                             <td class="text-center align-middle">
-                                <div class="text-primary">{{ iForm.answer6 }}</div>
+                                <div class="text-blue">{{ iForm.answer6 }}</div>
                             </td>
                             <td class="text-center align-middle">
                                 {{ iForm.answer6 * 10 }}
@@ -210,7 +210,7 @@
                                 10
                             </td>
                             <td class="text-center align-middle">
-                                <div class="text-primary">{{ iForm.answer7 }}</div>
+                                <div class="text-blue">{{ iForm.answer7 }}</div>
                             </td>
                             <td class="text-center align-middle">
                                 {{ iForm.answer7 * 10 }}
@@ -227,7 +227,7 @@
                                 10
                             </td>
                             <td class="text-center align-middle">
-                                <div class="text-primary">{{ iForm.answer8 }}</div>
+                                <div class="text-blue">{{ iForm.answer8 }}</div>
                             </td>
                             <td class="text-center align-middle">
                                 {{ iForm.answer8 * 10 }}
@@ -244,7 +244,7 @@
                                 5
                             </td>
                             <td class="text-center align-middle">
-                                <div class="text-primary">{{ iForm.answer9 }}</div>
+                                <div class="text-blue">{{ iForm.answer9 }}</div>
                             </td>
                             <td class="text-center align-middle">
                                 {{ iForm.answer9 * 5 }}
@@ -261,7 +261,7 @@
                                 5
                             </td>
                             <td class="text-center align-middle">
-                                <div class="text-primary">{{ iForm.answer10 }}</div>
+                                <div class="text-blue">{{ iForm.answer10 }}</div>
                             </td>
                             <td class="text-center align-middle">
                                 {{ iForm.answer10 * 5 }}
@@ -274,13 +274,13 @@
                             <td class="text-center">คะแนนรวม</td>
                             <td class="text-center">100</td>
                             <td class="text-center fw-bolder">รวมคะแนนที่ได้</td>
-                            <td class="text-center fw-bolder"> {{ iForm.total }} </td>
+                                <td class="text-center fw-bolder text-blue"> {{ iForm.total }} </td>
                         </tr>
                         <tr>
                             <td colspan=2 class="text-center fw-bolder">
                                 เกรดที่ได้
                             </td>
-                            <td colspan=2 class="text-center fw-bolder">
+                            <td colspan=2 class="text-center fw-bolder text-blue">
                                 {{ iForm.grade }}
                             </td>
                         </tr>

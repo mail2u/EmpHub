@@ -16,23 +16,23 @@
             <div class="row">
                 <div class="col-sm-8 mb-3">
                     <div class="text-dark fw-bolder">ชื่อ-สกุล</div>
-                    {{ iForm.fullname }}
+                    <div class="text-blue">{{ iForm.fullname }}</div>
                 </div>
                 <div class="col-sm-4 mb-3">
                     <div class="text-dark fw-bolder">ตาแหน่ง</div>
-                    {{ iForm.position }}
+                    <div class="text-blue">{{ iForm.position }}</div>
                 </div>
                 <div class="col-sm-4 mb-3">
                     <div class="text-dark fw-bolder">แผนก/ส่วน</div>
-                    {{ iForm.part }}
+                    <div class="text-blue">{{ iForm.section }}</div>
                 </div>
                 <div class="col-sm-4 mb-3">
                     <div class="text-dark fw-bolder">ฝ่าย</div>
-                    {{ iForm.department }}
+                    <div class="text-blue">{{ iForm.department }}</div>
                 </div>
                 <div class="col-sm-4 mb-3">
                     <div class="text-dark fw-bolder">สายงาน</div>
-                    {{ iForm.division }}
+                    <div class="text-blue">{{ iForm.division }}</div>
                 </div>
                 <div class="col-sm-4 mb-3">
                 </div>
@@ -43,47 +43,47 @@
             <div class="row">
                 <div class="col-sm-8 mb-3">
                     <div class="text-dark fw-bolder">ชื่อหลักสูตร</div>
-                    {{ iForm.license }}
+                    <div class="text-blue">{{ iForm.license }}</div>
                 </div>
                 <div class="col-sm-4 mb-3">
                     <div class="text-dark fw-bolder">จัดโดย</div>
-                    {{ iForm.organization }}
+                    <div class="text-blue">{{ iForm.organization }}</div>
                 </div>
                 <div class="col-sm-12 mb-3">
                     <div class="text-dark fw-bolder">วัตถุประสงค์การเข้ารับการฝึกอบรม / สัมมนา</div>
-                    {{ iForm.objectives }}
+                    <div class="text-blue">{{ iForm.objectives }}</div>
                 </div>
                 <div class="col-sm-4 mb-3">
                     <div class="text-dark fw-bolder">วัน-เวลา</div>
-                    {{ iForm.dt }}
+                    <div class="text-blue">{{ iForm.dt }}</div>
                 </div>
                 <div class="col-sm-8 mb-3">
                     <div class="text-dark fw-bolder">สถานที่</div>
-                    {{ iForm.location }}
+                    <div class="text-blue">{{ iForm.location }}</div>
                 </div>
                 <div class="col-sm-4 mb-3">
                     <div class="text-dark fw-bolder">ค่าใช้จ่ายต่อคน</div>
-                    {{ iForm.price | currency : '' }}
+                    <div class="text-blue">{{ iForm.price | currency : '' }}</div>
                 </div>
                 <div class="col-sm-4 mb-3">
                     <div class="text-dark fw-bolder">รวมทั้งสิ้น</div>
-                    {{ iForm.net | currency : '' }}
+                    <div class="text-blue">{{ iForm.net | currency : '' }}</div>
                 </div>
             </div>
             <div class="fw-bolder text-dark pt-1 fs-5 mb-2">
                 3. การปฏิบัติภายหลังเสร็จสิ้นการฝึกอบรม / สัมมนา
             </div>
             <ul>
-                <li ng-show="iForm.option1 == 1">
+                <li ng-show="iForm.option1 == 1" class="text-blue">
                     ทารายงานเสนอผู้บังคับบัญชา
                 </li>
-                <li ng-show="iForm.option2 == 1">
+                <li ng-show="iForm.option2 == 1" class="text-blue">
                     บรรยายสรุปเสนอผู้บังคับบัญชาโดยตรงรับทราบ
                 </li>
-                <li ng-show="iForm.option3 == 1">
+                <li ng-show="iForm.option3 == 1" class="text-blue">
                     บรรยายสรุปให้ผู้เกี่ยวข้องที่ควรทราบได้รับทราบ
                 </li>
-                <li ng-show="iForm.option4 == 1">
+                <li ng-show="iForm.option4 == 1" class="text-blue">
                     {{ iForm.option4_desc }}
                 </li>
             </ul>

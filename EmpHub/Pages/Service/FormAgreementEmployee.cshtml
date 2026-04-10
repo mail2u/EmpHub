@@ -1,4 +1,171 @@
 ﻿@page
 @model EmpHub.Pages.Service.FormAgreementEmployeeModel
 @{
+    var token = User.AccessToken(HttpContext);
 }
+<style>
+    .main-content {
+        min-height: calc(100vh - 150px) !important;
+    }
+
+    .box-group{
+        padding: 15px;
+        border: 1px solid white;
+        border-radius: 15px;
+    }
+
+    .box-group.input-error {
+        border: 1px solid red;
+    }
+</style>
+<div ng-controller="FormCtrl" id="tab_education">
+    @* Header *@
+    <partial name="_PartialFormHeader" />
+    @* View *@
+    <div class="rounded-4 mb-3 bg-white shadow-sm text-dark" style="padding:25px 120px;">
+        <div class="text-center fs-4 fw-bolder mb-4 text-dark">
+            เอกสารลงนามรับทราบเกี่ยวกับ<br />
+            บริษัท ทิพยประกันชีวิต จำกัด (มหาชน)
+        </div>
+        <div class="fs-5 mb-3">
+            <span style="padding-left:100px"></span>
+            ข้าพเจ้า <input ng-model="iForm.fullname" class="form-text fullname" style="width:400px" maxlength="100" /> 
+            ตำแหน่ง <input ng-model="iForm.position" class="form-text position" style="width:300px" maxlength="50" />
+            สังกัดฝ่ายงาน <input ng-model="iForm.department" class="form-text department" style="width:300px" maxlength="50" />
+            เริ่มงานวันที่ <input class="form-text icon-calendar join_date date"
+                ng-model="iForm.join_date_select"
+                ng-model-options="{ updateOn: 'blur' }"
+                moment-picker="iForm.join_date_select"
+                locale="th"
+                format="DD/MM/YYYY"
+                min-view="month"
+                max-view="month" required style="width:150px;" />
+            ได้รับเอกสาร และได้อ่านมีความเข้าใจข้อความอย่างถ่องแท้โดยตลอดแล้วใน ระเบียบข้อบังคับเกี่ยวกับการทำงาน นโยบายและแนวปฏิบัติที่เกี่ยวข้องกับการดูแลกิจการที่ดี นโยบายการดูแลความขัดแย้งทางผลประโยชน์นโยบายความคุ้มครองข้อมูลส่วนบุคคลสำหรับพนักงาน จรรยาบรรณและจริยธรรมทางธุรกิจ ระเบียบการใช้งานเทคโนโลยีสารสนเทศ นโยบายและกรอบการบริหารความเสี่ยง คู่มือพนักงาน คู่มืออัตลักษณ์องค์กร ข้อบังคับกองทุนสำรองเลี้ยงชีพ ของบริษัท ทิพยประกันชีวิต จำกัด (มหาชน) พร้อมทั้งยึดถือเป็นแนวปฏิบัติอย่างเคร่งครัดในการทำหน้าที่ของข้าพเจ้าในทุกกรณี จึงลงลายมือชื่อไว้เป็นหลักฐาน ดังนี้
+        </div>
+        <div class="fs-5 mb-3" style="padding-left:100px">
+            1. ระเบียบข้อบังคับการเกี่ยวกับการทำงาน<br />
+            2. นโยบายและแนวปฏิบัติที่เกี่ยวข้องกับการดูแลกิจการที่ดี<br />
+            3. จรรยาบรรณและจริยธรรมทางธุรกิจ<br />
+            4. ระเบียบการใช้งานเทคโนโลยีสารสนเทศ<br />
+            5. นโยบายและกรอบการบริหารความเสี่ยง<br />
+            6. คู่มือพนักงาน<br />
+            7. คู่มืออัตลักษณ์องค์กร (CI)<br />
+            8. ข้อบังคับกองทุนสำรองเลี้ยงชีพ<br />
+            9. ขอบเขตหน้าที่และความรับผิดชอบงานตำแหน่งงาน (Job Description)<br />
+            10. ตัวชี้วัดความสำเร็จของผลงานในช่วงระหว่างทดลองงาน (KPIs)<br />
+            11. แผนการเรียนรู้และพัฒนาสำหรับพนักงานใหม่ (On-Boarding Program)
+        </div>
+    </div>
+    <div class="d-flex justify-content-end">
+        <div class="btn btn-primary" ng-click="Save()">
+            <i class="far fa-paper-plane me-2"></i> Send Request
+        </div>
+    </div>
+</div>
+<script>
+    $(".day").mask("00");
+    $(".score").mask("00");
+    $(".date").mask("00/00/0000");
+    app.controller('FormCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.mode = '@Model.mode';
+        $scope.iData = {};
+        $scope.iForm = {
+            fullname:''
+            , position: ''
+            , department: ''
+            , join_date:''
+            , create_by:'@User.UserId()'
+        }
+
+        $scope.Validate = function () {
+            var flag = true;
+            JS_Reset($(".fullname"));
+            JS_Reset($(".position"));
+            JS_Reset($(".department"));
+            JS_Reset($(".join_date"));
+
+
+            if ($scope.iForm.join_date_select) {
+                $scope.iForm.join_date = $scope.iForm.join_date_select.format("DD/MM/YYYY");
+            }else{
+                $scope.iForm.join_date = '';
+            }
+
+            if ($scope.iForm.fullname == '') {
+                flag = false;
+                JS_Require($(".fullname"));
+            }
+            if ($scope.iForm.position == '') {
+                flag = false;
+                JS_Require($(".position"));
+            }
+            if ($scope.iForm.department == '') {
+                flag = false;
+                JS_Require($(".department"));
+            }
+            if ($scope.iForm.join_date == '') {
+                flag = false;
+                JS_Require($(".join_date"));
+            }
+
+            return flag;
+        }
+
+        $scope.Save = async function () {
+            if ($scope.Validate()) {
+                alertConfirm("ยืนยันการทำรายการ", "ท่านต้องการส่งใบคำขอ", async function () {
+                    var id = await $scope.CreateService();
+
+                    if (id) {
+                        $scope.iData.id = id;
+                        $scope.iForm.refId = id;
+
+                        var flag = await $scope.CreateForm();
+
+                        if (flag) {
+                            var serviceNo = await $scope.ServiceRequest();
+
+                            if (serviceNo) {
+                                alertSuccess("ทำรายการสำเร็จ", "ระบบบันทึกใบคำขอของท่านเรียบร้อย", function () {
+                                    location.href = '@Url.Page("/Service/Index")';
+                                });
+                            } else {
+                                $scope.CancelService();
+                            }
+                        } else {
+                            $scope.CancelService();
+                        }
+                    }
+                });
+            } else {
+                alertWarning("แจ้งเตือน", "กรุณากรอกข้อมูลให้ครบ");
+            }
+        }
+
+        $scope.CreateForm = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormAgreementEmployeeCreate',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify($scope.iForm),
+                    success: function () {
+                        $timeout(async function () {
+                            resolve(true);
+                        }, 0);
+                    }, error: function (jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "ระบบเกิดข้อผิดพลาด",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+    });
+</script>

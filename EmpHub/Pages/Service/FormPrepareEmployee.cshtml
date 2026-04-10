@@ -1,4 +1,522 @@
 ﻿@page
 @model EmpHub.Pages.Service.FormPrepareEmployeeModel
 @{
+    var token = User.AccessToken(HttpContext);
 }
+<style>
+    .main-content {
+        min-height: calc(100vh - 150px) !important;
+    }
+
+    .box-group{
+        border: 1px solid white;
+        border-radius: 5px;
+    }
+
+    .box-group.input-error {
+        border: 1px solid red;
+    }
+</style>
+<div ng-controller="FormCtrl" id="tab_education">
+    @* Header *@
+    <partial name="_PartialFormHeader" />
+    @* View *@
+    <div class="rounded-4 mb-3 bg-white shadow-sm text-dark" style="padding:25px 120px;">
+        <div class="text-center fs-4 fw-bolder mb-4 text-dark">
+            แบบฟอร์มการจัดเตรียมความพร้อมสำหรับพนักงานใหม่
+        </div>
+        @* section 1 *@
+        <div class="fs-5 fw-bolder bg-gray mb-3 p-1">
+            ข้อมูลทั่วไปของพนักงาน
+        </div>
+        <div class="fs-5 mb-4">
+            <div class="d-flex mb-1">
+                <div class="text-nowrap fw-bolder">คำนำหน้านาม: นาย / นาง / นางสาว / อื่นๆ </div>
+                <input ng-model="iForm.prefix" class="form-text prefix mx-2" maxlength="100" style="width:200px;" />
+                <div class="text-nowrap fw-bolder">ชื่อ-นามสกุล</div>
+                <input ng-model="iForm.fullname" class="form-text fullname ms-2" maxlength="100" />
+            </div>
+            <div class="d-flex mb-1">
+                <div class="text-nowrap fw-bolder">ชื่อตำแหน่ง</div>
+                <input ng-model="iForm.position" class="form-text position mx-2" maxlength="100" />
+                <div class="text-nowrap fw-bolder">วันเริ่มงาน</div>
+                <input class="form-text icon-calendar join_date date mx-2"
+                       ng-model="iForm.join_date_select"
+                       ng-model-options="{ updateOn: 'blur' }"
+                       moment-picker="iForm.join_date_select"
+                       locale="th"
+                       format="DD/MM/YYYY"
+                       min-view="month"
+                       max-view="month" required style="width:150px;" />
+                <div class="text-nowrap fw-bolder">หมายเลขโทรศัพท์</div>
+                <input ng-model="iForm.phoneNo" class="form-text phoneNo ms-2" maxlength="10" required style="width:250px;" />
+            </div>
+            <div class="d-flex mb-1 answer1 box-group">
+                <div class="text-nowrap fw-bolder">ต้องการให้จัดเตรียมนามบัตรหรือไม่</div>
+                <div class="ms-3">
+                    <input type="radio" id="answer1_no" name="answer1" ng-model="iForm.answer1" value="No" /> <label for="answer1_no">ไม่ต้องการ</label>
+                </div>
+                <div class="ms-2">
+                    <input type="radio" id="answer1_yes" name="answer1" ng-model="iForm.answer1" value="Yes" /> <label for="answer1_yes">ต้องการ</label>
+                </div>
+            </div>
+        </div>
+        @* section 2 *@
+        <div class="fs-5 fw-bolder bg-gray mb-3 p-1">
+            ข้อมูลเกี่ยวกับการใช้อุปกรณ์คอมพิวเตอร์
+        </div>
+        <div class="fs-5 mb-3">
+            <div class="d-flex mb-1">
+                <div class="text-nowrap fw-bolder">ชื่อผู้ใช้ / User Name</div>
+                <input ng-model="iForm.username" class="form-text username mx-2" maxlength="50" />
+                <div class="text-nowrap fw-bolder">ชื่ออีเมล์ / Email Address</div>
+                <input ng-model="iForm.email" class="form-text email ms-2" maxlength="50" />
+            </div>
+            <div class="d-flex mb-1">
+                <div class="text-nowrap fw-bolder">อนุญาตให้ผ่านเข้าถึงข้อมูลใน Server/Share Drive โปรดระบุ </div>
+                <input ng-model="iForm.sharedrive" class="form-text mx-2" maxlength="400" />
+            </div>
+            <div class="d-flex mb-1 answer2 box-group">
+                <div class="text-nowrap fw-bolder">ต้องการอุปกรณ์คอมพิวเตอร์แบบใด</div>
+                <div class="ms-3">
+                    <input type="radio" id="answer2_laptop" name="answer2" ng-model="iForm.answer2" value="Laptop" /> <label for="answer2_laptop">Laptop</label>
+                </div>
+                <div class="ms-2">
+                    <input type="radio" id="answer2_pc" name="answer2" ng-model="iForm.answer2" value="PC" /> <label for="answer2_pc">Desktop PC</label>
+                </div>
+            </div>
+            <div class="d-flex mb-1">
+                <div class="text-nowrap fw-bolder">โปรดระบุ Specifications ของคอมพิวเตอร์ที่ต้องการ </div>
+                <input ng-model="iForm.speccomputer" class="form-text mx-2" maxlength="400" />
+            </div>
+            <div class="d-flex mb-1 answer3 box-group">
+                <div class="text-nowrap fw-bolder">ต้องการโปรแกรม Software พิเศษหรือไม่</div>
+                <div class="ms-3 text-nowrap">
+                    <input type="radio" id="answer3_no" name="answer3" ng-model="iForm.answer3" value="No" /> <label for="answer3_no">ไม่ต้องการ</label>
+                </div>
+                <div class="ms-2 text-nowrap">
+                    <input type="radio" id="answer3_yes" name="answer3" ng-model="iForm.answer3" value="Yes" /> <label for="answer3_yes">ต้องการ โปรดระบุ</label>
+                </div>
+                <input ng-model="iForm.software_desc" class="form-text mx-2" maxlength="400" />
+            </div>
+            <div class="mb-1">
+                <div class=" fw-bolder">โปรดระบุระบบที่ต้องการใช้งาน</div>
+                <div class="row">
+                    <div class="col-sm-6 mb-1">
+                        <div class="d-flex">
+                            <input type="checkbox" id="gls_system" ng-model="iForm.gls_system" ng-true-value="'Yes'" /> 
+                            <label for="gls_system" class="text-nowrap mx-2">GLS ให้สิทธิการเข้าใช้ระบบเหมือนกับ</label>
+                            <input ng-model="iForm.gls_desc" class="form-text" />
+                        </div>
+                    </div>
+                    <div class="col-sm-6 mb-1">
+                        <div class="d-flex">
+                            <input type="checkbox" id="ls_system" ng-model="iForm.ls_system" ng-true-value="'Yes'" />
+                            <label for="ls_system" class="text-nowrap mx-2">LS ให้สิทธิการเข้าใช้ระบบเหมือนกับ</label>
+                            <input ng-model="iForm.ls_desc" class="form-text" />
+                        </div>
+                    </div>
+                    <div class="col-sm-6 mb-1">
+                        <div class="d-flex">
+                            <input type="checkbox" id="linet_system" ng-model="iForm.linet_system" ng-true-value="'Yes'" />
+                            <label for="linet_system" class="text-nowrap mx-2">Linet ให้สิทธิการเข้าใช้ระบบเหมือนกับ</label>
+                            <input ng-model="iForm.linet_desc" class="form-text" />
+                        </div>
+                    </div>
+                    <div class="col-sm-6 mb-1">
+                        <div class="d-flex">
+                            <input type="checkbox" id="sun_system" ng-model="iForm.sun_system" ng-true-value="'Yes'" />
+                            <label for="sun_system" class="text-nowrap mx-2">SUN ให้สิทธิการเข้าใช้ระบบเหมือนกับ</label>
+                            <input ng-model="iForm.sun_desc" class="form-text" />
+                        </div>
+                    </div>
+                    <div class="col-sm-6 mb-1">
+                        <div class="d-flex">
+                            <input type="checkbox" id="prophet_system" ng-model="iForm.prophet_system" ng-true-value="'Yes'" />
+                            <label for="prophet_system" class="text-nowrap mx-2">Prophet ให้สิทธิการเข้าใช้ระบบเหมือนกับ</label>
+                            <input ng-model="iForm.prophet_desc" class="form-text" />
+                        </div>
+                    </div>
+                    <div class="col-sm-6 mb-1">
+                        <div class="d-flex">
+                            <input type="checkbox" id="bonunza_system" ng-model="iForm.bonunza_system" ng-true-value="'Yes'" />
+                            <label for="bonunza_system" class="text-nowrap mx-2">Bonunza ให้สิทธิการเข้าใช้ระบบเหมือนกับ</label>
+                            <input ng-model="iForm.bonunza_desc" class="form-text" />
+                        </div>
+                    </div>
+                    <div class="col-sm-12 mb-1">
+                        <div class="d-flex">
+                            <input type="checkbox" id="other_system" ng-model="iForm.other_system" ng-true-value="'Yes'" />
+                            <label for="other_system" class="text-nowrap mx-2">ระบบอื่น ๆ โปรดระบุเพิ่มเติม</label>
+                            <input ng-model="iForm.other_desc" class="form-text" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @* section 3 *@
+        <div class="fs-5 fw-bolder bg-gray mb-3 p-1">
+            โต๊ะทำงานและอุปกรณ์อื่น ๆ
+        </div>
+        <table class="table table-borderless fs-5">
+            <tbody>
+                <tr class="answer4 box-group">
+                    <td width="400">
+                        ต้องการใช้โต๊ะทำงานหรือไม่
+                    </td>
+                    <td width="100">
+                        <input type="radio" id="answer4_no" name="answer4" ng-model="iForm.answer4" value="No" /> <label for="answer4_no">ไม่ใช้</label>
+                    </td>
+                    <td width="240">
+                        <input type="radio" id="answer4_yes" name="answer4" ng-model="iForm.answer4" value="Yes" /> <label for="answer4_yes">ใช้ โปรดระบุบริเวณ</label>
+                    </td>
+                    <td>
+                        <input ng-model="iForm.answer4_desc" class="form-text" maxlength="400" />
+                    </td>
+                </tr>
+                <tr class="answer5 box-group">
+                    <td>
+                        ต้องการเครื่องโทรศัพท์หรือไม่
+                    </td>
+                    <td>
+                        <input type="radio" id="answer5_no" name="answer5" ng-model="iForm.answer5" value="No" /> <label for="answer5_no">ไม่ใช้</label>
+                    </td>
+                    <td>
+                        <input type="radio" id="answer5_yes" name="answer5" ng-model="iForm.answer5" value="Yes" /> <label for="answer5_yes">ใช้ โปรดระบุหมายเลข</label>
+                    </td>
+                    <td>
+                        <input ng-model="iForm.answer5_desc" class="form-text" maxlength="400" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        @* section 4 *@
+        <div class="fs-5 fw-bolder bg-gray mb-3 p-1">
+            อุปกรณ์โทรศัพท์มือถือ
+        </div>
+        <table class="table table-borderless fs-5">
+            <tbody>
+                <tr class="answer6 box-group">
+                    <td width="400">
+                        ต้องการเครื่องโทรศัพท์มือถือของบริษัท
+                    </td>
+                    <td width="140">
+                        <input type="radio" id="answer6_no" name="answer6" ng-model="iForm.answer6" value="No" /> <label for="answer6_no">ไม่ต้องการ</label>
+                    </td>
+                    <td width="300">
+                        <input type="radio" id="answer6_yes" name="answer6" ng-model="iForm.answer6" value="Yes" /> <label for="answer6_yes">ต้องการ โปรดระบุรุ่น</label>
+                    </td>
+                    <td>
+                        <input ng-model="iForm.answer6_desc" class="form-text" maxlength="400" />
+                    </td>
+                </tr>
+                <tr class="answer7 box-group">
+                    <td>
+                        ต้องการ Sim โทรศัพท์มือถือของบริษัท
+                    </td>
+                    <td>
+                        <input type="radio" id="answer7_no" name="answer7" ng-model="iForm.answer7" value="No" /> <label for="answer7_no">ไม่ต้องการ</label>
+                    </td>
+                    <td>
+                        <input type="radio" id="answer7_yes" name="answer7" ng-model="iForm.answer7" value="Yes" /> <label for="answer7_yes">ต้องการ โปรดระบุ package @@</label>
+                    </td>
+                    <td class="text-nowrap d-flex">
+                        <input ng-model="iForm.answer7_desc" class="form-text" maxlength="400" /> / เดือน
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        @* section 5 *@
+        <div class="fs-5 fw-bolder bg-gray mb-3 p-1">
+            การเดินทาง
+        </div>
+        <table class="table table-borderless fs-5 mb-0">
+            <tbody>
+                <tr class="answer8 box-group">
+                    <td width="400">
+                        ต้องการให้จัดหารถยนต์ของบริษัท
+                    </td>
+                    <td width="140">
+                        <input type="radio" id="answer8_no" name="answer8" ng-model="iForm.answer8" value="No" /> <label for="answer8_no">ไม่ต้องการ</label>
+                    </td>
+                    <td width="270">
+                        <input type="radio" id="answer8_yes" name="answer8" ng-model="iForm.answer8" value="Yes" /> <label for="answer8_yes">ต้องการ โปรดระบุรุ่น</label>
+                    </td>
+                    <td>
+                        <input ng-model="iForm.answer8_desc" class="form-text" maxlength="400" />
+                    </td>
+                </tr>
+                <tr class="answer9 box-group">
+                    <td>
+                        ต้องการบัตรเติมน้ำมันรถยนต์
+                    </td>
+                    <td>
+                        <input type="radio" id="answer9_no" name="answer9" ng-model="iForm.answer9" value="No" /> <label for="answer9_no">ไม่ต้องการ</label>
+                    </td>
+                    <td>
+                        <input type="radio" id="answer9_yes" name="answer9" ng-model="iForm.answer9" value="Yes" /> <label for="answer9_yes">ต้องการ โปรดระบุ</label>
+                    </td>
+                    <td class="text-nowrap d-flex">
+                        <input ng-model="iForm.answer9_desc" class="form-text" maxlength="400" /> บาทหรือลิตร / เดือน
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="text-danger p-2 fs-5">หมายเหตุ: โปรดแนบเอกสารประจำรถยนต์มาให้ด้วย หากต้องการบัตรเติมน้ำมัน </div>
+        @* section 6 *@
+        <div class="fs-5 fw-bolder bg-gray mb-3 p-1">
+            เรื่องอื่นๆ (หากมี)
+        </div>
+        <textarea ng-model="iForm.description" class="form-control" rows="5" maxlength="2000">
+
+        </textarea>
+    </div>
+    <div class="d-flex justify-content-end">
+        <div class="btn btn-primary" ng-click="Save()">
+            <i class="far fa-paper-plane me-2"></i> Send Request
+        </div>
+    </div>
+</div>
+<script>
+    $(".day").mask("00");
+    $(".phoneNo").mask("000-000-0000");
+    $(".date").mask("00/00/0000");
+    app.controller('FormCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.mode = '@Model.mode';
+        $scope.iData = {};
+        $scope.iForm = {
+            prefix:''
+            , fullname:''
+            , position: ''
+            , join_date: ''
+            , phoneNo: ''
+            , username: ''
+            , email: ''
+            , sharedrive: ''
+            , speccomputer: ''
+            , answer1: ''
+            , answer2: ''
+            , answer3: ''
+            , answer3_desc: ''
+            , answer4: ''
+            , answer4_desc: ''
+            , answer5: ''
+            , answer5_desc: ''
+            , answer6: ''
+            , answer6_desc: ''
+            , answer7: ''
+            , answer7_desc: ''
+            , answer8: ''
+            , answer8_desc: ''
+            , answer9: ''
+            , answer9_desc: ''
+            , gls_system: ''
+            , gls_desc: ''
+            , ls_system: ''
+            , ls_desc: ''
+            , linet_system: ''
+            , linet_desc: ''
+            , sun_system: ''
+            , sun_desc: ''
+            , prophet_system: ''
+            , prophet_desc: ''
+            , bonunza_system: ''
+            , bonunza_desc: ''
+            , other_system: ''
+            , other_desc: ''
+            , description: ''
+            , create_by:'@User.UserId()'
+        }
+
+        $scope.Validate = function () {
+            var flag = true;
+            JS_Reset($(".prefix"));
+            JS_Reset($(".fullname"));
+            JS_Reset($(".position"));
+            JS_Reset($(".join_date"));
+            JS_Reset($(".phoneNo"));
+            JS_Reset($(".username"));
+            JS_Reset($(".email"));
+            JS_Reset($(".answer1"));
+            JS_Reset($(".answer2"));
+            JS_Reset($(".answer3"));
+            JS_Reset($(".answer3_desc"));
+            JS_Reset($(".answer4"));
+            JS_Reset($(".answer4_desc"));
+            JS_Reset($(".answer5"));
+            JS_Reset($(".answer5_desc"));
+            JS_Reset($(".answer6"));
+            JS_Reset($(".answer6_desc"));
+            JS_Reset($(".answer7"));
+            JS_Reset($(".answer7_desc"));
+            JS_Reset($(".answer8"));
+            JS_Reset($(".answer8_desc"));
+            JS_Reset($(".answer9"));
+            JS_Reset($(".answer9_desc"));
+            JS_Reset($(".aaa"));
+            JS_Reset($(".aaa"));
+            JS_Reset($(".aaa"));
+            JS_Reset($(".aaa"));
+            JS_Reset($(".aaa"));
+
+
+            if ($scope.iForm.join_date_select) {
+                $scope.iForm.join_date = $scope.iForm.join_date_select.format("DD/MM/YYYY");
+            }else{
+                $scope.iForm.join_date = '';
+            }
+
+            if ($scope.iForm.prefix == '') {
+                flag = false;
+                JS_Require($(".prefix"));
+            }
+            if ($scope.iForm.fullname == '') {
+                flag = false;
+                JS_Require($(".fullname"));
+            }
+            if ($scope.iForm.position == '') {
+                flag = false;
+                JS_Require($(".position"));
+            }
+            if ($scope.iForm.join_date == '') {
+                flag = false;
+                JS_Require($(".join_date"));
+            }
+            if ($scope.iForm.phoneNo == '') {
+                flag = false;
+                JS_Require($(".phoneNo"));
+            }
+            if ($scope.iForm.username == '') {
+                flag = false;
+                JS_Require($(".username"));
+            }
+            if ($scope.iForm.email == '') {
+                flag = false;
+                JS_Require($(".email"));
+            }
+            if ($scope.iForm.answer1 == '') {
+                flag = false;
+                JS_Require($(".answer1"));
+            }
+            if ($scope.iForm.answer2 == '') {
+                flag = false;
+                JS_Require($(".answer2"));
+            }
+            if ($scope.iForm.answer3 == '') {
+                flag = false;
+                JS_Require($(".answer3"));
+            }
+            if ($scope.iForm.answer3 == 'Yes' && $scope.iForm.answer3_desc == '') {
+                flag = false;
+                JS_Require($(".answer3_desc"));
+            }
+            if ($scope.iForm.answer4 == '') {
+                flag = false;
+                JS_Require($(".answer4"));
+            }
+            if ($scope.iForm.answer4 == 'Yes' && $scope.iForm.answer4_desc == '') {
+                flag = false;
+                JS_Require($(".answer4_desc"));
+            }
+            if ($scope.iForm.answer5 == '') {
+                flag = false;
+                JS_Require($(".answer5"));
+            }
+            if ($scope.iForm.answer5 == 'Yes' && $scope.iForm.answer5_desc == '') {
+                flag = false;
+                JS_Require($(".answer5_desc"));
+            }
+            if ($scope.iForm.answer6 == '') {
+                flag = false;
+                JS_Require($(".answer6"));
+            }
+            if ($scope.iForm.answer6 == 'Yes' && $scope.iForm.answer6_desc == '') {
+                flag = false;
+                JS_Require($(".answer6_desc"));
+            }
+            if ($scope.iForm.answer7 == '') {
+                flag = false;
+                JS_Require($(".answer7"));
+            }
+            if ($scope.iForm.answer7 == 'Yes' && $scope.iForm.answer7_desc == '') {
+                flag = false;
+                JS_Require($(".answer7_desc"));
+            }
+            if ($scope.iForm.answer8 == '') {
+                flag = false;
+                JS_Require($(".answer8"));
+            }
+            if ($scope.iForm.answer8 == 'Yes' && $scope.iForm.answer8_desc == '') {
+                flag = false;
+                JS_Require($(".answer8_desc"));
+            }
+            if ($scope.iForm.answer9 == '') {
+                flag = false;
+                JS_Require($(".answer9"));
+            }
+            if ($scope.iForm.answer9 == 'Yes' && $scope.iForm.answer9_desc == '') {
+                flag = false;
+                JS_Require($(".answer9_desc"));
+            }
+
+            return flag;
+        }
+
+        $scope.Save = async function () {
+            if ($scope.Validate()) {
+                alertConfirm("ยืนยันการทำรายการ", "ท่านต้องการส่งใบคำขอ", async function () {
+                    var id = await $scope.CreateService();
+
+                    if (id) {
+                        $scope.iData.id = id;
+                        $scope.iForm.refId = id;
+
+                        var flag = await $scope.CreateForm();
+
+                        if (flag) {
+                            var serviceNo = await $scope.ServiceRequest();
+
+                            if (serviceNo) {
+                                alertSuccess("ทำรายการสำเร็จ", "ระบบบันทึกใบคำขอของท่านเรียบร้อย", function () {
+                                    location.href = '@Url.Page("/Service/Index")';
+                                });
+                            } else {
+                                $scope.CancelService();
+                            }
+                        } else {
+                            $scope.CancelService();
+                        }
+                    }
+                });
+            } else {
+                alertWarning("แจ้งเตือน", "กรุณากรอกข้อมูลให้ครบ");
+            }
+        }
+
+        $scope.CreateForm = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormPrepareEmployeeCreate',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify($scope.iForm),
+                    success: function () {
+                        $timeout(async function () {
+                            resolve(true);
+                        }, 0);
+                    }, error: function (jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "ระบบเกิดข้อผิดพลาด",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+    });
+</script>

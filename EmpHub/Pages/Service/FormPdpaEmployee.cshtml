@@ -1,4 +1,212 @@
 ﻿@page
 @model EmpHub.Pages.Service.FormPdpaEmployeeModel
 @{
+    var token = User.AccessToken(HttpContext);
 }
+<style>
+    .main-content {
+        min-height: calc(100vh - 150px) !important;
+    }
+
+    .box-group{
+        padding: 15px;
+        border: 1px solid white;
+        border-radius: 15px;
+    }
+
+    .box-group.input-error {
+        border: 1px solid red;
+    }
+</style>
+<div ng-controller="FormCtrl" id="tab_education">
+    @* Header *@
+    <partial name="_PartialFormHeader" />
+    @* View *@
+    <div class="rounded-4 mb-3 bg-white shadow-sm text-dark" style="padding:25px 120px;">
+        <div class="text-center fs-4 fw-bolder mb-4 text-dark">
+            หนังสือให้ความยินยอมในการเก็บรวบรวม ใช้ หรือเปิดเผยข้อมูลส่วนบุคคล (สำหรับพนักงาน)
+        </div>
+        <div class="fs-5 mb-3">
+            <span style="padding-left:100px"></span> 
+            หนังสือให้ความยินยอมนึ้จัดทำขึ้นโดยบริษัท ทิพยประกันชีวิต จำกัด (มหาชน) <b>"บริษัท"</b> เพื่อให้เป็นไปตามพระราชบัญญัติคุ้มครองข้อมูล
+            ส่วนบุคคล พ.ศ. 2562 และเพื่อใช้กับบุคคลที่เข้าทำงานหรือจะเข้าทำสัญญาจ้างงานกับบริษัท หรือในฐานะนักศึกษาฝึกงานเรียกรวมกันว่า <b>"พนักงาน"</b>
+            ข้อมูลส่วนบุคคลที่บริษัทเก็บรวบรวม ใช้ หรือเปิดเผย เพื่อการสรรหาและหรือการว่าจ้างพนักงานนี้ รวมทั้งปรเภทของข้อมูล วัตถุประสงค์ ระยะเวลาใน
+            การจัดเก็บข้อมูลส่วนบุคคล การประมวลผลดังกล่าว บุคคลภายนอกที่บริษัทจะทำการเปิดเผยข้อมูลส่วนบุคคล และสิทธิต่าง ๆ ของผู้เป็นเจ้าของข้อมูล
+            ส่วนบุคคล รวมถึงสิทธิในการถอนความยินยอม เป็นไปตามนโยบายคุ้มครองข้อมูลส่วนบุคคล (Privacy Policy) ของบริษัทรายละเอียดปรากฏตาม Link
+            และ QR Code ด้านล่างโดยบริษัทประสงค์จะได้รับความยินยอมจากท่านเพื่อนำข้อมูลส่วนบุคคลไปดำเนินการประมวลผล หากท่านยินยอมให้ข้อมูล
+            ส่วนบุคคลของท่านกับทางบริษัทโปรดกรอกรายละเอียดตามด้านล่างนี้
+        </div>
+        <div class="fs-5 mb-3">
+            <span style="padding-left:100px"></span> 
+            เมื่อท่านลงลายมือชื่อในหนังสือนี้ บริษัทถือว่าท่านยินยอมให้บริษัทประมวลผลข้อมูลส่วนบุคคลของท่านตามวัตถุประสงค์หรือเพื่อใช้
+            กิจกรรมดังต่อไปนี้ (โปรดทำเครื่องหมาย ✓ ในช่อง ☐ ในการให้ความยินยอม หรือไม่ให้ความยินยอมแก่บริษัทในการเก็บรวมบรวม ใช้ หรือเปิดเผย
+            ข้อมูลส่วนบุคคลของท่านตามวัตถุประสงค์ นั้น ๆ)
+        </div>
+        <div class="fs-5 mb-3 d-flex flex-wrap">
+            <span style="padding-left:100px"></span> 
+            <div class="text-nowrap me-2">ข้าพเจ้า นาย/นาง/นางสาว </div>
+            <input ng-model="iForm.firstname" class="form-text firstname" style="width:300px" />
+            <div class="mx-2">นามสกุล</div>
+            <input ng-model="iForm.lastname" class="form-text lastname" style="width:300px" />
+            <div class="mx-2 text-nowrap">หมายเลขบัตรประชาชน/หนังสือเดินทาง</div>
+            <input ng-model="iForm.idcard" class="form-text idcard" style="width:300px" maxlength="13" />
+            <div class="ms-2">ยินยอมให้ข้อมูลส่วนบุคคลกับบริษัท ดังต่อไปนี้</div>
+        </div>
+        <div class="fs-5 mb-3 answer1 box-group">
+            <span style="padding-left:100px"></span>
+            <input type="radio" name="answer1" ng-model="iForm.answer1" value="Yes" /> <b>ยินยอม</b> 
+            <input type="radio" name="answer1" ng-model="iForm.answer1" value="No" /> <b>ไม่ยินยอม</b>
+            ให้บริษัทเก็บรวบรวมใช้ และเปิดเผยข้อมูลส่วนบุคคลและข้อมูลส่วนบุคคลที่มีความอ่อนไหวของข้าพเจ้า
+            และหรือบุตร ได้แก่ ศาสนา เชื้อชาติ ข้อมูลสุขภาพ ผลตรวจสุขภาพประจำปี ประวัติการรักษา ข้อมูลตามใบรับรองแพทย์ เป็นต้น เพื่อเป็นข้อมูลการจัด
+            สวัสดิการที่เกี่ยวข้องกับสุขภาพ ค่ารักษาพยาบาล และหรือเงื่อนไขการทำงานอันอาจเกี่ยวข้องกับศาสนาหรือเชื้อชาติสำหรับท่านที่เป็นพนักงาน (หากไม่ยินยอม ข้อมูลที่ให้อาจไม่เพียงพอต่อการจัดทำเงินเดือน การพิจารณาสวัสดิการและผลประโยชน์ต่าง ๆ สำหรับพนักงาน)
+        </div>
+        <div class="fs-5 mb-3 answer2 box-group">
+            <span style="padding-left:100px"></span>
+            <input type="radio" name="answer2" ng-model="iForm.answer2" value="Yes" /> <b>ยินยอม</b>
+            <input type="radio" name="answer2" ng-model="iForm.answer2" value="No" /> <b>ไม่ยินยอม</b>
+            ให้บริษัทเก็บรวบรวมใช้ และเปิดเผยข้อมูลส่วนบุคคลและข้อมูลส่วนบุคคลที่มีความอ่อนไหวของข้าพเจ้า
+            ได้แก่ ภาพลายนิ้วมือ (Finger Scan) ภาพใบหน้า (Face Scan) คลิป VDO วงจรปิด รูปภายกิจกรรมต่าง ๆ ของบริษัท เป็นต้น เพื่อใช้ในการตรวจสอบ
+            ข้อมูลและระบุตัวตนในการเข้าและออกพื้นที่ทำงานของบริษัท และเพื่อรักษาความปลอดภัยของพนักงานและบริษัท (หากไม่ยินยอม ข้อมูลที่ให้อาจไม่
+            เพียงพอต่อการยืนยันตัวตนและการเข้าออกพื้นที่)
+        </div>
+        <div class="fs-5 mb-3 answer3 box-group">
+            <span style="padding-left:100px"></span>
+            <input type="radio" name="answer3" ng-model="iForm.answer3" value="Yes" /> <b>ยินยอม</b>
+            <input type="radio" name="answer3" ng-model="iForm.answer3" value="No" /> <b>ไม่ยินยอม</b>
+            ให้บริษัทเก็บรวบรวมใช้ และเปิดเผยข้อมูลส่วนบุคคลและข้อมูลส่วนบุคคลที่มีความอ่อนไหวของข้าพเจ้า
+            ได้แก่ ข้อมูลประวัติอาชญากรรม ประวัติการทำงาน ข้อมูลเงินเดือน/รายได้ เป็นต้น เพื่อพิสูจน์และระบุตัวตน เพื่อตรวจสอบประวัติอาชญากรรม
+            ตรวจสอบบุคคลล้มละลาย ตรวจสอบการฉ้อฉล ระยะเวลาการจัดเก็บตลอดระยะเวลาสัญญาจ้าง และเก็บไว้อีก 10 ปีนับแต่วันที่สัญญาจ้างสิ้นสุดลง ตาม
+            สิทธิเรียกร้องตามกฏหมาย และเก็บไว้อีก 1 ปีเพื่อใช้เป็นหลักฐานในการพิจารณาคดี (หากไม่ยินยอม ข้อมูลที่ให้อาจไม่เพียงพอต่อการพิสูจน์และระบุ
+            ตัวตน)
+        </div>
+        <div class="fs-5 mb-4">
+            <span style="padding-left:100px"></span>
+            ข้าพเจ้าได้อ่านและรับทราบเนื้อหาของนโยบายคุ้มครองข้อมูลส่วนบุคคลของบริษัทแล้ว และข้าพเจ้ารับทราบว่า ข้าพเจ้ามีสิทธิถอนความ
+            ยินยอมในการเก็บรวบรวม ใช้ หรือเปิดเผยข้อมูลส่วนบุคคลของข้าพเจ้าเพื่อวัตถุประสงค์ตามที่ระบุไว้ในหนังสือฉบับนี้ได้ตลอดเวลา โดยแจ้งให้กับบริษัท
+            ทราบเป็นลายลักษณ์อักษรถึงการถอนความยินยอมเช่นว่านั้นได้ จึงได้ลงลายมือชื่อไว้เป็นสำคัญ
+        </div>
+        <div class="py-4">
+            <img src="~/Images/qr-code-tiplife-policy.png" width="120" />
+            <div class="fs-6">
+                สแกนเพื่ออ่านนโยบายคุ้มครองข้อมูลส่วนบุคคล (Privacy Policy) ของบริษัท หรือ <a class="text-blue" href="https://www.tiplife.com/about/policies" target="_blank">https://www.tiplife.com/about/policies</a>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-end">
+        <div class="btn btn-primary" ng-click="Save()">
+            <i class="far fa-paper-plane me-2"></i> Send Request
+        </div>
+    </div>
+</div>
+<script>
+    $(".day").mask("00");
+    $(".score").mask("00");
+    $(".date").mask("00/00/0000");
+    app.controller('FormCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.mode = '@Model.mode';
+        $scope.iData = {};
+        $scope.iForm = {
+            firstname:''
+            , lastname:''
+            , idcard:''
+            , answer1:''
+            , answer2: ''
+            , answer3: ''
+            , create_by:'@User.UserId()'
+        }
+
+        $scope.Validate = function () {
+            var flag = true;
+            JS_Reset($(".firstname"));
+            JS_Reset($(".lastname"));
+            JS_Reset($(".idcard"));
+            JS_Reset($(".answer1"));
+            JS_Reset($(".answer2"));
+            JS_Reset($(".answer3"));
+
+            if ($scope.iForm.firstname == '') {
+                flag = false;
+                JS_Require($(".firstname"));
+            }
+            if ($scope.iForm.lastname == '') {
+                flag = false;
+                JS_Require($(".lastname"));
+            }
+            if ($scope.iForm.idcard == '' || $scope.iForm.idcard.length != 13) {
+                flag = false;
+                JS_Require($(".idcard"));
+            }
+            if ($scope.iForm.answer1 == '') {
+                flag = false;
+                JS_Require($(".answer1"));
+            }
+            if ($scope.iForm.answer2 == '') {
+                flag = false;
+                JS_Require($(".answer2"));
+            }
+            if ($scope.iForm.answer3 == 0) {
+                flag = false;
+                JS_Require($(".answer3"));
+            }
+
+            return flag;
+        }
+
+        $scope.Save = async function () {
+            if ($scope.Validate()) {
+                alertConfirm("ยืนยันการทำรายการ", "ท่านต้องการส่งใบคำขอ", async function () {
+                    var id = await $scope.CreateService();
+
+                    if (id) {
+                        $scope.iData.id = id;
+                        $scope.iForm.refId = id;
+
+                        var flag = await $scope.CreateForm();
+
+                        if (flag) {
+                            var serviceNo = await $scope.ServiceRequest();
+
+                            if (serviceNo) {
+                                alertSuccess("ทำรายการสำเร็จ", "ระบบบันทึกใบคำขอของท่านเรียบร้อย", function () {
+                                    location.href = '@Url.Page("/Service/Index")';
+                                });
+                            } else {
+                                $scope.CancelService();
+                            }
+                        } else {
+                            $scope.CancelService();
+                        }
+                    }
+                });
+            } else {
+                alertWarning("แจ้งเตือน", "กรุณากรอกข้อมูลให้ครบ");
+            }
+        }
+
+        $scope.CreateForm = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormPdpaEmployeeCreate',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify($scope.iForm),
+                    success: function () {
+                        $timeout(async function () {
+                            resolve(true);
+                        }, 0);
+                    }, error: function (jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "ระบบเกิดข้อผิดพลาด",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+    });
+</script>
