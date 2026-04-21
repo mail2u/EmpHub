@@ -10,13 +10,48 @@
         </ol>
     </nav>
     <div class="rounded-4 p-3 bg-white shadow-sm border">
-        <div class="list-group list-group-flush">
-            <a href='@Url.Page("/Setting/Position")' class="text-decoration-none list-group-item list-group-item-action">
-                <div><i class="bi bi-database"></i> ข้อมูลตำแหน่ง</div>
-            </a>
-            <a href='@Url.Page("/Setting/Department")' class="text-decoration-none list-group-item list-group-item-action">
-                <div><i class="bi bi-database"></i> ข้อมูลฝ่ายงาน</div>
-            </a>
+        <div class="row">
+            <div class="col-sm-4 mb-3">
+                <div class="fw-bolder mb-2">Data Master</div>
+                <div class="list-group list-group-flush">
+                    <a href='@Url.Page("/Setting/Position")' class="text-decoration-none list-group-item list-group-item-action">
+                        <div><i class="bi bi-database me-2"></i> ตำแหน่ง</div>
+                    </a>
+                    <a href='@Url.Page("/Setting/Department")' class="text-decoration-none list-group-item list-group-item-action">
+                        <div><i class="bi bi-database me-2"></i> ฝ่ายงาน</div>
+                    </a>
+                    <a href='@Url.Page("/Setting/Prefix")' class="text-decoration-none list-group-item list-group-item-action">
+                        <div><i class="bi bi-database me-2"></i> คำนำหน้า</div>
+                    </a>
+                    <a href='@Url.Page("/Setting/Nationality")' class="text-decoration-none list-group-item list-group-item-action">
+                        <div><i class="bi bi-database me-2"></i> สัญชาติ</div>
+                    </a>
+                    <a href='@Url.Page("/Setting/Ethnicity")' class="text-decoration-none list-group-item list-group-item-action">
+                        <div><i class="bi bi-database me-2"></i> เชื้อชาติ</div>
+                    </a>
+                    <a href='@Url.Page("/Setting/Religion")' class="text-decoration-none list-group-item list-group-item-action">
+                        <div><i class="bi bi-database me-2"></i> ศาสนา</div>
+                    </a>
+                    <a href='@Url.Page("/Setting/Marital")' class="text-decoration-none list-group-item list-group-item-action">
+                        <div><i class="bi bi-database me-2"></i> สถานะภาพการสมรส</div>
+                    </a>
+                    <a href='@Url.Page("/Setting/Military")' class="text-decoration-none list-group-item list-group-item-action">
+                        <div><i class="bi bi-database me-2"></i> สถานะทางการทหาร</div>
+                    </a>
+                    <a href='@Url.Page("/Setting/Disability")' class="text-decoration-none list-group-item list-group-item-action">
+                        <div><i class="bi bi-database me-2"></i> สถานะความพิการ</div>
+                    </a>
+                    <a href='@Url.Page("/Setting/WorkMode")' class="text-decoration-none list-group-item list-group-item-action">
+                        <div><i class="bi bi-database me-2"></i> รูปแบบการทำงาน</div>
+                    </a>
+                    <a href='@Url.Page("/Setting/WorkTime")' class="text-decoration-none list-group-item list-group-item-action">
+                        <div><i class="bi bi-database me-2"></i> บันทึกเวลาเข้าออก</div>
+                    </a>
+                    <a href='@Url.Page("/Setting/OTMode")' class="text-decoration-none list-group-item list-group-item-action">
+                        <div><i class="bi bi-database me-2"></i> ค่าล่วงเวลา</div>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>

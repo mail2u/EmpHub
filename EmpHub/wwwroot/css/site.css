@@ -805,6 +805,12 @@ main {
     background-position: right 5px center;
 }
 
+.icon-search {
+    background-image: url('../images/search.png');
+    background-repeat: no-repeat;
+    background-position: right 5px center;
+}
+
 @media (min-width: 992px) {
     .col-1-of-10 {
         flex: 0 0 auto;

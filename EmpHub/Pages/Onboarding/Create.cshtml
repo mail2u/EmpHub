@@ -4,7 +4,6 @@
     ViewData["Title"] = "Onboarding";
     var token = User.AccessToken(HttpContext);
 }
-
 @section PageHeader {
     <!-- [ page-header ] start -->
     <div class="page-header">
@@ -20,118 +19,44 @@
         </div>
     </div>
 }
-
 <div ng-controller="ManageCtrl" class="p-2">
-    <div class="d-flex">
-        <div class="mb-3 me-2">
-            <div class="fs-4">Create</div>
+
+    <div class="rounded-4 border shadow-sm p-3 bg-white text-dark mb-3">
+        <div class="fs-4 fw-bolder">
+            Search Existing Employee
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <div>เลขประจำตัวประชาชน</div>
+                <input ng-model="iData.idcard" class="form-control" maxlength="13" />
+            </div>
         </div>
     </div>
-    <div class="rounded-4 border shadow-sm p-3 bg-white">
-        <div class="fs-4">
-            System
-        </div>
-        <div class="row">
-            <div class="col-sm-4">
-                <div class="fw-bolder">Username</div>
-                <input ng-model="iData.username" class="form-control" maxlength="50" />
-            </div>
-        </div>
-        <hr />
-        <div class="fs-4">
-            Personal
-        </div>
-        <div class="row">
-            <div class="col-sm-4 mb-3">
-                <div class="fw-bolder">firstname (TH)</div>
-                <input ng-model="iData.firstname_th" class="form-control" maxlength="50" />
-            </div>
-            <div class="col-sm-4 mb-3">
-                <div class="fw-bolder">lastname (TH)</div>
-                <input ng-model="iData.lastname_th" class="form-control" maxlength="50" />
-            </div>
-            <div class="col-sm-4 mb-3">
-                <div class="fw-bolder">Nickname</div>
-                <input ng-model="iData.nickname" class="form-control" maxlength="50" />
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-4 mb-3">
-                <div class="fw-bolder">firstname (EN)</div>
-                <input ng-model="iData.firstname" class="form-control" maxlength="50" />
-            </div>
-            <div class="col-sm-4 mb-3">
-                <div class="fw-bolder">lastname (EN)</div>
-                <input ng-model="iData.lastname" class="form-control" maxlength="50" />
-            </div>
-            <div class="col-sm-2 mb-3">
-                <div class="fw-bolder">Birth Date</div>
-                <input ng-model="iData.birth_date" class="form-control" maxlength="50" />
-            </div>
-            <div class="col-sm-2 mb-3">
-                <div class="fw-bolder">Sex</div>
-                <input ng-model="iData.sex" class="form-control" maxlength="50" />
-            </div>
-        </div>
-        <div class="fs-4">
-            Contact
-        </div>
-        <div class="row">
-            <div class="col-sm-4 mb-3">
-                <div class="fw-bolder">E-mail</div>
-                <input ng-model="iData.email" class="form-control" maxlength="50" />
-            </div>
-            <div class="col-sm-4 mb-3">
-                <div class="fw-bolder">Phone No</div>
-                <input ng-model="iData.phoneNo" class="form-control" maxlength="50" />
-            </div>
-            <div class="col-sm-2 mb-3">
-                <div class="fw-bolder">Ext</div>
-                <input ng-model="iData.phoneNo" class="form-control" maxlength="4" />
-            </div>
-        </div>
-        <div class="fs-4">
-            Employee
-        </div>
-        <div class="row">
-            <div class="col-sm-4 mb-3">
-                <div class="fw-bolder">Employee Code</div>
-                <select ng-model="iData.employeeCode" class="form-select" ng-options="x.code as x.desc_th for x in lPosition"></select>
-            </div>
-            <div class="col-sm-4 mb-3">
-                <div class="fw-bolder">Type</div>
-                <select ng-model="iData.employeeType" class="form-select" ng-options="x.code as x.desc_th for x in lDepartment"></select>
-            </div>
-            <div class="col-sm-4 mb-3">
-                <div class="fw-bolder">Join Date</div>
-                <select ng-model="iData.join_date" class="form-select" ng-options="x.code as x.desc_th for x in lDepartment"></select>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-4 mb-3">
-                <div class="fw-bolder">Position</div>
-                <select ng-model="iData.positionCode" class="form-select" ng-options="x.code as x.desc_th for x in lPosition"></select>
-            </div>
-            <div class="col-sm-4 mb-3">
-                <div class="fw-bolder">Department</div>
-                <select ng-model="iData.departmentCode" class="form-select" ng-options="x.code as x.desc_th for x in lDepartment"></select>
-            </div>
-            <div class="col-sm-4 mb-3">
-                <div class="fw-bolder">Head</div>
-                <select ng-model="iData.departmentCode" class="form-select" ng-options="x.code as x.desc_th for x in lDepartment"></select>
-            </div>
-        </div>
-        <div class="text-end mt-2">
-            <button class="btn btn-primary" ng-click="Update()">
-                <i class="far fa-paper-plane me-2"></i> Submit
-            </button>
-        </div>
+    <partial name="_PartialOnboard" />
+    <div class="text-end mt-2">
+        <button class="btn btn-primary" ng-click="Update()">
+            <i class="far fa-paper-plane me-2"></i> Submit
+        </button>
     </div>
 </div>
 <script>
     app.controller('ManageCtrl', function ($scope, $http, $timeout, $filter) {
         $scope.page = 1
         $scope.row = 10;
+
+        $scope.lProcessType = [
+            { key: 'เข้าใหม่', value: 'new' }
+            , { key: 'กลับเข้าใหม่', value: 'comeback' }
+            , { key: 'reinstatement', value: 'reinstatement' }
+        ];
+        $scope.lSex = [
+            { key: 'ชาย', value: 'M' }
+            , { key: 'หญิง', value: 'F' }
+        ];
+
+        $scope.iPersonal = {};
+        $scope.iEmployee = {};
+        $scope.iAddress = {};
 
         $scope.LoadInit = function(){
             $.ajax({
@@ -168,34 +93,316 @@
                 }
                 , error: AjaxError
             });
-        }
-        $scope.LoadInit();
-
-        $scope.LoadData = function (page = 1) {
-            $scope.page = page;
-
             $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/User/FullList'
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
                 , headers: { 'authorization': 'Bearer @token' }
                 , type: 'post'
                 , contentType: 'application/json'
                 , dataType: 'json'
                 , cache: false
                 , data: JSON.stringify({
-                    page: $scope.page
-                    , row: $scope.row
-                    , firstname: $scope.subject
+                    groupName: 'Disability'
                 })
                 , success: function (result) {
                     $timeout(function () {
-                        $scope.lData = result.data;
-                        $scope.total = result.total;
+                        $scope.lDisability = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'Ethnicity'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lEthnicity = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'Marital'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lMarital = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'Military'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lMilitary = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'Nationality'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lNationality = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'Religion'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lReligion = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'Prefix'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lPrefix = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'WorkMode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lWorkMode = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'OTMode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lOTMode = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/Address'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , dataType: 'json'
+                , cache: false
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lAddress = result;
                     }, 0);
                 }
                 , error: AjaxError
             });
         }
-        $scope.LoadData();
+        $scope.LoadInit();
+
+        $scope.ShowAddress = function (type) {
+            $scope.address_type = type;
+            $("#addressModal").modal('show');
+        }
+
+        $scope.SelectAddress = function (x) {
+            $timeout(function () {
+                console.log($scope.address_type);
+                if ($scope.address_type == 'registered') {
+                    $scope.iAddress.registered_subDistrictCode = x.subDistrictCode;
+                    $scope.iAddress.registered_subDistrictName = x.subDistrictName;
+                    $scope.iAddress.registered_districtCode = x.districtCode;
+                    $scope.iAddress.registered_districtName = x.districtName;
+                    $scope.iAddress.registered_provinceCode = x.provinceCode;
+                    $scope.iAddress.registered_provinceName = x.provinceName;
+                    $scope.iAddress.registered_postcode = x.postcode;
+                } else if ($scope.address_type == 'card') {
+                    $scope.iAddress.card_subDistrictCode = x.subDistrictCode;
+                    $scope.iAddress.card_subDistrictName = x.subDistrictName;
+                    $scope.iAddress.card_districtCode = x.districtCode;
+                    $scope.iAddress.card_districtName = x.districtName;
+                    $scope.iAddress.card_provinceCode = x.provinceCode;
+                    $scope.iAddress.card_provinceName = x.provinceName;
+                    $scope.iAddress.card_postcode = x.postcode;
+                } else if ($scope.address_type == 'live') {
+                    $scope.iAddress.live_subDistrictCode = x.subDistrictCode;
+                    $scope.iAddress.live_subDistrictName = x.subDistrictName;
+                    $scope.iAddress.live_districtCode = x.districtCode;
+                    $scope.iAddress.live_districtName = x.districtName;
+                    $scope.iAddress.live_provinceCode = x.provinceCode;
+                    $scope.iAddress.live_provinceName = x.provinceName;
+                    $scope.iAddress.live_postcode = x.postcode;
+                }
+                $("#addressModal").modal('hide');
+            }, 0);
+        }
+
+        $scope.CalcAge = function(){
+            $scope.iPersonal.age = '';
+
+            if ($scope.iPersonal.birth_date_select) {
+                const b = new Date($scope.iPersonal.birth_date_select);
+                const c = new Date();
+
+                let years = c.getFullYear() - b.getFullYear();
+                let months = c.getMonth() - b.getMonth();
+                let days = c.getDate() - b.getDate();
+
+                // ถ้าวันติดลบ → ยืมเดือน
+                if (days < 0) {
+                    months--;
+
+                    // เอาจำนวนวันของเดือนก่อนหน้า
+                    const prevMonth = new Date(c.getFullYear(), c.getMonth(), 0);
+                    days += prevMonth.getDate();
+                }
+
+                // ถ้าเดือนติดลบ → ยืมปี
+                if (months < 0) {
+                    years--;
+                    months += 12;
+                }
+
+                if (years > 0) {
+                    $scope.iPersonal.age = years + ' ปี ';
+                }
+                if (months > 0) {
+                    $scope.iPersonal.age += months + ' เดือน ';
+                }
+                if (days > 0) {
+                    $scope.iPersonal.age += days + ' วัน';
+                }
+            }
+        }
+
+        $scope.calcProbationDay = function(){
+            $scope.iEmployee.probation_day = 0;
+
+            if ($scope.iEmployee.join_date_select && $scope.iEmployee.probation_end_date_select) {
+                const startStr = $scope.iEmployee.join_date_select.format("DD/MM/YYYY");
+                const endStr = $scope.iEmployee.probation_end_date_select.format("DD/MM/YYYY");
+                const start = ConvertToDate(startStr);
+                const end = ConvertToDate(endStr);
+                const diffTime = end - start;
+
+                $scope.iEmployee.probation_day = parseInt(diffTime / (1000 * 60 * 60 * 24)) + 1;
+            }
+        }
+
+        // $scope.calcProbationDate = function () {
+        //     $scope.iEmployee.probation_end_date_select = null;
+
+        //     if ($scope.iEmployee.join_date_select && $scope.iEmployee.probation_day > 0){
+        //         var startStr = ConvertToDate($scope.iEmployee.join_date_select.format("DD/MM/YYYY"));
+        //         var end = startStr.addDays($scope.iEmployee.probation_day);
+        //         console.log(end);
+        //         $scope.iEmployee.probation_end_date_select = new moment(end);
+        //     }
+        // }
+
+        $scope.SelectWorkMode = function(){
+            $scope.iEmployee.workTime = '';
+
+            if ($scope.iEmployee.workMode) {
+                var find = $scope.lWorkMode.find(item => item.code == $scope.iEmployee.workMode);
+                if(find){
+                    $scope.iEmployee.workTime = find.condition_1 + '-' + find.condition_2;
+                }
+            }
+        }
+
+        $scope.ShowSupervisor = function(){
+            if (!$scope.lEmployee) {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/User/DataList'
+                    , headers: { 'authorization': 'Bearer @token' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , dataType: 'json'
+                    , cache: false
+                    , data: JSON.stringify({
+                        page: 1
+                        , row: 999
+                    })
+                    , success: function (result) {
+                        $timeout(function () {
+                            $scope.lEmployee = result.data;
+                            $("#supervisorModal").modal('show');
+                        }, 0);
+                    }
+                    , error: AjaxError
+                });
+            } else {
+                $("#supervisorModal").modal('show');
+            }
+        }
+
+        $scope.SelectSupervisor = function(x){
+            $scope.iEmployee.supervisorId = x.userId;
+            $scope.iEmployee.supervisorName = x.firstname_th + ' ' + x.lastname_th;
+        }
 
         $scope.New = function (x) {
             $scope.iData = { username: '', password: '', firstname: '', lastname: '' };
