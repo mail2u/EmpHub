@@ -67,7 +67,7 @@
         </div>
         <div class="col-sm-3 mb-3">
             <div>ชื่อ <span class="text-danger">*</span></div>
-            <input ng-model="iPersonal.firthname_th" class="form-control form-input firthname_th" />
+            <input ng-model="iPersonal.firstname_th" class="form-control form-input firstname_th" />
         </div>
         <div class="col-sm-3 mb-3">
             <div>นามสกุล <span class="text-danger">*</span></div>
@@ -84,7 +84,7 @@
         </div>
         <div class="col-sm-3 mb-3">
             <div>ชื่อ</div>
-            <input ng-model="iPersonal.firthname_en" class="form-control form-input firthname_en" />
+            <input ng-model="iPersonal.firstname_en" class="form-control form-input firstname_en" />
         </div>
         <div class="col-sm-3 mb-3">
             <div>นามสกุล</div>
@@ -96,7 +96,6 @@
             <div>วันเกิด <span class="text-danger">*</span></div>
             <input class="form-control form-input date birth_date icon-calendar"
                    ng-model="iPersonal.birth_date_select"
-                   ng-model-options="{ updateOn: 'blur' }"
                    moment-picker="iPersonal.birth_date_select"
                    locale="th"
                    format="DD/MM/YYYY"
@@ -235,7 +234,7 @@
         </div>
         <div class="col-sm-3 mb-3">
             <div>อีเมล์ที่ใช้ในบริษัท</div>
-            <input ng-model="iEmployee.email_office" class="form-control form-input" maxlength="50" />
+            <input ng-model="iEmployee.email" class="form-control form-input" maxlength="50" />
         </div>
     </div>
 </div>

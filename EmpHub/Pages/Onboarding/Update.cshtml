@@ -1,5 +1,5 @@
 ﻿@page
-@model EmpHub.Pages.Onboarding.CreateModel
+@model EmpHub.Pages.Onboarding.UpdateModel
 @{
     ViewData["Title"] = "Onboarding";
     var token = User.AccessToken(HttpContext);
@@ -14,7 +14,7 @@
             <ul class="breadcrumb">
                 <li class="breadcrumb-item"><a href="@Url.Page("/Index")">Home</a></li>
                 <li class="breadcrumb-item"><a href="@Url.Page("Index")">Onboarding</a></li>
-                <li class="breadcrumb-item">Create</li>
+                <li class="breadcrumb-item">Update</li>
             </ul>
         </div>
     </div>
@@ -34,8 +34,8 @@
     </div>
     <partial name="_PartialOnboard" />
     <div class="text-end mt-2">
-        <button class="btn btn-primary" ng-click="Create()">
-            <i class="far fa-paper-plane me-2"></i> Submit
+        <button class="btn btn-primary" ng-click="Save()">
+            <i class="far fa-paper-plane me-2"></i> Save Change
         </button>
     </div>
 </div>
@@ -43,6 +43,7 @@
     app.controller('ManageCtrl', function ($scope, $http, $timeout, $filter) {
         $scope.page = 1
         $scope.row = 10;
+        $scope.userId = '@Model.userId';
 
         $scope.lProcessType = [
             { key: 'เข้าใหม่', value: 'new' }
@@ -262,6 +263,74 @@
         }
         $scope.LoadInit();
 
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserPersonal'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    userId: $scope.userId
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.iPersonal = result.data;
+
+                        if ($scope.iPersonal.birth_date) {
+                            $scope.iPersonal.birth_date_select = moment($scope.iPersonal.birth_date, "DD/MM/YYYY");
+                        }
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+            
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserAddress'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    userId: $scope.userId
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.iAddress = result.data;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserEmployee'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    userId: $scope.userId
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.iEmployee = result.data;
+
+                        if ($scope.iEmployee.join_date) {
+                            $scope.iEmployee.join_date_select = moment($scope.iEmployee.join_date, "DD/MM/YYYY");
+                        }
+                        if ($scope.iEmployee.probation_end_date) {
+                            $scope.iEmployee.probation_end_date_select = moment($scope.iEmployee.probation_end_date, "DD/MM/YYYY");
+                        }
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
         $scope.ShowAddress = function (type) {
             $scope.address_type = type;
             $("#addressModal").modal('show');
@@ -351,17 +420,6 @@
             }
         }
 
-        // $scope.calcProbationDate = function () {
-        //     $scope.iEmployee.probation_end_date_select = null;
-
-        //     if ($scope.iEmployee.join_date_select && $scope.iEmployee.probation_day > 0){
-        //         var startStr = ConvertToDate($scope.iEmployee.join_date_select.format("DD/MM/YYYY"));
-        //         var end = startStr.addDays($scope.iEmployee.probation_day);
-        //         console.log(end);
-        //         $scope.iEmployee.probation_end_date_select = new moment(end);
-        //     }
-        // }
-
         $scope.SelectWorkMode = function(){
             $scope.iEmployee.workTime = '';
 
@@ -404,63 +462,23 @@
             $scope.iEmployee.supervisorName = x.firstname_th + ' ' + x.lastname_th;
         }
 
-        $scope.Create = async function () {
-            var iUser = await $scope.CreateOnboard();
-
+        $scope.Save = async function () {
             $scope.iPersonal.create_by = '@User.UserId()';
-            $scope.iPersonal.userId = iUser.userId;
 
             var flag = await $scope.SavePersonal();
+            flag = await $scope.SaveEmployee();
+            flag = await $scope.SaveAddress();
 
-            if (flag) {
-                $scope.iEmployee.create_by = '@User.UserId()';
-                $scope.iEmployee.userId = iUser.userId;
-
-                flag = await $scope.SaveEmployee();
-
-                if (flag) {
-                    $scope.iAddress.create_by = '@User.UserId()';
-                    $scope.iAddress.userId = iUser.userId;
-
-                    flag = await $scope.SaveAddress();
-
-                    if (flag) {
-                        alertSuccess("Create Onboarding", "Success");
-                    }
-                }
+            if(flag){
+                alertSuccess("Save Change", "Success");
             }
-
-            if(flag == false){
-                await $scope.CancelOnboard(iUser.userId);
-            }
-        }
-
-        $scope.CreateOnboard = function(){
-            return new Promise((resolve) => {
-                $.ajax({
-                    url: '@webAPI.CurrentValue.APIEmpHub/api/Onboard/Create'
-                    , headers: { 'authorization': 'Bearer @token' }
-                    , type: 'post'
-                    , contentType: 'application/json'
-                    , dataType: 'json'
-                    , cache: false
-                    , data: JSON.stringify({
-                        create_by: '@User.UserId()'
-                    })
-                    , success: function (result) {
-                        $timeout(function () {
-                            resolve(result);
-                        }, 0);
-                    }
-                    , error: function () {
-                        alertWarning("Save Onboard", "Error");
-                        resolve(null);
-                    }
-                });
-            });
         }
 
         $scope.SavePersonal = function () {
+            if ($scope.iPersonal.birth_date_select) {
+                $scope.iPersonal.birth_date = $scope.iPersonal.birth_date_select.format("DD/MM/YYYY");
+            }
+
             return new Promise((resolve) => {
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserPersonalSave'
@@ -483,6 +501,13 @@
         }
 
         $scope.SaveEmployee = function () {
+            if ($scope.iEmployee.join_date_select){
+                $scope.iEmployee.join_date = $scope.iEmployee.join_date_select.format("DD/MM/YYYY");
+            }
+            if ($scope.iEmployee.probation_end_date_select) {
+                $scope.iEmployee.probation_end_date = $scope.iEmployee.probation_end_date_select.format("DD/MM/YYYY");
+            }
+
             return new Promise((resolve) => {
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserEmployeeSave'
@@ -520,31 +545,6 @@
                     }
                     , error: function () {
                         alertWarning("Save Data Address", "Error");
-                        resolve(false);
-                    }
-                });
-            });
-        }
-
-        $scope.CancelOnboard = function (userId) {
-            return new Promise((resolve) => {
-                $.ajax({
-                    url: '@webAPI.CurrentValue.APIEmpHub/api/Onboard/Delete'
-                    , headers: { 'authorization': 'Bearer @token' }
-                    , type: 'post'
-                    , contentType: 'application/json'
-                    , cache: false
-                    , data: JSON.stringify({
-                        userId: userId
-                        , update_by: '@User.UserId()'
-                    })
-                    , success: function () {
-                        $timeout(function () {
-                            resolve(true);
-                        }, 0);
-                    }
-                    , error: function () {
-                        alertWarning("Save Onboard", "Error");
                         resolve(false);
                     }
                 });

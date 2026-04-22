@@ -57,19 +57,21 @@
                         </div>
                     </td>
                     <td>
-                        <div class="text-secondary">{{ x.firstname_th + ' ' + x.lastname_th }}</div>
-                        <div class="text-dark">{{ x.firstname_en + ' ' + x.lastname_en }}</div>
+                        <div class="text-secondary">{{ x.firstname + ' ' + x.lastname }}</div>
                     </td>
                     <td>
                         <div class="text-secondary">{{ x.positionDesc }} {{ x.departmentDesc }}</div>
                         <div>{{ x.email != '' ? x.email : '-'}}</div>
                     </td>
                     <td>
+                        <span class="badge bg-info">{{ x.status }}</span>
+                    </td>
+                    <td>
                         join date
                     </td>
                     <td width="50">
-                        <div class="btn btn-circle">
-                            <i class="far fa-trash-alt"></i>
+                        <div class="btn btn-circle" ng-click="Edit(x)">
+                            <i class="bi bi-pen-fill"></i>
                         </div>
                     </td>
                 </tr>
@@ -82,49 +84,11 @@
         $scope.page = 1
         $scope.row = 10;
 
-        $scope.LoadInit = function(){
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
-                , headers: { 'authorization': 'Bearer @token' }
-                , type: 'post'
-                , contentType: 'application/json'
-                , dataType: 'json'
-                , cache: false
-                , data: JSON.stringify({
-                    groupName: 'departmentCode'
-                })
-                , success: function (result) {
-                    $timeout(function () {
-                        $scope.lDepartment = result;
-                    }, 0);
-                }
-                , error: AjaxError
-            });
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
-                , headers: { 'authorization': 'Bearer @token' }
-                , type: 'post'
-                , contentType: 'application/json'
-                , dataType: 'json'
-                , cache: false
-                , data: JSON.stringify({
-                    groupName: 'positionCode'
-                })
-                , success: function (result) {
-                    $timeout(function () {
-                        $scope.lPosition = result;
-                    }, 0);
-                }
-                , error: AjaxError
-            });
-        }
-        $scope.LoadInit();
-
         $scope.LoadData = function (page = 1) {
             $scope.page = page;
 
             $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/User/FullList'
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Onboard/DataList'
                 , headers: { 'authorization': 'Bearer @token' }
                 , type: 'post'
                 , contentType: 'application/json'
@@ -133,7 +97,7 @@
                 , data: JSON.stringify({
                     page: $scope.page
                     , row: $scope.row
-                    , firstname: $scope.subject
+                    , firstname: $scope.search
                 })
                 , success: function (result) {
                     $timeout(function () {
@@ -146,138 +110,8 @@
         }
         $scope.LoadData();
 
-        $scope.New = function (x) {
-            $scope.iData = { username: '', password: '', firstname: '', lastname: '' };
-            $("#CreateModal").modal('show');
-        }
-
-        $scope.Create = function () {
-            $scope.iData.create_by = '@User.UserId()';
-            $("#CreateModal").modal('hide');
-
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/User/Create'
-                , headers: { 'authorization': 'Bearer @token' }
-                , type: 'post'
-                , contentType: 'application/json'
-                , cache: false
-                , data: JSON.stringify($scope.iData)
-                , success: function () {
-                    $timeout(function () {
-                        $scope.LoadData($scope.page);
-                    }, 0);
-                }
-                , error: AjaxError
-            });
-        }
-
-        $scope.ShowEdit = function (x) {
-            $scope.iData = x;
-            $("#DetailModal").modal('show');
-        }
-
-        $scope.Update = function () {
-            $scope.iData.update_by = '@User.UserId()';
-            $("#DetailModal").modal('hide');
-
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/User/Update'
-                , headers: { 'authorization': 'Bearer @token' }
-                , type: 'post'
-                , contentType: 'application/json'
-                , cache: false
-                , data: JSON.stringify($scope.iData)
-                , success: function () {
-                    $timeout(function () {
-                        $scope.LoadData($scope.page);
-                    }, 0);
-                }
-                , error: AjaxError
-            });
-        }
-
-        $scope.Delete = function(x){
-            alertConfirm('ยืนยันการทำรายการ', 'ท่านต้องการลบข้อมูลผู้ใช้งานนี้', function () {
-                x.update_by = '@User.UserId()';
-                $.ajax({
-                    url: '@webAPI.CurrentValue.APIEmpHub/api/User/Delete'
-                    , headers: { 'authorization': 'Bearer @token' }
-                    , type: 'post'
-                    , contentType: 'application/json'
-                    , cache: false
-                    , data: JSON.stringify(x)
-                    , success: function () {
-                        $timeout(function () {
-                            $scope.LoadData($scope.page);
-                        }, 0);
-                    }
-                    , error: AjaxError
-                });
-            });
-        }
-
-        $scope.ShowChangePass = function (x) {
-            $scope.iData = x;
-            $("#ChangePassModal").modal('show');
-        }
-
-        $scope.ChangePass = function () {
-            $scope.iData.update_by = '@User.UserId()';
-            $("#ChangePassModal").modal('hide');
-
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/User/ChangePassword'
-                , headers: { 'authorization': 'Bearer @token' }
-                , type: 'post'
-                , contentType: 'application/json'
-                , cache: false
-                , data: JSON.stringify($scope.iData)
-                , success: function () {
-                    $timeout(function () {
-                        $scope.LoadData($scope.page);
-                    }, 0);
-                }
-                , error: AjaxError
-            });
-        }
-
-        $scope.Resend = function (x) {
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/Mail/Resend'
-                , headers: { 'authorization': 'Bearer @token' }
-                , type: 'post'
-                , contentType: 'application/json'
-                , cache: false
-                , data: JSON.stringify({
-                    id: x.id
-                })
-                , success: function () {
-                    $timeout(function () {
-                        alertSuccess("ส่งเมล์สำเร็จ", "ดำเนินการส่งเมล์เรียบร้อยแล้ว");
-                        $scope.LoadData($scope.page);
-                    }, 0);
-                }
-                , error: AjaxError
-            });
-        }
-
-        $scope.UpdateSync = function (x) {
-            return new Promise((resolve) => {
-                $.ajax({
-                    url: '@webAPI.CurrentValue.APIEmpHub/api/User/SyncData'
-                    , headers: { 'authorization': 'Bearer @token' }
-                    , type: 'post'
-                    , contentType: 'application/json'
-                    , cache: false
-                    , data: JSON.stringify(x)
-                    , success: function (data) {
-                        resolve(true);
-                    }
-                    , error: function(){
-                        resolve(false);
-                    }
-                });
-            });
+        $scope.Edit = function(x){
+            window.open('@Url.Page("Update")?userId=' + x.userId);
         }
 
         $scope.Download = function () {
