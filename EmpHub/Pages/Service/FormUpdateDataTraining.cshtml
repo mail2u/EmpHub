@@ -17,6 +17,22 @@
     .list-item-box:hover{
         border: 2px solid var(--bs-blue);
     }
+
+    .form-input {
+        padding: 5px;
+        border: 0px;
+        border-radius: 0;
+        border-bottom: 2px solid var(--bs-gray-400);
+        background-color: #fcfcfc;
+    }
+
+    .form-input:focus {
+        border-bottom: 2px solid var(--tip-blue);
+    }
+
+    input.form-input:read-only {
+        background-color: var(--bs-gray-200);
+    }
 </style>
 <div ng-controller="ServiceTrainingCtrl">
     @* Header *@
@@ -29,12 +45,16 @@
                     <div class="fw-bolder">
                         #{{ $index + 1 }}
                     </div>
-                    <div class="row flex-fill">
-                        <div class="col-sm-9 mb-3">
+                    <div class="d-flex flex-fill mb-3">
+                        <div class="flex-fill me-3">
                             <div class="text-dark fs-5">ชื่อใบอนุญาต</div>
                             <input ng-model="x.license" class="form-control" />
                         </div>
-                        <div class="col-sm-3 mb-3">
+                        <div class="flex-fill me-3">
+                            <div class="text-dark fs-5">องค์กรที่ออกเอกสาร</div>
+                            <input ng-model="x.organization" class="form-control" />
+                        </div>
+                        <div class="me-3" style="width:150px;">
                             <div class="text-dark fs-5">วันที่ออกเอกสาร</div>
                             <input class="form-control icon-calendar target"
                                    ng-model="x.issue_date_select"
@@ -45,11 +65,7 @@
                                    min-view="month"
                                    max-view="month" required />
                         </div>
-                        <div class="col-sm-9 mb-3">
-                            <div class="text-dark fs-5">องค์กรที่ออกเอกสาร</div>
-                            <input ng-model="x.organization" class="form-control" />
-                        </div>
-                        <div class="col-sm-3 mb-3">
+                        <div class="" style="width:150px;">
                             <div class="text-dark fs-5">วันที่หมดอายุ</div>
                             <input class="form-control icon-calendar target"
                                    ng-model="x.expire_date_select"
@@ -60,16 +76,16 @@
                                    min-view="month"
                                    max-view="month" required />
                         </div>
-                        <div class="col-sm-12 mb-3">
-                            <div class="text-dark fs-5">รายละเอียด</div>
-                            <textarea ng-model="x.description" class="form-control" rows="5" maxlength="4000"></textarea>
-                        </div>
                     </div>
-                    <div class="text-end">
+                    <div class="mb-3">
+                        <div class="text-dark fs-5">รายละเอียด</div>
+                        <textarea ng-model="x.description" class="form-control" rows="5" maxlength="4000"></textarea>
+                    </div>
+                   @*  <div class="text-end">
                         <div class="btn btn-warning-invert bg-white" ng-click="Delete(x)">
                             <i class="far fa-trash-alt me-2"></i>ลบรายการ
                         </div>
-                    </div>
+                    </div> *@
                 </div>
             </div>
         </div>

@@ -7,60 +7,107 @@
     .main-content{
         min-height:calc(100vh - 150px) !important;
     }
+
+    .form-input {
+        padding: 5px;
+        border: 0px;
+        border-radius: 0;
+        border-bottom: 2px solid var(--bs-gray-400);
+        background-color: #fcfcfc;
+    }
+
+    .form-input:focus {
+        border-bottom: 2px solid var(--tip-blue);
+    }
+
+    input.form-input:read-only {
+        background-color: var(--bs-gray-200);
+    }
 </style>
 <div ng-controller="ServicePersonalCtrl" id="tab_personal">
     @* Header *@
     <partial name="_PartialFormHeader" />
     @* View *@
     <div class="rounded-4 mb-3 bg-white shadow-sm p-4">
-     @*    <div class="text-center mb-4">
-            <img src="~/Images/icon-user.png" class="rounded-pill" width="200px" />
-        </div> *@
         <div class="d-flex">
-           <div class="row">
+            <div class="row text-dark">
                 <div class="col-sm-4 mb-3">
-                    <div class="text-dark fs-5">ชื่อ <i class="text-danger">*</i></div>
-                    <input ng-model="iData.firstname_th" class="form-control firstname_th" />
-                </div>
-                <div class="col-sm-4 mb-3">
-                    <div class="text-dark fs-5">นามสกุล <i class="text-danger">*</i></div>
-                    <input ng-model="iData.lastname_th" class="form-control lastname_th" />
+                    <div>คำนำหน้า (ภาษาไทย) <span class="text-danger">*</span></div>
+                    <select ng-model="iData.prefix_th" class="form-select form-input prefix_th" ng-options="x.code as x.desc_th for x in lPrefix"></select>
                 </div>
                 <div class="col-sm-4 mb-3">
-                    <div class="text-dark fs-5">ชื่อเล่น</div>
-                    <input ng-model="iData.nickname" class="form-control" />
+                    <div>ชื่อ (ภาษาไทย) <span class="text-danger">*</span></div>
+                    <input ng-model="iData.firstname_th" class="form-control form-input firstname_th" />
                 </div>
                 <div class="col-sm-4 mb-3">
-                    <div class="text-dark fs-5">Firstname</div>
-                    <input ng-model="iData.firstname_en" class="form-control" />
+                    <div>นามสกุล (ภาษาไทย) <span class="text-danger">*</span></div>
+                    <input ng-model="iData.lastname_th" class="form-control form-input lastname_th" />
                 </div>
                 <div class="col-sm-4 mb-3">
-                    <div class="text-dark fs-5">Lastname</div>
-                    <input ng-model="iData.lastname_en" class="form-control" />
+                    <div>คำนำหน้า (ภาษาอังกฤษ) </div>
+                    <select ng-model="iData.prefix_en" class="form-select form-input prefix_en" ng-options="x.code as x.desc_en for x in lPrefix"></select>
                 </div>
-                <div class="col-sm-2 mb-3">
-                    <div class="text-dark fs-5">วันเกิด (ค.ศ.)</div>
-                    <input class="form-control icon-calendar date"
-                            ng-model="iData.birth_date_select"
-                            ng-model-options="{ updateOn: 'blur' }"
-                            moment-picker="iData.birth_date_select"
-                            locale="th"
-                            format="DD/MM/YYYY"
-                            min-view="month"
-                            max-view="month" required />
+                <div class="col-sm-4 mb-3">
+                    <div>ชื่อ (ภาษาอังกฤษ) </div>
+                    <input ng-model="iData.firstname_en" class="form-control form-input firstname_en" />
                 </div>
-                <div class="col-sm-2 mb-3">
-                    <div class="text-dark fs-5">เพศ</div>
-                    <div class="d-flex align-items-center p-2">
-                        <div class="me-4">
-                            <input ng-model="iData.sex" type="radio" value="Male" id="ra_male" />
-                            <label for="ra_male">ชาย</label>
-                        </div>
-                        <div>
-                            <input ng-model="iData.sex" type="radio" value="Female" id="ra_female" />
-                            <label for="ra_female">หญิง</label>
-                        </div>
-                    </div>
+                <div class="col-sm-4 mb-3">
+                    <div>นามสกุล (ภาษาอังกฤษ) </div>
+                    <input ng-model="iData.lastname_en" class="form-control form-input lastname_en" />
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">ชื่อเล่น</div>
+                    <input ng-model="iData.nickname" class="form-control form-input nickname" />
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">วันเกิด</div>
+                    <input class="form-control form-input date birth_date icon-calendar"
+                           ng-model="iData.birth_date_select"
+                           moment-picker="iData.birth_date_select"
+                           locale="th"
+                           format="DD/MM/YYYY"
+                           min-view="month"
+                           max-view="month" required />
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">เพศ</div>
+                    <select ng-model="iData.sex" class="form-select form-input sex" ng-options="x.value as x.key for x in lSex"></select>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">น้ำหนัก</div>
+                    <input ng-model="iData.weight" class="form-control form-input weight" />
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">ส่วนสูง</div>
+                    <input ng-model="iData.height" class="form-control form-input height" />
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">กรุ๊ปเลือด</div>
+                    <input ng-model="iData.blood" class="form-control form-input" maxlength="3" />
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">สัญชาติ</div>
+                    <select ng-model="iData.nationality" class="form-select form-input nationality" ng-options="x.code as x.desc_th for x in lNationality"></select>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">เชื้อชาติ</div>
+                    <select ng-model="iData.ethnicity" class="form-select form-input ethnicity" ng-options="x.code as x.desc_th for x in lEthnicity"></select>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">ศาสนา</div>
+                    <select ng-model="iData.religion" class="form-select form-input religion" ng-options="x.code as x.desc_th for x in lReligion"></select>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">สถานภาพการสมรส</div>
+                    <select ng-model="iData.maritalStatus" class="form-select form-input maritalStatus" ng-options="x.code as x.desc_th for x in lMarital"></select>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">สถานะทางการทหาร</div>
+                    <select ng-model="iData.militaryStatus" class="form-select form-input militaryStatus" ng-options="x.code as x.desc_th for x in lMilitary"></select>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">สถานะความพิการ</div>
+                    <select ng-model="iData.disabilityStatus" class="form-select form-input disabilityStatus" ng-options="x.code as x.desc_th for x in lDisability"></select>
                 </div>
             </div>
         </div>
@@ -72,11 +119,141 @@
     </div>
 </div>
 <script>
+    $(".weight").mask("000");
+    $(".height").mask("000");
     $(".date").mask("00/00/0000");
     $(".phone").mask("000-000-0000");
     app.controller('ServicePersonalCtrl', function ($scope, $http, $timeout, $filter) {
         $scope.mode = '@Model.mode';
         $scope.userId = '@Model.id';
+
+        $scope.lSex = [
+            { key: 'ชาย', value: 'M' }
+            , { key: 'หญิง', value: 'F' }
+        ];
+
+        $scope.LoadInit = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'Disability'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lDisability = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'Ethnicity'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lEthnicity = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'Marital'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lMarital = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'Military'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lMilitary = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'Nationality'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lNationality = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'Religion'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lReligion = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'Prefix'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lPrefix = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadInit();
 
         $scope.LoadData = function () {
             $.ajax({
@@ -100,7 +277,7 @@
                             })
                         }
                         
-                        if ($scope.iData.birth_date != '' && $scope.iData.birth_date != undefined){
+                        if ($scope.iData.birth_date != '' && $scope.iData.birth_date != undefined) {
                             var date = ConvertToDate($scope.iData.birth_date);
                             $scope.iData.birth_date_select = new moment(date);
                         }
@@ -112,14 +289,19 @@
 
         $scope.Validate = function(){
             var flag = true;
+            JS_Reset($(".prefix_th"));
             JS_Reset($(".firstname_th"));
             JS_Reset($(".lastname_th"));
 
-            if($scope.iData.firstname_th == ''){
+            if ($scope.iData.prefix_th == '') {
+                flag = false;
+                JS_Require($(".prefix_th"));
+            }
+            if ($scope.iData.firstname_th == '') {
                 flag = false;
                 JS_Require($(".firstname_th"));
             }
-            if($scope.iData.lastname_th == ''){
+            if ($scope.iData.lastname_th == '') {
                 flag = false;
                 JS_Require($(".lastname_th"));
             }
@@ -164,8 +346,11 @@
                     $scope.iData.birth_date = $scope.iData.birth_date_select.format("DD/MM/YYYY");
                 }
 
+                $scope.iData.weight = parseInt($scope.iData.weight);
+                $scope.iData.height = parseInt($scope.iData.height);
+
                 $.ajax({
-                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServicePersonal/Save',
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormUpdatePersonalCreate',
                     headers: { 'authorization': 'Bearer @token' },
                     type: "POST",
                     contentType: 'application/json',

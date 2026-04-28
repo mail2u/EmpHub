@@ -100,7 +100,7 @@
                                         </td>
                                         <td class="p-1">
                                             <div class=" d-flex align-items-center">
-                                                <div ng-repeat="a in s.lAction" class="btn btn-light bg-light-blue border-0 rounded-pill px-2 py-1 me-1 d-flex align-items-center text-nowrap">
+                                                <div ng-repeat="a in s.lAction" class="text-dark bg-light-blue border-0 rounded-pill px-2 py-1 me-1 d-flex align-items-center text-nowrap">
                                                     <div>{{ a.actionName }} </div>
                                                     <div class="select ms-2 text-danger" title="Remove Operator" ng-click="DeleteAction(a, s)">
                                                         <i class="bi bi-x-circle"></i>
@@ -565,8 +565,6 @@
         }
 
         $scope.CreateAction = function (actionBy) {
-            $("#UpdateActionModal").modal('hide');
-
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceStepTemplateAction/Create'
                 , headers: { 'authorization': 'Bearer @token' }

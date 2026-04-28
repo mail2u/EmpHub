@@ -1,0 +1,108 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var token = User.AccessToken(Context);
+}
+<style>
+    input[type="radio"]:disabled {
+        background-color: #0d6efd !important;
+        border-color: #0d6efd !important;
+        background-image: none !important;
+        opacity: 1 !important;
+    }
+</style>
+<div ng-controller="ServiceUpdateEmployeeCtrl">
+    <div class="bg-white rounded-4 border mb-4 overflow-hidden p-4">
+        <div class="px-4 py-3 border-bottom d-flex align-items-center">
+            <div class="fs-5 fw-bolder text-dark flex-fill">
+                ปรับปรุงข้อมูลพนักงาน
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">วันเข้างาน</div>
+                <div>{{ iForm.join_date == '' ? '-' : iForm.join_date }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">วันบรรจุงาน</div>
+                <div>{{ iForm.probation_end_date == '' ? '-' : iForm.probation_end_date }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">สถานะ</div>
+                <div>{{ iForm.employeeStatus == '' ? '-' : iForm.employeeStatus }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">อายุงาน</div>
+                <div>{{ iForm.work_day == '' ? '-' : iForm.work_day }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">ด้าน</div>
+                <div>{{ iForm.divisionCode == '' ? '-' : iForm.divisionCode }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">สายงาน</div>
+                <div>{{ iForm.departmentCode == '' ? '-' : iForm.departmentCode }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">ฝ่าย</div>
+                <div>{{ iForm.sectionCode == '' ? '-' : iForm.sectionCode }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">ตำแหน่งงาน</div>
+                <div>{{ iForm.positionCode == '' ? '-' : iForm.positionCode }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">ประเภทพนักงาน</div>
+                <div>{{ iForm.employeeType == '' ? '-' : iForm.employeeType }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">ระดับพนักงาน</div>
+                <div>{{ iForm.levelDesc == '' ? '-' : iForm.levelDesc }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">เกรด</div>
+                <div>{{ iForm.grade == '' ? '-' : iForm.grade }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">หัวหน้างาน</div>
+                <div>{{ iForm.supervisorName == '' ? '-' : iForm.supervisorName }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ServiceUpdateEmployeeCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.LoadDetail = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormUpdateEmployeeDetail',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        refId: $scope.refId
+                    }),
+                    success: function (result) {
+                        $timeout(async function () {
+                            $scope.iForm = result;
+                            resolve(true);
+                        }, 0);
+                    }, error: function () {
+                        resolve(false);
+                    }
+                });
+            });
+        }
+
+        $scope.$parent.LoadFormUpdateEmployee = async function (x) {
+            $scope.refId = x.id;
+            $scope.userId = x.userId;
+            $scope.status = x.status;
+
+            await $scope.LoadDetail();
+        }
+    });
+</script>

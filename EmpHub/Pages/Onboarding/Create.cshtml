@@ -26,17 +26,31 @@
             Search Existing Employee
         </div>
         <div class="row">
-            <div class="col-sm-3">
+            <div class="col-sm-4">
                 <div>เลขประจำตัวประชาชน</div>
-                <input ng-model="iData.idcard" class="form-control" maxlength="13" />
+                <div class="d-flex">
+                    <input ng-model="iPersonal.idcard" class="form-control me-2" maxlength="13" />
+                    <button class="btn btn-primary" ng-click="ExistsIdcard()" ng-disabled="!iPersonal.idcard">
+                        <i class="bi bi-search me-2"></i> ค้นหา
+                    </button>
+                </div>
             </div>
         </div>
     </div>
     <partial name="_PartialOnboard" />
-    <div class="text-end mt-2">
-        <button class="btn btn-primary" ng-click="Create()">
-            <i class="far fa-paper-plane me-2"></i> Submit
-        </button>
+    <div class="d-flex mt-2">
+        <div class="flex-fill">
+        </div>
+        <div class="me-2">
+            <button class="btn btn-primary" ng-click="Save()">
+                Save Change
+            </button>
+        </div>
+        <div class="">
+            <button class="btn btn-success" ng-click="Send()">
+                <i class="far fa-paper-plane me-2"></i> Submit
+            </button>
+        </div>
     </div>
 </div>
 <script>
@@ -54,11 +68,37 @@
             , { key: 'หญิง', value: 'F' }
         ];
 
-        $scope.iPersonal = {};
-        $scope.iEmployee = {};
-        $scope.iAddress = {};
+        $scope.iPersonal = {
+            idcard: ''
+            , nationality: ''
+            , prefix_th: ''
+            , firstname_th: ''
+            , lastname_th: ''
+            , birth_date: ''
+            , sex: ''
+            , maritalStatus: ''
+            , phoneNo: ''
+        };
+        $scope.iEmployee = {
+            processType: ''
+            , employeeCode: ''
+            , join_date: ''
+            , sectionCode: ''
+            , positionCode: ''
+            , levelCode: ''
+            , employeeType: ''
+            , employeeMode: ''
+        };
+        $scope.iAddress = {
+            registered_home: ''
+            , registered_provinceName: ''
+            , card_home: ''
+            , card_provinceName: ''
+            , live_home: ''
+            , live_provinceName: ''
+        };
 
-        $scope.LoadInit = function(){
+        $scope.LoadInit = function () {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
                 , headers: { 'authorization': 'Bearer @token' }
@@ -262,6 +302,98 @@
         }
         $scope.LoadInit();
 
+        $scope.ExistsIdcard = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Onboard/ExistsByIDCard'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    idcard: $scope.iPersonal.idcard
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        if (result.userId != '') {
+                            alertSuccess("Exists Data", "พบข้อมูลในระบบ");
+                            $scope.LoadData(result.userId);
+                        } else {
+                            alertWarning("Not Found", "ไม่พบข้อมูล");
+                        }
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+
+        $scope.LoadData = function (userId) {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserPersonal'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    userId: userId
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.iPersonal = result.data;
+
+                        if ($scope.iPersonal.birth_date) {
+                            $scope.iPersonal.birth_date_select = moment($scope.iPersonal.birth_date, "DD/MM/YYYY");
+                        }
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserAddress'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    userId: userId
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.iAddress = result.data;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserEmployee'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    userId: userId
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.iEmployee = result.data;
+
+                        if ($scope.iEmployee.join_date) {
+                            $scope.iEmployee.join_date_select = moment($scope.iEmployee.join_date, "DD/MM/YYYY");
+                        }
+                        if ($scope.iEmployee.probation_end_date) {
+                            $scope.iEmployee.probation_end_date_select = moment($scope.iEmployee.probation_end_date, "DD/MM/YYYY");
+                        }
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+
         $scope.ShowAddress = function (type) {
             $scope.address_type = type;
             $("#addressModal").modal('show');
@@ -299,7 +431,7 @@
             }, 0);
         }
 
-        $scope.CalcAge = function(){
+        $scope.CalcAge = function () {
             $scope.iPersonal.age = '';
 
             if ($scope.iPersonal.birth_date_select) {
@@ -337,7 +469,7 @@
             }
         }
 
-        $scope.calcProbationDay = function(){
+        $scope.calcProbationDay = function () {
             $scope.iEmployee.probation_day = 0;
 
             if ($scope.iEmployee.join_date_select && $scope.iEmployee.probation_end_date_select) {
@@ -362,18 +494,18 @@
         //     }
         // }
 
-        $scope.SelectWorkMode = function(){
+        $scope.SelectWorkMode = function () {
             $scope.iEmployee.workTime = '';
 
             if ($scope.iEmployee.workMode) {
                 var find = $scope.lWorkMode.find(item => item.code == $scope.iEmployee.workMode);
-                if(find){
+                if (find) {
                     $scope.iEmployee.workTime = find.condition_1 + '-' + find.condition_2;
                 }
             }
         }
 
-        $scope.ShowSupervisor = function(){
+        $scope.ShowSupervisor = function () {
             if (!$scope.lEmployee) {
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/User/DataList'
@@ -399,43 +531,36 @@
             }
         }
 
-        $scope.SelectSupervisor = function(x){
+        $scope.SelectSupervisor = function (x) {
             $scope.iEmployee.supervisorId = x.userId;
             $scope.iEmployee.supervisorName = x.firstname_th + ' ' + x.lastname_th;
         }
 
-        $scope.Create = async function () {
-            var iUser = await $scope.CreateOnboard();
-
-            $scope.iPersonal.create_by = '@User.UserId()';
-            $scope.iPersonal.userId = iUser.userId;
-
-            var flag = await $scope.SavePersonal();
-
-            if (flag) {
-                $scope.iEmployee.create_by = '@User.UserId()';
-                $scope.iEmployee.userId = iUser.userId;
-
-                flag = await $scope.SaveEmployee();
-
-                if (flag) {
-                    $scope.iAddress.create_by = '@User.UserId()';
-                    $scope.iAddress.userId = iUser.userId;
-
-                    flag = await $scope.SaveAddress();
-
-                    if (flag) {
-                        alertSuccess("Create Onboarding", "Success");
-                    }
-                }
-            }
-
-            if(flag == false){
-                await $scope.CancelOnboard(iUser.userId);
-            }
+        $scope.SelectCardAddressUserRegistered = function () {
+            $scope.iAddress.card_home = $scope.is_card_same_register ? $scope.iAddress.registered_home : '';
+            $scope.iAddress.card_road = $scope.is_card_same_register ? $scope.iAddress.registered_road : '';
+            $scope.iAddress.card_subDistrictCode = $scope.is_card_same_register ? $scope.iAddress.registered_subDistrictCode : '';
+            $scope.iAddress.card_subDistrictName = $scope.is_card_same_register ? $scope.iAddress.registered_subDistrictName : '';
+            $scope.iAddress.card_districtCode = $scope.is_card_same_register ? $scope.iAddress.registered_districtCode : '';
+            $scope.iAddress.card_districtName = $scope.is_card_same_register ? $scope.iAddress.registered_districtName : '';
+            $scope.iAddress.card_provinceCode = $scope.is_card_same_register ? $scope.iAddress.registered_provinceCode : '';
+            $scope.iAddress.card_provinceName = $scope.is_card_same_register ? $scope.iAddress.registered_provinceName : '';
+            $scope.iAddress.card_postcode = $scope.is_card_same_register ? $scope.iAddress.registered_postcode : '';
         }
 
-        $scope.CreateOnboard = function(){
+        $scope.SelectLiveAddressUserRegistered = function () {
+            $scope.iAddress.live_home = $scope.is_live_same_register ? $scope.iAddress.registered_home : '';
+            $scope.iAddress.live_road = $scope.is_live_same_register ? $scope.iAddress.registered_road : '';
+            $scope.iAddress.live_subDistrictCode = $scope.is_live_same_register ? $scope.iAddress.registered_subDistrictCode : '';
+            $scope.iAddress.live_subDistrictName = $scope.is_live_same_register ? $scope.iAddress.registered_subDistrictName : '';
+            $scope.iAddress.live_districtCode = $scope.is_live_same_register ? $scope.iAddress.registered_districtCode : '';
+            $scope.iAddress.live_districtName = $scope.is_live_same_register ? $scope.iAddress.registered_districtName : '';
+            $scope.iAddress.live_provinceCode = $scope.is_live_same_register ? $scope.iAddress.registered_provinceCode : '';
+            $scope.iAddress.live_provinceName = $scope.is_live_same_register ? $scope.iAddress.registered_provinceName : '';
+            $scope.iAddress.live_postcode = $scope.is_live_same_register ? $scope.iAddress.registered_postcode : '';
+        }
+
+        $scope.CreateOnboard = function () {
             return new Promise((resolve) => {
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/Onboard/Create'
@@ -551,74 +676,221 @@
             });
         }
 
-        $scope.ShowEdit = function (x) {
-            $scope.iData = x;
-            $("#DetailModal").modal('show');
-        }
-
-        $scope.Update = function () {
-            $scope.iData.update_by = '@User.UserId()';
-            $("#DetailModal").modal('hide');
-
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/User/Update'
-                , headers: { 'authorization': 'Bearer @token' }
-                , type: 'post'
-                , contentType: 'application/json'
-                , cache: false
-                , data: JSON.stringify($scope.iData)
-                , success: function () {
-                    $timeout(function () {
-                        $scope.LoadData($scope.page);
-                    }, 0);
-                }
-                , error: AjaxError
-            });
-        }
-
-        $scope.Delete = function(x){
-            alertConfirm('ยืนยันการทำรายการ', 'ท่านต้องการลบข้อมูลผู้ใช้งานนี้', function () {
-                x.update_by = '@User.UserId()';
+        $scope.SendOnboard = function () {
+            return new Promise((resolve) => {
                 $.ajax({
-                    url: '@webAPI.CurrentValue.APIEmpHub/api/User/Delete'
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Onboard/Send'
                     , headers: { 'authorization': 'Bearer @token' }
                     , type: 'post'
                     , contentType: 'application/json'
                     , cache: false
-                    , data: JSON.stringify(x)
+                    , data: JSON.stringify({
+                        userId: $scope.userId
+                        , update_by: '@User.UserId()'
+                    })
                     , success: function () {
                         $timeout(function () {
-                            $scope.LoadData($scope.page);
+                            resolve(true);
                         }, 0);
                     }
-                    , error: AjaxError
+                    , error: function () {
+                        alertWarning("Send Onboard", "Error");
+                        resolve(false);
+                    }
                 });
             });
         }
 
-        $scope.ShowChangePass = function (x) {
-            $scope.iData = x;
-            $("#ChangePassModal").modal('show');
-        }
+        //Action
 
-        $scope.ChangePass = function () {
-            $scope.iData.update_by = '@User.UserId()';
-            $("#ChangePassModal").modal('hide');
+        $scope.Save = async function () {
+            var iUser = await $scope.CreateOnboard();
 
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/User/ChangePassword'
-                , headers: { 'authorization': 'Bearer @token' }
-                , type: 'post'
-                , contentType: 'application/json'
-                , cache: false
-                , data: JSON.stringify($scope.iData)
-                , success: function () {
-                    $timeout(function () {
-                        $scope.LoadData($scope.page);
-                    }, 0);
+            $scope.iPersonal.create_by = '@User.UserId()';
+            $scope.iPersonal.userId = iUser.userId;
+
+            var flag = await $scope.SavePersonal();
+
+            if (flag) {
+                $scope.iEmployee.create_by = '@User.UserId()';
+                $scope.iEmployee.userId = iUser.userId;
+
+                flag = await $scope.SaveEmployee();
+
+                if (flag) {
+                    $scope.iAddress.create_by = '@User.UserId()';
+                    $scope.iAddress.userId = iUser.userId;
+
+                    flag = await $scope.SaveAddress();
                 }
-                , error: AjaxError
-            });
+            }
+
+            if (flag) {
+                location.href = '@Url.Page("Update")?userId=' + iUser.userId;
+            } else {
+                await $scope.CancelOnboard(iUser.userId);
+            }
         }
+
+        $scope.Validate = function () {
+            var flag = true;
+
+            JS_Reset($(".processType"));
+            JS_Reset($(".employeeCode"));
+            JS_Reset($(".idcard"));
+            JS_Reset($(".nationality"));
+            JS_Reset($(".prefix_th"));
+            JS_Reset($(".firstname_th"));
+            JS_Reset($(".lastname_th"));
+            JS_Reset($(".birth_date"));
+            JS_Reset($(".sex"));
+            JS_Reset($(".maritalStatus"));
+            JS_Reset($(".registered_home"));
+            JS_Reset($(".registered_provinceName"));
+            JS_Reset($(".card_home"));
+            JS_Reset($(".card_provinceName"));
+            JS_Reset($(".live_home"));
+            JS_Reset($(".live_provinceName"));
+            JS_Reset($(".phoneNo"));
+            JS_Reset($(".join_date"));
+            JS_Reset($(".sectionCode"));
+            JS_Reset($(".positionCode"));
+            JS_Reset($(".levelCode"));
+            JS_Reset($(".employeeType"));
+            JS_Reset($(".employeeMode"));
+
+            if ($scope.iEmployee.processType == '') {
+                flag = false;
+                JS_Require($(".processType"));
+            }
+            if ($scope.iEmployee.employeeCode == '') {
+                flag = false;
+                JS_Require($(".employeeCode"));
+            }
+            if ($scope.iPersonal.idcard == '') {
+                flag = false;
+                JS_Require($(".idcard"));
+            }
+            if ($scope.iPersonal.nationality == '') {
+                flag = false;
+                JS_Require($(".nationality"));
+            }
+            if ($scope.iPersonal.prefix_th == '') {
+                flag = false;
+                JS_Require($(".prefix_th"));
+            }
+            if ($scope.iPersonal.firstname_th == '') {
+                flag = false;
+                JS_Require($(".firstname_th"));
+            }
+            if ($scope.iPersonal.lastname_th == '') {
+                flag = false;
+                JS_Require($(".lastname_th"));
+            }
+            if ($scope.iPersonal.birth_date == '') {
+                flag = false;
+                JS_Require($(".birth_date"));
+            }
+            if ($scope.iPersonal.sex == '') {
+                flag = false;
+                JS_Require($(".sex"));
+            }
+            if ($scope.iPersonal.maritalStatus == '') {
+                flag = false;
+                JS_Require($(".maritalStatus"));
+            }
+            if ($scope.iAddress.registered_home == '') {
+                flag = false;
+                JS_Require($(".registered_home"));
+            }
+            if ($scope.iAddress.registered_provinceName == '') {
+                flag = false;
+                JS_Require($(".registered_provinceName"));
+            }
+            if ($scope.iAddress.card_home == '') {
+                flag = false;
+                JS_Require($(".card_home"));
+            }
+            if ($scope.iAddress.card_provinceName == '') {
+                flag = false;
+                JS_Require($(".card_provinceName"));
+            }
+            if ($scope.iAddress.live_home == '') {
+                flag = false;
+                JS_Require($(".live_home"));
+            }
+            if ($scope.iAddress.live_provinceName == '') {
+                flag = false;
+                JS_Require($(".live_provinceName"));
+            }
+            if ($scope.iPersonal.phoneNo == '') {
+                flag = false;
+                JS_Require($(".phoneNo"));
+            }
+            if ($scope.iEmployee.join_date == '') {
+                flag = false;
+                JS_Require($(".join_date"));
+            }
+            if ($scope.iEmployee.sectionCode == '') {
+                flag = false;
+                JS_Require($(".sectionCode"));
+            }
+            if ($scope.iEmployee.positionCode == '') {
+                flag = false;
+                JS_Require($(".positionCode"));
+            }
+            if ($scope.iEmployee.levelCode == '') {
+                flag = false;
+                JS_Require($(".levelCode"));
+            }
+            if ($scope.iEmployee.employeeType == '') {
+                flag = false;
+                JS_Require($(".employeeType"));
+            }
+            if ($scope.iEmployee.employeeMode == '') {
+                flag = false;
+                JS_Require($(".employeeMode"));
+            }
+
+            return flag;
+        }
+
+        $scope.Send = async function () {
+            if ($scope.Validate()) {
+                var iUser = await $scope.CreateOnboard();
+
+                $scope.iPersonal.create_by = '@User.UserId()';
+                $scope.iPersonal.userId = iUser.userId;
+
+                var flag = await $scope.SavePersonal();
+
+                if (flag) {
+                    $scope.iEmployee.create_by = '@User.UserId()';
+                    $scope.iEmployee.userId = iUser.userId;
+
+                    flag = await $scope.SaveEmployee();
+
+                    if (flag) {
+                        $scope.iAddress.create_by = '@User.UserId()';
+                        $scope.iAddress.userId = iUser.userId;
+
+                        flag = await $scope.SaveAddress();
+                    }
+                }
+
+                flag = await $scope.SendOnboard();
+
+                if (flag) {
+                    alertSuccess("Create Onboarding", "Success", function () {
+                        location.href = '@Url.Page("Index")';
+                    });
+                } else {
+                    await $scope.CancelOnboard(iUser.userId);
+                }
+            } else {
+                alertWarning("Form Validate", "Please fill in all the required fields.");
+            }
+        }
+
     });
 </script>

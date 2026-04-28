@@ -1,0 +1,186 @@
+﻿@page
+@model EmpHub.Pages.Service.FormUpdateCardModel
+@{
+    var token = User.AccessToken(HttpContext);
+}
+<style>
+    .form-input {
+        padding: 5px;
+        border: 0px;
+        border-radius: 0;
+        border-bottom: 2px solid var(--bs-gray-400);
+        background-color: #fcfcfc;
+    }
+
+    .form-input:focus {
+        border-bottom: 2px solid var(--tip-blue);
+    }
+
+    input.form-input:read-only {
+        background-color: var(--bs-gray-200);
+    }
+</style>
+<div ng-controller="FormCtrl" id="tab_education">
+    @* Header *@
+    <partial name="_PartialFormHeader" />
+    @* View *@
+    <div class="rounded-4 mb-3 bg-white shadow-sm p-4">
+        <div class="text-center fs-4 fw-bolder mb-4 text-dark">
+            ปรับปรุงข้อมูลบัตร
+        </div>
+        <div class="row text-dark fs-6">
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">บัตรพนักงาน</div>
+                <input ng-model="iForm.employeeCode" class="form-control form-input employeeCode" maxlength="6" />
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">บัตรประชาชน</div>
+                <input ng-model="iForm.idcard" class="form-control form-input idcard" maxlength="13" />
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">หนังสือเดินทาง</div>
+                <input ng-model="iForm.passport" class="form-control form-input passport" maxlength="20" />
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">ใบอนุญาตทำงานคนต่างด้าว</div>
+                <input ng-model="iForm.workPermitNo" class="form-control form-input workPermitNo" maxlength="20" />
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-end">
+        <div class="btn btn-primary" ng-click="Save()">
+            <i class="far fa-paper-plane me-2"></i> Send Request
+        </div>
+    </div>
+</div>
+<script>
+    $(".day").mask("00");
+    $(".score").mask("00");
+    $(".date").mask("00/00/0000");
+    app.controller('FormCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.mode = '@Model.mode';
+        $scope.userId = '@Model.id';
+        $scope.iData = {};
+        $scope.iForm = {}
+
+        $scope.Validate = function () {
+            var flag = true;
+            JS_Reset($(".employeeCode"));
+            JS_Reset($(".idcard"));
+
+            console.log($scope.iForm);
+
+            if ($scope.iForm.employeeCode == '') {
+                flag = false;
+                JS_Require($(".employeeCode"));
+            }
+            if ($scope.iForm.idcard == '') {
+                flag = false;
+                JS_Require($(".idcard"));
+            }
+
+            return flag;
+        }
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserPersonal',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.userId
+                    , create_by: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        var iData = result.data;
+
+                        $scope.iForm.idcard = iData.idcard;
+                        $scope.iForm.passport = iData.passport;
+                        $scope.iForm.workPermitNo = iData.workPermitNo;
+                    }, 0);
+                }, error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserEmployee',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.userId
+                    , create_by: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        var iData = result.data;
+
+                        $scope.iForm.employeeCode = iData.employeeCode;
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+        $scope.Save = async function () {
+            if ($scope.Validate()) {
+                alertConfirm("ยืนยันการทำรายการ", "ท่านต้องการส่งใบคำขอ", async function () {
+                    var id = await $scope.CreateService();
+
+                    if (id) {
+                        $scope.iData.id = id;
+                        $scope.iForm.refId = id;
+
+                        var flag = await $scope.CreateForm();
+
+                        if (flag) {
+                            var serviceNo = await $scope.ServiceRequest();
+
+                            if (serviceNo) {
+                                alertSuccess("ทำรายการสำเร็จ", "ระบบบันทึกใบคำขอของท่านเรียบร้อย", function () {
+                                    location.href = '@Url.Page("/Service/Index")';
+                                });
+                            } else {
+                                $scope.CancelService();
+                            }
+                        } else {
+                            $scope.CancelService();
+                        }
+                    }
+                });
+            } else {
+                alertWarning("แจ้งเตือน", "กรุณากรอกข้อมูลให้ครบ");
+            }
+        }
+
+        $scope.CreateForm = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormUpdateCardCreate',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify($scope.iForm),
+                    success: function () {
+                        $timeout(async function () {
+                            resolve(true);
+                        }, 0);
+                    }, error: function (jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "ระบบเกิดข้อผิดพลาด",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+    });
+</script>

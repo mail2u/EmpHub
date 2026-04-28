@@ -30,12 +30,12 @@
             </div>
         </div>
         <div>
-            <div class="btn btn-primary">
+         @*    <div class="btn btn-primary">
                 <i class="bi bi-person-plus-fill me-2"></i> Add New Employee
-            </div>
+            </div> *@
         </div>
     </div>
-    <div class="rounded-3 p-3 bg-white shadow-sm border d-flex mb-4 aling-items-center">
+    <div class="rounded-4 p-3 bg-white shadow-sm border d-flex mb-4 aling-items-center">
         <div class="flex-fill me-2 position-relative">
             <input class="form-control rounded-3 p-2" ng-model="firstname_th" my-enter="LoadData()" placeholder="Search..." />
             <span class="position-absolute top-50 end-0 translate-middle badge bg-gray" ng-show="firstname_th != ''">
@@ -58,7 +58,7 @@
                 <li ng-repeat="d in lPosition"><a class="dropdown-item" href="#" ng-click="SelectPosition(d)">{{ d.desc_th }}</a></li>
             </ul>
         </div>
-        <div class="dropdown me-2">
+        <div class="dropdown">
             <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="bi bi-briefcase-fill me-2"></i> {{ typeName != '' ? typeName : 'Employee Type' }}
             </button>
@@ -66,12 +66,12 @@
                 <li ng-repeat="d in lType"><a class="dropdown-item" href="#" ng-click="SelectType(d)">{{ d.desc_th }}</a></li>
             </ul>
         </div>
-        <div class="btn btn-warning" ng-click="Clear()" ng-show="firstname_th != '' || departmentName != '' || positionName != '' || typeName != ''">
+        <div class="btn btn-warning ms-2" ng-click="Clear()" ng-show="firstname_th != '' || departmentName != '' || positionName != '' || typeName != ''">
             Clear
         </div>
     </div>
     <div class="mb-4">
-        <table class="table table-tip">
+        <table class="table table-tip border shadow-sm">
             <thead>
                 <tr>
                     <th>EMPLOYEE</th>
@@ -84,18 +84,19 @@
                 <tr ng-repeat="x in lData">
                     <td>
                         <div class="d-flex align-items-center">
-                           <div class="me-3" style="width:35px;">
+                           <div class="me-3 ms-2" style="width:35px;">
                                 <img src="~/Images/icon-user.png" class="rounded-circle" width="100%" />
                             </div>
                             <div>
+                                <div class="text-dark fw-bolder">{{ x.employeeCode }}</div>
                                 <div class="text-dark">{{ x.firstname_th + ' ' + x.lastname_th }}</div>
-                                <div class="text-gray">{{ x.firstname_en + ' ' + x.lastname_en }}</div>
+                               @*  <div class="text-gray">{{ x.firstname_en + ' ' + x.lastname_en }}</div> *@
                             </div>
                         </div>
                     </td>
                     <td>
                         <div class="text-dark">{{ x.positionDesc }}</div>
-                        <div class="text-gray">{{ x.departmentDesc }}</div>
+                        <div class="text-dark">{{ x.departmentDesc }}</div>
                     </td>
                     <td>
                         <div class="text-gray">{{ x.email }}</div>

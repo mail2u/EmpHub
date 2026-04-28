@@ -4,7 +4,17 @@
     ViewData["Title"] = "Onboarding";
     var token = User.AccessToken(HttpContext);
 }
+<style>
+    .bg-Draft{
+        background-color: var(--bs-gray-200);
+        color: var(--bs-gray-800);
+    }
 
+    .bg-Complete {
+        background-color: var(--bs-green);
+        color: var(--bs-white);
+    }
+</style>
 @section PageHeader {
     <!-- [ page-header ] start -->
     <div class="page-header">
@@ -20,62 +30,119 @@
     </div>
 }
 
-<div ng-controller="ManageCtrl" class="p-2">
-    <div class="d-flex">
-        <div class="mb-2 me-2">
-            <div class="fs-4">Onboarding</div>
-        </div>
-    </div>
-    <div class="rounded-4 border shadow-sm p-3 bg-white">
-        <div class="mb-3 d-flex align-items-center">
-            <div class="position-relative me-2">
-                <input class="form-control form-control-sm me-2" ng-model="search" my-enter="LoadData()" />
-                <span class="position-absolute top-50 end-0 translate-middle-y me-3">
-                    <i class="fas fa-search"></i>
-                </span>
-            </div>
-            <div>
-                <a class="btn btn-light" href="@Url.Page("Create")">
-                    <i class="fas fa-user-plus me-2"></i> Create
-                </a>
-            </div>
-            <div class="flex-fill">
-            </div>
-            <div>
-                <div class="btn btn-light border-0">
-                    <i class="far fa-arrow-alt-circle-down me-2"></i> download
+<div ng-controller="ManageCtrl">
+    <div class="d-flex mb-2">
+        <div class="fs-4 me-3">Onboarding</div>
+        <div class="overflow-auto flex-fill">
+            <div class="flex-fill d-flex flex-nowrap align-items-center">
+                <div class="btn btn-link text-nowrap {{ iStatus == '' ? 'active' : '' }}" ng-click="SelectStatus('')">
+                    All <span class="badge ms-1" ng-show="sum_all > 0">{{ sum_all | number }}</span>
+                </div> |
+                <div class="btn btn-link border-0 text-nowrap {{ iStatus == 'Request' ? 'active' : '' }}" ng-click="SelectStatus('Request')">
+                    Draft <span class="badge ms-1" ng-show="sum_request > 0">{{ sum_request | number }}</span>
+                </div>
+                <div class="btn btn-link border-0 text-nowrap {{ iStatus == 'Complete' ? 'active' : '' }}" ng-click="SelectStatus('Complete')">
+                    <span ng-show="alert_complete > 0" class="ms-1 badge rounded-circle bg-danger p-1">
+                        <span class="visually-hidden">unread messages</span>
+                    </span>
+                    Complete <span class="badge ms-1" ng-show="sum_complete > 0">{{ sum_complete | number }}</span>
                 </div>
             </div>
         </div>
-        <hr class="m-1" />
-        <table class="table">
+        <div class="d-none d-sm-block">
+            <a class="btn btn-primary" href="@Url.Page("Create")">
+                <i class="fas fa-plus me-2"></i> Create
+            </a>
+        </div>
+    </div>
+    <div class="rounded-4 p-3 bg-white shadow-sm border d-flex mb-4 align-items-end">
+        <div class="me-2">
+            <small>full name</small>
+            <input class="form-control form-control-sm me-2" ng-model="search" my-enter="LoadData()" style="width:300px;" />
+        </div>
+        <div class="me-2">
+            <button ng-click="LoadData()" class="btn btn-circle" title="Search">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+        <div class="me-2">
+            <button ng-click="Download()" class="btn btn-circle" title="Download" ng-disabled="total == 0">
+                <i class="fas fa-arrow-down"></i>
+            </button>
+        </div>
+        <div class="flex-fill">
+        </div>
+    </div>
+    <div class="mb-4">
+        <table class="table table-tip border shadow-sm">
+            <thead>
+                <tr>
+                    <th>EMPLOYEE</th>
+                    <th>ROLE & DEPARTMENT</th>
+                    <th>Create</th>
+                    <th class="text-center">Status</th>
+                    <th width="120"></th>
+                </tr>
+            </thead>
             <tbody>
                 <tr ng-repeat="x in lData">
                     <td>
-                        <div class="me-3" style="width:40px; min-width:40px;">
-                            <img src="~/Images/icon-user.png" class="rounded-circle" width="100%" />
+                        <div class="d-flex align-items-center">
+                            <div class="me-3 ms-2" style="width:35px;">
+                                <img src="~/Images/icon-user.png" class="rounded-circle" width="100%" />
+                            </div>
+                            <div>
+                                <div class="text-dark fw-bolder">{{ x.employeeCode }}</div>
+                                <div class="text-dark">{{ x.firstname_th + ' ' + x.lastname_th }}</div>
+                            </div>
                         </div>
                     </td>
                     <td>
-                        <div class="text-secondary">{{ x.firstname + ' ' + x.lastname }}</div>
+                        <div class="text-dark">{{ x.positionDesc }}</div>
+                        <div class="text-gray">{{ x.departmentDesc }}</div>
                     </td>
                     <td>
-                        <div class="text-secondary">{{ x.positionDesc }} {{ x.departmentDesc }}</div>
-                        <div>{{ x.email != '' ? x.email : '-'}}</div>
+                        <div class="fw-bolder text-dark">{{ x.create_by }}</div>
+                        <div class="text-dark">{{ x.create_date }}</div>
                     </td>
-                    <td>
-                        <span class="badge bg-info">{{ x.status }}</span>
+                    <td class="text-center align-middle">
+                        <div class="badge bg-{{ x.status }}">
+                            {{ x.status }}
+                        </div>
                     </td>
-                    <td>
-                        join date
-                    </td>
-                    <td width="50">
-                        <div class="btn btn-circle" ng-click="Edit(x)">
-                            <i class="bi bi-pen-fill"></i>
+                    <td class="align-middle text-end">
+                        <div class="d-flex">
+                            <a href="#" class="btn btn-circle me-1" ng-click="Edit(x)" ng-show="x.status == 'Draft'">
+                                <i class="bi bi-pen"></i>
+                            </a>
+                            <a href="#" class="btn btn-circle" ng-click="Delete(x)" ng-show="x.status == 'Draft'">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                            <a href="#" class="btn btn-circle" ng-click="Detail(x)" ng-show="x.status == 'Complete'">
+                                <i class="bi bi-arrow-right"></i>
+                            </a>
                         </div>
                     </td>
                 </tr>
             </tbody>
+            <tfoot>
+                <tr>
+                    <td>
+                        <div class="text-light-gray">Showing {{ ((page - 1) * row) + 1 }} to {{ (page * row) > total ? total : page * row }} of {{ total }} employees</div>
+                    </td>
+                    <td colspan="4">
+                        <div class="d-flex">
+                            <div class="flex-fill"></div>
+                            <button class="btn btn-circle me-2" ng-click="LoadData(page - 1)" ng-disabled="page <= 1">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="btn btn-circle" ng-click="LoadData(page + 1)" ng-disabled="page * row >= total">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tfoot>
         </table>
     </div>
 </div>
@@ -83,6 +150,44 @@
     app.controller('ManageCtrl', function ($scope, $http, $timeout, $filter) {
         $scope.page = 1
         $scope.row = 10;
+
+        $scope.LoadSummary = function(){
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Onboard/Summary'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    userId: '@User.UserId()'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.sum_request = 0;
+                        $scope.sum_complete = 0;
+                        
+                        $scope.alert_complete = 0;
+
+                        var find = result.find(x => x.status == 'Draft');
+                        if (find) { 
+                            $scope.sum_request = find.total; 
+                            $scope.alert_request = find.alert_total; 
+                        }
+                        find = result.find(x => x.status == 'Complete');
+                        if (find) { 
+                            $scope.sum_complete = find.total; 
+                            $scope.alert_complete = find.alert_total; 
+                        }
+
+                        $scope.sum_all = $scope.sum_request
+                            + $scope.sum_complete;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadSummary();
 
         $scope.LoadData = function (page = 1) {
             $scope.page = page;
@@ -114,18 +219,44 @@
             window.open('@Url.Page("Update")?userId=' + x.userId);
         }
 
+        $scope.Detail = function (x) {
+            window.open('@Url.Page("Detail")?userId=' + x.userId);
+        }
+
+        $scope.Delete = function (x) {
+            alertConfirm("Delete Draft", "Confirm Delet", function () {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Onboard/Cancel'
+                    , headers: { 'authorization': 'Bearer @token' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , cache: false
+                    , data: JSON.stringify({
+                        userId: x.userId
+                        , update_by: '@User.UserId()'
+                    })
+                    , success: function () {
+                        $timeout(function () {
+                            $scope.LoadData();
+                        }, 0);
+                    }
+                    , error: AjaxError
+                });
+            });
+        }
+
         $scope.Download = function () {
             $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/User/FullList',
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Onboard/DataList',
                 headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
                 dataType: 'json',
                 cache: false,
                 data: JSON.stringify({
-                    page: $scope.page
+                    page: 1
                     , row: 2000
-                    , firstname: $scope.subject
+                    , firstname: $scope.search
                 }),
                 success: function (result) {
                     $timeout(function () {
@@ -133,8 +264,9 @@
 
                         if (lData.length > 0) {
                             var JSData = [[
-                                { 'text': 'Username' }
-                                , { 'text': 'Fullname' }
+                                { 'text': 'EmployeeCode' }
+                                , { 'text': 'Firstname_TH' }
+                                , { 'text': 'Lastname_TH' }
                                 , { 'text': 'ชื่อ - สกุล' }
                                 , { 'text': 'E-mail' }
                                 , { 'text': 'ประเภท' }

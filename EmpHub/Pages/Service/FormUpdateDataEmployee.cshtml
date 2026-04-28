@@ -4,6 +4,24 @@
 @{
     var token = User.AccessToken(HttpContext);
 }
+<style>
+
+    .form-input {
+        padding: 5px;
+        border: 0px;
+        border-radius: 0;
+        border-bottom: 2px solid var(--bs-gray-400);
+        background-color: #fcfcfc;
+    }
+
+    .form-input:focus {
+        border-bottom: 2px solid var(--tip-blue);
+    }
+
+    input.form-input:read-only {
+        background-color: var(--bs-gray-200);
+    }
+</style>
 <div ng-controller="ServiceEmployeeCtrl" id="tab_employee">
     @* Header *@
     <partial name="_PartialFormHeader" />
@@ -11,43 +29,76 @@
     <div class="rounded-4 mb-3 bg-white shadow-sm p-4">
         <div class="row">
             <div class="col-sm-4 mb-3">
-                <div class="text-dark fs-5">รหัสพนักงาน</div>
-                <input ng-model="iData.employeeCode" class="form-control" maxlength="6" />
-            </div>
-            <div class="col-sm-4 mb-3">
-                <div class="text-dark fs-5">ประเภท</div>
-                <select ng-model="iData.employeeType" class="form-select" ng-options="x.code as x.desc_th for x in lEmployeeType"></select>
-            </div>
-            <div class="col-sm-4 mb-3">
-                <div class="text-dark fs-5">วันที่เริ่มงาน</div>
-                <input class="form-control icon-calendar date"
+                <div class="text-dark fw-bolder">วันเข้างาน</div>
+                <input class="form-control form-input date join_date icon-calendar"
                        ng-model="iData.join_date_select"
                        ng-model-options="{ updateOn: 'blur' }"
                        moment-picker="iData.join_date_select"
                        locale="th"
                        format="DD/MM/YYYY"
+                       max-date="iData.probation_end_date_select"
                        min-view="month"
-                       max-view="month" required />
+                       max-view="month" />
             </div>
             <div class="col-sm-4 mb-3">
-                <div class="text-dark fs-5">ตำแหน่ง</div>
-                <select ng-model="iData.positionCode" class="form-select" ng-options="x.code as x.desc_th + ' (' + x.desc_en + ')' for x in lPosition"></select>
+                <div class="text-dark fw-bolder">วันบรรจุงาน</div>
+                <input class="form-control form-input date probation_end_date icon-calendar"
+                       ng-model="iData.probation_end_date_select"
+                       ng-model-options="{ updateOn: 'blur' }"
+                       moment-picker="iData.probation_end_date_select"
+                       locale="th"
+                       min-date="iData.join_date_select"
+                       format="DD/MM/YYYY"
+                       min-view="month"
+                       max-view="month" change="calcProbationDay()" />
             </div>
-            <div class="col-sm-8 mb-3">
-                <div class="text-dark fs-5">ฝ่าย/ส่วนงาน</div>
-                <select ng-model="iData.departmentCode" class="form-select" ng-options="x.code as x.desc_th + ' (' + x.desc_en + ')' for x in lDepartment"></select>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">สถานะ</div>
+                
             </div>
-            <div class="col-sm-6 mb-3">
-                <div class="text-dark fs-5">อีเมล์ <span class="text-danger">*</span></div>
-                <input ng-model="iData.email" class="form-control email" />
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">อายุงาน</div>
+                <div>{{ iData.work_day == '' ? '-' : iData.work_day  }}</div>
             </div>
-        @*     <div class="col-sm-4 mb-3">
-                <div class="text-dark fs-5">เบอร์ติดต่อภายใน</div>
-                <input ng-model="iData.ext" class="form-control ext" maxlength="10" />
+            @*         <div class="col-sm-4 mb-3">
+            <div class="text-dark fw-bolder">บริษัท</div>
+            <div>{{ iData.company == '' ? '-' : iData.company }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+            <div class="text-dark fw-bolder">สถานที่</div>
+            <div>{{ iData.location == '' ? '-' : iData.location }}</div>
             </div> *@
-            <div class="col-sm-6 mb-3">
-                <div class="text-dark fs-5">หัวหน้งาน</div>
-                <input ng-model="iData.supervisorName" class="form-select bg-light-blue" data-bs-toggle="modal" data-bs-target="#supervisorModal" readonly />
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">ด้าน</div>
+                <div>{{ iData.divisionDesc == '' ? '-' : iData.divisionDesc }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">สายงาน</div>
+                <div>{{ iData.departmentDesc == '' ? '-' : iData.departmentDesc }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">ฝ่าย</div>
+                <select ng-model="iData.sectionCode" class="form-select form-input sectionCode" ng-options="x.code as x.desc_th for x in lDepartment"></select>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">ตำแหน่งงาน</div>
+                <select ng-model="iData.positionCode" class="form-select form-input positionCode" ng-options="x.code as x.desc_th for x in lPosition"></select>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">ประเภทพนักงาน</div>
+                <input ng-model="iData.employeeType" class="form-control form-input employeeType" maxlength="50" />
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">ระดับพนักงาน</div>
+                <input ng-model="iData.levelCode" class="form-control form-input levelCode" maxlength="50" />
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">เกรด</div>
+                <input ng-model="iData.grade" class="form-control form-input grade" maxlength="50" />
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">หัวหน้างาน</div>
+                <input ng-model="iData.supervisorName" class="form-control form-input icon-search supervisorName" maxlength="50" readonly ng-click="ShowSupervisor()" />
             </div>
         </div>
     </div>
@@ -212,7 +263,7 @@
 
                             if ($scope.iData.join_date != '' && $scope.iData.join_date != undefined) {
                                 var date = ConvertToDate($scope.iData.join_date);
-                                $scope.iData.join_date_select = new moment(date);
+                                $scope.iData.join_date_select = moment(date);
                             }
                         }
                     }, 0);
@@ -220,6 +271,10 @@
             });
         }
         $scope.LoadData();
+
+        $scope.ShowSupervisor = function(){
+            $("#supervisorModal").modal('show');
+        }
 
         $scope.SelectSupervisor = function(x){
             $scope.iData.supervisorId = x.userId;
@@ -231,11 +286,31 @@
         
         $scope.Validate = function(){
             var flag = true;
-            JS_Reset($(".email"));
+            JS_Reset($(".join_date"));
+            JS_Reset($(".positionCode"));
+            JS_Reset($(".sectionCode"));
 
-            if(JS_ValidateEmail($scope.iData.email) == false){
+            $scope.iData.join_date = '';
+            $scope.iData.probation_end_date = '';
+
+            if($scope.iData.join_date_select){
+                $scope.iData.join_date = $scope.iData.join_date_select.format("DD/MM/YYYY");
+            }
+            if($scope.iData.probation_end_date_select){
+                $scope.iData.probation_end_date = $scope.iData.probation_end_date_select.format("DD/MM/YYYY");
+            }
+
+            if ($scope.iData.join_date == '') {
                 flag = false;
-                JS_Require($(".email"));
+                JS_Require($(".join_date"));
+            }
+            if ($scope.iData.positionCode == '') {
+                flag = false;
+                JS_Require($(".positionCode"));
+            }
+            if ($scope.iData.sectionCode == '') {
+                flag = false;
+                JS_Require($(".sectionCode"));
             }
 
             return flag;
@@ -279,7 +354,7 @@
                 }
 
                 $.ajax({
-                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceEmployee/Save',
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormUpdateEmployeeCreate',
                     headers: { 'authorization': 'Bearer @token' },
                     type: "POST",
                     contentType: 'application/json',

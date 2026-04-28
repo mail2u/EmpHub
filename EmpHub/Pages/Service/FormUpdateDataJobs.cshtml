@@ -28,12 +28,16 @@
                     <div class="fw-bolder">
                         #{{ $index + 1 }}
                     </div>
-                    <div class="row flex-fill">
-                        <div class="col-sm-8 mb-3">
+                    <div class="d-flex flex-fill mb-3">
+                        <div class="flex-fill me-3">
                             <div class="text-dark fs-5">บริษัท</div>
                             <input ng-model="x.company" class="form-control" />
                         </div>
-                        <div class="col-sm-2 mb-3">
+                        <div class="flex-fill me-3">
+                            <div class="text-dark fs-5">ตำแหน่ง</div>
+                            <input ng-model="x.position" class="form-control" />
+                        </div>
+                        <div class="me-3" style="width:150px;">
                             <div class="text-dark fs-5">วันเริ่ม</div>
                             <input class="form-control icon-calendar date"
                                    ng-model="x.from_date_select"
@@ -41,10 +45,11 @@
                                    moment-picker="x.from_date_select"
                                    locale="th"
                                    format="MMM YYYY"
+                                   max-date="x.end_date_select"
                                    min-view="year"
                                    max-view="year" required />
                         </div>
-                        <div class="col-sm-2 mb-3">
+                        <div class="" style="width:150px;">
                             <div class="text-dark fs-5">วันที่สิ้นสุด</div>
                             <input class="form-control icon-calendar date"
                                    ng-model="x.end_date_select"
@@ -52,23 +57,20 @@
                                    moment-picker="x.end_date_select"
                                    locale="th"
                                    format="MMM YYYY"
+                                   min-date="x.from_date_select"
                                    min-view="year"
                                    max-view="year" required />
                         </div>
-                        <div class="col-sm-12 mb-3">
-                            <div class="text-dark fs-5">ตำแหน่ง</div>
-                            <input ng-model="x.position" class="form-control" />
-                        </div>
-                        <div class="col-sm-12 mb-3">
-                            <div class="text-dark fs-5">รายละเอียดงาน</div>
-                            <textarea ng-model="x.descripition" class="form-control" maxlength="4000" rows="5"></textarea>
-                        </div>
                     </div>
-                    <div class="text-end">
+                    <div class="mb-3">
+                        <div class="text-dark fs-5">รายละเอียดงาน</div>
+                        <textarea ng-model="x.descripition" class="form-control" maxlength="4000" rows="5"></textarea>
+                    </div>
+                   @*  <div class="text-end">
                         <div class="btn btn-warning-invert bg-white" ng-click="Delete(x)">
                             <i class="far fa-trash-alt me-2"></i>ลบรายการ
                         </div>
-                    </div>
+                    </div> *@
                 </div>
             </div>
         </div>

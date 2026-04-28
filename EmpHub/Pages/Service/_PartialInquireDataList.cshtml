@@ -44,7 +44,7 @@
 @* Web View *@
 <div class="mb-4">
     <div style="min-height:calc(100vh - 410px);" class="position-relative">
-        <table class="table table-tip">
+        <table class="table table-tip border shadow-sm">
             <thead>
                 <tr>
                     <th width="40"></th>
@@ -110,6 +110,24 @@
                     </td>
                 </tr>
             </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3">
+                        <div class="text-light-gray">Showing {{ ((page - 1) * row) + 1 }} to {{ (page * row) > total ? total : page * row }} of {{ total }} requests</div>
+                    </td>
+                    <td colspan="4">
+                        <div class="d-flex">
+                            <div class="flex-fill"></div>
+                            <button class="btn btn-circle me-2" ng-click="LoadData(page - 1)" ng-disabled="page <= 1">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="btn btn-circle" ng-click="LoadData(page + 1)" ng-disabled="page * row >= total">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tfoot>
         </table>
         <div ng-show="lData.length == 0" class="position-absolute top-50 start-50 translate-middle text-center opacity-75 text-gray">
             <img src="~/Images/empty.png" width="100" />

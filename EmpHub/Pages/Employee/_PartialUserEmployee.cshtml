@@ -2,105 +2,77 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
-    var token = User.AccessToken(Context);
 }
-<div ng-controller="ServiceEmployeeCtrl" id="tab_employee">
-    @* View *@
-    <div class=" position-relative">
-        <div>
-            <div class="row">
-                <div class="col-sm-4 mb-3">
-                    <div class="text-gray">
-                        รหัสพนักงาน
-                    </div>
-                    <div class="text-dark fs-5 ">{{ iData.employeeCode != '' ? iData.employeeCode : '-' }}</div>
-                </div>
-                <div class="col-sm-4 mb-3">
-                    <div class="text-gray">
-                        ประเภท
-                    </div>
-                    <div class="text-dark fs-5 ">{{ iData.employeeDesc != '' ? iData.employeeDesc : '-' }}</div>
-                </div>
-                <div class="col-sm-4 mb-3">
-                    <div class="text-gray">
-                        วันที่เริ่มงาน
-                    </div>
-                    <div class="text-dark fs-5 ">{{ iData.join_date != '' ? iData.join_date : '-' }}</div>
-                </div>
-                <div class="col-sm-4 mb-3">
-                    <div class="text-gray">
-                        ตำแหน่ง
-                    </div>
-                    <div class="text-dark fs-5 ">{{ iData.positionDesc != '' ? iData.positionDesc : '-' }}</div>
-                </div>
-                <div class="col-sm-8 mb-3">
-                    <div class="text-gray">
-                        ฝ่าย/ส่วนงาน
-                    </div>
-                    <div class="text-dark fs-5 ">{{ iData.departmentDesc != '' ? iData.departmentDesc : '-' }}</div>
-                </div>
-                <div class="col-sm-8 mb-3">
-                    <div class="text-gray">
-                        อีเมล์บริษัท
-                    </div>
-                    <div class="text-dark fs-5 ">{{ iData.email != '' ? iData.email : '-' }}</div>
-                </div>
-               @*  <div class="col-sm-4 mb-3">
-                    <div class="text-gray">
-                        เบอร์ติดต่อภายใน
-                    </div>
-                    <div class="text-dark fs-5">{{ iData.ext != '' ? iData.ext : '-' }}</div>
-                </div> *@
-                <div class="col-sm-12 mb-3">
-                    <div class="text-gray">
-                        หัวหน้างาน
-                    </div>
-                    <div class="text-dark fs-5">
-                        <div >{{ iData.supervisorName != '' ? iData.supervisorName : '-' }}</div>
-                        <div>{{ iData.supervisorPosition }}</div>
-                        <div>{{ iData.supervisorDepartment }}</div>
-                    </div>
-                </div>
+<div>
+    <div class="row">
+        <div class="col-sm-4 mb-3">
+            <div class="text-dark fw-bolder">วันเข้างาน</div>
+            <div>{{ iEmployee.join_date == '' ? '-' : iEmployee.join_date }}</div>
+        </div>
+        <div class="col-sm-4 mb-3">
+            <div class="text-dark fw-bolder">วันบรรจุงาน</div>
+            <div>{{ iEmployee.probation_end_date == '' ? '-' : iEmployee.probation_end_date }}</div>
+        </div>
+        <div class="col-sm-4 mb-3">
+            <div class="text-dark fw-bolder">สถานะ</div>
+            <div>{{ iEmployee.employeeStatus == '' ? '-' : iEmployee.employeeStatus }}</div>
+        </div>
+        <div class="col-sm-4 mb-3">
+            <div class="text-dark fw-bolder">อายุงาน</div>
+            <div>{{ iEmployee.work_day == '' ? '-' : iEmployee.work_day }}</div>
+        </div>
+@*         <div class="col-sm-4 mb-3">
+            <div class="text-dark fw-bolder">บริษัท</div>
+            <div>{{ iEmployee.company == '' ? '-' : iEmployee.company }}</div>
+        </div>
+        <div class="col-sm-4 mb-3">
+            <div class="text-dark fw-bolder">สถานที่</div>
+            <div>{{ iEmployee.location == '' ? '-' : iEmployee.location }}</div>
+        </div> *@
+        <div class="col-sm-4 mb-3">
+            <div class="text-dark fw-bolder">ด้าน</div>
+            <div>{{ iEmployee.divisionDesc == '' ? '-' : iEmployee.divisionDesc }}</div>
+        </div>
+        <div class="col-sm-4 mb-3">
+            <div class="text-dark fw-bolder">สายงาน</div>
+            <div>{{ iEmployee.departmentDesc == '' ? '-' : iEmployee.departmentDesc }}</div>
+        </div>
+        <div class="col-sm-4 mb-3">
+            <div class="text-dark fw-bolder">ฝ่าย</div>
+            <div>{{ iEmployee.sectionDesc == '' ? '-' : iEmployee.sectionDesc }}</div>
+        </div>
+        <div class="col-sm-4 mb-3">
+            <div class="text-dark fw-bolder">ตำแหน่งงาน</div>
+            <div>{{ iEmployee.positionDesc == '' ? '-' : iEmployee.positionDesc }}</div>
+        </div>
+        <div class="col-sm-4 mb-3">
+            <div class="text-dark fw-bolder">ประเภทพนักงาน</div>
+            <div>{{ iEmployee.employeeType == '' ? '-' : iEmployee.employeeType }}</div>
+        </div>
+        <div class="col-sm-4 mb-3">
+            <div class="text-dark fw-bolder">ระดับพนักงาน</div>
+            <div>{{ iEmployee.levelDesc == '' ? '-' : iEmployee.levelDesc }}</div>
+        </div>
+        <div class="col-sm-4 mb-3">
+            <div class="text-dark fw-bolder">เกรด</div>
+            <div>{{ iEmployee.grade == '' ? '-' : iEmployee.grade }}</div>
+        </div>
+        <div class="col-sm-4 mb-3">
+            <div class="text-dark fw-bolder">หัวหน้างาน</div>
+            <div>{{ iEmployee.supervisorName == '' ? '-' : iEmployee.supervisorName }}</div>
+        </div>
+    </div>
+    <hr class="my-3" />
+    <div class="mb-2 d-flex align-items-center">
+        <div class="flex-fill">
+            <div>
+                ปรับปรุงล่าสุด <span class="fw-bolder">{{ iEmployee.update_date }}</span> โดย <span class="fw-bolder">{{ iEmployee.update_by }}</span>
             </div>
         </div>
-        <div ng-show="can_edit == 1">
-            <a class="btn btn-light border-0" href="@Url.Page("/Service/FormUpdateDataEmployee")?mode=EDIT_EMPLOYEE&id={{userId}}" target="_blank">
-                <i class="far fa-edit me-1"></i> แก้ไข
+        <div>
+            <a class="btn btn-sm btn-warning-invert" href="@Url.Page("/Service/FormUpdateDataEmployee")?mode=EDIT_EMPLOYEE&id={{userId}}" target="_blank">
+                <i class="bi bi-pen me-2"></i> แก้ไข
             </a>
         </div>
     </div>
 </div>
-<script>
-    $(".date").mask("00/00/0000");
-    $(".ext").mask("0000");
-    app.controller('ServiceEmployeeCtrl', function ($scope, $http, $timeout, $filter) {
-
-        $scope.LoadData = function () {
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserEmployee',
-                headers: { 'authorization': 'Bearer @token' },
-                type: "POST",
-                contentType: 'application/json',
-                dataType: 'json',
-                cache: false,
-                data: JSON.stringify({
-                    userId: $scope.userId
-                    , create_by: '@User.UserId()'
-                }),
-                success: function (result) {
-                    $timeout(async function () {
-                        $scope.iData = result.data;
-                        $scope.can_view = result.can_view;
-                        $scope.can_edit = result.can_edit;
-                    }, 0);
-                }, error: AjaxError
-            });
-        }
-
-        $scope.InitEmployee = function () {
-            $scope.userId = $scope.$parent.userId
-            $scope.LoadData();
-        }
-        $scope.InitEmployee();
-    });
-</script>

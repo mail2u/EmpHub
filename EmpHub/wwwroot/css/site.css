@@ -832,7 +832,7 @@ main {
     border: 1px solid var(--bs-gray-200);
     border-collapse: separate; /* สำคัญมาก */
     border-spacing: 0;
-    border-radius: 10px;
+    border-radius: 15px;
     overflow: hidden; /* ทำให้มุมโค้งเห็นผล */
 }
 

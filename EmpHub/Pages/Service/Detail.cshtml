@@ -101,6 +101,27 @@
                 <div ng-show="iData.subCategoryCode == 'FORM_IDP'">
                     <partial name="_PartialServiceIDP" />
                 </div>
+                <div ng-show="iData.subCategoryCode == 'EDIT_PERSONAL'">
+                    <partial name="_PartialServiceUpdatePersonal" />
+                </div>
+                <div ng-show="iData.subCategoryCode == 'EDIT_EMPLOYEE'">
+                    <partial name="_PartialServiceUpdateEmployee" />
+                </div>
+                <div ng-show="iData.subCategoryCode == 'EDIT_CARD'">
+                    <partial name="_PartialServiceUpdateCard" />
+                </div>
+                <div ng-show="iData.subCategoryCode == 'EDIT_CONTACT'">
+                    <partial name="_PartialServiceUpdateContact" />
+                </div>
+                <div ng-show="iData.subCategoryCode == 'EDIT_JOB'">
+                    <partial name="_PartialServiceUpdateJob" />
+                </div>
+                <div ng-show="iData.subCategoryCode == 'EDIT_EDUCATION'">
+                    <partial name="_PartialServiceUpdateEducation" />
+                </div>
+                <div ng-show="iData.subCategoryCode == 'EDIT_TRAINING'">
+                    <partial name="_PartialServiceUpdateTraining" />
+                </div>
                 @* Feedback *@
                 <div class="bg-white rounded-4 border mb-4">
                     <div class="px-4 py-3 border-bottom">
@@ -249,8 +270,26 @@
                             case 'FORM_IDP':
                                 $scope.LoadFormIDP($scope.iData);
                                 break;
-                            case 'AAA':
-                                $scope.AAA($scope.iData);
+                            case 'EDIT_PERSONAL':
+                                $scope.LoadFormUpdatePersonal($scope.iData);
+                                break;
+                            case 'EDIT_EMPLOYEE':
+                                $scope.LoadFormUpdateEmployee($scope.iData);
+                                break;
+                            case 'EDIT_CARD':
+                                $scope.LoadFormUpdateCard($scope.iData);
+                                break;
+                            case 'EDIT_CONTACT':
+                                $scope.LoadFormUpdateContact($scope.iData);
+                                break;
+                            case 'EDIT_JOB':
+                                $scope.LoadFormUpdateJob($scope.iData);
+                                break;
+                            case 'EDIT_EDUCATION':
+                                $scope.LoadFormUpdateEducation($scope.iData);
+                                break;
+                            case 'EDIT_TRAINING':
+                                $scope.LoadFormUpdateTraining($scope.iData);
                                 break;
                             default:
                         }
@@ -323,13 +362,12 @@
                         success: function () {
                             $timeout(function () {
                                 hidePreloader();
+                                $scope.LoadData();
 
                                 alertSuccess("Rejection Completed", "The request has been rejected.", () => {
                                     if (window.opener && typeof window.opener.ReloadApprove === 'function') {
                                         if (!window.opener.ReloadApprove()) { window.opener.ReloadApprove(); }
                                     }
-                                    window.close();
-                                    $scope.LoadData();
                                 });
                             }, 0);
                         },
@@ -356,12 +394,12 @@
                     success: function (result) {
                         $timeout(function () {
                             hidePreloader();
+                            $scope.LoadData();
 
                             alertSuccess("Cancellation Successful", "The request has been cancelled successfully.", () => {
                                 if (window.opener && typeof window.opener.ReloadRequest === 'function') {
                                     if (!window.opener.ReloadRequest()) { window.opener.ReloadRequest(); }
                                 }
-                                location.href = '@Url.Page("Index")';
                             });
                         }, 0);
                     },
@@ -386,13 +424,12 @@
                     success: function (result) {
                         $timeout(function () {
                             hidePreloader();
+                            $scope.LoadData();
 
                             alertSuccess("Processed Successful", "The request has been processed successfully.", () => {
                                 if (window.opener && typeof window.opener.ReloadApprove === 'function') {
                                     if (!window.opener.ReloadWork()) { window.opener.ReloadWork(); }
                                 }
-                                window.close();
-                                $scope.LoadData();
                             });
                         }, 0);
                     },

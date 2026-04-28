@@ -1,5 +1,5 @@
 ﻿@page
-@model EmpHub.Pages.Employee.DetailModel
+@model EmpHub.Pages.Profile.IndexModel
 @{
     ViewData["Title"] = "EmpHub";
     var token = User.AccessToken(HttpContext);
@@ -20,6 +20,7 @@
             </div>
         </div>
     }
+
     <div class="d-flex">
         @* Profile *@
         <div class=" me-4" style="width:400px">
@@ -38,7 +39,7 @@
                         </div>
                         <div class="text-blue fs-5">{{ iEmployee.positionDesc }}</div>
                     </div>
-                    <div class="rounded-3 bg-light text-dark-gray p-3">
+                    <div class="rounded-3 bg-light text-dark-gray p-3 mb-4">
                         <table class="">
                             <tbody>
                                 <tr>
@@ -52,22 +53,22 @@
                                 <tr>
                                     <td class="p-2 align-top"><i class="bi bi-geo-alt-fill"></i></td>
                                     <td class="p-2">
-                                        {{ iAddress.live_home }}
-                                        {{ iAddress.live_road }}
-                                        {{ iAddress.live_subDistrictName }}
-                                        {{ iAddress.live_districtName }}
-                                        {{ iAddress.live_provinceName }}
-                                        {{ iAddress.live_postcode }}
+                                        {{ iAddress.home }}
+                                        <span ng-show="iAddress.road != ''">ถ.{{ iAddress.road }}</span>
+                                        {{ iAddress.subDistrictName }}
+                                        {{ iAddress.districtName }}
+                                        {{ iAddress.provinceName }}
+                                        {{ iAddress.postcode }}
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                   @*  <div>
+                    <div>
                         <a class="btn btn-primary" href="@Url.Page("Edit")?id=@Model.id">
                             <i class="bi bi-pen-fill me-2"></i> Edit Profile
                         </a>
-                    </div> *@
+                    </div>
                 </div>
             </div>
             @* Report To *@
@@ -90,71 +91,127 @@
         <div class="flex-fill bg-white overflow-hidden rounded-4 border">
             <nav class="border-bottom px-4 pt-2 bg-gray-100">
                 <div class="nav nav-underline" id="nav-tab" role="tablist">
-                    <a class="nav-link text-nowrap active" href="?tab=nav-personal"
-                       data-bs-target="#nav-personal">
-                        ข้อมูลส่วนบุคคล
+                    <a class="nav-link active" href="?tab=nav-profile"
+                       data-bs-target="#nav-profile">
+                        Profile
                     </a>
-                    <a class="nav-link text-nowrap" href="?tab=nav-employment"
-                       data-bs-target="#nav-employment">
-                        ข้อมูลการว่าจ้าง
-                    </a>
-                    <a class="nav-link text-nowrap" href="?tab=nav-card"
-                       data-bs-target="#nav-card">
-                        ข้อมูลบัตร
-                    </a>
-                    <a class="nav-link text-nowrap" href="?tab=nav-contact"
-                       data-bs-target="#nav-contact">
-                        ข้อมูลการติดต่อ
-                    </a>
-                    <a class="nav-link text-nowrap" href="?tab=nav-job"
-                       data-bs-target="#nav-job">
-                        ประสบการณ์ทำงาน
-                    </a>
-                    <a class="nav-link text-nowrap" href="?tab=nav-education"
-                       data-bs-target="#nav-education">
-                        การศึกษา
-                    </a>
-                    <a class="nav-link text-nowrap" href="?tab=nav-talent"
+                    <a class="nav-link" href="?tab=nav-talent"
                        data-bs-target="#nav-talent">
-                        ความสามารถทางภาษา
+                        Talent
                     </a>
-                    <a class="nav-link text-nowrap" href="?tab=nav-training"
-                       data-bs-target="#nav-training">
-                        การฝึกอบรม
+                    <a class="nav-link" href="?tab=nav-lifecycle"
+                       data-bs-target="#nav-lifecycle">
+                        Lifecycle
                     </a>
-                    <a class="nav-link text-nowrap" href="?tab=nav-document"
+                    <a class="nav-link" href="?tab=nav-document"
                        data-bs-target="#nav-document">
-                        เอกสาร
+                        Document
                     </a>
                 </div>
             </nav>
             <div class="tab-content p-4" id="nav-tabContent">
-                <div class="tab-pane fade show active" id="nav-personal" role="tabpanel" aria-labelledby="nav-personal-tab" tabindex="0">
-                    <partial name="_PartialUserPersonal" />
-                </div>
-                <div class="tab-pane fade" id="nav-employment" role="tabpanel" aria-labelledby="nav-employment-tab" tabindex="0">
-                    <partial name="_PartialUserEmployee" />
-                </div>
-                <div class="tab-pane fade" id="nav-card" role="tabpanel" aria-labelledby="nav-card-tab" tabindex="0">
-                    <partial name="_PartialUserCard" />
-                </div>
-                <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab" tabindex="0">
-                    <partial name="_PartialUserContact" />
-                </div>
-                <div class="tab-pane fade" id="nav-job" role="tabpanel" aria-labelledby="nav-job-tab" tabindex="0">
-                    <partial name="_PartialUserJobExperience" />
-                </div>
-                <div class="tab-pane fade" id="nav-education" role="tabpanel" aria-labelledby="nav-education-tab" tabindex="0">
-                    <partial name="_PartialUserEducation" />
+                <div class="tab-pane fade show active" id="nav-profile" role="tabpanel" aria-labelledby="nav-employee-tab" tabindex="0">
+                    @* Profile *@
+                    <div class="text-dark fs-5 fw-bolder d-flex align-items-center mb-3">
+                        <i class="bi bi-person-vcard-fill fs-4 me-2 text-blue"></i> Basic Infomation
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6 mb-3">
+                            <div class="text-gray">FULL NAME</div>
+                            <div class="text-dark">{{ iPersonal.firstname_th }} {{ iPersonal.lastname_th }}</div>
+                        </div>
+                        <div class="col-sm-6 mb-3">
+                            <div class="text-gray">NICKNAME</div>
+                            <div class="text-dark">{{ iPersonal.nickname }}</div>
+                        </div>
+                        <div class="col-sm-6 mb-3">
+                            <div class="text-gray">DEPARTMENT</div>
+                            <div class="text-dark">{{ iEmployee.departmentDesc }}</div>
+                        </div>
+                        <div class="col-sm-6 mb-3">
+                            <div class="text-gray">EMPLOYEE ID</div>
+                            <div class="text-dark">{{ iEmployee.employeeCode }}</div>
+                        </div>
+                        <div class="col-sm-6 mb-3">
+                            <div class="text-gray">EMPLOYMENT TYPE</div>
+                            <div class="text-dark">{{ iEmployee.employeeDesc }}</div>
+                        </div>
+                        <div class="col-sm-6 mb-3">
+                            <div class="text-gray">HIRE DATE</div>
+                            <div class="text-dark">{{ iEmployee.join_date }}</div>
+                        </div>
+                    </div>
+                    <hr class="my-3" />
+                    @* Job Experience *@
+                    <div class="text-dark fs-5 fw-bolder d-flex align-items-center mb-3">
+                        <i class="bi bi-person-vcard-fill fs-4 me-2 text-blue"></i> Job Experience
+                    </div>
+                    <table>
+                        <tbody>
+                            <tr ng-repeat="x in lJobExperience">
+                                <td class="align-top pt-1 px-2">
+                                    <i class="bi bi-circle-fill {{ $index == 0 ? 'text-blue shadow-sm' : '' }}"></i>
+                                </td>
+                                <td>
+                                    <div class="text-dark fw-bolder">{{ x.company }}</div>
+                                    <div class="text-gray">{{ x.position }}</div>
+                                    <div class="text-light">{{ x.from_date | date:'MMM yyyy' }} - {{ x.end_date | date:'MMM yyyy' }}</div>
+                                </td>
+                                <td>
+                                    {{ x.description }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="d-flex">
+                        <div>
+                        </div>
+
+                    </div>
+                    <hr class="my-3" />
+                    <div class="row">
+                        <div class="col-sm-6 mb-3">
+                            @* Eductaion *@
+                            <div class="text-dark fs-5 fw-bolder d-flex align-items-center mb-3">
+                                <i class="fas fa-graduation-cap fs-4 me-2 text-blue"></i> Education
+                            </div>
+                            <div class="mt-3" ng-repeat="x in lEducation">
+                                <div class="text-dark fw-bolder">{{ x.levelName }}</div>
+                                <div class="text-gray">{{ x.institution }}</div>
+                                <div class="text-light" ng-show="x.year != ''">class of {{ x.year }}</div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 mb-3">
+                            @* Training History *@
+                            <div class="text-dark fs-5 fw-bolder d-flex align-items-center mb-3">
+                                <i class="bi bi-patch-check fs-4 me-2 text-blue"></i> Training History
+                            </div>
+                            <div class="mt-3" ng-repeat="x in lTraining">
+                                <div class="text-dark fw-bolder">{{ x.organization }}</div>
+                                <div class="text-gray">{{ x.license }} {{ issueDate }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    @* Document *@
+                    <div class="text-dark fs-5 fw-bolder d-flex align-items-center mb-3">
+                        <i class="bi bi-file-earmark-text-fill fs-4 me-2 text-blue"></i> Documents
+                    </div>
+                    <div class="border border-dash text-gray-500 text-center p-3 rounded-3">
+                        <i class="bi bi-cloud-arrow-up-fill fs-3"></i>
+                        <div class="fw-bolder">Upload New Document</div>
+                        <div class="">PDF, DOCX up to 10MB</div>
+                    </div>
                 </div>
                 <div class="tab-pane fade" id="nav-talent" role="tabpanel" aria-labelledby="nav-talent-tab" tabindex="0">
-                    <partial name="_PartialUserTalent" />
+                    @* Partial Address *@
                 </div>
-                <div class="tab-pane fade" id="nav-training" role="tabpanel" aria-labelledby="nav-training-tab" tabindex="0">
-                    <partial name="_PartialUserTraining" />
+                <div class="tab-pane fade" id="nav-lifecycle" role="tabpanel" aria-labelledby="nav-lifecycle-tab" tabindex="0">
+                    @* Lifecycle *@
+                    @*  <partial name="Employee/_PartialUserEducation" /> *@
                 </div>
                 <div class="tab-pane fade" id="nav-document" role="tabpanel" aria-labelledby="nav-document-tab" tabindex="0">
-                    <partial name="_PartialUserDocument" />
+                    @* Document *@
+                    @* <partial name="Employee/_PartialUserTraining" /> *@
                 </div>
             </div>
         </div>
@@ -175,44 +232,6 @@
             }
         }
 
-        $scope.CalcAge = function () {
-            $scope.iPersonal.age = '';
-
-            if ($scope.iPersonal.birth_date) {
-                const b = ConvertToDate($scope.iPersonal.birth_date);
-                const c = new Date();
-
-                let years = c.getFullYear() - b.getFullYear();
-                let months = c.getMonth() - b.getMonth();
-                let days = c.getDate() - b.getDate();
-
-                // ถ้าวันติดลบ → ยืมเดือน
-                if (days < 0) {
-                    months--;
-
-                    // เอาจำนวนวันของเดือนก่อนหน้า
-                    const prevMonth = new Date(c.getFullYear(), c.getMonth(), 0);
-                    days += prevMonth.getDate();
-                }
-
-                // ถ้าเดือนติดลบ → ยืมปี
-                if (months < 0) {
-                    years--;
-                    months += 12;
-                }
-
-                if (years > 0) {
-                    $scope.iPersonal.age = years + ' ปี ';
-                }
-                if (months > 0) {
-                    $scope.iPersonal.age += months + ' เดือน ';
-                }
-                if (days > 0) {
-                    $scope.iPersonal.age += days + ' วัน';
-                }
-            }
-        }
-
         $scope.LoadPersonal = function () {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserPersonal',
@@ -230,50 +249,11 @@
                         $scope.iPersonal = result.data;
                         $scope.can_view = result.can_view;
                         $scope.can_edit = result.can_edit;
-                        $scope.CalcAge();
                     }, 0);
                 }, error: AjaxError
             });
         }
         $scope.LoadPersonal();
-
-        $scope.CalcWorkDay = function () {
-            $scope.iEmployee.work_day = '';
-
-            if ($scope.iEmployee.join_date) {
-                const b = ConvertToDate($scope.iEmployee.join_date);
-                const c = new Date();
-
-                let years = c.getFullYear() - b.getFullYear();
-                let months = c.getMonth() - b.getMonth();
-                let days = c.getDate() - b.getDate();
-
-                // ถ้าวันติดลบ → ยืมเดือน
-                if (days < 0) {
-                    months--;
-
-                    // เอาจำนวนวันของเดือนก่อนหน้า
-                    const prevMonth = new Date(c.getFullYear(), c.getMonth(), 0);
-                    days += prevMonth.getDate();
-                }
-
-                // ถ้าเดือนติดลบ → ยืมปี
-                if (months < 0) {
-                    years--;
-                    months += 12;
-                }
-
-                if (years > 0) {
-                    $scope.iEmployee.work_day = years + ' ปี ';
-                }
-                if (months > 0) {
-                    $scope.iEmployee.work_day += months + ' เดือน ';
-                }
-                if (days > 0) {
-                    $scope.iEmployee.work_day += days + ' วัน';
-                }
-            }
-        }
 
         $scope.LoadEmployee = function () {
             $.ajax({
@@ -290,7 +270,6 @@
                 success: function (result) {
                     $timeout(async function () {
                         $scope.iEmployee = result.data;
-                        $scope.CalcWorkDay();
                     }, 0);
                 }, error: AjaxError
             });
@@ -334,8 +313,8 @@
                 success: function (result) {
                     $timeout(async function () {
                         $scope.lJobExperience = result.data;
-                        if ($scope.lJobExperience.length > 0) {
-                            $scope.lJobExperience = $scope.lJobExperience.map((x) => {
+                        if ($scope.lData.length > 0) {
+                            $scope.lData = $scope.lData.map((x) => {
                                 x.from_date = x.fromDate != '' ? ConvertToDate(x.fromDate) : '';
                                 x.end_date = x.endDate != '' ? ConvertToDate(x.endDate) : '';
                                 return x;
@@ -389,6 +368,5 @@
             });
         }
         $scope.LoadTraining();
-
     });
 </script>

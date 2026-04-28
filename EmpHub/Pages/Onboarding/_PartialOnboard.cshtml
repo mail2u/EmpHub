@@ -11,9 +11,9 @@
         background-color: #fcfcfc;
     }
 
-        .form-input:focus {
-            border-bottom: 2px solid var(--tip-blue);
-        }
+    .form-input:focus {
+        border-bottom: 2px solid var(--tip-blue);
+    }
 
     input.form-input:read-only {
         background-color: var(--bs-gray-200);
@@ -26,34 +26,34 @@
     <div class="row">
         <div class="col-sm-3 mb-3">
             <div>ประเภทการดำเนินการ <span class="text-danger">*</span></div>
-            <select ng-model="iEmployee.processType" class="form-select form-input processType" ng-options="x.value as x.key for x in lProcessType"></select>
+            <select ng-model="iEmployee.processType" class="form-select form-input processType" ng-options="x.value as x.key for x in lProcessType" ng-disabled="is_readonly"></select>
         </div>
         <div class="col-sm-9 mb-3">
             <div>เหตุผลการดำเนินการ</div>
-            <input ng-model="iEmployee.processReason" class="form-control form-input processReason" maxlength="200" />
+            <input ng-model="iEmployee.processReason" class="form-control form-input processReason" maxlength="200" ng-disabled="is_readonly" />
         </div>
     </div>
     @* Employee *@
     <div class="row">
         <div class="col-sm-3 mb-3">
             <div>รหัสพนักงาน <span class="text-danger">*</span></div>
-            <input ng-model="iEmployee.employeeCode" class="form-control form-input employeeCode" placeholder="000000" maxlength="6" />
+            <input ng-model="iEmployee.employeeCode" class="form-control form-input employeeCode" placeholder="000000" maxlength="6" ng-disabled="is_readonly" />
         </div>
         <div class="col-sm-3 mb-3">
             <div>เลขประจำตัวประชาชน <span class="text-danger">*</span></div>
-            <input ng-model="iPersonal.idcard" class="form-control form-input idcard" placeholder="0000000000000" maxlength="13" />
+            <input ng-model="iPersonal.idcard" class="form-control form-input idcard" placeholder="0000000000000" maxlength="13" ng-disabled="is_readonly" />
         </div>
         <div class="col-sm-3 mb-3">
             <div>สัญชาติ <span class="text-danger">*</span></div>
-            <select ng-model="iPersonal.nationality" class="form-select form-input nationality" ng-options="x.code as x.desc_th for x in lNationality"></select>
+            <select ng-model="iPersonal.nationality" class="form-select form-input nationality" ng-options="x.code as x.desc_th for x in lNationality" ng-disabled="is_readonly"></select>
         </div>
         <div class="col-sm-3 mb-3">
             <div>เชื้อชาติ</div>
-            <select ng-model="iPersonal.ethnicity" class="form-select form-input ethnicity" ng-options="x.code as x.desc_th for x in lEthnicity"></select>
+            <select ng-model="iPersonal.ethnicity" class="form-select form-input ethnicity" ng-options="x.code as x.desc_th for x in lEthnicity" ng-disabled="is_readonly"></select>
         </div>
         <div class="col-sm-3 mb-3">
             <div>ศาสนา</div>
-            <select ng-model="iPersonal.religion" class="form-select form-input religion" ng-options="x.code as x.desc_th for x in lReligion"></select>
+            <select ng-model="iPersonal.religion" class="form-select form-input religion" ng-options="x.code as x.desc_th for x in lReligion" ng-disabled="is_readonly"></select>
         </div>
     </div>
     @* Personal *@
@@ -63,15 +63,15 @@
     <div class="row">
         <div class="col-sm-3 mb-3">
             <div>คำนำหน้าชื่อ <span class="text-danger">*</span></div>
-            <select ng-model="iPersonal.prefix_th" class="form-select form-input prefix_th" ng-options="x.code as x.desc_th for x in lPrefix"></select>
+            <select ng-model="iPersonal.prefix_th" class="form-select form-input prefix_th" ng-options="x.code as x.desc_th for x in lPrefix" ng-disabled="is_readonly"></select>
         </div>
         <div class="col-sm-3 mb-3">
             <div>ชื่อ <span class="text-danger">*</span></div>
-            <input ng-model="iPersonal.firstname_th" class="form-control form-input firstname_th" />
+            <input ng-model="iPersonal.firstname_th" class="form-control form-input firstname_th" ng-disabled="is_readonly" />
         </div>
         <div class="col-sm-3 mb-3">
             <div>นามสกุล <span class="text-danger">*</span></div>
-            <input ng-model="iPersonal.lastname_th" class="form-control form-input lastname_th" />
+            <input ng-model="iPersonal.lastname_th" class="form-control form-input lastname_th" ng-disabled="is_readonly" />
         </div>
     </div>
     <div class="fw-bolder fs-6">
@@ -80,15 +80,15 @@
     <div class="row">
         <div class="col-sm-3 mb-3">
             <div>คำนำหน้าชื่อ</div>
-            <select ng-model="iPersonal.prefix_en" class="form-select form-input prefix_en" ng-options="x.code as x.desc_en for x in lPrefix"></select>
+            <select ng-model="iPersonal.prefix_en" class="form-select form-input prefix_en" ng-options="x.code as x.desc_en for x in lPrefix" ng-disabled="is_readonly"></select>
         </div>
         <div class="col-sm-3 mb-3">
             <div>ชื่อ</div>
-            <input ng-model="iPersonal.firstname_en" class="form-control form-input firstname_en" />
+            <input ng-model="iPersonal.firstname_en" class="form-control form-input firstname_en" ng-disabled="is_readonly" />
         </div>
         <div class="col-sm-3 mb-3">
             <div>นามสกุล</div>
-            <input ng-model="iPersonal.lastname_en" class="form-control form-input lastname_en" />
+            <input ng-model="iPersonal.lastname_en" class="form-control form-input lastname_en" ng-disabled="is_readonly" />
         </div>
     </div>
     <div class="row">
@@ -100,7 +100,7 @@
                    locale="th"
                    format="DD/MM/YYYY"
                    min-view="month"
-                   max-view="month" required change="CalcAge()" />
+                   max-view="month" required change="CalcAge()" ng-disabled="is_readonly" />
         </div>
         <div class="col-sm-3 mb-3">
             <div>อายุ</div>
@@ -108,19 +108,19 @@
         </div>
         <div class="col-sm-3 mb-3">
             <div>เพศ <span class="text-danger">*</span></div>
-            <select ng-model="iPersonal.sex" class="form-select form-input sex" ng-options="x.value as x.key for x in lSex"></select>
+            <select ng-model="iPersonal.sex" class="form-select form-input sex" ng-options="x.value as x.key for x in lSex" ng-disabled="is_readonly"></select>
         </div>
         <div class="col-sm-3 mb-3">
             <div>สถานภาพการสมรส <span class="text-danger">*</span></div>
-            <select ng-model="iPersonal.maritalStatus" class="form-select form-input maritalStatus" ng-options="x.code as x.desc_th for x in lMarital"></select>
+            <select ng-model="iPersonal.maritalStatus" class="form-select form-input maritalStatus" ng-options="x.code as x.desc_th for x in lMarital" ng-disabled="is_readonly"></select>
         </div>
         <div class="col-sm-3 mb-3">
             <div>สถานะทางการทหาร</div>
-            <select ng-model="iPersonal.militaryStatus" class="form-select form-input militaryStatus" ng-options="x.code as x.desc_th for x in lMilitary"></select>
+            <select ng-model="iPersonal.militaryStatus" class="form-select form-input militaryStatus" ng-options="x.code as x.desc_th for x in lMilitary" ng-disabled="is_readonly"></select>
         </div>
         <div class="col-sm-3 mb-3">
             <div>สถานะความพิการ</div>
-            <select ng-model="iPersonal.disabilityStatus" class="form-select form-input disabilityStatus" ng-options="x.code as x.desc_th for x in lDisability"></select>
+            <select ng-model="iPersonal.disabilityStatus" class="form-select form-input disabilityStatus" ng-options="x.code as x.desc_th for x in lDisability" ng-disabled="is_readonly"></select>
         </div>
     </div>
 </div>
@@ -130,82 +130,88 @@
     <div class="fw-bolder fs-6">ที่อยู่ทะเบียนบ้าน</div>
     <div class="row">
         <div class="col-sm-6 mb-3">
-            <div>บ้านเลขที่</div>
-            <input ng-model="iAddress.registered_home" class="form-control form-input" maxlength="100" />
+            <div>บ้านเลขที่ <span class="text-danger">*</span></div>
+            <input ng-model="iAddress.registered_home" class="form-control form-input registered_home" maxlength="100" ng-disabled="is_readonly" />
         </div>
         <div class="col-sm-6 mb-3">
             <div>ถนน</div>
-            <input ng-model="iAddress.registered_road" class="form-control form-input" maxlength="100" />
+            <input ng-model="iAddress.registered_road" class="form-control form-input registered_road" maxlength="100" ng-disabled="is_readonly" />
         </div>
         <div class="col-sm-3 mb-3">
             <div>แขวง/ตำบล</div>
-            <input ng-model="iAddress.registered_subDistrictName" class="form-control form-input icon-search" maxlength="50" ng-click="ShowAddress('registered')" readonly />
+            <input ng-model="iAddress.registered_subDistrictName" class="form-control form-input icon-search registered_subDistrictName" maxlength="50" ng-click="ShowAddress('registered')" readonly />
         </div>
         <div class="col-sm-3 mb-3">
             <div>เขต/อำเภอ</div>
-            <input ng-model="iAddress.registered_districtName" class="form-control form-input icon-search" maxlength="50" ng-click="ShowAddress('registered')" readonly />
+            <input ng-model="iAddress.registered_districtName" class="form-control form-input icon-search registered_districtName" maxlength="50" ng-click="ShowAddress('registered')" readonly />
         </div>
         <div class="col-sm-3 mb-3">
             <div>จังหวัด <span class="text-danger">*</span></div>
-            <input ng-model="iAddress.registered_provinceName" class="form-control form-input icon-search" maxlength="50" ng-click="ShowAddress('registered')" readonly />
+            <input ng-model="iAddress.registered_provinceName" class="form-control form-input icon-search registered_provinceName" maxlength="50" ng-click="ShowAddress('registered')" readonly />
         </div>
         <div class="col-sm-3 mb-3">
             <div>ไปรษณีย์</div>
-            <input ng-model="iAddress.registered_postcode" class="form-control form-input" maxlength="5" />
+            <input ng-model="iAddress.registered_postcode" class="form-control form-input registered_postcode" maxlength="5" ng-disabled="is_readonly" />
         </div>
     </div>
-    <div class="fw-bolder fs-6">ที่อยู่ตามบัตรประชาชน</div>
+    <div class="fw-bolder fs-6 me-2">ที่อยู่ตามบัตรประชาชน</div>
+    <div class="mb-2">
+        <input ng-model="is_card_same_register" type="checkbox" ng-change="SelectCardAddressUserRegistered()" ng-disabled="is_readonly" /> ใช้ที่อยู่เดียวกับทะเบียนบ้าน
+    </div>
     <div class="row">
         <div class="col-sm-6 mb-3">
-            <div>บ้านเลขที่</div>
-            <input ng-model="iAddress.card_home" class="form-control form-input" maxlength="100" />
+            <div>บ้านเลขที่ <span class="text-danger">*</span></div>
+            <input ng-model="iAddress.card_home" class="form-control form-input card_home" maxlength="100" ng-disabled="is_readonly" />
         </div>
         <div class="col-sm-6 mb-3">
             <div>ถนน</div>
-            <input ng-model="iAddress.card_road" class="form-control form-input" maxlength="100" />
+            <input ng-model="iAddress.card_road" class="form-control form-input card_road" maxlength="100" ng-disabled="is_readonly" />
         </div>
         <div class="col-sm-3 mb-3">
             <div>แขวง/ตำบล</div>
-            <input ng-model="iAddress.card_subDistrictName" class="form-control form-input icon-search" maxlength="50" ng-click="ShowAddress('card')" readonly />
+            <input ng-model="iAddress.card_subDistrictName" class="form-control form-input icon-search card_subDistrictName" maxlength="50" ng-click="ShowAddress('card')" readonly />
         </div>
         <div class="col-sm-3 mb-3">
             <div>เขต/อำเภอ</div>
-            <input ng-model="iAddress.card_districtName" class="form-control form-input icon-search" maxlength="50" ng-click="ShowAddress('card')" readonly />
+            <input ng-model="iAddress.card_districtName" class="form-control form-input icon-search card_districtName" maxlength="50" ng-click="ShowAddress('card')" readonly />
         </div>
         <div class="col-sm-3 mb-3">
             <div>จังหวัด <span class="text-danger">*</span></div>
-            <input ng-model="iAddress.card_provinceName" class="form-control form-input icon-search" maxlength="50" ng-click="ShowAddress('card')" readonly />
+            <input ng-model="iAddress.card_provinceName" class="form-control form-input icon-search card_provinceName" maxlength="50" ng-click="ShowAddress('card')" readonly />
         </div>
         <div class="col-sm-3 mb-3">
             <div>ไปรษณีย์</div>
-            <input ng-model="iAddress.card_postcode" class="form-control form-input" maxlength="5" />
+            <input ng-model="iAddress.card_postcode" class="form-control form-input card_postcode" maxlength="5" ng-disabled="is_readonly" />
         </div>
     </div>
     <div class="fw-bolder fs-6">ที่อยู่พักอาศัย</div>
+    <div class="mb-2">
+        <input ng-model="is_live_same_register" type="checkbox" ng-change="SelectLiveAddressUserRegistered()" ng-disabled="is_readonly" /> ใช้ที่อยู่เดียวกับทะเบียนบ้าน
+    </div>
     <div class="row">
         <div class="col-sm-6 mb-3">
-            <div>บ้านเลขที่</div>
-            <input ng-model="iAddress.live_home" class="form-control form-input" maxlength="100" />
+            <div>บ้านเลขที่ <span class="text-danger">*</span></div>
+            <input ng-model="iAddress.live_home" class="form-control form-input live_home" maxlength="100" ng-disabled="is_readonly" />
         </div>
         <div class="col-sm-6 mb-3">
             <div>ถนน</div>
-            <input ng-model="iAddress.live_road" class="form-control form-input" maxlength="100" />
+            <input ng-model="iAddress.live_road" class="form-control form-input live_road" maxlength="100" ng-disabled="is_readonly" />
         </div>
         <div class="col-sm-3 mb-3">
             <div>แขวง/ตำบล</div>
-            <input ng-model="iAddress.live_subDistrictName" class="form-control form-input icon-search" maxlength="50" ng-click="ShowAddress('live')" readonly />
+            <input ng-model="iAddress.live_subDistrictName" class="form-control form-input icon-search live_subDistrictName" maxlength="50" ng-click="ShowAddress('live')" readonly />
         </div>
         <div class="col-sm-3 mb-3">
             <div>เขต/อำเภอ</div>
-            <input ng-model="iAddress.live_districtName" class="form-control form-input icon-search" maxlength="50" ng-click="ShowAddress('live')" readonly />
+            <input ng-model="iAddress.live_districtName" class="form-control form-input icon-search live_districtName" maxlength="50" ng-click="ShowAddress('live')" readonly />
         </div>
         <div class="col-sm-3 mb-3">
             <div>จังหวัด <span class="text-danger">*</span></div>
-            <input ng-model="iAddress.live_provinceName" class="form-control form-input icon-search" maxlength="50" ng-click="ShowAddress('live')" readonly />
+            <input ng-model="iAddress.live_provinceName" class="form-control form-input icon-search live_provinceName" maxlength="50" ng-click="ShowAddress('live')" readonly />
         </div>
         <div class="col-sm-3 mb-3">
             <div>ไปรษณีย์</div>
-            <input ng-model="iAddress.live_postcode" class="form-control form-input" maxlength="5" />
+            <input ng-model="iAddress.live_postcode" class="form-control form-input live_postcode" maxlength="5" ng-disabled="is_readonly" />
         </div>
     </div>
 </div>
@@ -216,25 +222,25 @@
     </div>
     <div class="row">
         <div class="col-sm-3 mb-3">
-            <div>โทรศัพท์</div>
-            <input ng-model="iPersonal.phoneNo" class="form-control form-input" maxlength="50" />
+            <div>โทรศัพท์ <span class="text-danger">*</span></div>
+            <input ng-model="iPersonal.phoneNo" class="form-control form-input phoneNo" maxlength="50" ng-disabled="is_readonly" />
         </div>
         <div class="col-sm-3 mb-3">
             <div>มือถือ</div>
-            <input ng-model="iPersonal.mobile" class="form-control form-input" maxlength="50" />
+            <input ng-model="iPersonal.mobile" class="form-control form-input mobile" maxlength="50" ng-disabled="is_readonly" />
         </div>
         <div class="col-sm-3 mb-3">
             <div>อีเมล์ส่วนตัว</div>
-            <input ng-model="iPersonal.email" class="form-control form-input" maxlength="50" />
+            <input ng-model="iPersonal.email" class="form-control form-input email" maxlength="50" ng-disabled="is_readonly" />
         </div>
         <div class="col-sm-3"></div>
         <div class="col-sm-3 mb-3">
             <div>เบอร์โทรศัพท์ที่ทำงาน</div>
-            <input ng-model="iEmployee.phone_office" class="form-control form-input" maxlength="50" />
+            <input ng-model="iEmployee.phone_office" class="form-control form-input phone_office" maxlength="50" ng-disabled="is_readonly" />
         </div>
         <div class="col-sm-3 mb-3">
             <div>อีเมล์ที่ใช้ในบริษัท</div>
-            <input ng-model="iEmployee.email" class="form-control form-input" maxlength="50" />
+            <input ng-model="iEmployee.email" class="form-control form-input email_office" maxlength="50" ng-disabled="is_readonly" />
         </div>
     </div>
 </div>
@@ -253,7 +259,7 @@
                    format="DD/MM/YYYY"
                    max-date="iEmployee.probation_end_date_select"
                    min-view="month"
-                   max-view="month" />
+                   max-view="month" ng-disabled="is_readonly" />
         </div>
         <div class="col-sm-3 mb-3">
             <div>วันผ่านการทดลองงาน</div>
@@ -265,7 +271,7 @@
                    min-date="iEmployee.join_date_select"
                    format="DD/MM/YYYY"
                    min-view="month"
-                   max-view="month" change="calcProbationDay()" />
+                   max-view="month" change="calcProbationDay()" ng-disabled="is_readonly" />
         </div>
         <div class="col-sm-3 mb-3">
             <div>ระยะเวลาทดลองงาน (วัน)</div>
@@ -275,77 +281,77 @@
     <div class="row">
         <div class="col-sm-3 mb-3">
             <div>หน่วยงานเชิงธุรกิจ <span class="text-danger">*</span></div>
-            <select ng-model="iEmployee.departmentCode" class="form-select form-input disabilityStatus" ng-options="x.code as x.desc_th for x in lDepartment"></select>
+            <select ng-model="iEmployee.sectionCode" class="form-select form-input sectionCode" ng-options="x.code as x.desc_th for x in lDepartment" ng-disabled="is_readonly"></select>
         </div>
         <div class="col-sm-3 mb-3">
             <div>ตำแหน่งงาน <span class="text-danger">*</span></div>
-            <select ng-model="iEmployee.positionCode" class="form-select form-input disabilityStatus" ng-options="x.code as x.desc_th for x in lPosition"></select>
+            <select ng-model="iEmployee.positionCode" class="form-select form-input positionCode" ng-options="x.code as x.desc_th for x in lPosition" ng-disabled="is_readonly"></select>
         </div>
         <div class="col-sm-3 mb-3">
             <div>ประเภทพนักงาน <span class="text-danger">*</span></div>
-            <input ng-model="iEmployee.employeeType" class="form-control form-input" maxlength="50" />
+            <input ng-model="iEmployee.employeeType" class="form-control form-input employeeType" maxlength="50" ng-disabled="is_readonly" />
         </div>
         <div class="col-sm-3 mb-3">
             <div>ระดับพนักงาน <span class="text-danger">*</span></div>
-            <input ng-model="iEmployee.levelCode" class="form-control form-input" maxlength="50" />
+            <input ng-model="iEmployee.levelCode" class="form-control form-input levelCode" maxlength="50" ng-disabled="is_readonly" />
         </div>
         <div class="col-sm-3 mb-3">
             <div>เกรด</div>
-            <input ng-model="iEmployee.grade" class="form-control form-input" maxlength="50" />
+            <input ng-model="iEmployee.grade" class="form-control form-input grade" maxlength="50" ng-disabled="is_readonly" />
         </div>
         <div class="col-sm-3 mb-3">
             <div>หัวหน้างาน</div>
-            <input ng-model="iEmployee.supervisorName" class="form-control form-input icon-search" maxlength="50" readonly ng-click="ShowSupervisor()" />
+            <input ng-model="iEmployee.supervisorName" class="form-control form-input icon-search supervisorName" maxlength="50" readonly ng-click="ShowSupervisor()" ng-disabled="is_readonly" />
         </div>
         <div class="col-sm-3 mb-3">
             <div>สถานที่</div>
-            <input ng-model="iEmployee.location" class="form-control form-input" maxlength="50" />
+            <input ng-model="iEmployee.location" class="form-control form-input location" maxlength="50" ng-disabled="is_readonly" />
         </div>
         <div class="col-sm-3 mb-3">
             <div>สาขาประกันสังคม</div>
-            <input ng-model="iEmployee.sso" class="form-control form-input" maxlength="50" />
+            <input ng-model="iEmployee.sso" class="form-control form-input sso" maxlength="50" ng-disabled="is_readonly" />
         </div>
     </div>
     <div class="fw-bolder">เงื่อนไขการทำงาน</div>
     <div class="row">
         <div class="col-sm-3 mb-3">
             <div>รูปแบบการทำงาน</div>
-            <select ng-model="iEmployee.workMode" class="form-select form-input disabilityStatus" ng-options="x.code as x.desc_th for x in lWorkMode" ng-change="SelectWorkMode()"></select>
+            <select ng-model="iEmployee.workMode" class="form-select form-input workMode" ng-options="x.code as x.desc_th for x in lWorkMode" ng-change="SelectWorkMode()" ng-disabled="is_readonly"></select>
         </div>
         <div class="col-sm-3 mb-3">
             <div>บันทึกเวลาเข้าออก</div>
-            <input ng-model="iEmployee.workTime" class="form-control form-input" maxlength="50" readonly />
+            <input ng-model="iEmployee.workTime" class="form-control form-input workTime" maxlength="50" readonly />
         </div>
         <div class="col-sm-3 mb-3">
             <div>ได้รับค่าล่วงเวลา</div>
-            <select ng-model="iEmployee.otMode" class="form-select form-input disabilityStatus" ng-options="x.code as x.desc_th for x in lOTMode"></select>
+            <select ng-model="iEmployee.otMode" class="form-select form-input otMode" ng-options="x.code as x.desc_th for x in lOTMode" ng-disabled="is_readonly"></select>
         </div>
     </div>
     <div class="fw-bolder">ข้อมูลการจ่ายเงิน</div>
     <div class="row">
         <div class="col-sm-3 mb-3">
             <div>ประเภทการจ้างงาน <span class="text-danger">*</span></div>
-            <input ng-model="iEmployee.employeeMode" class="form-control form-input" maxlength="50" />
+            <input ng-model="iEmployee.employeeMode" class="form-control form-input employeeMode" maxlength="50" ng-disabled="is_readonly" />
         </div>
         <div class="col-sm-3 mb-3">
             <div>รหัสปฏิทิน</div>
-            <input ng-model="iEmployee.calendarCode" class="form-control form-input" maxlength="50" />
+            <input ng-model="iEmployee.calendarCode" class="form-control form-input calendarCode" maxlength="50" ng-disabled="is_readonly" />
         </div>
         <div class="col-sm-3 mb-3">
             <div>เงินเดือน</div>
-            <input ng-model="iEmployee.salary" class="form-control form-input" maxlength="50" />
+            <input ng-model="iEmployee.salary" class="form-control form-input salary" maxlength="50" ng-disabled="is_readonly" />
         </div>
         <div class="col-sm-3 mb-3">
             <div>ตัวเลือกในการจ่าย</div>
-            <input ng-model="iEmployee.paymentChannel" class="form-control form-input" maxlength="50" />
+            <input ng-model="iEmployee.paymentChannel" class="form-control form-input paymentChannel" maxlength="50" ng-disabled="is_readonly" />
         </div>
         <div class="col-sm-3 mb-3">
             <div>รหัสธนาคาร</div>
-            <input ng-model="iEmployee.bankCode" class="form-control form-input" maxlength="50" />
+            <input ng-model="iEmployee.bankCode" class="form-control form-input bankCode" maxlength="50" ng-disabled="is_readonly" />
         </div>
         <div class="col-sm-3 mb-3">
             <div>เลขที่บัญชี</div>
-            <input ng-model="iEmployee.bookNo" class="form-control form-input" maxlength="50" />
+            <input ng-model="iEmployee.bookNo" class="form-control form-input bookNo" maxlength="50" ng-disabled="is_readonly" />
         </div>
     </div>
     @* modal *@

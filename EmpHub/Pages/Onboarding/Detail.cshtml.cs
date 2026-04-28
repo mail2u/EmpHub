@@ -5,10 +5,10 @@ namespace EmpHub.Pages.Onboarding
 {
     public class DetailModel : PageModel
     {
-        public string id { get; set; }
-        public void OnGet(string id)
+        public string userId { get; set; }
+        public void OnGet(string userId)
         {
-            this.id = id;
+            this.userId = userId;
         }
     }
 }

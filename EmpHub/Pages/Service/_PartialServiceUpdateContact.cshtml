@@ -1,0 +1,115 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var token = User.AccessToken(Context);
+}
+<style>
+    input[type="radio"]:disabled {
+        background-color: #0d6efd !important;
+        border-color: #0d6efd !important;
+        background-image: none !important;
+        opacity: 1 !important;
+    }
+</style>
+<div ng-controller="ServiceUpdateContactCtrl">
+    <div class="bg-white rounded-4 border mb-4 overflow-hidden p-4">
+        <div class="px-4 py-3 border-bottom d-flex align-items-center">
+            <div class="fs-5 fw-bolder text-dark flex-fill">
+                ปรับปรุงข้อมูลติดต่อ
+            </div>
+        </div>
+        <div class="p-4 fs-6 text-dark">
+            <div class="row">
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">ที่อยู่ตามทะเบียนบ้าน</div>
+                    <div>
+                        {{ iForm.registered_home }}
+                        {{ iForm.registered_road }}
+                        {{ iForm.registered_subDistrictName }}
+                        {{ iForm.registered_districtName }}
+                        {{ iForm.registered_provinceName }}
+                        {{ iForm.registered_postcode }}
+                    </div>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">ที่อยู่ตามบัตรประชาชน</div>
+                    <div>
+                        {{ iForm.card_home }}
+                        {{ iForm.card_road }}
+                        {{ iForm.card_subDistrictName }}
+                        {{ iForm.card_districtName }}
+                        {{ iForm.card_provinceName }}
+                        {{ iForm.card_postcode }}
+                    </div>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">ที่อยู่พักอาศัย</div>
+                    <div>
+                        {{ iForm.live_home }}
+                        {{ iForm.live_road }}
+                        {{ iForm.live_subDistrictName }}
+                        {{ iForm.live_districtName }}
+                        {{ iForm.live_provinceName }}
+                        {{ iForm.live_postcode }}
+                    </div>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">มือถือ</div>
+                    <div>{{ iForm.mobile == '' ? '-' : iForm.mobile }}</div>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">เบอร์ติดต่อ</div>
+                    <div>{{ iForm.phone == '' ? '-' : iForm.phone }}</div>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">อีเมล์ติดต่อ</div>
+                    <div>{{ iForm.email == '' ? '-' : iForm.email }}</div>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">มือถือบริษัท</div>
+                    <div>{{ iForm.phone_office == '' ? '-' : iForm.phone_office }}</div>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">อีเมล์บริษัท</div>
+                    <div>{{ iForm.email_office == '' ? '-' : iForm.email_office }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ServiceUpdateContactCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.LoadDetail = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormUpdateContactDetail',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        refId: $scope.refId
+                    }),
+                    success: function (result) {
+                        $timeout(async function () {
+                            $scope.iForm = result;
+                            resolve(true);
+                        }, 0);
+                    }, error: function () {
+                        resolve(false);
+                    }
+                });
+            });
+        }
+
+        $scope.$parent.LoadFormUpdateContact = async function (x) {
+            $scope.refId = x.id;
+            $scope.userId = x.userId;
+            $scope.status = x.status;
+
+            await $scope.LoadDetail();
+        }
+    });
+</script>

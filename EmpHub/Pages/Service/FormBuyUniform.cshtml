@@ -39,7 +39,7 @@
                             <div class="text-dark text-nowrap">Quantity</div>
                         </td>
                         <td>
-                            <input ng-model="iForm.quantity" class="form-control quantity" type="number" />
+                            <input ng-model="iForm.quantity" class="form-control quantity" />
                         </td>
                     </tr>
                     <tr>
@@ -62,6 +62,7 @@
     </div>
 </div>
 <script>
+    $(".quantity").mask("000");
     app.controller('FormCtrl', function ($scope, $http, $timeout, $filter) {
         $scope.mode = '@Model.mode';
         $scope.iData = {};

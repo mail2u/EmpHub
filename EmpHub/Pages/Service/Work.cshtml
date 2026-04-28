@@ -41,7 +41,7 @@
             </div>
         </div>
     </div>
-    <div class="rounded-3 p-3 bg-white shadow-sm border mb-4">
+    <div class="rounded-4 p-3 bg-white shadow-sm border mb-4">
         <partial name="Service/_PartialNavBar" />
     </div>
     <partial name="_PartialWorkDataList"></partial>
@@ -182,7 +182,7 @@
             window.open('@Url.Page("Detail")/' + x.id, '_blank');
         }
         
-        window.parent.ReloadApprove = function () {
+        window.parent.ReloadWork = function () {
             $scope.LoadData();
         }
         

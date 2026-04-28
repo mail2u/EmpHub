@@ -1,5 +1,6 @@
 ﻿@page
-@model EmpHub.Pages.Service.FormUpdateDataEducationModel
+@model EmpHub.Pages.Service.FormUpdateDataTalentModel
+
 @{
     var token = User.AccessToken(HttpContext);
 }
@@ -16,8 +17,7 @@
     .list-item-box:hover{
         border: 2px solid var(--bs-blue);
     }
-</style>
-<style>
+
     .form-input {
         padding: 5px;
         border: 0px;
@@ -34,7 +34,7 @@
         background-color: var(--bs-gray-200);
     }
 </style>
-<div ng-controller="ServiceEducationCtrl" id="tab_education">
+<div ng-controller="ServiceTalentCtrl">
     @* Header *@
     <partial name="_PartialFormHeader" />
     @* View *@
@@ -47,40 +47,32 @@
                     </div>
                     <div class="d-flex flex-fill mb-3">
                         <div class="flex-fill me-3">
-                            <div class="text-gray">
-                                หลักสูตรหรือวุฒิการศึกษา
-                            </div>
-                            <select ng-model="x.levelCode" class="form-select form-input" ng-options="d.code as d.desc_th for d in lEduction"></select>
+                            <div class="text-dark fs-5">ภาษา</div>
+                            <input ng-model="x.language" class="form-control" />
                         </div>
-                        <div class="flex-fill me-3">
-                            <div class="text-gray">
-                                สถาบันการศึกษา
+                        <div class="me-3">
+                            <div class="text-dark fs-5 mb-2">ระดับ</div>
+                            <div class="d-flex align-items-center">
+                                <div class="form-check me-3" ng-repeat="lvl in lLevel">
+
+                                    <input class="form-check-input"
+                                           type="radio"
+                                           ng-model="x.level"
+                                           ng-value="lvl.id"
+                                           name="level_{{$index}}">
+
+                                    <label class="form-check-label">
+                                        {{lvl.name_th}}
+                                    </label>
+                                </div>
                             </div>
-                            <input ng-model="x.institution" class="form-control form-input" maxlength="200" />
-                        </div>
-                        <div class="" style="width:150px;">
-                            <div class="text-gray">
-                                ปีที่สำเร็จการศึกษา
-                            </div>
-                            <input ng-model="x.year" class="form-control form-input" year />
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <div class="text-gray">
-                            เพิ่มกิจกรรม เกียรตินิยม รางวัล หรือโครงการพิเศษที่ประสบความสำเร็จระหว่างการศึกษา
-                        </div>
-                        <textarea ng-model="x.description" class="form-control form-input" rows="5" maxlength="4000"></textarea>
-                    </div>
-                   @*  <div class="text-end">
-                        <div class="btn btn-warning-invert bg-white" ng-click="Delete(x)">
-                            <i class="far fa-trash-alt me-2"></i>ลบรายการ
-                        </div>
-                    </div> *@
                 </div>
             </div>
         </div>
         <div class="btn btn-light" ng-click="New()">
-            เพิ่มข้อมูลการศึกษา
+            เพิ่มข้อมูล
         </div>
     </div>
     <div class="d-flex justify-content-end">
@@ -90,79 +82,66 @@
     </div>
 </div>
 <script>
-    app.controller('ServiceEducationCtrl', function ($scope, $http, $timeout, $filter) {
+    app.controller('ServiceTalentCtrl', function ($scope, $http, $timeout, $filter) {
         $scope.mode = '@Model.mode';
         $scope.userId = '@Model.id';
 
-        // $scope.lStatus = [{ value: 'modify', key: 'เพิ่ม/แก้ไข' }, { value: 'delete', key: 'ลบข้อมูล' }]
-
         $scope.LoadMaster = function () {
-            if (!$scope.lEduction) {
-                $.ajax({
-                    url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
-                    , headers: { 'authorization': 'Bearer @token' }
-                    , type: 'post'
-                    , contentType: 'application/json'
-                    , dataType: 'json'
-                    , cache: false
-                    , data: JSON.stringify({
-                        groupName: 'educationCode'
-                    })
-                    , success: function (result) {
-                        $timeout(function () {
-                            $scope.lEduction = result;
-                        }, 0);
-                    }
-                    , error: AjaxError
-                });
-            }
+            $scope.lLevel = [
+                { "id": 1, "code": "Beginner", "name_th": "ระดับเริ่มต้น" },
+                { "id": 2, "code": "Elementary", "name_th": "ระดับพื้นฐาน" },
+                { "id": 3, "code": "Intermediate", "name_th": "ระดับปานกลาง" },
+                { "id": 4, "code": "Upper-Intermediate", "name_th": "ระดับดี" },
+                { "id": 5, "code": "Advanced", "name_th": "ระดับเชี่ยวชาญ" }
+            ]
         }
+        $scope.LoadMaster();
 
-        $scope.LoadData = function () {
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserEducation',
-                headers: { 'authorization': 'Bearer @token' },
-                type: "POST",
-                contentType: 'application/json',
-                dataType: 'json',
-                cache: false,
-                data: JSON.stringify({
-                    userId: $scope.userId
-                    , create_by: '@User.UserId()'
-                }),
-                success: function (result) {
-                    $timeout(async function () {
-                        $scope.iData = {id:''};
-                        $scope.lData = result.data;
-
-                        if(result.can_edit != 1){
-                            alertWarning("ท่านไม่ได้สิทธิ์ให้เข้าถึงหน้านี้","กรุณาตรวจสอบ",function(){
-                                location.href = '@Url.Page("/Service/Index")';
-                            })
-                        }else{
-                            $scope.LoadMaster();
-
-                            if($scope.lData.length == 0){
-                                $scope.New();
-                            }else{
-                                $scope.lData = $scope.lData.map(item=>{
-                                    item.mode = "modify";
-
-                                    return item;
-                                });
-                            }
-                        }
-                    }, 0);
-                }, error: AjaxError
-            });
-        }
-        $scope.LoadData();
-
-        $scope.New = function(){
+        $scope.New = function () {
             $timeout(function () {
                 $scope.lData.splice($scope.lData.length, 0, { mode: "modify" });
             }, 0);
         }
+
+        $scope.LoadData = function () {
+            // $.ajax({
+            //     url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserTalent',
+            //     headers: { 'authorization': 'Bearer @token' },
+            //     type: "POST",
+            //     contentType: 'application/json',
+            //     dataType: 'json',
+            //     cache: false,
+            //     data: JSON.stringify({
+            //         userId: $scope.userId
+            //         , create_by: '@User.UserId()'
+            //     }),
+            //     success: function (result) {
+            //         $timeout(async function () {
+            //             $scope.iData = {};
+            //             $scope.lData = result.data;
+            $scope.lData = [];
+            //             if(result.can_edit != 1){
+            //                 alertWarning("ท่านไม่ได้สิทธิ์ให้เข้าถึงหน้านี้","กรุณาตรวจสอบ",function(){
+            //                     location.href = '@Url.Page("/Service/Index")';
+            //                 })
+            //             }else{
+            //                 $scope.LoadMaster();
+
+            //                 if($scope.lData.length == 0){
+                                $scope.New();
+            //                 }else{
+            //                     $scope.lData = $scope.lData.map(item=>{
+            //                         item.mode = "modify";
+
+            //                         return item;
+            //                     });
+            //                 }
+            //             }
+            //         }, 0);
+            //     }, error: AjaxError
+            // });
+        }
+        $scope.LoadData();
 
         $scope.Delete = function(x){
             $timeout(function () {
@@ -201,7 +180,7 @@
                             return item;
                         });
 
-                        var flag = await $scope.CreateEducation();
+                        var flag = await $scope.CreateTalent();
 
                         if(flag){
                             var serviceNo = await $scope.ServiceRequest();
@@ -223,10 +202,10 @@
             }
         }
 
-        $scope.CreateEducation = function () {
+        $scope.CreateTalent = function () {
             return new Promise((resolve)=>{
                 $.ajax({
-                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceEducation/Save',
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormUpdateTalent',
                     headers: { 'authorization': 'Bearer @token' },
                     type: "POST",
                     contentType: 'application/json',

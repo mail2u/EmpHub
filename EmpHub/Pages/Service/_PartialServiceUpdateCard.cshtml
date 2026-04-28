@@ -1,0 +1,86 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var token = User.AccessToken(Context);
+}
+<style>
+    input[type="radio"]:disabled {
+        background-color: #0d6efd !important;
+        border-color: #0d6efd !important;
+        background-image: none !important;
+        opacity: 1 !important;
+    }
+</style>
+<div ng-controller="ServiceUpdateCardCtrl">
+    <div class="bg-white rounded-4 border mb-4 overflow-hidden p-4">
+        <div class="px-4 py-3 border-bottom d-flex align-items-center">
+            <div class="fs-5 fw-bolder text-dark flex-fill">
+                ปรับปรุงข้อมูลบัตร
+            </div>
+        </div>
+        <div class="p-4 fs-6 text-dark">
+            <div class="row">
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">บัตรพนักงาน</div>
+                    <div>{{ iForm.employeeCode == '' ? '-' : iForm.employeeCode }}</div>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">บัตรประชาชน</div>
+                    <div>{{ iForm.idcard == '' ? '-' : iForm.idcard }}</div>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">หนังสือเดินทาง</div>
+                    <div>{{ iForm.passport == '' ? '-' : iForm.passport }}</div>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">ประกันสังคม</div>
+                    <div>{{ iForm.idcard == '' ? '-' : iForm.idcard }}</div>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">เลขที่ผู้เสียภาษี</div>
+                    <div>{{ iForm.idcard == '' ? '-' : iForm.idcard }}</div>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">ใบอนุญาตทำงานคนต่างด้าว</div>
+                    <div>{{ iForm.workPermitNo == '' ? '-' : iForm.workPermitNo }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ServiceUpdateCardCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.LoadDetail = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormUpdateCardDetail',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        refId: $scope.refId
+                    }),
+                    success: function (result) {
+                        $timeout(async function () {
+                            $scope.iForm = result;
+                            resolve(true);
+                        }, 0);
+                    }, error: function () {
+                        resolve(false);
+                    }
+                });
+            });
+        }
+
+        $scope.$parent.LoadFormUpdateCard = async function (x) {
+            $scope.refId = x.id;
+            $scope.userId = x.userId;
+            $scope.status = x.status;
+
+            await $scope.LoadDetail();
+        }
+    });
+</script>
