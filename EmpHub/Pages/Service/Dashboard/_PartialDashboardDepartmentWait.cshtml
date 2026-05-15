@@ -1,0 +1,30 @@
+﻿@{
+    var token = User.AccessToken(Context);
+}
+<div ng-controller="ChartDepartmentWaitCtrl">
+    <div class="label-dashboard mb-2">ฝ่ายงาน</div>
+    <div class="list-group">
+        <div class="list-group-item"></div>
+    </div>
+</div>
+<script>
+    app.controller('ChartDepartmentWaitCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.year = new Date().getFullYear();
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Service/DashboardDepartmentWait'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , dataType: 'json'
+                , cache: false
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lData = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadData();
+    });
+</script>

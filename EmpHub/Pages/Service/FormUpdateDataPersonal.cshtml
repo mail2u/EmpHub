@@ -33,7 +33,7 @@
             <div class="row text-dark">
                 <div class="col-sm-4 mb-3">
                     <div>คำนำหน้า (ภาษาไทย) <span class="text-danger">*</span></div>
-                    <select ng-model="iData.prefix_th" class="form-select form-input prefix_th" ng-options="x.code as x.desc_th for x in lPrefix"></select>
+                    <select ng-model="iData.prefix_th" class="form-select form-input prefix_th" ng-options="x.desc_th as x.desc_th for x in lPrefix" ng-change="SelectPrefixTH()"></select>
                 </div>
                 <div class="col-sm-4 mb-3">
                     <div>ชื่อ (ภาษาไทย) <span class="text-danger">*</span></div>
@@ -45,7 +45,7 @@
                 </div>
                 <div class="col-sm-4 mb-3">
                     <div>คำนำหน้า (ภาษาอังกฤษ) </div>
-                    <select ng-model="iData.prefix_en" class="form-select form-input prefix_en" ng-options="x.code as x.desc_en for x in lPrefix"></select>
+                    <select ng-model="iData.prefix_en" class="form-select form-input prefix_en" ng-options="x.desc_en as x.desc_en for x in lPrefix" ng-change="SelectPrefixEN()"></select>
                 </div>
                 <div class="col-sm-4 mb-3">
                     <div>ชื่อ (ภาษาอังกฤษ) </div>
@@ -61,13 +61,14 @@
                 </div>
                 <div class="col-sm-4 mb-3">
                     <div class="text-dark fw-bolder">วันเกิด</div>
-                    <input class="form-control form-input date birth_date icon-calendar"
+                    <input ng-model="iData.birth_date" class="form-control form-input date birth_date" />
+                    @* <input class="form-control form-input date birth_date icon-calendar"
                            ng-model="iData.birth_date_select"
                            moment-picker="iData.birth_date_select"
                            locale="th"
                            format="DD/MM/YYYY"
                            min-view="month"
-                           max-view="month" required />
+                           max-view="month" required /> *@
                 </div>
                 <div class="col-sm-4 mb-3">
                     <div class="text-dark fw-bolder">เพศ</div>
@@ -83,7 +84,7 @@
                 </div>
                 <div class="col-sm-4 mb-3">
                     <div class="text-dark fw-bolder">กรุ๊ปเลือด</div>
-                    <input ng-model="iData.blood" class="form-control form-input" maxlength="3" />
+                    <select ng-model="iData.blood" class="form-select form-input blood" ng-options="x as x for x in lBlood"></select>
                 </div>
                 <div class="col-sm-4 mb-3">
                     <div class="text-dark fw-bolder">สัญชาติ</div>
@@ -131,6 +132,7 @@
             { key: 'ชาย', value: 'M' }
             , { key: 'หญิง', value: 'F' }
         ];
+        $scope.lBlood = ['A', 'B', 'AB', 'O'];
 
         $scope.LoadInit = function () {
             $.ajax({
@@ -286,6 +288,22 @@
             });
         }
         $scope.LoadData();
+
+        $scope.SelectPrefixTH = function () {
+            var find = $scope.lPrefix.find(item => item.desc_th == $scope.iData.prefix_th);
+
+            if(find){
+                $scope.iData.prefix_en = find.desc_en;
+            }
+        }
+
+        $scope.SelectPrefixEN = function () {
+            var find = $scope.lPrefix.find(item => item.desc_en == $scope.iData.prefix_en);
+
+            if (find) {
+                $scope.iData.prefix_th = find.desc_th;
+            }
+        }
 
         $scope.Validate = function(){
             var flag = true;

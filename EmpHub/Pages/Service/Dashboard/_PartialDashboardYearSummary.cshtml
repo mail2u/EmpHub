@@ -1,0 +1,81 @@
+﻿@{
+    var token = User.AccessToken(Context);
+}
+<div ng-controller="ChartYearCtrl" class="bg-white rounded shadow-sm p-4">
+    <div class="d-flex">
+        <div class="flex-fill fw-bolder mb-2 border-start-tip-blue">ใบงานแต่ละปี</div>
+    </div>
+    <canvas id="chart_dashboard_year_summary"></canvas>
+</div>
+<script>
+    app.controller('ChartYearCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Service/DashboardYearSummary'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , dataType: 'json'
+                , cache: false
+                , success: function (result) {
+                    $timeout(function () {
+                        var lData = result;
+                        $scope.LoadChar(lData);
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+        $scope.LoadChar = function (lData) {
+            new Chart(
+                document.getElementById('chart_dashboard_year_summary'),
+                {
+                    type: 'line',
+                    data: {
+                        labels: lData.map(x => x.title)
+                        , datasets: [{
+                            label: 'รออนุมัติ',
+                            data: lData.map(x => x.total_approve),
+                            borderColor: '#ffcd56',
+                            backgroundColor: '#ffcd56',
+                        }, {
+                            label: 'รอดำเนินการ',
+                            data: lData.map(x => x.total_work),
+                            borderColor: '#ff9f40',
+                            backgroundColor: '#ff9f40',
+                        }, {
+                            label: 'ดำเนนการแล้ว',
+                            data: lData.map(x => x.total_complete),
+                            borderColor: '#36a2eb',
+                            backgroundColor: '#36a2eb',
+                        }],
+                    },
+                    options: {
+                        responsive: true,
+                        aspectRatio: 2,
+                        borderRadius: 5,
+                        weight: 5,
+                        cutout: 80,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    usePointStyle: true,
+                                    pointStyle: 'circle'
+                                },
+                                position: 'bottom'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                grid: {
+                                    display: false
+                                }
+                            },
+                        },
+                    }
+                }
+            );
+        }
+    });
+</script>

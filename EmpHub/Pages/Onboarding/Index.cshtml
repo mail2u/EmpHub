@@ -50,7 +50,7 @@
             </div>
         </div>
         <div class="d-none d-sm-block">
-            <a class="btn btn-primary" href="@Url.Page("Create")">
+            <a class="btn btn-primary" href="@Url.Page("Check")">
                 <i class="fas fa-plus me-2"></i> Create
             </a>
         </div>
@@ -203,6 +203,7 @@
                     page: $scope.page
                     , row: $scope.row
                     , firstname: $scope.search
+                    , status: $scope.status
                 })
                 , success: function (result) {
                     $timeout(function () {
@@ -214,6 +215,11 @@
             });
         }
         $scope.LoadData();
+
+        $scope.SelectStatus = function (status) {
+            $scope.status = status;
+            $scope.LoadData();
+        }
 
         $scope.Edit = function(x){
             window.open('@Url.Page("Update")?userId=' + x.userId);

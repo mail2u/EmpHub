@@ -19,10 +19,11 @@
         background-color: var(--bs-gray-200);
     }
 </style>
-<div class="rounded-4 border shadow-sm p-3 bg-white text-dark mb-3">
+<div class="rounded-4 border shadow-sm p-3 bg-white text-dark mb-3" ng-show="step_index == 0">
     <div class="fs-4 fw-bolder">
         ข้อมูลการจ้างงาน
     </div>
+    <hr/>
     <div class="row">
         <div class="col-sm-3 mb-3">
             <div>ประเภทการดำเนินการ <span class="text-danger">*</span></div>
@@ -63,7 +64,7 @@
     <div class="row">
         <div class="col-sm-3 mb-3">
             <div>คำนำหน้าชื่อ <span class="text-danger">*</span></div>
-            <select ng-model="iPersonal.prefix_th" class="form-select form-input prefix_th" ng-options="x.code as x.desc_th for x in lPrefix" ng-disabled="is_readonly"></select>
+            <select ng-model="iPersonal.prefix_th" class="form-select form-input prefix_th" ng-options="x.code as x.desc_th for x in lPrefix" ng-disabled="is_readonly" ng-change="SelectPrefixTH()"></select>
         </div>
         <div class="col-sm-3 mb-3">
             <div>ชื่อ <span class="text-danger">*</span></div>
@@ -80,7 +81,7 @@
     <div class="row">
         <div class="col-sm-3 mb-3">
             <div>คำนำหน้าชื่อ</div>
-            <select ng-model="iPersonal.prefix_en" class="form-select form-input prefix_en" ng-options="x.code as x.desc_en for x in lPrefix" ng-disabled="is_readonly"></select>
+            <select ng-model="iPersonal.prefix_en" class="form-select form-input prefix_en" ng-options="x.code as x.desc_en for x in lPrefix" ng-disabled="is_readonly" ng-change="SelectPrefixEN()"></select>
         </div>
         <div class="col-sm-3 mb-3">
             <div>ชื่อ</div>
@@ -123,8 +124,14 @@
             <select ng-model="iPersonal.disabilityStatus" class="form-select form-input disabilityStatus" ng-options="x.code as x.desc_th for x in lDisability" ng-disabled="is_readonly"></select>
         </div>
     </div>
+    <div class="d-flex">
+        <div class="flex-fill"></div>
+        <div>
+            <button class="btn btn-primary" ng-click="CheckStep1()" ng-disabled="iPersonal.firstname_th == ''">Next</button>
+        </div>
+    </div>
 </div>
-<div class="rounded-4 border shadow-sm p-3 bg-white text-dark mb-3">
+<div class="rounded-4 border shadow-sm p-3 bg-white text-dark mb-3" ng-show="step_index == 1">
     <div class="fs-4 fw-bolder">ข้อมูลที่อยู่</div>
     @* Address *@
     <div class="fw-bolder fs-6">ที่อยู่ทะเบียนบ้าน</div>
@@ -151,7 +158,7 @@
         </div>
         <div class="col-sm-3 mb-3">
             <div>ไปรษณีย์</div>
-            <input ng-model="iAddress.registered_postcode" class="form-control form-input registered_postcode" maxlength="5" ng-disabled="is_readonly" />
+            <input ng-model="iAddress.registered_postcode" class="form-control form-input registered_postcode postcode" maxlength="5" ng-disabled="is_readonly" />
         </div>
     </div>
     <div class="fw-bolder fs-6 me-2">ที่อยู่ตามบัตรประชาชน</div>
@@ -181,7 +188,7 @@
         </div>
         <div class="col-sm-3 mb-3">
             <div>ไปรษณีย์</div>
-            <input ng-model="iAddress.card_postcode" class="form-control form-input card_postcode" maxlength="5" ng-disabled="is_readonly" />
+            <input ng-model="iAddress.card_postcode" class="form-control form-input card_postcode postcode" maxlength="5" ng-disabled="is_readonly" />
         </div>
     </div>
     <div class="fw-bolder fs-6">ที่อยู่พักอาศัย</div>
@@ -211,11 +218,20 @@
         </div>
         <div class="col-sm-3 mb-3">
             <div>ไปรษณีย์</div>
-            <input ng-model="iAddress.live_postcode" class="form-control form-input live_postcode" maxlength="5" ng-disabled="is_readonly" />
+            <input ng-model="iAddress.live_postcode" class="form-control form-input live_postcode postcode" maxlength="5" ng-disabled="is_readonly" />
+        </div>
+    </div>
+    <div class="d-flex">
+        <div class="flex-fill"></div>
+        <div class="me-3">
+            <button class="btn btn-light" ng-click="step_index = 0">Back</button>
+        </div>
+        <div>
+            <button class="btn btn-primary" ng-click="CheckStep2()" ng-disabled="iAddress.registered_home == ''">Next</button>
         </div>
     </div>
 </div>
-<div class="rounded-4 border shadow-sm p-3 bg-white text-dark mb-3">
+<div class="rounded-4 border shadow-sm p-3 bg-white text-dark mb-3" ng-show="step_index == 2">
     @* Contact *@
     <div class="fw-bolder fs-4">
         ข้อมูลการติดต่อ
@@ -223,11 +239,11 @@
     <div class="row">
         <div class="col-sm-3 mb-3">
             <div>โทรศัพท์ <span class="text-danger">*</span></div>
-            <input ng-model="iPersonal.phoneNo" class="form-control form-input phoneNo" maxlength="50" ng-disabled="is_readonly" />
+            <input ng-model="iPersonal.phoneNo" class="form-control form-input phoneNo phone" maxlength="50" ng-disabled="is_readonly" placeholder="000-000-0000" />
         </div>
         <div class="col-sm-3 mb-3">
             <div>มือถือ</div>
-            <input ng-model="iPersonal.mobile" class="form-control form-input mobile" maxlength="50" ng-disabled="is_readonly" />
+            <input ng-model="iPersonal.mobile" class="form-control form-input mobile phone" maxlength="50" ng-disabled="is_readonly" placeholder="000-000-0000" />
         </div>
         <div class="col-sm-3 mb-3">
             <div>อีเมล์ส่วนตัว</div>
@@ -236,15 +252,24 @@
         <div class="col-sm-3"></div>
         <div class="col-sm-3 mb-3">
             <div>เบอร์โทรศัพท์ที่ทำงาน</div>
-            <input ng-model="iEmployee.phone_office" class="form-control form-input phone_office" maxlength="50" ng-disabled="is_readonly" />
+            <input ng-model="iEmployee.phone_office" class="form-control form-input phone_office phone" maxlength="50" ng-disabled="is_readonly" placeholder="000-000-0000" />
         </div>
         <div class="col-sm-3 mb-3">
             <div>อีเมล์ที่ใช้ในบริษัท</div>
             <input ng-model="iEmployee.email" class="form-control form-input email_office" maxlength="50" ng-disabled="is_readonly" />
         </div>
     </div>
+    <div class="d-flex">
+        <div class="flex-fill"></div>
+        <div class="me-3">
+            <button class="btn btn-light" ng-click="step_index = 1">Back</button>
+        </div>
+        <div>
+            <button class="btn btn-primary" ng-click="CheckStep3()" ng-disabled="iPersonal.phoneNo == ''">Next</button>
+        </div>
+    </div>
 </div>
-<div class="rounded-4 border shadow-sm p-3 bg-white text-dark mb-3">
+<div class="rounded-4 border shadow-sm p-3 bg-white text-dark mb-3" ng-show="step_index == 3">
     <div class="fw-bolder fs-4">
         ข้อมูลพนักงาน
     </div>
@@ -289,7 +314,7 @@
         </div>
         <div class="col-sm-3 mb-3">
             <div>ประเภทพนักงาน <span class="text-danger">*</span></div>
-            <input ng-model="iEmployee.employeeType" class="form-control form-input employeeType" maxlength="50" ng-disabled="is_readonly" />
+            <select ng-model="iEmployee.employeeType" class="form-select form-input employeeType" ng-options="x.code as x.desc_th for x in lEmployeeType" ng-disabled="is_readonly"></select>
         </div>
         <div class="col-sm-3 mb-3">
             <div>ระดับพนักงาน <span class="text-danger">*</span></div>
@@ -354,78 +379,95 @@
             <input ng-model="iEmployee.bookNo" class="form-control form-input bookNo" maxlength="50" ng-disabled="is_readonly" />
         </div>
     </div>
-    @* modal *@
-    <div id="addressModal" class="modal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <div>
-                        <div class="mb-2">
-                            <input ng-model="filter_name" class="form-control" placeholder="ค้นหาที่อยู่" />
-                            <div class="list-group list-group-flush overflow-auto" style="max-height: 400px;">
-                                <div class="list-group-item list-group-item-action d-flex align-items-center justify-content-between" ng-repeat="x in lAddress | filter : filter_name | limitTo : 50">
-                                    <div class="p-2">
-                                        <nav aria-label="breadcrumb">
-                                            <ol class="breadcrumb mb-0">
-                                                <li class="breadcrumb-item active">{{ x.subDistrictName }}</li>
-                                                <li class="breadcrumb-item active">{{ x.districtName }}</li>
-                                                <li class="breadcrumb-item active">{{ x.provinceName }}</li>
-                                                <li class="breadcrumb-item active">{{ x.postcode }}</li>
-                                            </ol>
-                                        </nav>
-                                    </div>
-                                    <div>
-                                        <button ng-click="SelectAddress(x)" class="btn btn-circle">
-                                            <i class="fas fa-plus"></i>
-                                        </button>
-                                    </div>
+    <div class="d-flex">
+        <div class="flex-fill"></div>
+        <div class="me-3">
+            <button class="btn btn-light" ng-click="step_index = 2">Back</button>
+        </div>
+        <div class="me-2">
+            <button class="btn btn-primary" ng-click="Save()">
+                Save Change
+            </button>
+        </div>
+        <div class="">
+            <button class="btn btn-success" ng-click="Send()">
+                <i class="far fa-paper-plane me-2"></i> Submit
+            </button>
+        </div>
+    </div>
+</div>
+
+@* modal *@
+<div id="addressModal" class="modal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div>
+                    <div class="mb-2">
+                        <input ng-model="filter_name" class="form-control" placeholder="ค้นหาที่อยู่" />
+                        <div class="list-group list-group-flush overflow-auto" style="max-height: 400px;">
+                            <div class="list-group-item list-group-item-action d-flex align-items-center justify-content-between" ng-repeat="x in lAddress | filter : filter_name | limitTo : 50">
+                                <div class="p-2">
+                                    <nav aria-label="breadcrumb">
+                                        <ol class="breadcrumb mb-0">
+                                            <li class="breadcrumb-item active">{{ x.subDistrictName }}</li>
+                                            <li class="breadcrumb-item active">{{ x.districtName }}</li>
+                                            <li class="breadcrumb-item active">{{ x.provinceName }}</li>
+                                            <li class="breadcrumb-item active">{{ x.postcode }}</li>
+                                        </ol>
+                                    </nav>
+                                </div>
+                                <div>
+                                    <button ng-click="SelectAddress(x)" class="btn btn-circle">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
-                        <div class="text-end">
-                            <button class="btn btn-light" data-bs-dismiss="modal" aria-label="Close">
-                                ปิด
-                            </button>
-                        </div>
+                    </div>
+                    <div class="text-end">
+                        <button class="btn btn-light" data-bs-dismiss="modal" aria-label="Close">
+                            ปิด
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    @* supervisorModal *@
-    <div id="supervisorModal" class="modal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <div>
-                        <div class="mb-2">
-                            <input ng-model="filter_name" class="form-control" />
-                            <div class="list-group list-group-flush overflow-auto" style="max-height: 400px;">
-                                <div class="list-group-item list-group-item-action d-flex align-items-center justify-content-between" ng-repeat="x in lEmployee | filter : filter_name">
-                                    <div>
-                                        <div class="text-dark fs-5 text-secondary">
-                                            {{ x.firstname_th + ' ' + x.lastname_th }} <span ng-show="x.nickname != ''">({{ x.nickname }})</span>
-                                        </div>
-                                        <div class="text-dark fs-5 text-secondary">
-                                            {{ x.firstname + ' ' + x.lastname }}
-                                        </div>
-                                        <small class="text-dark">
-                                            {{ x.positionDesc }} {{ x.departmentDesc }}
-                                        </small>
+</div>
+@* supervisorModal *@
+<div id="supervisorModal" class="modal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div>
+                    <div class="mb-2">
+                        <input ng-model="filter_name" class="form-control" />
+                        <div class="list-group list-group-flush overflow-auto" style="max-height: 400px;">
+                            <div class="list-group-item list-group-item-action d-flex align-items-center justify-content-between" ng-repeat="x in lEmployee | filter : filter_name">
+                                <div>
+                                    <div class="text-dark fs-5 text-secondary">
+                                        {{ x.firstname_th + ' ' + x.lastname_th }} <span ng-show="x.nickname != ''">({{ x.nickname }})</span>
                                     </div>
-                                    <div>
-                                        <button ng-click="SelectSupervisor(x)" class="btn btn-circle">
-                                            <i class="fas fa-plus"></i>
-                                        </button>
+                                    <div class="text-dark fs-5 text-secondary">
+                                        {{ x.firstname + ' ' + x.lastname }}
                                     </div>
+                                    <small class="text-dark">
+                                        {{ x.positionDesc }} {{ x.departmentDesc }}
+                                    </small>
+                                </div>
+                                <div>
+                                    <button ng-click="SelectSupervisor(x)" class="btn btn-circle">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
-                        <div class="text-end">
-                            <button class="btn btn-light" data-bs-dismiss="modal" aria-label="Close">
-                                ปิด
-                            </button>
-                        </div>
+                    </div>
+                    <div class="text-end">
+                        <button class="btn btn-light" data-bs-dismiss="modal" aria-label="Close">
+                            ปิด
+                        </button>
                     </div>
                 </div>
             </div>
@@ -436,4 +478,6 @@
     $(".employeeCode").mask("000000");
     $(".idcard").mask("0000000000000");
     $(".date").mask("00/00/0000");
+    $(".postcode").mask("00000");
+    $(".phone").mask("000-000-0000");
 </script>

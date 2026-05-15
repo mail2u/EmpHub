@@ -35,92 +35,98 @@
     <div class="p-4 m-2">
         <div class="d-flex">
             <div class="flex-fill me-4">
-                <div ng-show="iData.subCategoryCode == 'EDIT_PROFILE'">
-                    <partial name="_PartialServiceProfile" />
+                <div ng-if="iData.subCategoryCode == 'EDIT_PROFILE'">
+                    <partial name="Form/_PartialServiceProfile" />
                 </div>
-                <div ng-show="iData.subCategoryCode == 'FORM_NEED_NEW_CARD'">
-                    <partial name="_PartialServiceNewCard" />
+                <div ng-if="iData.subCategoryCode == 'FORM_NEED_NEW_CARD'">
+                    <partial name="Form/_PartialServiceNewCard" />
                 </div>
-                <div ng-show="iData.subCategoryCode == 'FORM_PARKING_STICKER'">
-                    <partial name="_PartialServiceParkingSticker" />
+                <div ng-if="iData.subCategoryCode == 'FORM_PARKING_STICKER'">
+                    <partial name="Form/_PartialServiceParkingSticker" />
                 </div>
-                <div ng-show="iData.subCategoryCode == 'FORM_BUY_UNIFORM'">
-                    <partial name="_PartialServiceBuyUniform" />
+                <div ng-if="iData.subCategoryCode == 'FORM_BUY_UNIFORM'">
+                    <partial name="Form/_PartialServiceBuyUniform" />
                 </div>
-                <div ng-show="iData.subCategoryCode == 'FORM_RESET_PASSWORD'">
-                    <partial name="_PartialServiceResetPassword" />
+                <div ng-if="iData.subCategoryCode == 'FORM_RESET_PASSWORD'">
+                    <partial name="Form/_PartialServiceResetPassword" />
                 </div>
-                <div ng-show="iData.subCategoryCode == 'FORM_SALARY_CERTIFICATE'">
-                    <partial name="_PartialServiceSalaryCertificate" />
+                <div ng-if="iData.subCategoryCode == 'FORM_SALARY_CERTIFICATE'">
+                    <partial name="Form/_PartialServiceSalaryCertificate" />
                 </div>
-                <div ng-show="iData.subCategoryCode == 'FORM_EMPLOYEE_CERTIFICATE'">
-                    <partial name="_PartialServiceEmployeeCertificate" />
+                <div ng-if="iData.subCategoryCode == 'FORM_EMPLOYEE_CERTIFICATE'">
+                    <partial name="Form/_PartialServiceEmployeeCertificate" />
                 </div>
-                <div ng-show="iData.subCategoryCode == 'FORM_REQUEST_TRAINING'">
-                    <partial name="_PartialServiceRequestTraining" />
+                <div ng-if="iData.subCategoryCode == 'FORM_REQUEST_TRAINING'">
+                    <partial name="Form/_PartialServiceRequestTraining" />
                 </div>
-                <div ng-show="iData.subCategoryCode == 'FORM_REQUEST_MANPOWER'">
-                    <partial name="_PartialServiceManPower" />
+                <div ng-if="iData.subCategoryCode == 'FORM_REQUEST_MANPOWER'">
+                    <partial name="Form/_PartialServiceManPower" />
                 </div>
-                <div ng-show="iData.subCategoryCode == 'FORM_BENEFIT_FUND'">
-                    <partial name="_PartialServiceBenefitFund" />
+                <div ng-if="iData.subCategoryCode == 'FORM_BENEFIT_FUND'">
+                    <partial name="Form/_PartialServiceBenefitFund" />
                 </div>
-                <div ng-show="iData.subCategoryCode == 'FORM_BENEFIT_INSURANCE'">
-                    <partial name="_PartialServiceBenefitInsurance" />
+                <div ng-if="iData.subCategoryCode == 'FORM_BENEFIT_INSURANCE'">
+                    <partial name="Form/_PartialServiceBenefitInsurance" />
                 </div>
-                <div ng-show="iData.subCategoryCode == 'FORM_PERFORMANCE_LV1'">
-                    <partial name="_PartialServicePerformanceLv1" />
+                <div ng-if="iData.subCategoryCode == 'FORM_PERFORMANCE_LV1'">
+                    <partial name="Form/_PartialServicePerformanceLv1" />
                 </div>
-                <div ng-show="iData.subCategoryCode == 'FORM_PERFORMANCE_LV2'">
-                    <partial name="_PartialServicePerformanceLv2" />
+                <div ng-if="iData.subCategoryCode == 'FORM_PERFORMANCE_LV2'">
+                    <partial name="Form/_PartialServicePerformanceLv2" />
                 </div>
-                <div ng-show="iData.subCategoryCode == 'FORM_MOVE_EMPLOYEE'">
-                    <partial name="_PartialServiceMoveEmployee" />
+                <div ng-if="iData.subCategoryCode == 'FORM_MOVE_EMPLOYEE'">
+                    <partial name="Form/_PartialServiceMoveEmployee" />
                 </div>
-                <div ng-show="iData.subCategoryCode == 'FORM_HIRING_EMPLOYEE'">
-                    <partial name="_PartialServiceHiringEmployee" />
+                <div ng-if="iData.subCategoryCode == 'FORM_HIRING_EMPLOYEE'">
+                    <partial name="Form/_PartialServiceHiringEmployee" />
                 </div>
-                <div ng-show="iData.subCategoryCode == 'FORM_PDPA_EMPLOYEE'">
-                    <partial name="_PartialServicePdpaEmployee" />
+                <div ng-if="iData.subCategoryCode == 'FORM_PDPA_EMPLOYEE'">
+                    <partial name="Form/_PartialServicePdpaEmployee" />
                 </div>
-                <div ng-show="iData.subCategoryCode == 'FORM_WFH_EMPLOYEE'">
-                    <partial name="_PartialServiceWfhEmployee" />
+                <div ng-if="iData.subCategoryCode == 'FORM_WFH_EMPLOYEE'">
+                    <partial name="Form/_PartialServiceWfhEmployee" />
                 </div>
-                <div ng-show="iData.subCategoryCode == 'FORM_AGREEMENT_EMPLOYEE'">
-                    <partial name="_PartialServiceAgreementEmployee" />
+                <div ng-if="iData.subCategoryCode == 'FORM_AGREEMENT_EMPLOYEE'">
+                    <partial name="Form/_PartialServiceAgreementEmployee" />
                 </div>
-                <div ng-show="iData.subCategoryCode == 'FORM_PREPARE_EMPLOYEE'">
-                    <partial name="_PartialServicePrepareEmployee" />
+                <div ng-if="iData.subCategoryCode == 'FORM_PREPARE_EMPLOYEE'">
+                    <partial name="Form/_PartialServicePrepareEmployee" />
                 </div>
-                <div ng-show="iData.subCategoryCode == 'FORM_PROBATION_REPORT'">
-                    <partial name="_PartialServiceProbationReport" />
+                <div ng-if="iData.subCategoryCode == 'FORM_PROBATION_REPORT'">
+                    <partial name="Form/_PartialServiceProbationReport" />
                 </div>
-                <div ng-show="iData.subCategoryCode == 'FORM_PROMOTE_EMPLOYEE'">
-                    <partial name="_PartialServicePromoteEmployee" />
+                <div ng-if="iData.subCategoryCode == 'FORM_PROMOTE_EMPLOYEE'">
+                    <partial name="Form/_PartialServicePromoteEmployee" />
                 </div>
-                <div ng-show="iData.subCategoryCode == 'FORM_IDP'">
-                    <partial name="_PartialServiceIDP" />
+                <div ng-if="iData.subCategoryCode == 'FORM_IDP'">
+                    <partial name="Form/_PartialServiceIDP" />
                 </div>
                 <div ng-show="iData.subCategoryCode == 'EDIT_PERSONAL'">
-                    <partial name="_PartialServiceUpdatePersonal" />
+                    <partial name="Form/_PartialServiceUpdatePersonal" />
                 </div>
-                <div ng-show="iData.subCategoryCode == 'EDIT_EMPLOYEE'">
-                    <partial name="_PartialServiceUpdateEmployee" />
+                <div ng-if="iData.subCategoryCode == 'EDIT_EMPLOYEE'">
+                    <partial name="Form/_PartialServiceUpdateEmployee" />
                 </div>
-                <div ng-show="iData.subCategoryCode == 'EDIT_CARD'">
-                    <partial name="_PartialServiceUpdateCard" />
+                <div ng-if="iData.subCategoryCode == 'EDIT_CARD'">
+                    <partial name="Form/_PartialServiceUpdateCard" />
                 </div>
-                <div ng-show="iData.subCategoryCode == 'EDIT_CONTACT'">
-                    <partial name="_PartialServiceUpdateContact" />
+                <div ng-if="iData.subCategoryCode == 'EDIT_CONTACT'">
+                    <partial name="Form/_PartialServiceUpdateContact" />
                 </div>
-                <div ng-show="iData.subCategoryCode == 'EDIT_JOB'">
-                    <partial name="_PartialServiceUpdateJob" />
+                <div ng-if="iData.subCategoryCode == 'EDIT_JOB'">
+                    <partial name="Form/_PartialServiceUpdateJob" />
                 </div>
-                <div ng-show="iData.subCategoryCode == 'EDIT_EDUCATION'">
-                    <partial name="_PartialServiceUpdateEducation" />
+                <div ng-if="iData.subCategoryCode == 'EDIT_EDUCATION'">
+                    <partial name="Form/_PartialServiceUpdateEducation" />
                 </div>
-                <div ng-show="iData.subCategoryCode == 'EDIT_TRAINING'">
-                    <partial name="_PartialServiceUpdateTraining" />
+                <div ng-if="iData.subCategoryCode == 'EDIT_TRAINING'">
+                    <partial name="Form/_PartialServiceUpdateTraining" />
+                </div>
+                <div ng-if="iData.subCategoryCode == 'EDIT_TALENT'">
+                    <partial name="Form/_PartialServiceUpdateTalent" />
+                </div>
+                <div ng-if="iData.subCategoryCode == 'EDIT_DOCUMENT'">
+                    <partial name="Form/_PartialServiceUpdateDocument" />
                 </div>
                 @* Feedback *@
                 <div class="bg-white rounded-4 border mb-4">
@@ -134,19 +140,19 @@
             </div>
             <div class="" style="width:300px; min-width:300px;">
                 @* Review Action *@
-                <div class="bg-white rounded-4 border mb-4 p-4" ng-show="iData.can_cancel == 1 || iData.can_approve == 1 || iData.can_work == 1">
+                <div class="bg-white rounded-4 border mb-4 p-4" ng-if="iData.can_cancel == 1 || iData.can_approve == 1 || iData.can_work == 1">
                     <div class="fw-bolder text-gray mb-4">REVIEW ACTIONS</div>
                     <div class="d-grid gap-2">
-                        <button ng-show="iData.can_approve == 1" class="btn btn-primary" ng-click="Approve()">
+                        <button ng-if="iData.can_approve == 1" class="btn btn-primary" ng-click="Approve()">
                             <i class="bi bi-check-circle-fill me-2"></i> Approve
                         </button>
-                        <button ng-show="iData.can_work == 1" class="btn btn-success" ng-click="Work()">
+                        <button ng-if="iData.can_work == 1" class="btn btn-success" ng-click="Work()">
                             <i class="bi bi-arrow-right-circle me-2"></i> Process
                         </button>
-                        <button ng-show="iData.can_approve == 1 || iData.can_work == 1" class="btn btn-danger-secondary" ng-click="Reject()">
+                        <button ng-if="iData.can_approve == 1 || iData.can_work == 1" class="btn btn-danger-secondary" ng-click="Reject()">
                             <i class="bi bi-x-circle-fill me-2"></i> Reject Request
                         </button>
-                        <button ng-show="iData.can_cancel == 1" class="btn btn-warning-secondary" ng-click="Cancel()">
+                        <button ng-if="iData.can_cancel == 1" class="btn btn-warning-secondary" ng-click="Cancel()">
                             Cancel
                         </button>
                     </div>
@@ -203,96 +209,6 @@
                         $scope.LoadTrack($scope.id);
                         $scope.LoadComment($scope.id);
 
-                        switch ($scope.iData.subCategoryCode) {
-                            case 'EDIT_PROFILE':
-                                $scope.LoadProfile($scope.iData);
-                                break;
-                            case 'FORM_NEED_NEW_CARD':
-                                $scope.LoadFormNeedNewCard($scope.iData);
-                                break;
-                            case 'FORM_PARKING_STICKER':
-                                $scope.LoadFormParkingSticker($scope.iData);
-                                break;
-                            case 'FORM_BUY_UNIFORM':
-                                $scope.LoadFormBuyUniform($scope.iData);
-                                break;
-                            case 'FORM_RESET_PASSWORD':
-                                $scope.LoadFormResetPassword($scope.iData);
-                                break;
-                            case 'FORM_SALARY_CERTIFICATE':
-                                $scope.LoadFormSalaryCertificate($scope.iData);
-                                break;
-                            case 'FORM_EMPLOYEE_CERTIFICATE':
-                                $scope.LoadFormEmployeeCertificate($scope.iData);
-                                break;
-                            case 'FORM_REQUEST_TRAINING':
-                                $scope.LoadFormRequestTraining($scope.iData);
-                                break;
-                            case 'FORM_REQUEST_MANPOWER':
-                                $scope.LoadFormRequestManpower($scope.iData);
-                                break;
-                            case 'FORM_BENEFIT_FUND':
-                                $scope.LoadFormBenefitFund($scope.iData);
-                                break;
-                            case 'FORM_BENEFIT_INSURANCE':
-                                $scope.LoadFormBenefitInsurance($scope.iData);
-                                break;
-                            case 'FORM_PERFORMANCE_LV1':
-                                $scope.LoadFormPerformanceLv1($scope.iData);
-                                break;
-                            case 'FORM_PERFORMANCE_LV2':
-                                $scope.LoadFormPerformanceLv2($scope.iData);
-                                break;
-                            case 'FORM_MOVE_EMPLOYEE':
-                                $scope.LoadFormMoveEmployee($scope.iData);
-                                break;
-                            case 'FORM_HIRING_EMPLOYEE':
-                                $scope.LoadFormHiringEmployee($scope.iData);
-                                break;
-                            case 'FORM_PDPA_EMPLOYEE':
-                                $scope.LoadFormPdpaEmployee($scope.iData);
-                                break;
-                            case 'FORM_WFH_EMPLOYEE':
-                                $scope.LoadFormWfhEmployee($scope.iData);
-                                break;
-                            case 'FORM_AGREEMENT_EMPLOYEE':
-                                $scope.LoadFormAgreementEmployee($scope.iData);
-                                break;
-                            case 'FORM_PREPARE_EMPLOYEE':
-                                $scope.LoadFormPrepareEmployee($scope.iData);
-                                break;
-                            case 'FORM_PROBATION_REPORT':
-                                $scope.LoadFormProbationReport($scope.iData);
-                                break;
-                            case 'FORM_PROMOTE_EMPLOYEE':
-                                $scope.LoadFormPromoteEmployee($scope.iData);
-                                break;
-                            case 'FORM_IDP':
-                                $scope.LoadFormIDP($scope.iData);
-                                break;
-                            case 'EDIT_PERSONAL':
-                                $scope.LoadFormUpdatePersonal($scope.iData);
-                                break;
-                            case 'EDIT_EMPLOYEE':
-                                $scope.LoadFormUpdateEmployee($scope.iData);
-                                break;
-                            case 'EDIT_CARD':
-                                $scope.LoadFormUpdateCard($scope.iData);
-                                break;
-                            case 'EDIT_CONTACT':
-                                $scope.LoadFormUpdateContact($scope.iData);
-                                break;
-                            case 'EDIT_JOB':
-                                $scope.LoadFormUpdateJob($scope.iData);
-                                break;
-                            case 'EDIT_EDUCATION':
-                                $scope.LoadFormUpdateEducation($scope.iData);
-                                break;
-                            case 'EDIT_TRAINING':
-                                $scope.LoadFormUpdateTraining($scope.iData);
-                                break;
-                            default:
-                        }
                     }, 0);
                 },
                 error: function (jqXHR, error, errorThrown) {
@@ -303,6 +219,167 @@
             });
         }
         $scope.LoadData();
+
+        $scope.$watch('iData.subCategoryCode', function (val) {
+            switch (val) {
+                case 'EDIT_PROFILE':
+                    $timeout(function () {
+                        $scope.$broadcast('EDIT_PROFILE_LOAD', $scope.iData);
+                    });
+                    break;
+                case 'FORM_NEED_NEW_CARD':
+                    $timeout(function () {
+                        $scope.$broadcast('FORM_NEED_NEW_CARD_LOAD', $scope.iData);
+                    });
+                    break;
+                case 'FORM_PARKING_STICKER':
+                    $timeout(function () {
+                        $scope.$broadcast('FORM_PARKING_STICKER_LOAD', $scope.iData);
+                    });
+                    break;
+                case 'FORM_BUY_UNIFORM':
+                    $timeout(function () {
+                        $scope.$broadcast('FORM_BUY_UNIFORM_LOAD', $scope.iData);
+                    });
+                    break;
+                case 'FORM_RESET_PASSWORD':
+                    $timeout(function () {
+                        $scope.$broadcast('FORM_RESET_PASSWORD_LOAD', $scope.iData);
+                    });
+                    break;
+                case 'FORM_SALARY_CERTIFICATE':
+                    $timeout(function () {
+                        $scope.$broadcast('FORM_SALARY_CERTIFICATE_LOAD', $scope.iData);
+                    });
+                    break;
+                case 'FORM_EMPLOYEE_CERTIFICATE':
+                    $timeout(function () {
+                        $scope.$broadcast('FORM_EMPLOYEE_CERTIFICATE_LOAD', $scope.iData);
+                    });
+                    break;
+                case 'FORM_REQUEST_TRAINING':
+                    $timeout(function () {
+                        $scope.$broadcast('FORM_REQUEST_TRAINING_LOAD', $scope.iData);
+                    });
+                    break;
+                case 'FORM_REQUEST_MANPOWER':
+                    $timeout(function () {
+                        $scope.$broadcast('FORM_REQUEST_MANPOWER_LOAD', $scope.iData);
+                    });
+                    break;
+                case 'FORM_BENEFIT_FUND':
+                    $timeout(function () {
+                        $scope.$broadcast('FORM_BENEFIT_FUND_LOAD', $scope.iData);
+                    });
+                    break;
+                case 'FORM_BENEFIT_INSURANCE':
+                    $timeout(function () {
+                        $scope.$broadcast('FORM_BENEFIT_INSURANCE_LOAD', $scope.iData);
+                    });
+                    break;
+                case 'FORM_PERFORMANCE_LV1':
+                    $timeout(function () {
+                        $scope.$broadcast('FORM_PERFORMANCE_LV1_LOAD', $scope.iData);
+                    });
+                    break;
+                case 'FORM_PERFORMANCE_LV2':
+                    $timeout(function () {
+                        $scope.$broadcast('FORM_PERFORMANCE_LV2_LOAD', $scope.iData);
+                    });
+                    break;
+                case 'FORM_MOVE_EMPLOYEE':
+                    $timeout(function () {
+                        $scope.$broadcast('FORM_MOVE_EMPLOYEE_LOAD', $scope.iData);
+                    });
+                    break;
+                case 'FORM_HIRING_EMPLOYEE':
+                    $timeout(function () {
+                        $scope.$broadcast('FORM_HIRING_EMPLOYEE_LOAD', $scope.iData);
+                    });
+                    break;
+                case 'FORM_PDPA_EMPLOYEE':
+                    $timeout(function () {
+                        $scope.$broadcast('FORM_PDPA_EMPLOYEE_LOAD', $scope.iData);
+                    });
+                    break;
+                case 'FORM_WFH_EMPLOYEE':
+                    $timeout(function () {
+                        $scope.$broadcast('FORM_WFH_EMPLOYEE_LOAD', $scope.iData);
+                    });
+                    break;
+                case 'FORM_AGREEMENT_EMPLOYEE':
+                    $timeout(function () {
+                        $scope.$broadcast('FORM_AGREEMENT_EMPLOYEE_LOAD', $scope.iData);
+                    });
+                    break;
+                case 'FORM_PREPARE_EMPLOYEE':
+                    $timeout(function () {
+                        $scope.$broadcast('FORM_PREPARE_EMPLOYEE_LOAD', $scope.iData);
+                    });
+                    break;
+                case 'FORM_PROBATION_REPORT':
+                    $timeout(function () {
+                        $scope.$broadcast('FORM_PROBATION_REPORT_LOAD', $scope.iData);
+                    });
+                    break;
+                case 'FORM_PROMOTE_EMPLOYEE':
+                    $timeout(function () {
+                        $scope.$broadcast('FORM_PROMOTE_EMPLOYEE_LOAD', $scope.iData);
+                    });
+                    break;
+                case 'FORM_IDP':
+                    $timeout(function () {
+                        $scope.$broadcast('FORM_IDP_LOAD', $scope.iData);
+                    });
+                    break;
+                case 'EDIT_PERSONAL':
+                    $timeout(function () {
+                        $scope.$broadcast('EDIT_PERSONAL_LOAD', $scope.iData);
+                    });
+                    break;
+                case 'EDIT_EMPLOYEE':
+                    $timeout(function () {
+                        $scope.$broadcast('EDIT_EMPLOYEE_LOAD', $scope.iData);
+                    });
+                    break;
+                case 'EDIT_CARD':
+                    $timeout(function () {
+                        $scope.$broadcast('EDIT_CARD_LOAD', $scope.iData);
+                    });
+                    break;
+                case 'EDIT_CONTACT':
+                    $timeout(function () {
+                        $scope.$broadcast('EDIT_CONTACT_LOAD', $scope.iData);
+                    });
+                    break;
+                case 'EDIT_JOB':
+                    $timeout(function () {
+                        $scope.$broadcast('EDIT_JOB_LOAD', $scope.iData);
+                    });
+                    break;
+                case 'EDIT_EDUCATION':
+                    $timeout(function () {
+                        $scope.$broadcast('EDIT_EDUCATION_LOAD', $scope.iData);
+                    });
+                    break;
+                case 'EDIT_TRAINING':
+                    $timeout(function () {
+                        $scope.$broadcast('EDIT_TRAINING_LOAD', $scope.iData);
+                    });
+                    break;
+                case 'EDIT_TALENT':
+                    $timeout(function () {
+                        $scope.$broadcast('EDIT_TALENT_LOAD', $scope.iData);
+                    });
+                    break;
+                case 'EDIT_DOCUMENT':
+                    $timeout(function () {
+                        $scope.$broadcast('EDIT_DOCUMENT_LOAD', $scope.iData);
+                    });
+                    break;
+                default:
+            }
+        })
 
         $scope.Approve = function () {
             alertConfirm("Approval Confirmed", "Do you want to approve this request?", function () {

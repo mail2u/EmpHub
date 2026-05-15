@@ -1,0 +1,110 @@
+﻿
+@{
+    var token = User.AccessToken(Context);
+}
+<style>
+</style>
+<div ng-controller="ServiceUpdateDocumentCtrl">
+    <div class="bg-white rounded-4 border mb-4 overflow-hidden p-4">
+        <div class="px-4 py-3 border-bottom d-flex align-items-center">
+            <div class="fs-5 fw-bolder text-dark flex-fill">
+                ปรับปรุงข้อมูลเอกสาร
+            </div>
+        </div>
+        <div class="p-4 fs-6 text-dark">
+            <div class="list-group list-group-flush">
+                <div class="list-group-item px-0" ng-repeat="x in lDocument">
+                    <div class="text-dark fs-6 fw-bolder mb-3">
+                        {{ x.documentType }}
+                    </div>
+                    <div class="d-flex">
+                        <div class="bg-gray rounded-3" ng-repeat="a in x.lAttachFile" title="{{ a.filename }}">
+                            @* <div class="d-flex align-items-center">
+                                <div>
+                                    <i class="bi bi-file-earmark-check text-green"></i>
+                                </div>
+                                <div class="text-truncate mx-2 flex-fill" style="min-width: 0;">
+                                    {{a.filename }}
+                                </div>
+                                <div>
+                                    <div class="btn btn-link">
+                                       <i class="bi bi-download me-2"></i>  ดาวน์โหลด 
+                                    </div>
+                                </div>
+                            </div> *@
+                            <a class="btn btn-link" href="@webAPI.CurrentValue.APIEmpHub/api/File/DownloadFile?refId={{ a.refId }}&id={{ a.id }}" target="_blank" title="Download">
+                                <div class="d-flex align-items-center w-100">
+                                    <img width="20" src="data:image/png;base64,{{a.imageBase64}}">
+                                    <span class="text-truncate mx-2 flex-grow-1 w-100" style="min-width: 0;">
+                                        {{a.outputname }}
+                                    </span>
+                                    <i class="bi bi-download"></i>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ServiceUpdateDocumentCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.LoadDetail = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormUpdateDocumentDetail',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    refId: $scope.refId
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.lDocument = result;
+
+                        for(var i = 0; i < $scope.lDocument.length; i++){
+                            var iDocument = $scope.lDocument[i];
+                             $scope.LoadFile(iDocument);
+                        }
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+
+        $scope.LoadFile = function(x){
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/File/DataList',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    refId: x.documentId
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        x.lAttachFile = result;
+                    }, 0);
+                }, error: function () {
+                    console.log('Load File Error')
+                }
+            });
+        }
+
+        $scope.init = async function (x) {
+            $scope.refId = x.id;
+            $scope.userId = x.userId;
+            $scope.status = x.status;
+
+            await $scope.LoadDetail();
+        }
+
+        $scope.$on('EDIT_DOCUMENT_LOAD', function (e, data) {
+            $scope.init(data);
+        });
+    });
+</script>

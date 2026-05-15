@@ -20,6 +20,8 @@
   <ItemGroup>
     <Folder Include="Pages\Probation\" />
     <Folder Include="Pages\Offer\" />
+    <Folder Include="Pages\Service\Form\" />
+    <Folder Include="Pages\Service\Dashboard\" />
   </ItemGroup>
 
 </Project>

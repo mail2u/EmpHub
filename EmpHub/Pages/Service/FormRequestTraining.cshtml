@@ -66,12 +66,46 @@
                 <input ng-model="iForm.organization" class="form-control organization" maxlength="200" />
             </div>
             <div class="mb-3">
-                <div class="text-dark fw-bolder">วัน-เวลา</div>
-                <input ng-model="iForm.dt" class="form-control dt" maxlength="200" />
-            </div>
-            <div class="mb-3">
                 <div class="text-dark fw-bolder">สถานที่</div>
                 <input ng-model="iForm.location" class="form-control location" maxlength="200" />
+            </div>
+            <div class="row">
+                <div class="col-sm-6 mb-3">
+                    <div class="text-dark fw-bolder">ช่วงวันที่</div>
+                    <input class="form-control icon-calendar date start_date_select"
+                           ng-model="iForm.start_date_select"
+                           ng-model-options="{ updateOn: 'blur' }"
+                           moment-picker="iForm.start_date_select"
+                           locale="th"
+                           format="DD/MM/YYYY"
+                           min-view="month"
+                           max-view="month"
+                           max-date="iForm.end_date_select"
+                           required />
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <div class="text-dark fw-bolder">ถึง</div>
+                    <input class="form-control icon-calendar date end_date_select"
+                           ng-model="iForm.end_date_select"
+                           ng-model-options="{ updateOn: 'blur' }"
+                           moment-picker="iForm.end_date_select"
+                           locale="th"
+                           format="DD/MM/YYYY"
+                           min-view="month"
+                           max-view="month"
+                           min-date="iForm.start_date_select"
+                           required />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6 mb-3">
+                    <div class="text-dark fw-bolder">ช่วงเวลา</div>
+                    <input class="form-control icon-time time start_time" ng-model="iForm.start_time" placeholder="00:00" ng-blur="validateTime(iForm.start_time)" />
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <div class="text-dark fw-bolder">ถึง</div>
+                    <input class="form-control icon-time time end_time" ng-model="iForm.end_time" placeholder="00:00" ng-blur="validateTime(iForm.end_time)" />
+                </div>
             </div>
             <div class="row">
                 <div class="col-sm-6 mb-3">
@@ -130,9 +164,13 @@
     </div>
 </div>
 <script>
+    $(".date").mask("00/00/0000");
+    $(".time").mask("00:00");
+
     app.controller('FormCtrl', function ($scope, $http, $timeout, $filter) {
         $scope.mode = '@Model.mode';
         $scope.iData = {};
+
         $scope.iForm = {
             userId: ''
             , fullname: ''
@@ -140,7 +178,10 @@
             , objectives: ''
             , organization: ''
             , location: ''
-            , dt: ''
+            , start_date: ''
+            , end_date: ''
+            , start_time: ''
+            , end_time: ''
             , price: 0
             , net: 0
             , option1: 0
@@ -180,8 +221,36 @@
             $scope.iForm.userId = x.userId;
             $scope.iForm.fullname = x.employeeName;
             $scope.iForm.position = x.positionDesc;
+            $scope.iForm.section = x.sectionDesc;
             $scope.iForm.department = x.departmentDesc;
+            $scope.iForm.division = x.divisionDesc;
         }
+
+        $scope.validateTime = function (time) {
+
+            // format HH:mm
+            var regex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+
+            if (!regex.test(time)) {
+
+                alert('รูปแบบเวลาไม่ถูกต้อง');
+
+                $scope.iForm.time = '';
+
+                return;
+            }
+
+            // optional ใช้ moment ตรวจซ้ำ
+            var isValid = moment(time, 'HH:mm', true).isValid();
+
+            if (!isValid) {
+
+                alert('เวลาไม่ถูกต้อง');
+
+                $scope.iForm.time = '';
+
+            }
+        };
 
         $scope.Validate = function () {
             var flag = true;
@@ -190,12 +259,23 @@
             JS_Reset($(".objectives"));
             JS_Reset($(".organization"));
             JS_Reset($(".location"));
-            JS_Reset($(".dt"));
+            JS_Reset($(".start_date_select"));
+            JS_Reset($(".end_date_select"));
+            JS_Reset($(".start_time"));
+            JS_Reset($(".end_time"));
             JS_Reset($(".price"));
             JS_Reset($(".net"));
             JS_Reset($(".option4_desc"));
 
-            console.log($scope.iForm);
+            $scope.iForm.start_date = '';
+            $scope.iForm.end_date = '';
+
+            if ($scope.iForm.start_date_select) {
+                $scope.iForm.start_date = $scope.iForm.start_date_select.format("DD/MM/YYYY");
+            }
+            if ($scope.iForm.end_date_select) {
+                $scope.iForm.end_date = $scope.iForm.end_date_select.format("DD/MM/YYYY");
+            }
 
             if ($scope.iForm.fullname == '') {
                 flag = false;
@@ -217,9 +297,21 @@
                 flag = false;
                 JS_Require($(".location"));
             }
-            if ($scope.iForm.dt == '') {
+            if ($scope.iForm.start_date == '') {
                 flag = false;
-                JS_Require($(".dt"));
+                JS_Require($(".start_date_select"));
+            }
+            if ($scope.iForm.end_date == '') {
+                flag = false;
+                JS_Require($(".end_date_select"));
+            }
+            if ($scope.iForm.start_time == '') {
+                flag = false;
+                JS_Require($(".start_time"));
+            }
+            if ($scope.iForm.end_time == '') {
+                flag = false;
+                JS_Require($(".end_time"));
             }
             if ($scope.iForm.price == 0) {
                 flag = false;

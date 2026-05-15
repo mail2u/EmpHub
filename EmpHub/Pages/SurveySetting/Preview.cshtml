@@ -1,0 +1,338 @@
+﻿@page
+@model EmpHub.Pages.SurveySetting.PreviewModel
+@{
+    var token = User.AccessToken(HttpContext);
+}
+<style>
+    .main-content {
+        padding: 5px !important;
+    }
+</style>
+<div ng-controller="SurveyCtrl" class="position-relative p-0">
+    <div class="container">
+        <div class="fs-5 text-blue mb-2">
+            STEP {{ section_index + 1 }} OF {{ lSection.length }}
+        </div>
+        <div>
+            @* Section *@
+            <div class="fs-5 text-dark fw-bolder mb-1">
+                {{ iSection.title }}
+            </div>
+            <div class="fs-5 text-dark mb-3">
+                {{ iSection.description }}
+            </div>
+            @* Question *@
+            <div ng-repeat="q in iSection.lQuestion">
+                <div class="rounded-4 bg-white shadow-sm p-4 mb-4">
+                    <div class="d-flex">
+                        <div class="flex-fill fs-5 fw-bolder text-dark">
+                            {{ q.title }}
+                        </div>
+                        <div ng-show="q.is_required > 0" class="text-danger">
+                            (require)
+                        </div>
+                    </div>
+                    <div class="fs-5 text-dark">
+                        {{ q.description }}
+                    </div>
+                    @* Radio *@
+                    <div ng-if="q.type == 'radio'" class="mt-3">
+                        <div ng-repeat="c in q.lChoice" class="mb-2">
+                            <label>
+                                <input type="radio"
+                                       ng-model="q.choiceId"
+                                       ng-value="c.id"
+                                       name="r_{{ q.id }}"
+                                       class="me-2" />
+
+                                {{ c.text }}
+                            </label>
+                        </div>
+                    </div>
+                    @* Checkbox *@
+                    <div ng-if="q.type == 'checkbox'" class="mt-3">
+                        <div ng-repeat="c in q.lChoice" class="mb-2">
+                            <label>
+                                <input type="checkbox"
+                                       ng-checked="q.choiceIds.indexOf(c.id) > -1"
+                                       ng-click="toggleCheckbox(q, c.id)"
+                                       class="me-2" />
+                                {{ c.text }}
+                            </label>
+                        </div>
+                    </div>
+                    @* Text *@
+                    <div ng-if="q.type == 'text'" class="mt-3">
+                        <input ng-model="q.answerText" class="form-control" maxlength="200" />
+                    </div>
+                    @* Textarea *@
+                    <div ng-if="q.type == 'textarea'" class="mt-3">
+                        <textarea ng-model="q.answerText" class="form-control" rows="5" maxlength="2000"></textarea>
+                    </div>
+                </div>
+            </div>
+            @* Action *@
+            <div class="d-flex mb-4">
+                <div class="btn btn-light bg-white " ng-click="BackSection()" ng-show="section_index > 0">
+                    <i class="bi bi-chevron-left me-2"></i> Back
+                </div>
+                <div class="flex-fill">
+                </div>
+                <div class="btn btn-primary" ng-click="NextSection()" ng-show="section_index < lSection.length - 1">
+                    Next <i class="bi bi-chevron-right ms-2"></i>
+                </div>
+              @*   <div class="btn btn-success" ng-click="Submit()" ng-show="section_index == lSection.length - 1">
+                    <i class="bi bi-send me-2"></i> Submit
+                </div> *@
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('SurveyCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.surveyId = '@Model.id';
+        $scope.is_save = 0;
+        $scope.section_index = 0;
+        $scope.iSection = {};
+        $scope.lSection = [];
+        $scope.lType = ['radio', 'checkbox', 'text', 'textarea', 'number'];
+
+        if ($scope.surveyId == '') {
+            location.href = '@Url.Page("Index")';
+        }
+
+        $scope.LoadSection = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/SurveySection/DataList',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    surveyId: $scope.surveyId
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.lSection = result;
+
+                        if ($scope.lSection.length > 0) {
+                            for (var i = 0; i < $scope.lSection.length; i++) {
+                                var iSection = $scope.lSection[i];
+
+                                $scope.LoadQuestion(iSection);
+                            }
+                            $scope.SelectSection(0)
+                        } else {
+                            alertWarning("Warning", "ไม่พบข้อมูลแบบสอบถาม", function () {
+                                location.href = '@Url.Page("Index")';
+                            });
+                        }
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+        $scope.LoadSection();
+
+        $scope.SelectSection = function (index) {
+            $scope.section_index = index;
+            $scope.iSection = $scope.lSection[$scope.section_index];
+        }
+
+        /* Question */
+
+        $scope.LoadQuestion = function (x) {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/SurveyQuestion/DataList',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    sectionId: x.id
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        x.lQuestion = result;
+
+                        for (var i = 0; i < x.lQuestion.length; i++) {
+                            var iQuestion = x.lQuestion[i];
+
+                            iQuestion.choiceId = '';
+                            iQuestion.answerText = '';
+
+                            if (['radio', 'checkbox'].indexOf(iQuestion.type) > -1) {
+                                $scope.LoadChoice(iQuestion);
+                            }
+                        }
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+
+    @* Choice *@
+
+            $scope.LoadChoice = function (x) {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/SurveyChoice/DataList',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        questionId: x.id
+                    }),
+                    success: function (result) {
+                        $timeout(function () {
+                            x.lChoice = result;
+                        }, 0);
+                    },
+                    error: AjaxError
+                });
+            }
+
+        /* Action */
+        $scope.toggleCheckbox = function (q, choiceId) {
+
+            if (!q.choiceIds) {
+                q.choiceIds = [];
+            }
+
+            var index = q.choiceIds.indexOf(choiceId);
+
+            if (index > -1) {
+                q.choiceIds.splice(index, 1);
+            }
+            else {
+                q.choiceIds.push(choiceId);
+            }
+        };
+
+        $scope.BackSection = function () {
+            if ($scope.section_index > 0) {
+                $scope.SelectSection($scope.section_index - 1);
+            }
+        }
+
+        $scope.validateSurvey = function () {
+
+            var isValid = true;
+
+            angular.forEach($scope.iSection.lQuestion, function (q) {
+
+                q.is_invalid = false;
+
+                // ข้ามถ้าไม่ required
+                if (q.is_required != 1) {
+                    return;
+                }
+
+                // radio
+                if (q.type == 'radio') {
+
+                    if (!q.choiceId) {
+                        q.is_invalid = true;
+                        isValid = false;
+                    }
+
+                }
+
+                // checkbox
+                else if (q.type == 'checkbox') {
+
+                    if (!q.choiceIds || q.choiceIds.length == 0) {
+                        q.is_invalid = true;
+                        isValid = false;
+                    }
+
+                }
+
+                // text / textarea
+                else if (q.type == 'text'
+                    || q.type == 'textarea') {
+
+                    if (!q.answerText
+                        || q.answerText.trim() == '') {
+
+                        q.is_invalid = true;
+                        isValid = false;
+                    }
+
+                }
+
+            });
+
+            return isValid;
+        };
+
+        $scope.NextSection = function () {
+            /* Validate */
+            if ($scope.validateSurvey()) {
+                if ($scope.section_index < $scope.lSection.length - 1) {
+                    $scope.SelectSection($scope.section_index + 1);
+                }
+            } else {
+                alertWarning("Validate Form", "กรุณากรอกข้อมูลให้ครบ");
+            }
+
+        }
+
+        $scope.BuildAnswer = function () {
+            var lAnswer = [];
+
+            angular.forEach($scope.lSection, function (s) {
+                angular.forEach(s.lQuestion, function (q) {
+
+                    // radio
+                    if (q.type == 'radio' && q.choiceId) {
+
+                        lAnswer.push({
+                            questionId: q.id,
+                            choiceId: q.choiceId,
+                            answerText: null
+                        });
+
+                    }
+
+                    // checkbox
+                    if (q.type == 'checkbox' && q.choiceIds) {
+
+                        angular.forEach(q.choiceIds, function (choiceId) {
+
+                            lAnswer.push({
+                                questionId: q.id,
+                                choiceId: choiceId,
+                                answerText: null
+                            });
+
+                        });
+
+                    }
+
+                    // text
+                    if ((q.type == 'text' || q.type == 'textarea')
+                        && q.answerText) {
+
+                        lAnswer.push({
+                            questionId: q.id,
+                            choiceId: null,
+                            answerText: q.answerText
+                        });
+
+                    }
+
+                });
+            });
+
+            console.log(lAnswer);
+        }
+
+        $scope.Submit = function(){
+            $scope.BuildAnswer();
+        }
+    });
+</script>

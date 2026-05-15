@@ -1,0 +1,255 @@
+﻿@page
+@model EmpHub.Pages.Setting.DocumentTypeModel
+@{
+    ViewData["Title"] = "Setting";
+    var token = User.AccessToken(HttpContext);
+}
+
+@section PageHeader {
+    <!-- [ page-header ] start -->
+    <div class="page-header">
+        <div class="page-header-left d-flex align-items-center">
+            <div class="page-header-title">
+                <h5 class="m-b-10">Setting</h5>
+            </div>
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Page("/Index")">Home</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Page("Index")">Data Master</a></li>
+                <li class="breadcrumb-item">Ethnicity</li>
+            </ul>
+        </div>
+    </div>
+}
+
+<div ng-controller="DataMasterCtrl">
+    <div class="mb-2">
+        <div class="fs-4">{{ groupName }}</div>
+    </div>
+    <div class="rounded-4 p-3 bg-white shadow-sm border position-relative">
+        <div class="d-flex align-items-center">
+            <div class="me-2">
+                <button class="btn btn-light" ng-click="ShowCreate()" ng-disabled="roleId == ''">
+                    <i class="fas fa-plus me-2"></i> Add
+                </button>
+            </div>
+            <div>
+                <div class="position-relative me-2">
+                    <input class="form-control form-control-sm me-2" ng-model="search" />
+                    <span class="position-absolute top-50 end-0 translate-middle-y me-3">
+                        <i class="fas fa-search"></i>
+                    </span>
+                </div>
+            </div>
+            <div>
+                <button class="btn btn-circle me-2" ng-click="Download()" ng-disabled="total == 0">
+                    <i class="fas fa-arrow-down"></i>
+                </button>
+            </div>
+            <div class="flex-fill">
+            </div>
+        </div>
+        <hr class="m-1" />
+        <div class="overflow-auto" style="height: calc(100vh - 200px);">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>
+                            Code
+                        </th>
+                        <th>
+                            Name (TH)
+                        </th>
+                        <th>
+                            Name (EN)
+                        </th>
+                        <th width="50"></th>
+                        <th width="50"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="x in lData | filter : search | orderBy : sortBy">
+                        <td>
+                            {{ x.code }}
+                        </td>
+                        <td>
+                            {{ x.desc_th }}
+                        </td>
+                        <td>
+                            {{ x.desc_en }}
+                        </td>
+                        <td class="p-0">
+                            <button class="btn btn-circle" ng-click="ShowEdit(x)">
+                                <i class="bi bi-pen-fill"></i>
+                            </button>
+                        </td>
+                        <td class="p-0">
+                            <button class="btn btn-circle" ng-click="Delete(x)">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div ng-show="lData.length == 0">
+                <div class="text-gray fs-4 position-absolute top-50 start-50 translate-middle">
+                    ไม่พบข้อมูล
+                </div>
+            </div>
+        </div>
+    </div>
+    @* Modify Modal *@
+    <div id="CreateModal" class="modal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ groupName }} Info</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        Code
+                        <input ng-model="iData.code" class="form-control" maxlength="50" />
+                    </div>
+                    <div class="mb-3">
+                        Name (TH)
+                        <input ng-model="iData.desc_th" class="form-control" maxlength="50" />
+                    </div>
+                    <div class="mb-3">
+                        Name (EN)
+                        <input ng-model="iData.desc_en" class="form-control" maxlength="50" />
+                    </div>
+                    <div class="text-end">
+                        <button class="btn btn-primary" ng-click="SaveChange()">
+                            Save Change
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('DataMasterCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.page = 1
+        $scope.row = 10;
+        $scope.search = '';
+        $scope.groupName = 'DocumentType';
+
+        $scope.LoadData = function (page = 1) {
+            $scope.page = page;
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: $scope.groupName
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lData = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+        $scope.ShowCreate = function () {
+            $scope.iData = {
+                id: 0
+                , code: ''
+                , desc_th: ''
+                , desc_en: ''
+                , groupName: $scope.groupName
+                , create_by: '@User.UserId()'
+            };
+            $("#CreateModal").modal('show');
+        }
+
+        $scope.ShowEdit = function (x) {
+            $scope.iData = angular.copy(x);
+            $scope.iData.create_by = '@User.UserId()';
+            $("#CreateModal").modal('show');
+        }
+
+        $scope.SaveChange = function () {
+            var url = '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/Create';
+
+            if ($scope.iData.id > 0) {
+                url = '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/Update';
+            }
+
+            $("#CreateModal").modal('hide');
+
+            $.ajax({
+                url: url
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , cache: false
+                , data: JSON.stringify($scope.iData)
+                , success: function () {
+                    $timeout(function () {
+                        alertSuccess("บันทึกรายการสำเร็จ", "");
+                        $scope.LoadData($scope.page);
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+
+        $scope.Delete = function (x) {
+            alertConfirm("Delete ", "ต้องการยืนยันการทำรายการ", () => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/Delete'
+                    , headers: { 'authorization': 'Bearer @token' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , cache: false
+                    , data: JSON.stringify({
+                        id: x.id
+                        , groupName: $scope.groupName
+                        , update_by: '@User.UserId()'
+                    })
+                    , success: function () {
+                        $timeout(function () {
+                            $scope.LoadData();
+                        }, 0);
+                    }
+                    , error: AjaxError
+                });
+            });
+        }
+
+        $scope.Download = function () {
+            var lData = $filter('filter')($scope.lData, $scope.search);
+            lData = $filter('orderBy')($scope.lData, $scope.sortBy);
+
+            var JSData = [[
+                { 'text': 'Code' }
+                , { 'text': 'Name (TH)' }
+                , { 'text': 'Name (EN)' }
+            ]];
+
+            if (lData.length > 0) {
+                for (var i = 0; i < lData.length; i++) {
+                    var iData = lData[i];
+
+                    JSData.splice(JSData.length, 0, [
+                        { 'text': iData.code }
+                        , { 'text': iData.parentName }
+                        , { 'text': iData.desc_th }
+                        , { 'text': iData.desc_en }
+                    ]);
+                }
+
+                ExportFile(JSData, $scope.groupName + 'List');
+            }
+        }
+
+    });
+</script>

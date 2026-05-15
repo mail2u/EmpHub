@@ -1,0 +1,932 @@
+﻿@page
+@model EmpHub.Pages.SurveySetting.IndexModel
+@{
+    var token = User.AccessToken(HttpContext);
+}
+<style>
+    .bg-Private{
+        background-color:var(--light-orange);
+        color:var(--bs-orange);
+    }
+    .bg-Publish{
+        background-color:var(--light-green);
+        color:var(--bs-green);
+    }
+
+    .bg-Employee{
+        background-color: #0d6efd;
+    }
+    
+    .bg-Position{
+        background-color: #6f42c1;
+    }
+    
+    .bg-Level{
+        background-color: #fd7e14;
+    }
+    
+    .bg-Department{
+        background-color: #198754;
+    }
+    
+    .bg-Division{
+        background-color: #20c997;
+    }
+    
+    .bg-Business{
+        background-color: #dc3545;
+    }
+</style>
+@section PageHeader {
+    <!-- [ page-header ] start -->
+    <div class="page-header">
+        <div class="page-header-left d-flex align-items-center">
+            <div class="page-header-title">
+                <h5 class="m-b-10">Survey Manage</h5>
+            </div>
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Page("/Index")">Home</a></li>
+                <li class="breadcrumb-item">Index</li>
+            </ul>
+        </div>
+    </div>
+}
+
+<div ng-controller="SurveyCtrl">
+    <div class="d-md-flex mb-2">
+        <div class="fs-4 me-3">Survey</div>
+        <div class="overflow-auto flex-fill">
+            <div class="flex-fill d-flex flex-nowrap align-items-center">
+                <div class="btn btn-link text-nowrap {{ iStatus == '' ? 'active' : '' }}" ng-click="SelectStatus('')">
+                    All <span class="badge ms-1" ng-show="sum_all > 0">{{ sum_all | number }}</span>
+                </div> |
+                <div class="btn btn-link border-0 text-nowrap {{ iStatus == 'Private' ? 'active' : '' }}" ng-click="SelectStatus('Private')">
+                    Private <span class="badge ms-1" ng-show="sum_private > 0">{{ sum_private | number }}</span>
+                </div>
+                <div class="btn btn-link border-0 text-nowrap {{ iStatus == 'Publish' ? 'active' : '' }}" ng-click="SelectStatus('Publish')">
+                    Publish <span class="badge ms-1" ng-show="sum_publish > 0">{{ sum_publish | number }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="d-none d-sm-block">
+            <div class="btn btn-primary" ng-click="ShowCreate()">
+                <i class="fas fa-plus me-2"></i> Create New Survey
+            </div>
+        </div>
+    </div>
+    <div class="rounded-4 p-3 bg-white shadow-sm border mb-4">
+        <div class="d-flex mb-1">
+            <div class="flex-fill">
+                <div class="d-flex align-items-end">
+                    <div class="me-2">
+                        <small>Title</small>
+                        <div class="d-flex">
+                            <input class="form-control form-control-sm" ng-model="title" my-enter="LoadData()" />
+                        </div>
+                    </div>
+              @*       <div class="me-2">
+                        <small>Request Date</small>
+                        <div class="d-flex">
+                            <input class="form-control form-control-sm icon-calendar date"
+                                   ng-model="createDate"
+                                   ng-model-options="{ updateon: 'blur' }"
+                                   moment-picker="createDate"
+                                   locale="th"
+                                   format="DD/MM/YYYY"
+                                   min-view="month"
+                                   max-view="month"
+                                   start-view="month"
+                                   my-enter="LoadData()" />
+                        </div>
+                    </div> *@
+                    <div class="me-2">
+                        <button ng-click="LoadData()" class="btn btn-circle" title="Search">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    <div class="me-2">
+                        <button ng-click="Download()" class="btn btn-circle" title="Download" ng-disabled="total == 0">
+                            <i class="fas fa-arrow-down"></i>
+                        </button>
+                    </div>
+                    <div class="flex-fill">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mb-4">
+        <div style="min-height:calc(100vh - 410px);" class="position-relative">
+            <table class="table table-tip border shadow-sm">
+                <thead>
+                    <tr>
+                        <th width="50"></th>
+                        <th class="select" ng-click="SetSort('title')">
+                            Title
+                            <i ng-show="sortBy.indexOf('title') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                        </th>
+                        <th class="select text-center" ng-click="SetSort('status')">
+                            Status
+                            <i ng-show="sortBy.indexOf('status') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                        </th>
+                        <th class="select text-center" ng-click="SetSort('total')">
+                            Total Questions
+                            <i ng-show="sortBy.indexOf('total') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                        </th>
+                        <th class="select" ng-click="SetSort('create_date')">
+                            Create
+                            <i ng-show="sortBy.indexOf('create_date') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                        </th>
+                        <th>
+                            Actions
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="x in lData" class="{{ x.statusCss }} {{ x.is_not_read == 1 ? 'fw-bolder' : '' }}">
+                        <td class="text-center align-middle">
+                            <span ng-show="x.status == 'Private'" class="text-warning" title="Private">
+                                <i class="bi bi-clipboard"></i>
+                            </span>
+                            <span ng-show="x.status == 'Publish'" class="text-green" title="Publish">
+                                <i class="bi bi-clipboard-check"></i>
+                            </span>
+                        </td>
+                        <td>
+                            <div class="fw-bolder text-truncate">
+                                {{ x.title }}
+                            </div>
+                            <div>{{ x.start_date }} - {{ x.end_date }}</div>
+                        </td>
+                        <td class="text-center align-middle">
+                            <div class="badge bg-{{ x.status }}">{{ x.status }}</div>
+                        </td>
+                        <td class="text-center align-middle">
+                            {{ x.total | number }}
+                        </td>
+                        <td class="align-middle">
+                            {{ x.create_date }}
+                        </td>
+                        <td>
+                            <div class="d-flex">
+                                <button ng-click="ShowPublish(x)" class="btn btn-circle bg-light-green me-2" title="Publish">
+                                    <i class="bi bi-send"></i>
+                                </button>
+                                <button ng-click="ShowEdit(x)" class="btn btn-circle bg-light-orange me-2" title="Edit">
+                                    <i class="bi bi-pen"></i>
+                                </button>
+                                <button ng-click="Delete(x)" class="btn btn-circle bg-light-red me-2" title="Delete">
+                                   <i class="bi bi-trash"></i>
+                                </button>
+                                <button ng-click="ShowDetail(x)" class="btn btn-circle bg-light-blue" title="Detail">
+                                    <i class="bi bi-arrow-right"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3">
+                            <div class="text-light-gray">Showing {{ ((page - 1) * row) + 1 }} to {{ (page * row) > total ? total : page * row }} of {{ total }} requests</div>
+                        </td>
+                        <td colspan="3">
+                            <div class="d-flex">
+                                <div class="flex-fill"></div>
+                                <button class="btn btn-circle me-2" ng-click="LoadData(page - 1)" ng-disabled="page <= 1">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <button class="btn btn-circle" ng-click="LoadData(page + 1)" ng-disabled="page * row >= total">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    @* Modal *@
+    <div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen modal-dialog-centered">
+            <div class="modal-content rounded-0">
+                <div class="modal-header">
+                <h1 class="modal-title fs-5">Survey Info</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex">
+                        <div class="flex-fill">
+                            <div class="mb-3">
+                                <div class="fs-6 text-dark fw-bolder mt-2">
+                                    Title
+                                </div>
+                                <textarea ng-model="iData.title" class="form-control" rows="3" maxlength="2000"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <div class="fs-6 text-dark fw-bolder">
+                                    Description
+                                </div>
+                                <textarea ng-model="iData.description" class="form-control" rows="7"></textarea>
+                            </div>
+                            <div class="d-flex mb-3" ng-show="iData.id != ''">
+                                <div class="me-3" style="width:300px;">
+                                    <div class="fs-6 text-dark">
+                                        Start Date
+                                    </div>
+                                    <input class="form-control form-control-sm icon-calendar date"
+                                           ng-model="iData.start_date_select"
+                                           ng-model-options="{ updateon: 'blur' }"
+                                           moment-picker="iData.start_date_select"
+                                           locale="th"
+                                           format="DD/MM/YYYY"
+                                           min-view="month"
+                                           max-view="month"
+                                           max-date="iData.end_date_select"
+                                           start-view="month" />
+                                </div>
+                                <div class="me-3" style="width:300px;">
+                                    <div class="fs-6 text-dark">
+                                        End Date
+                                    </div>
+                                    <input class="form-control form-control-sm icon-calendar date"
+                                           ng-model="iData.end_date_select"
+                                           ng-model-options="{ updateon: 'blur' }"
+                                           moment-picker="iData.end_date_select"
+                                           locale="th"
+                                           format="DD/MM/YYYY"
+                                           min-view="month"
+                                           max-view="month"
+                                           min-date="iData.start_date_select"
+                                           start-view="month" />
+                                </div>
+                                <div class="me-3" style="width:300px;">
+                                    <div class="fs-6 text-dark">
+                                        Authorized
+                                    </div>
+                                    <select ng-model="iData.mode" class="form-select" ng-options="x.value as x.key for x in lMode"></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ms-3" style="min-width:400px; width:400px;" ng-show="iData.mode == 'permission'">
+                            <div class="d-flex aling-items-center">
+                                <div class="flex-fill fs-6 fw-bolder text-dark">
+                                    Permission
+                                </div>
+                                <div class="btn btn-sm btn-link text-primary" ng-click="ShowPermission()">
+                                    + ADD PERMISSION
+                                </div>
+                            </div>
+                            <div class="overflow-auto p-2 border rounded-3" style="height:calc(100vh - 250px);">
+                                <table class="table table-borderless">
+                                    <tbody>
+                                        <tr ng-repeat="p in iData.lPermission | filter : {is_active:1}">
+                                            <td class="align-middle">
+                                                <div class="badge bg-{{ p.permission_type }}">
+                                                    {{ p.permission_type }}
+                                                </div>
+                                            </td>
+                                            <td class="align-middle">
+                                                {{ p.description }}
+                                            </td>
+                                            <td width="40">
+                                                <div class="btn btn-circle" ng-click="DeletePermission(p)">
+                                                    <i class="bi bi-trash3"></i>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" ng-click="SaveChange()" ng-disabled="iData.title == ''">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @* Modal Publish *@
+    <div class="modal fade" id="publishmodal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h1 class="modal-title fs-5">publish survey</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex">
+                        <div class="flex-fill">
+                            <div class="fs-5 fw-bolder text-dark">
+                                {{ idata.title }}
+                            </div>
+                            <div class="mb-3 fs-5 text-dark bg-gray rounded-3 p-3 overflow-auto" style="height:calc(100vh - 340px);">
+                                {{ idata.description }}
+                            </div>
+                        </div>
+                        <div class="ms-3" style="min-width:400px; width:400px;" ng-show="idata.mode == 'permission'">
+                            <div class="d-flex">
+                                <div class="flex-fill fs-6 fw-bolder text-dark">
+                                    กลุ่มผู้มีสิทธ์
+                                </div>
+                                <div class="btn btn-link" ng-click="showpermission()">
+                                    เพิ่ม
+                                </div>
+                            </div>
+                            <div class="overflow-auto p-2 border rounded-3" style="height:calc(100vh - 250px);">
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item list-group-item-action" ng-repeat="p in idata.lpermission">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">close</button>
+                    <button type="button" class="btn btn-success" ng-click="publish()" ng-disabled="idata.title == ''">
+                        <i class="bi bi-send me-2"></i> publish
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    @* Modal Permission *@
+    <div class="modal fade" id="permissionModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-md modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-blue ">
+                <h1 class="modal-title fs-5 text-white">Add Permission</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <div class="fs-6 text-dark">
+                            กลุ่มสิทธิ์
+                        </div>
+                        <select ng-model="permission_type" class="form-select" ng-options="x.name_en as x.name_th for x in lPermissionType"></select>
+                    </div>
+                    <div class="mb-3">
+                        <input ng-model="find_name" class="form-control" placeholder="Search" />
+                    </div>
+                    <div class="overflow-auto" style="height:calc(100vh - 400px);">
+                        @* Employee *@
+                        <div ng-show="permission_type == 'Employee'" class="list-group list-group-flush">
+                            <div class="list-group-item d-flex" ng-repeat="x in lUser | filter : find_name">
+                                <div class="flex-fill">
+                                    {{ x.firstname_th }} {{ x.lastname_th }}
+                                    <div class="fw-bolder">{{ x.employeeCode }}</div>
+                                </div>
+                                <div class="btn btn-circle" ng-click="AddUserPermission(x)">
+                                    <i class="bi bi-person-plus" ng-show="x.is_added != 1"></i>
+                                    <i class="bi bi-check-square-fill text-success" ng-show="x.is_added == 1"></i>
+                                </div>
+                            </div>
+                        </div>
+                        @* Position *@
+                        <div ng-show="permission_type == 'Position'" class="list-group list-group-flush">
+                            <div class="list-group-item d-flex" ng-repeat="x in lPosition | filter : find_name">
+                                <div class="flex-fill">
+                                    {{ x.desc_en }}
+                                </div>
+                                <div class="btn btn-circle" ng-click="AddMasterPermissionEN(x)">
+                                    <i class="bi bi-person-plus" ng-show="x.is_added != 1"></i>
+                                    <i class="bi bi-check-square-fill text-success" ng-show="x.is_added == 1"></i>
+                                </div>
+                            </div>
+                        </div>
+                        @* Level *@
+                        <div ng-show="permission_type == 'Level'" class="list-group list-group-flush">
+                            <div class="list-group-item d-flex" ng-repeat="x in lLevel | filter : find_name">
+                                <div class="flex-fill">
+                                    {{ x.desc_th }}
+                                </div>
+                                <div class="btn btn-circle" ng-click="AddMasterPermission(x)">
+                                    <i class="bi bi-person-plus" ng-show="x.is_added != 1"></i>
+                                    <i class="bi bi-check-square-fill text-success" ng-show="x.is_added == 1"></i>
+                                </div>
+                            </div>
+                        </div>
+                        @* Department *@
+                        <div ng-show="permission_type == 'Department'" class="list-group list-group-flush">
+                            <div class="list-group-item d-flex" ng-repeat="x in lDepartment | filter : find_name">
+                                <div class="flex-fill">
+                                    {{ x.desc_th }}
+                                </div>
+                                <div class="btn btn-circle" ng-click="AddMasterPermission(x)">
+                                    <i class="bi bi-person-plus" ng-show="x.is_added != 1"></i>
+                                    <i class="bi bi-check-square-fill text-success" ng-show="x.is_added == 1"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        @* Division *@
+                        <div ng-show="permission_type == 'Division'" class="list-group list-group-flush">
+                            <div class="list-group-item d-flex" ng-repeat="x in lGroup | filter : find_name">
+                                <div class="flex-fill">
+                                    {{ x.desc_th }}
+                                </div>
+                                <div class="btn btn-circle" ng-click="AddMasterPermission(x)">
+                                    <i class="bi bi-person-plus" ng-show="x.is_added != 1"></i>
+                                    <i class="bi bi-check-square-fill text-success" ng-show="x.is_added == 1"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        @* BusinessUnit *@
+                        <div ng-show="permission_type == 'Business Unit'" class="list-group list-group-flush">
+                            <div class="list-group-item d-flex" ng-repeat="x in lBusinessUnit | filter : find_name">
+                                <div class="flex-fill">
+                                    {{ x.desc_th }}
+                                </div>
+                                <div class="btn btn-circle" ng-click="AddMasterPermission(x)">
+                                    <i class="bi bi-person-plus" ng-show="x.is_added != 1"></i>
+                                    <i class="bi bi-check-square-fill text-success" ng-show="x.is_added == 1"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('SurveyCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.is_not_read = 99;
+        $scope.createBy = '';
+        $scope.iStatus = '';
+
+        $scope.page = 1;
+        $scope.row = 10;
+        $scope.lData = [];
+        
+        $scope.lMode = [
+            { key: 'ทุกคนในระบบ', value: 'everyonce' }
+            ,  { key: 'เฉพาะผู้มีสิทธิ์', value: 'permission' }
+        ];
+
+        $scope.lPermissionType = [
+            {
+                "code": "EMP",
+                "name_th": "พนักงาน",
+                "name_en": "Employee"
+            },
+            {
+                "code": "POS",
+                "name_th": "ตำแหน่ง",
+                "name_en": "Position"
+            },
+            {
+                "code": "LVL",
+                "name_th": "ระดับตำแหน่ง",
+                "name_en": "Level"
+            },
+            {
+                "code": "DEPT",
+                "name_th": "แผนก",
+                "name_en": "Department"
+            },
+            {
+                "code": "DIV",
+                "name_th": "สายงาน",
+                "name_en": "Division"
+            },
+            {
+                "code": "BU",
+                "name_th": "หน่วยธุรกิจ",
+                "name_en": "Business Unit"
+            }
+        ];
+
+        $scope.LoadUser = function(){
+            if(!$scope.lUser){
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/User/DataList',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        page: 1
+                        , row: 999
+                    }),
+                    success: function (result) {
+                        $timeout(function () {
+                            $scope.lUser = result.data;
+                        }, 0);
+                    },
+                    error: AjaxError
+                });
+            }
+        }
+        
+        $scope.LoadPosition = function(){
+            if(!$scope.lPosition){
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                    , headers: { 'authorization': 'Bearer @token' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , dataType: 'json'
+                    , cache: false
+                    , data: JSON.stringify({
+                        groupName: 'positionCode'
+                    })
+                    , success: function (result) {
+                        $timeout(function () {
+                            $scope.lPosition = result;
+                        }, 0);
+                    }
+                    , error: AjaxError
+                });
+            }
+        }
+        
+        $scope.LoadLevel = function(){
+            if(!$scope.lLevel){
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                    , headers: { 'authorization': 'Bearer @token' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , dataType: 'json'
+                    , cache: false
+                    , data: JSON.stringify({
+                        groupName: 'levelCode'
+                    })
+                    , success: function (result) {
+                        $timeout(function () {
+                            $scope.lLevel = result;
+                        }, 0);
+                    }
+                    , error: AjaxError
+                });
+            }
+        }
+        
+        $scope.LoadDepartment = function(){
+            if(!$scope.lDepartment){
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                    , headers: { 'authorization': 'Bearer @token' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , dataType: 'json'
+                    , cache: false
+                    , data: JSON.stringify({
+                        groupName: 'departmentCode'
+                    })
+                    , success: function (result) {
+                        $timeout(function () {
+                            $scope.lDepartment = result.filter(item => item.condition_4 == 'Department');
+                            $scope.lGroup = result.filter(item => item.condition_4 == 'Group');
+                            $scope.lBusinessUnit = result.filter(item => item.condition_4 == 'Business Unit');
+                        }, 0);
+                    }
+                    , error: AjaxError
+                });
+            }
+        }
+
+        $scope.LoadData = function(page = 1){
+            $scope.page = page;
+            var createDate = '';
+
+            if($scope.createDate != null){
+                createDate = $scope.createDate.format("DD/MM/YYYY");
+            }
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Survey/DataList',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    page: $scope.page
+                    , row: $scope.row
+                    , sortBy: $scope.sortBy
+                    , status: $scope.iStatus
+                    , title: $scope.title
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.lData = result.data;
+                        $scope.total = result.total;
+                    }, 0);
+                },
+                error: AjaxError
+            });
+            
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Survey/Summary', 
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    title: $scope.title
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.sum_private = 0;
+                        $scope.sum_publish = 0;
+                        
+                        var find = result.find(x => x.status == 'Private');
+                        if (find) { 
+                            $scope.sum_private = find.total; 
+                        }
+                        find = result.find(x => x.status == 'Publish');
+                        if (find) { 
+                            $scope.sum_publish = find.total; 
+                        }
+
+                        $scope.sum_all = $scope.sum_private
+                            + $scope.sum_publish;
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+        $scope.SelectStatus = function (status) {
+            $scope.iStatus = status;
+            $scope.LoadData();
+        }
+
+        $scope.SetPage = function (page) {
+            $scope.LoadData(page);
+        }
+        
+        $scope.SetSort = function(sortBy){
+            if ($scope.sortBy != null && $scope.sortBy.indexOf(sortBy) > -1) {
+                if ($scope.sortBy.indexOf("-") > -1) {
+                    $scope.sortBy = sortBy;
+                }else{
+                    $scope.sortBy = '-' + sortBy;
+                }
+            }else{
+                $scope.sortBy = sortBy;
+            }
+            $scope.LoadData();
+        }
+
+        $scope.ShowDetail = function(x){
+            x.is_not_read = 0;
+            window.open('@Url.Page("Detail")?id=' + x.id, '_self');
+        }
+        
+        window.parent.ReloadRequest = function () {
+            $scope.LoadData();
+        }
+
+        $scope.ShowCreate = function(){
+            $scope.iData = { id: '', title: '', description: '', status: 'Private', lPermission: [] };
+
+            $("#detailModal").modal('show');
+        }
+        
+        $scope.ShowEdit = function(x){
+            $scope.iData = x;
+
+            $scope.LoadPermission($scope.iData);
+
+            if($scope.iData.start_date != ''){
+                $scope.iData.start_date_select = moment($scope.iData.start_date, "DD/MM/YYYY");
+            }
+            console.log($scope.iData.end_date);
+            if($scope.iData.end_date != ''){
+                $scope.iData.end_date_select = moment($scope.iData.end_date, "DD/MM/YYYY");
+            }
+
+            $("#detailModal").modal('show');
+        }
+
+        $scope.SaveChange = function(){
+            $("#detailModal").modal('hide');
+
+            var url = '@webAPI.CurrentValue.APIEmpHub/api/Survey/Create';
+
+            if($scope.iData.id != ''){
+                url = '@webAPI.CurrentValue.APIEmpHub/api/Survey/Update';
+            }
+
+            $scope.iData.create_by = '@User.UserId()';
+
+            if($scope.iData.start_date_select){
+                $scope.iData.start_date = $scope.iData.start_date_select.format("DD/MM/YYYY");
+            }
+            if($scope.iData.end_date_select){
+                $scope.iData.end_date = $scope.iData.end_date_select.format("DD/MM/YYYY");
+            }
+
+            var lPermission = $scope.iData.lPermission.filter(item => item.is_active == 0 || item.id == '').map(item => 
+                ({
+                id:item.id
+                ,surveyId: item.surveyId
+                ,permission_type: item.permission_type
+                ,refId: item.refId
+                ,description: item.description
+                ,is_active: item.is_active
+                ,create_by: '@User.UserId()'
+                ,update_by: '@User.UserId()'
+            }));
+
+            if (lPermission.length > 0) {
+                $scope.SavePermission(lPermission);
+            }
+
+            $.ajax({
+                url: url,
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify($scope.iData),
+                success: function (result) {
+                    $timeout(function () {
+                        alertSuccess("Save Change", "Success");
+                        $scope.LoadData();
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+        
+        $scope.Delete = function (x) {
+            alertConfirm("Delete ", "ต้องการยืนยันการทำรายการ", () => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Survey/Delete'
+                    , headers: { 'authorization': 'Bearer @token' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , cache: false
+                    , data: JSON.stringify({
+                        id: x.id
+                        , update_by: '@User.UserId()'
+                    })
+                    , success: function () {
+                        $timeout(function () {
+                            $scope.LoadData();
+                        }, 0);
+                    }
+                    , error: AjaxError
+                });
+            });
+        }
+
+        $scope.ShowPublish = function(x){
+            $scope.iData = x;
+            $scope.LoadPermission($scope.iData);
+
+            $("#publishmodal").modal('show');
+        }
+
+        /* Permission */
+
+        $scope.ShowPermission = function(){
+            $scope.LoadUser();
+            $scope.LoadPosition();
+            $scope.LoadLevel();
+            $scope.LoadDepartment();
+
+            if(!$scope.permission_type){
+                $scope.permission_type = $scope.lPermissionType[0].name_en;
+            }
+
+            $("#permissionModal").modal('show');
+        }
+
+        $scope.AddUserPermission = function(x){
+            if (x.is_added != 1) {
+                x.is_added = 1;
+                $scope.AddPermission(x.userId, (x.firstname_th + ' ' + x.lastname_th));
+            }else{
+                x.is_added = 0;
+            }
+        }
+        
+        $scope.AddMasterPermission = function(x){
+            x.is_added = 1;
+            $scope.AddPermission(x.code, x.desc_th);
+        }
+
+        $scope.AddMasterPermissionEN= function(x){
+            x.is_added = 1;
+            $scope.AddPermission(x.code, x.desc_en);
+        }
+
+        $scope.AddPermission = function(refId, description){
+            var iPermission = {
+                id: ''
+                , surveyId: $scope.iData.id
+                , permission_type: $scope.permission_type
+                , refId: refId
+                , description: description
+                , is_active: 1
+                , create_by: '@User.UserId()'
+            }
+            $scope.iData.lPermission.splice($scope.iData.lPermission.length, 0, iPermission);
+        }
+
+        $scope.DeletePermission = function(x){
+            x.is_active = 0;
+        }
+        
+        $scope.SavePermission = function(lPermission){
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/SurveyPermission/Save',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                cache: false,
+                data: JSON.stringify(lPermission),
+                success: function () {
+                    $timeout(function () {
+
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+
+        $scope.LoadPermission = function(x){
+             $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/SurveyPermission/DataList',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    surveyId: x.id
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.iData.lPermission = result;
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+
+        $scope.Download = function(){
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Survey/DataList',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    page: 1
+                    , row: $scope.total
+                    , sortBy: $scope.sortBy
+                    , status: $scope.iStatus
+                    , title: $scope.title
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        var lData = result.data;
+                        
+                        if (lData.length > 0) {
+                            var JSData = [[
+                                { 'text': 'Title' }
+                                , { 'text': 'Status' }
+                                , { 'text': 'Total Question' }
+                            ]];
+
+                            for (var i = 0; i < lData.length; i++) {
+                                var iData = lData[i];
+
+                                JSData.splice(JSData.length, 0, [
+                                    { 'text': iData.title }
+                                    , { 'text': iData.status }
+                                    , { 'text': iData.total_question }
+                                ]);
+                            }
+
+                            var dt = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+                            ExportFile(JSData, 'SurveyList_' + dt);
+                        }
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+    })
+</Script>

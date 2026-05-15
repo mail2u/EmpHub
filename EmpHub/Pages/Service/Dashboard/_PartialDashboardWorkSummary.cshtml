@@ -1,0 +1,83 @@
+﻿@{
+    var token = User.AccessToken(Context);
+}
+<div ng-controller="ChartWorkSummaryCtrl" class="bg-white rounded shadow-sm p-4">
+    <div class="d-flex">
+        <div class="flex-fill fw-bolder mb-2 border-start-tip-blue">งานรอดำเนินการในระบบ</div>
+        <div class="badge bg-gray p-2"></div>
+    </div>
+    <canvas id="chart_dashboard_work_summary"></canvas>
+</div>
+<script>
+    app.controller('ChartWorkSummaryCtrl', function ($scope, $http, $timeout, $filter) {
+
+        $scope.$parent.LoadWorkSummary = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Service/DashboardWorkSummary'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    departmentCode: $scope.$parent.departmentCode
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        var lData = result;
+                        $scope.LoadChar(lData);
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+
+        var chart = new Chart(
+            document.getElementById('chart_dashboard_work_summary'),
+            {
+                type: 'bar',
+                options: {
+                    responsive: true,
+                    aspectRatio: 2,
+                    borderRadius: 5,
+                    weight: 5,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            },
+                            position: 'bottom'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        },
+                    },
+                }
+            }
+        );
+
+        $scope.LoadChar = function (lData) {
+            lData = lData.filter(x => x.total_work > 0);
+            chart.data = {
+                labels: lData.map(x => x.username)
+                , datasets: [{
+                    label: 'รอดำเนินการ',
+                    data: lData.map(x => x.total_work),
+                    borderColor: '#ff9f40',
+                    backgroundColor: '#ff9f40',
+                }],
+            };
+            chart.update();
+        }
+
+        $scope.init = function () {
+            $scope.$emit('LoadWorkSummary');
+        };
+        $scope.init();
+    });
+</script>

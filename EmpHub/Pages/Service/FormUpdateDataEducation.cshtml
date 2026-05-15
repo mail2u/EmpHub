@@ -48,21 +48,51 @@
                     <div class="d-flex flex-fill mb-3">
                         <div class="flex-fill me-3">
                             <div class="text-gray">
-                                หลักสูตรหรือวุฒิการศึกษา
-                            </div>
-                            <select ng-model="x.levelCode" class="form-select form-input" ng-options="d.code as d.desc_th for d in lEduction"></select>
-                        </div>
-                        <div class="flex-fill me-3">
-                            <div class="text-gray">
                                 สถาบันการศึกษา
                             </div>
-                            <input ng-model="x.institution" class="form-control form-input" maxlength="200" />
+                            <div class="dropdown">
+                                <input ng-model="x.institutionDesc" class="form-control form-input bg-white icon-search dropdown-toggle" readonly data-bs-toggle="dropdown" />
+                                <div class="dropdown-menu p-2 rounded-3" style="width:400px;">
+                                    <input ng-model="find_institution" class="form-control mb-2" />
+                                    <div class="overflow-auto list-group list-group-flush" style="height:400px">
+                                        <div class="list-group-item list-group-item-action" ng-repeat="d in lInstitution | filter : find_institution" ng-click="SelectInstitution(d, x)">
+                                            {{ d.desc_th }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="" style="width:150px;">
+                        <div class="me-3" style="width:150px;">
                             <div class="text-gray">
                                 ปีที่สำเร็จการศึกษา
                             </div>
                             <input ng-model="x.year" class="form-control form-input" year />
+                        </div>
+                        <div class="" style="width:150px;">
+                            <div class="text-gray">
+                                เกรดเฉลี่ย
+                            </div>
+                            <input ng-model="x.grade" amount="x.grade" class="form-control form-input grade" format-to-currency maxlength="4" />
+                        </div>
+                    </div>
+                    <div class="d-flex mb-3">
+                        <div class="flex-fill me-3">
+                            <div class="text-gray">
+                                วุฒิการศึกษา
+                            </div>
+                            <select ng-model="x.degreeCode" class="form-select form-input" ng-options="d.code as d.desc_th for d in lDegree"></select>
+                        </div>
+                        <div class="flex-fill me-3">
+                            <div class="text-gray">
+                                หลักสูตร
+                            </div>
+                            <select ng-model="x.programCode" class="form-select form-input" ng-options="d.code as d.desc_th for d in lProgram"></select>
+                        </div>
+                        <div class="flex-fill me-3">
+                            <div class="text-gray">
+                                สาขาวิชา
+                            </div>
+                            <input ng-model="x.major" class="form-control form-input" maxlength="200" />
                         </div>
                     </div>
                     <div class="mb-3">
@@ -97,26 +127,62 @@
         // $scope.lStatus = [{ value: 'modify', key: 'เพิ่ม/แก้ไข' }, { value: 'delete', key: 'ลบข้อมูล' }]
 
         $scope.LoadMaster = function () {
-            if (!$scope.lEduction) {
-                $.ajax({
-                    url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
-                    , headers: { 'authorization': 'Bearer @token' }
-                    , type: 'post'
-                    , contentType: 'application/json'
-                    , dataType: 'json'
-                    , cache: false
-                    , data: JSON.stringify({
-                        groupName: 'educationCode'
-                    })
-                    , success: function (result) {
-                        $timeout(function () {
-                            $scope.lEduction = result;
-                        }, 0);
-                    }
-                    , error: AjaxError
-                });
-            }
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'educationCode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lEduction = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'institution'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lInstitution = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+
+            
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'Degree'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lDegree = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
         }
+        $scope.LoadMaster();
 
         $scope.LoadData = function () {
             $.ajax({
@@ -140,7 +206,6 @@
                                 location.href = '@Url.Page("/Service/Index")';
                             })
                         }else{
-                            $scope.LoadMaster();
 
                             if($scope.lData.length == 0){
                                 $scope.New();
@@ -158,9 +223,14 @@
         }
         $scope.LoadData();
 
+        $scope.SelectInstitution = function(d, x){
+            x.institution = d.code;
+            x.institutionDesc = d.desc_th;
+        }
+
         $scope.New = function(){
             $timeout(function () {
-                $scope.lData.splice($scope.lData.length, 0, { mode: "modify" });
+                $scope.lData.splice($scope.lData.length, 0, { institution:'', grade: 0, mode: "modify" });
             }, 0);
         }
 
@@ -172,6 +242,8 @@
 
         $scope.Validate = function(){
             var flag = true;
+
+            $scope.lData = $scope.lData.filter(item => item.institution != '');
             // JS_Reset($(".firstname_th"));
             // JS_Reset($(".lastname_th"));
 

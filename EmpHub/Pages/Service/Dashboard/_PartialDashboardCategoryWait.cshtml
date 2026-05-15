@@ -1,0 +1,38 @@
+﻿@{
+    var token = User.AccessToken(Context);
+}
+<div ng-controller="ChartCategoryWaitCtrl" class="bg-white rounded shadow-sm p-4" ng-show="lData.length">
+    <div class="fw-bolder mb-2 border-start-tip-blue">งานค้าง</div>
+    <div ng-repeat="x in lData" class="d-flex">
+        <div class="flex-fill">
+            {{ x.categoryDesc }}
+        </div>
+        <div class="fw-bolder text-orange fs-3">
+            {{ x.total }}
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ChartCategoryWaitCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Service/DashboardCategoryWait'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , dataType: 'json'
+                , cache: false
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lData = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+        $scope.timer = setInterval(() => {
+            $scope.LoadData();
+        }, 600000);
+    });
+</script>

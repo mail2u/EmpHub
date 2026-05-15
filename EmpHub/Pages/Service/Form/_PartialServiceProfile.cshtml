@@ -1,0 +1,64 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var token = User.AccessToken(Context);
+}
+<div ng-controller="ServiceProfileCtrl">
+    <div class="bg-white rounded-4 border mb-4">
+        <div class="px-4 py-3 border-bottom">
+            <div class="fs-5 fw-bolder text-dark">Request Details</div>
+        </div>
+        <div class="p-4 pb-2">
+            <div class="row">
+                <div class="col-sm-6 mb-2">
+                    <div class="d-flex">
+                        <div class="me-3">
+                            <div class="py-1 px-2 rounded-3 bg-light"><i class="bi bi-person-fill fs-5 text-blue"></i></div>
+                        </div>
+                        <div class="flex-fill">
+                            <div class="text-gray fw-bolder">RELATED EMPLOYEE</div>
+                            <div class="text-dark fw-bolder">{{ iData.userName }}</div>
+                            <div class="text-gray">{{ iData.userPosition }} {{ iData.userDepartment }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 mb-2">
+                    <div class="d-flex">
+                        <div class="me-3">
+                            <div class="py-1 px-2 rounded-3 bg-light"><i class="bi bi-clipboard-check-fill fs-5 text-blue"></i></div>
+                        </div>
+                        <div class="flex-fill">
+                            <div class="text-gray fw-bolder">CATEGORY</div>
+                            <div class="text-dark fw-bolder">{{ iData.categoryDesc }}</div>
+                            <div class="text-gray">{{ iData.subCategoryDesc }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <partial name="Form/_PartialServicePersonal" />
+    <partial name="Form/_PartialServiceAddress" />
+    <partial name="Form/_PartialServiceEmployee" />
+    <partial name="Form/_PartialServiceEducation" />
+    <partial name="Form/_PartialServiceJobExperience" />
+    <partial name="Form/_PartialServiceTraining" />
+</div>
+<script>
+    app.controller('ServiceProfileCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.$parent.LoadProfile = function (x) {
+            $scope.iData = x;
+            $scope.refId = x.id;
+            $scope.userId = x.userId;
+            $scope.status = x.status;
+
+            $scope.LoadPersonal(x);
+            $scope.LoadAddress(x);
+            $scope.LoadEmployee(x);
+            $scope.LoadEducation(x);
+            $scope.LoadJobExperience(x);
+            $scope.LoadTraining(x);
+        }
+    });
+</script>

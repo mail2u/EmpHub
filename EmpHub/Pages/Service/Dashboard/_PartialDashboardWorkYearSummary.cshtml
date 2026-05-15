@@ -1,0 +1,82 @@
+﻿@{
+    var token = User.AccessToken(Context);
+}
+<div ng-controller="ChartWorkYearSummaryCtrl" class="bg-white rounded shadow-sm p-4">
+    <div class="d-flex">
+        <div class="flex-fill fw-bolder mb-2 border-start-tip-blue">ผู้ดำเนินการประจำปี {{year}}</div>
+    </div>
+    <canvas id="chart_dashboard_work_year_summary"></canvas>
+</div>
+<script>
+    app.controller('ChartWorkYearSummaryCtrl', function ($scope, $http, $timeout, $filter) {
+
+        $scope.$parent.LoadWorkYearSummary = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Service/DashboardWorkYearSummary'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data:JSON.stringify({
+                    departmentCode: $scope.$parent.departmentCode
+                    , year: $scope.$parent.year
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        var lData = result;
+                        $scope.LoadChar(lData);
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+
+        var chart = new Chart(
+            document.getElementById('chart_dashboard_work_year_summary'),
+            {
+                type: 'bar',
+                options: {
+                    responsive: true,
+                    aspectRatio: 2,
+                    borderRadius: 5,
+                    weight: 5,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            },
+                            position: 'bottom'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        },
+                    },
+                }
+            }
+        );
+
+        $scope.LoadChar = function (lData) {
+            chart.data = {
+                labels: lData.map(x => x.username)
+                , datasets: [{
+                    label: 'ดำเนนการแล้ว',
+                    data: lData.map(x => x.total_complete),
+                    borderColor: '#36a2eb',
+                    backgroundColor: '#36a2eb',
+                }],
+            };
+            chart.update();
+        }
+
+        $scope.init = function () {
+            $scope.$emit('LoadWorkYearSummary');
+        };
+        $scope.init();
+    });
+</script>

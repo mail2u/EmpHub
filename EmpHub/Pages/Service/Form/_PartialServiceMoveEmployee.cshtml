@@ -1,0 +1,114 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var token = User.AccessToken(Context);
+}
+<div ng-controller="ServiceMoveEmployeeCtrl">
+    <div class="bg-white rounded-4 border mb-4 overflow-hidden p-4">
+        <div class="px-4 py-3 border-bottom d-flex align-items-center">
+            <div class="fs-5 fw-bolder text-dark flex-fill">แบบฟอร์มโอนย้ายฝ่ายงาน</div>
+        </div>
+        <div class="p-4 fs-6">
+            <div class="row">
+                <div class="col-sm-2 mb-3">
+                    ชื่อ-นามสกุล
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-blue">{{ iForm.fullname }}</div>
+                </div>
+                <div class="col-sm-2 mb-3">
+                    ตำแหน่ง
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-blue">{{ iForm.position }}</div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2 mb-3">
+                    สังกัดฝ่ายงาน
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-blue">{{ iForm.department }}</div>
+                </div>
+                <div class="col-sm-2 mb-3">
+                    สายงาน
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-blue">{{ iForm.section }}</div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2 mb-3">
+                    วันเริ่มงาน
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-blue">{{ iForm.join_date }}</div>
+                </div>
+                <div class="col-sm-2 mb-3">
+                    อายุงาน
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-blue">{{ iForm.age }}</div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="">หน้าที่ความรับผิดชอบปัจจุบัน</div>
+                <div class="text-blue rounded-3 bg-light p-3">
+                    {{ iForm.job_description }}
+                </div>
+            </div>
+            <div class="d-flex mb-3">
+                <div class="me-3">
+                    มีความประสงค์ขอโอนย้ายไปยังฝ่ายงาน ดังนี้
+                </div>
+                <div class="text-blue">{{ iForm.new_department }}</div>
+            </div>
+            <div>
+                <div class="fw-bolder">เหตุผลที่ขอโอนย้าย</div>
+                <div class="text-blue rounded-3 bg-light p-3">
+                    {{ iForm.description }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ServiceMoveEmployeeCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.LoadDetail = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormMoveEmployeeDetail',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        refId: $scope.refId
+                    }),
+                    success: function (result) {
+                        $timeout(async function () {
+                            $scope.iForm = result;
+                            resolve(true);
+                        }, 0);
+                    }, error: function () {
+                        resolve(false);
+                    }
+                });
+            });
+        }
+
+        $scope.init = async function (x) {
+            $scope.refId = x.id;
+            $scope.userId = x.userId;
+            $scope.status = x.status;
+
+            await $scope.LoadDetail();
+        }
+
+        $scope.$on('FORM_MOVE_EMPLOYEE_LOAD', function (e, data) {
+            $scope.init(data);
+        });
+    });
+</script>

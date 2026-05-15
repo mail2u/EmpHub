@@ -1,0 +1,106 @@
+﻿@{
+    var token = User.AccessToken(Context);
+}
+<div ng-controller="ChartWorkMonthSummaryCtrl" class="bg-white rounded shadow-sm p-4">
+    <div class="d-flex">
+        <div class="flex-fill fw-bolder mb-2 border-start-tip-blue">ผู้ดำเนินการประจำเดือน {{month}}/{{year}}</div>
+        <select ng-model="month" ng-options="x.value as x.key for x in lMonth" class="border-0 text-blue" ng-change="LoadData()"></select>
+    </div>
+    <canvas id="chart_dashboard_work_month_summary"></canvas>
+</div>
+<script>
+    app.controller('ChartWorkMonthSummaryCtrl', function ($scope, $http, $timeout, $filter) {
+        var dt = new Date();
+        $scope.month = dt.getMonth() + 1;
+         
+        $scope.lMonth = [
+            {key:"มกราคม",value:1}
+            ,{key:"กุมภาพันธ์",value:2}
+            ,{key:"มีนาคม",value:3}
+            ,{key:"เมษายน",value:4}
+            ,{key:"พฤษภาคม",value:5}
+            ,{key:"มิถุนายน",value:6}
+            ,{key:"กรกฎาคม",value:7}
+            ,{key:"สิงหาคม",value:8}
+            ,{key:"กันยายน",value:9}
+            ,{key:"ตุลาคม",value:10}
+            ,{key:"พฤศจิกายน",value:11}
+            ,{key:"ธันวาคม",value:12}
+        ];
+
+        $scope.LoadData = function(){
+            $scope.$parent.LoadWorkMonthSummary();
+        }
+
+        $scope.$parent.LoadWorkMonthSummary = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Service/DashboardWorkMonthSummary'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data:JSON.stringify({
+                    departmentCode: $scope.$parent.departmentCode
+                    , year: $scope.$parent.year
+                    , month: $scope.month
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        var lData = result;
+                        $scope.LoadChar(lData);
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+
+        var chart = new Chart(
+            document.getElementById('chart_dashboard_work_month_summary'),
+            {
+                type: 'bar',
+                options: {
+                    responsive: true,
+                    aspectRatio: 2,
+                    borderRadius: 5,
+                    weight: 5,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            },
+                            position: 'bottom'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        },
+                    },
+                }
+            }
+        );
+
+        $scope.LoadChar = function (lData) {
+            chart.data = {
+                labels: lData.map(x => x.username)
+                , datasets: [{
+                    label: 'ดำเนนการแล้ว',
+                    data: lData.map(x => x.total_complete),
+                    borderColor: '#36a2eb',
+                    backgroundColor: '#36a2eb',
+                }],
+            };
+
+            chart.update();
+        }
+            
+        $scope.init = function() {
+            $scope.$emit('LoadWorkMonthSummary');
+        };
+        $scope.init();
+    });
+</script>

@@ -61,7 +61,7 @@
             </div>
             <div class="col-sm-4 mb-3 d-lg-flex">
                 <div class="me-3">
-                    <div class="text-dark text-nowrap fw-bolder">วันเริ่มทางาน</div>
+                    <div class="text-dark text-nowrap fw-bolder">วันเริ่มทำงาน</div>
                     <div class="text-dark text-nowrap">(Date of employment)</div>
                 </div>
                 <input class="form-control  icon-calendar date join_date"
@@ -75,7 +75,7 @@
             </div>
             <div class="col-sm-4 mb-3 d-lg-flex">
                 <div class="me-3">
-                    <div class="text-dark text-nowrap fw-bolder">ตาแหน่ง</div>
+                    <div class="text-dark text-nowrap fw-bolder">ตำแหน่ง</div>
                     <div class="text-dark text-nowrap">(Position)</div>
                 </div>
                 <input ng-model="iForm.position" class="form-control  position" maxlength="100" />
@@ -235,6 +235,7 @@
 <script>
     $(".age").mask("00");
     $(".date").mask("00/00/0000")
+    $(".employeeCode").mask("000000");
     app.controller('FormCtrl', function ($scope, $http, $timeout, $filter) {
         $scope.mode = '@Model.mode';
         $scope.iData = {};
@@ -263,6 +264,29 @@
             , benefitpercent4: 0
             , create_by:'@User.UserId()'
         }
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/Detail',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        var data = result;
+
+                        $scope.iForm.fullname = data.employeeName;
+                        $scope.iForm.employeeCode = data.employeeCode;
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+        $scope.LoadData();
 
         $scope.Validate = function () {
             var flag = true;

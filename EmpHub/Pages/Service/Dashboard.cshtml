@@ -1,0 +1,145 @@
+﻿@page
+@model EmpHub.Pages.Service.DashboardModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+<style>
+    .bg-main {
+        min-height: 100%;
+    }
+
+    .label-dashboard {
+        font-weight: bold;
+        border-left: 7px solid var(--tip-blue);
+        padding-left: 5px;
+    }
+</style>
+<div ng-controller="DashboardCtrl" class="p-2">
+    <div class="mb-2 d-flex align-items-center">
+        <div class="fs-5 fw-bolder text-dark me-2">Year </div>
+        <select ng-model="year" ng-options="x for x in lYear" class="form-select" style="width:100px;" ng-change="LoadData()"></select>
+    </div>
+    <div class="row">
+        <div class="col-xl-4 col-sm-6 mb-3">
+            <partial name="Dashboard/_PartialDashboardCategorySummary"></partial>
+        </div>
+        <div class="col-xl-4 col-sm-6 mb-3">
+            <partial name="Dashboard/_PartialDashboardStatusSummary2"></partial>
+        </div>
+        <div class="col-xl-4 col-sm-6 mb-3">
+            <partial name="Dashboard/_PartialDashboardYearSummary"></partial>
+        </div>
+        <div class="col-xl-4 col-sm-6 mb-3">
+            <partial name="Dashboard/_PartialDashboardWorkMonthSummary"></partial>
+        </div>
+        <div class="col-xl-4 col-sm-6 mb-3">
+            <partial name="Dashboard/_PartialDashboardWorkYearSummary"></partial>
+        </div>
+        <div class="col-xl-4 col-sm-6 mb-3">
+            <partial name="Dashboard/_PartialDashboardWorkSummary"></partial>
+        </div>
+        <div class="col-xl-4 col-sm-6 mb-3">
+            <partial name="Dashboard/_PartialDashboardApproveMonthSummary"></partial>
+        </div>
+        <div class="col-xl-4 col-sm-6 mb-3">
+            <partial name="Dashboard/_PartialDashboardApproveYearSummary"></partial>
+        </div>
+        <div class="col-xl-4 col-sm-6 mb-3">
+            <partial name="Dashboard/_PartialDashboardApproveSummary"></partial>
+        </div>
+    </div>
+   @*  <div class="row">
+        <div class="col-xl-4 mb-3">
+            <partial name="Dashboard/_PartialDashboardWorkSLA"></partial>
+        </div>
+        <div class="col-xl-8 mb-3">
+            <partial name="Dashboard/_PartialDashboardRequestNoClose"></partial>
+        </div>
+    </div> *@
+    <div class="row">
+        <div class="col-xl-6 mb-3">
+            <partial name="Dashboard/_PartialDashboardSubCategorySummary"></partial>
+        </div>
+        <div class="col-xl-6 mb-3">
+            <partial name="Dashboard/_PartialDashboardDepartmentSummary"></partial>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('DashboardCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.lDepartment = [
+            { key: "--------- แสดงทั้งหมด ---------", value: "" }
+            , { key: "ฝ่ายบริหารจัดการสถาปัตยกรรมเทคโนโลยีสารสนเทศ", value: "DEA" }
+            , { key: "ฝ่ายพัฒนาระบบเทคโนโลยีสารสนเทศ", value: "DID" }
+            , { key: "ฝ่ายวางแผนและบริหารโครงการเทคโนโลยีสารสนเทศ", value: "DPM" }
+            , { key: "ฝ่ายวิศวกรรมระบบและความปลอดภัยเทคโนโลยีสารสนเทศ", value: "DES" }
+        ];
+        $scope.lYear = [];
+        $scope.departmentCode = "";
+        $scope.year = new Date().getFullYear();
+
+        for (var i = 0; i < 2; i++) {
+            $scope.lYear.splice($scope.lYear.length, 0, $scope.year - i);
+        }
+
+        $scope.Init = function () {
+            $scope.$on('LoadCategorySummary', function () {
+                $scope.LoadCategorySummary();
+            });
+            $scope.$on('LoadSubCategorySummary', function () {
+                $scope.LoadSubCategorySummary();
+            });
+            $scope.$on('LoadDepartmentSummary', function () {
+                $scope.LoadDepartmentSummary();
+            });
+            $scope.$on('LoadStatusSummary', function () {
+                $scope.LoadStatusSummary();
+            });
+            $scope.$on('LoadWorkMonthSummary', function () {
+                $scope.LoadWorkMonthSummary();
+            });
+            $scope.$on('LoadWorkYearSummary', function () {
+                $scope.LoadWorkYearSummary();
+            });
+            $scope.$on('LoadWorkSummary', function () {
+                $scope.LoadWorkSummary();
+            });
+            $scope.$on('LoadApproveMonthSummary', function () {
+                $scope.LoadApproveMonthSummary();
+            });
+            $scope.$on('LoadApproveYearSummary', function () {
+                $scope.LoadApproveYearSummary();
+            });
+            $scope.$on('LoadApproveSummary', function () {
+                $scope.LoadApproveSummary();
+            });
+            $scope.$on('LoadWorkSLA', function () {
+                $scope.LoadWorkSLA();
+            });
+            $scope.$on('LoadApproveSLA', function () {
+                $scope.LoadApproveSLA();
+            });
+            $scope.$on('LoadRequestNoClose', function () {
+                $scope.LoadRequestNoClose();
+            });
+
+        }
+        $scope.Init();
+
+        $scope.LoadData = function () {
+            $scope.LoadCategorySummary();
+            $scope.LoadSubCategorySummary();
+            $scope.LoadDepartmentSummary();
+            $scope.LoadStatusSummary();
+            $scope.LoadWorkMonthSummary();
+            $scope.LoadWorkYearSummary();
+            $scope.LoadWorkSummary();
+            $scope.LoadApproveMonthSummary();
+            $scope.LoadApproveYearSummary();
+            $scope.LoadApproveSummary();
+            $scope.LoadWorkSLA();
+            $scope.LoadApproveSLA();
+            $scope.LoadRequestNoClose();
+        }
+    });
+</script>

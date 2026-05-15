@@ -23,12 +23,14 @@
     <div class="rounded-4 p-3 bg-white shadow-sm border mb-4">
         <input ng-model="search" class="form-control" placeholder="Find..." />
     </div>
-    <div class="rounded-4 p-3 bg-white shadow-sm border">
-        <div ng-repeat="c in lCategory">
-            <div class="fs-5">{{ c.cateDesc }}</div>
-            <div class="list-group list-group-flush">
-                <div class="list-group-item list-group-item-action text-dark select" ng-repeat="s in c.lSub | filter : search" ng-click="Create(s)">
-                    {{ s.cateDesc }}
+    <div class="row">
+        <div class="col-sm-4 mb-3" ng-repeat="c in lCategory" ng-show="(c.lSub | filter : search).length > 0">
+            <div class="rounded-4 p-3 bg-white shadow-sm border h-100">
+                <div class="fs-5 text-dark fw-bolder mb-2">{{ c.cateDesc }}</div>
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item list-group-item-action text-dark select" ng-repeat="s in c.lSub | filter : search" ng-click="Create(s)">
+                        {{ s.cateDesc }}
+                    </div>
                 </div>
             </div>
         </div>

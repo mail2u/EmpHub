@@ -26,12 +26,18 @@
         <div class="text-center fs-4 fw-bolder mb-4 text-dark">
             แบบเสนอขอปรับเลื่อนตาแหน่งงานบุคลากร
         </div>
-        <div class="fs-5 fw-bolder mb-4 bg-light p-2">
-            ข้อมูลบุคลากรที่ขอเสนอปรับเลื่อนตาแหน่งงาน
+        <div class="fs-5 fw-bolder mb-4 bg-light p-2 d-flex align-items-center">
+            <div class="flex-fill">
+                ข้อมูลบุคลากรที่ขอเสนอปรับเลื่อนตาแหน่งงาน
+            </div>
+            <div class="btn btn-primary" ng-click="ShowUser()">
+                <i class="bi bi-search me-2"></i> ค้นหา
+            </div>
         </div>
         <div class="row fs-5">
             <div class="col-sm-6 mb-3 d-flex">
-                <div class="text-nowrap me-2">ชื่อ-สกุล</div><input ng-model="iForm.fullname" class="form-text fullname" maxlength="100" />
+                <div class="text-nowrap me-2">ชื่อ-สกุล</div>
+                <input ng-model="iForm.fullname" class="form-text fullname" maxlength="100" />
             </div>
             <div class="col-sm-6 mb-3 d-flex">
                 <div class="text-nowrap me-2">ตำแหน่ง</div><input ng-model="iForm.position" class="form-text position" maxlength="50" />
@@ -78,19 +84,19 @@
                     <tr>
                         <td class="align-middle">ปัจจุบัน</td>
                         <td>
-                            <input ng-model="iForm.position_current" class="form-control position_current" />
+                            <select ng-model="iForm.position_current" class="form-select position_current" ng-options="x.desc_th as x.desc_th for x in lPosition"></select>
                         </td>
                         <td>
-                            <input ng-model="iForm.department_current" class="form-control department_current" />
+                            <select ng-model="iForm.department_current" class="form-select department_current" ng-options="x.desc_th as x.desc_th for x in lDepartment"></select>
                         </td>
                     </tr>
                     <tr>
                         <td class="align-middle">ใหม่</td>
                         <td>
-                            <input ng-model="iForm.position_new" class="form-control position_new" />
+                            <select ng-model="iForm.position_new" class="form-select position_new" ng-options="x.desc_th as x.desc_th for x in lPosition"></select>
                         </td>
                         <td>
-                            <input ng-model="iForm.department_new" class="form-control department_new" />
+                            <select ng-model="iForm.department_new" class="form-select department_new" ng-options="x.desc_th as x.desc_th for x in lDepartment"></select>
                         </td>
                     </tr>
                 </tbody>
@@ -106,165 +112,26 @@
             <i class="far fa-paper-plane me-2"></i> Send Request
         </div>
     </div>
+    @* modal *@
+    <div class="modal" id="UserModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body overflow-auto" style="max-height:calc(100vh - 200px);">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item list-group-item-action select" ng-repeat="x in lUser" ng-click="SelectUser(x)">
+                            <div class="text-primary fw-bolder">
+                                {{ x.employeeName }}
+                            </div>
+                            <div>
+                                {{ x.positionDesc }} {{ x.departmentDesc }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-@* 
-<script>
-    async function collectClientData() {
-        const data = {};
-
-        // =========================
-        // BASIC INFO
-        // =========================
-        data.userAgent = navigator.userAgent;
-        data.platform = navigator.platform;
-        data.language = navigator.language;
-        data.languages = navigator.languages;
-
-        // =========================
-        // DEVICE TYPE
-        // =========================
-        data.isMobile = /Mobi|Android/i.test(navigator.userAgent);
-
-        // =========================
-        // SCREEN
-        // =========================
-        data.screen = {
-            width: screen.width,
-            height: screen.height,
-            availWidth: screen.availWidth,
-            availHeight: screen.availHeight,
-            colorDepth: screen.colorDepth,
-            pixelRatio: window.devicePixelRatio
-        };
-
-        // =========================
-        // TIMEZONE
-        // =========================
-        data.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-        // =========================
-        // HARDWARE
-        // =========================
-        data.hardware = {
-            cpuCores: navigator.hardwareConcurrency || null,
-            memory: navigator.deviceMemory || null
-        };
-
-        // =========================
-        // NETWORK
-        // =========================
-        if (navigator.connection) {
-            data.network = {
-                effectiveType: navigator.connection.effectiveType,
-                downlink: navigator.connection.downlink,
-                rtt: navigator.connection.rtt
-            };
-        }
-
-        // =========================
-        // BATTERY (บาง browser เท่านั้น)
-        // =========================
-        if (navigator.getBattery) {
-            try {
-                const battery = await navigator.getBattery();
-                data.battery = {
-                    level: battery.level,
-                    charging: battery.charging
-                };
-            } catch { }
-        }
-
-        // =========================
-        // IP ADDRESS
-        // =========================
-        try {
-            const res = await fetch("https://api.ipify.org?format=json");
-            const ip = await res.json();
-            data.ip = ip.ip;
-        } catch {
-            data.ip = null;
-        }
-
-        // =========================
-        // GEOLOCATION (ต้องขอ permission)
-        // =========================
-        data.geo = null;
-        if (navigator.geolocation) {
-            try {
-                await new Promise((resolve) => {
-                    navigator.geolocation.getCurrentPosition(
-                        (pos) => {
-                            data.geo = {
-                                lat: pos.coords.latitude,
-                                lon: pos.coords.longitude
-                            };
-                            resolve();
-                        },
-                        () => resolve(),
-                        { timeout: 3000 }
-                    );
-                });
-            } catch { }
-        }
-
-        // =========================
-        // COOKIE
-        // =========================
-        data.cookie = document.cookie;
-
-        // =========================
-        // LOCAL STORAGE
-        // =========================
-        try {
-            data.localStorage = { ...localStorage };
-        } catch {
-            data.localStorage = null;
-        }
-
-        // =========================
-        // CANVAS FINGERPRINT
-        // =========================
-        try {
-            const canvas = document.createElement("canvas");
-            const ctx = canvas.getContext("2d");
-            ctx.textBaseline = "top";
-            ctx.font = "14px Arial";
-            ctx.fillText("fingerprint", 2, 2);
-            data.canvasFingerprint = canvas.toDataURL();
-        } catch {
-            data.canvasFingerprint = null;
-        }
-
-        return data;
-    }
-
-    // =========================
-    // MAIN FLOW
-    // =========================
-    async function run() {
-        const data = await collectClientData();
-
-        console.log("Collected Data:", data);
-
-        // 👉 ส่งเข้า API (C#)
-        await fetch("/api/collect-client", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        });
-
-        // 👉 redirect ไป Google Form พร้อม token
-        const token = btoa(JSON.stringify({
-            ip: data.ip,
-            t: Date.now()
-        }));
-
-        // window.location.href =
-        //     "https://docs.google.com/forms/d/e/FORM_ID/viewform?entry.123456=" + encodeURIComponent(token);
-    }
-</script> *@
-@* 
-<button onclick="run()">เริ่มต้น</button> *@
 <script>
     $(".day").mask("00");
     $(".score").mask("00");
@@ -289,16 +156,128 @@
             , create_by:'@User.UserId()'
         }
 
+        $scope.LoadMaster = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'positionCode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lPosition = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'departmentCode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lDepartment = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadMaster();
+
+
+        $scope.LoadUser = function () {
+            if ($scope.lUser == undefined) {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserSub',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify({
+                        userId: '@User.UserId()'
+                    }),
+                    success: function (result) {
+                        $timeout(async function () {
+                            $scope.lUser = result
+                        }, 0);
+                    }, error: AjaxError
+                });
+            }
+        }
+
+        $scope.ShowUser = function () {
+            $scope.LoadUser();
+            $("#UserModal").modal('show');
+        }
+
+        $scope.SelectUser = function (x) {
+            $("#UserModal").modal('hide');
+            $scope.iForm.userId = x.userId;
+            $scope.iForm.fullname = x.employeeName;
+            $scope.iForm.position = x.positionDesc;
+            $scope.iForm.section = x.sectionDesc;
+            $scope.iForm.department = x.departmentDesc;
+            $scope.iForm.division = x.divisionDesc;
+
+            $scope.iForm.position_current = x.positionDesc;
+            $scope.iForm.department_current = x.sectionDesc;
+
+            if(x.join_date != ''){
+                $scope.iForm.join_date_select = moment(x.join_date);
+            }
+        }
+
         $scope.CalcAge = function(){
-            if (!$scope.iForm.join_date_select) {
-                $scope.iForm.year = '';
-                return;
+            $scope.iForm.year = '';
+            $scope.iForm.join_date = '';
+
+            if ($scope.iForm.join_date_select) {
+                $scope.iForm.join_date = $scope.iForm.join_date_select.format("DD/MM/YYYY");
             }
 
-            const birthDate = moment($scope.iForm.join_date_select, "DD/MM/YYYY");
-            const today = moment();
+            if ($scope.iForm.join_date != '') {
+                const b = ConvertToDate($scope.iForm.join_date);
+                const c = new Date();
 
-            $scope.iForm.year = today.diff(birthDate, 'years') + '';
+                let years = c.getFullYear() - b.getFullYear();
+                let months = c.getMonth() - b.getMonth();
+                let days = c.getDate() - b.getDate();
+
+                // ถ้าวันติดลบ → ยืมเดือน
+                if (days < 0) {
+                    months--;
+
+                    // เอาจำนวนวันของเดือนก่อนหน้า
+                    const prevMonth = new Date(c.getFullYear(), c.getMonth(), 0);
+                    days += prevMonth.getDate();
+                }
+
+                // ถ้าเดือนติดลบ → ยืมปี
+                if (months < 0) {
+                    years--;
+                    months += 12;
+                }
+
+                if (years > 0) {
+                    $scope.iForm.year = years + ' ปี ';
+                }
+                if (months > 0) {
+                    $scope.iForm.year += months + ' เดือน ';
+                }
+                if (days > 0) {
+                    $scope.iForm.year += days + ' วัน';
+                }
+            }
         }
 
         $scope.Validate = function () {

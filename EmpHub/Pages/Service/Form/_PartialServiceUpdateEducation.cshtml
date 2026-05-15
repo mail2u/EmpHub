@@ -1,0 +1,161 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var token = User.AccessToken(Context);
+}
+<style>
+    input[type="radio"]:disabled {
+        background-color: #0d6efd !important;
+        border-color: #0d6efd !important;
+        background-image: none !important;
+        opacity: 1 !important;
+    }
+</style>
+<div ng-controller="ServiceUpdateEducationCtrl">
+    <div class="bg-white rounded-4 border mb-4 overflow-hidden p-4">
+        <div class="pb-3 mb-3 border-bottom d-flex align-items-center">
+            <div class="fs-5 fw-bolder text-dark flex-fill">
+                ปรับปรุงข้อมูลการศึกษา
+            </div>
+        </div>
+        <div class="fs-6 text-dark">
+            <div class="list-group list-group-flush">
+                <div class="list-group-item px-0 d-flex" ng-repeat="x in lEducation">
+                    <div class="p-2">
+                        {{ $index + 1 }}.
+                    </div>
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <td width="250">
+                                    <div class="fw-bolder">
+                                        สถาบันการศึกษา
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        {{ x.institution == '' ? '-' : x.institution }}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="fw-bolder">
+                                        วุฒิการศึกษา
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        {{ x.degreeName == '' ? '-' : x.degreeName }}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="fw-bolder">
+                                        หลักสูตร
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        {{ x.programName == '' ? '-' : x.programName }}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="fw-bolder">
+                                        สาขาวิชา
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        {{ x.major == '' ? '-' : x.major }}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="fw-bolder">
+                                        ปีที่สำเร็จการศึกษา
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        {{ x.year }}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="fw-bolder">
+                                        เกรดเฉลี่ย
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        {{ x.grade }}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="fw-bolder">
+                                        รายละเอียด
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        {{ x.description == '' ? '-' : x.description }}
+                                    </div>
+                                </td>
+                            </tr>
+
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ServiceUpdateEducationCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.LoadDetail = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceEducation/Detail',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        refId: $scope.refId
+                    }),
+                    success: function (result) {
+                        $timeout(async function () {
+                            $scope.lEducation = result;
+                            resolve(true);
+                        }, 0);
+                    }, error: function () {
+                        resolve(false);
+                    }
+                });
+            });
+        }
+
+        $scope.init = async function (x) {
+            $scope.refId = x.id;
+            $scope.userId = x.userId;
+            $scope.status = x.status;
+
+            await $scope.LoadDetail();
+        }
+
+        $scope.$on('EDIT_EDUCATION_LOAD', function (e, data) {
+            $scope.init(data);
+        });
+    });
+</script>

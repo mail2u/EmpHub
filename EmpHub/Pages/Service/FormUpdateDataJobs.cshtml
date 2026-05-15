@@ -64,7 +64,7 @@
                     </div>
                     <div class="mb-3">
                         <div class="text-dark fs-5">รายละเอียดงาน</div>
-                        <textarea ng-model="x.descripition" class="form-control" maxlength="4000" rows="5"></textarea>
+                        <textarea ng-model="x.description" class="form-control" maxlength="4000" rows="5"></textarea>
                     </div>
                    @*  <div class="text-end">
                         <div class="btn btn-warning-invert bg-white" ng-click="Delete(x)">
@@ -75,7 +75,7 @@
             </div>
         </div>
         <div class="btn btn-light" ng-click="New()">
-            เพิ่มข้อมูลการศึกษา
+            เพิ่มข้อมูลประวัติการทำงาน
         </div>
     </div>
     <div class="d-flex justify-content-end">
@@ -132,7 +132,7 @@
 
         $scope.New = function(){
             $timeout(function () {
-                $scope.lData.splice($scope.lData.length, 0, { mode: "modify" });
+                $scope.lData.splice($scope.lData.length, 0, { company: '', mode: "modify" });
             }, 0);
         }
 
@@ -144,17 +144,8 @@
 
         $scope.Validate = function(){
             var flag = true;
-            // JS_Reset($(".firstname_th"));
-            // JS_Reset($(".lastname_th"));
 
-            // if($scope.iData.firstname_th == ''){
-            //     flag = false;
-            //     JS_Require($(".firstname_th"));
-            // }
-            // if($scope.iData.lastname_th == ''){
-            //     flag = false;
-            //     JS_Require($(".lastname_th"));
-            // }
+            $scope.lData = $scope.lData.filter(item=>item.company != '');
 
             return flag;
         }

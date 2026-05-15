@@ -1,0 +1,221 @@
+﻿@page
+@model EmpHub.Pages.Report.workforce_overviewModel
+@{
+    var token = User.AccessToken(HttpContext);
+}
+<div ng-controller="ReportCtrl" class="p-2">
+    <div class="d-flex mb-3 align-items-center">
+        <div class="fs-5 fw-bolder text-dark flex-fill">
+            รายงานข้อมูพนักงาน
+        </div>
+        <div class="">
+            <div class="btn btn-light bg-white" ng-click="Download()">
+                <i class="bi bi-download me-2"></i> Download
+            </div>
+        </div>
+    </div>
+    <div class="rounded-2 p-3 bg-white shadow-sm border">
+        <div class="d-flex mb-2">
+            <div class="flex-fill">
+                <div class="d-flex align-items-end">
+                    <div class="me-2">
+                        <small>ชื่อ - สกุล</small>
+                        <div class="d-flex">
+                            <input class="form-control" ng-model="firstname_th" my-enter="LoadData()" />
+                        </div>
+                    </div>
+                    <div class="me-2">
+                        <small>ตำแหน่ง</small>
+                        <div class="d-flex">
+                            <input class="form-control" ng-model="positionCode" my-enter="LoadData()" />
+                        </div>
+                    </div>
+                    <div class="me-2">
+                        <small>ฝ่ายงาน</small>
+                        <div class="d-flex">
+                            <input class="form-control" ng-model="departmentCode" my-enter="LoadData()" />
+                        </div>
+                    </div>
+                    <div>
+                        <button ng-click="LoadData()" class="btn btn-light me-2">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    <div class="flex-fill">
+                    </div>
+                </div>
+            </div>
+            <div class="text-end d-flex flex-nowrap align-items-center">
+                <span class="d-none d-md-block">
+                    {{ (total > 0 ? ((page - 1) * row) + 1 : 0) | number }} - {{ (page * row < total ? page * row : total) | number }} of {{ total | number }}
+                </span>
+                <button class="btn btn-circle" ng-click="LoadData(page - 1)" ng-disabled="page <= 1">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="btn btn-circle" ng-click="LoadData(page + 1)" ng-disabled="page * row >= total">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+        <div class="overflow-auto d-none d-lg-block">
+            <div class="pt-3" style="height:calc(100vh - 265px);">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th class="text-nowrap" ng-click="SetSort('employeeCode')">
+                                รหัสพนักงาน
+                                <i ng-show="sortBy.indexOf('employeeCode') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                            </th>
+                            <th class="text-nowrap" ng-click="SetSort('firstname_th')">
+                                ชื่อ (ภาษาไทย)
+                                <i ng-show="sortBy.indexOf('firstname_th') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                            </th>
+                            <th class="text-nowrap" ng-click="SetSort('firstname_en')">
+                                ชื่อ (ภาษาอังกฤษ)
+                                <i ng-show="sortBy.indexOf('firstname_en') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                            </th>
+                            <th class="text-nowrap" ng-click="SetSort('positionName')">
+                                ตำแหน่ง
+                                <i ng-show="sortBy.indexOf('positionName') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                            </th>
+                            <th class="text-nowrap" ng-click="SetSort('departmentName')">
+                                ฝ่ายงาน
+                                <i ng-show="sortBy.indexOf('departmentName') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                            </th>
+                            <th class="text-nowrap" ng-click="SetSort('email')">
+                                อีเมล์
+                                <i ng-show="sortBy.indexOf('email') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                            </th>
+                            <th class="text-nowrap" ng-click="SetSort('phoneNo')">
+                                เบอร์ติดต่อ
+                                <i ng-show="sortBy.indexOf('phoneNo') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="x in lData">
+                            <td>
+                                {{ x.employeeCode }}
+                            </td>
+                            <td>
+                                {{ x.prefix_th + ' ' + x.firstname_th + ' ' + x.lastname_th }}
+                            </td>
+                            <td>
+                                {{ x.prefix_en + ' ' + x.firstname_en + ' ' + x.lastname_en }}
+                            </td>
+                            <td>
+                                {{ x.positionName }}
+                            </td>
+                            <td>
+                                {{ x.departmentName }}
+                            </td>
+                            <td>
+                                {{ x.email }}
+                            </td>
+                            <td>
+                                {{ x.phone_office }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ReportCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.page = 1
+        $scope.row = 10;
+
+        $scope.LoadData = function (page = 1) {
+            $scope.page = page;
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Report/ReportWorkforceOverview'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    page: $scope.page
+                    , row: $scope.row
+                    , sortBy: $scope.sortBy
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lData = JSON.parse(result.data);
+                        $scope.total = result.total;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+        $scope.SetSort = function (sortBy) {
+            if ($scope.sortBy != null && $scope.sortBy.indexOf(sortBy) > -1) {
+                if ($scope.sortBy.indexOf("-") > -1) {
+                    $scope.sortBy = sortBy;
+                } else {
+                    $scope.sortBy = '-' + sortBy;
+                }
+            } else {
+                $scope.sortBy = sortBy;
+            }
+            $scope.LoadData();
+        }
+
+
+        $scope.Download = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Report/ReportWorkforceOverview'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    page: 1
+                    , row: $scope.total
+                    , sortBy: $scope.sortBy
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        var lData = JSON.parse(result.data);
+
+                        if (lData.length > 0) {
+                            var JSData = [[
+                                { 'text': 'รหัสพนักงาน' }
+                                , { 'text': 'ชื่อ (ภาษาไทย)' }
+                                , { 'text': 'ชื่อ (ภาษาอังกฤษ)' }
+                                , { 'text': 'ตำแหน่ง' }
+                                , { 'text': 'ฝ่ายงาน' }
+                                , { 'text': 'อีเมล์' }
+                                , { 'text': 'เบอร์ติดต่อ' }
+                            ]];
+
+                            for (var i = 0; i < lData.length; i++) {
+                                var iData = lData[i];
+
+                                JSData.splice(JSData.length, 0, [
+                                    { 'text': iData.employeeCode }
+                                    , { 'text': (iData.prefix_th + ' ' + iData.firstname_th + ' ' + iData.lastname_th) }
+                                    , { 'text': (iData.prefix_en + ' ' + iData.firstname_en + ' ' + iData.lastname_en) }
+                                    , { 'text': iData.positionName }
+                                    , { 'text': iData.departmentName }
+                                    , { 'text': iData.email }
+                                    , { 'text': iData.phone_office }
+                                ]);
+                            }
+
+                            var dt = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+                            ExportFile(JSData, 'รายงานข้อมูพนักงาน_' + dt);
+                        }
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+    });
+</script>

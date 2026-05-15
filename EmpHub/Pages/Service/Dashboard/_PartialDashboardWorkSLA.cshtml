@@ -1,0 +1,115 @@
+﻿@{
+    var token = User.AccessToken(Context);
+}
+<div ng-controller="ChartWorkSLACtrl" class="bg-white rounded shadow-sm p-4 h-100">
+    <div class="d-flex">
+        <div class="flex-fill fw-bolder mb-2 border-start-tip-blue">ผลการปิดงานภายใน SLA จำนวน {{ total | number }} ของปี {{year}}</div>
+        <select ng-model="userId" ng-options="x.userId as x.fullname for x in lUser" class="border-0 text-blue" ng-change="$parent.LoadWorkSLA()"></select>
+    </div>
+    <canvas id="chart_dashboard_work_sla" height="100%"></canvas>
+</div>
+<script>
+    app.controller('ChartWorkSLACtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.userId = '';
+        $scope.total = 0;
+        $scope.$parent.LoadWorkSLA = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Service/DashboardWorkSLA'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    year: $scope.$parent.year
+                    , userBy: $scope.userId
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        var data = result.Table;
+
+                        $scope.total = data.reduce((sum, item) => {
+                            return sum + item.value;
+                        }, 0);
+
+                        $scope.lUser = result.Table1;
+                        $scope.lUser.splice(0, 0, { userId: '', fullname: 'แสดงทั้งหมด' });
+
+                        $timeout(function () {
+                            $scope.LoadChar(data);
+                        }, 0);
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+
+        var chart = new Chart(
+            document.getElementById('chart_dashboard_work_sla'),
+            {
+                type: 'pie',
+                options: {
+                    responsive: true,
+                    aspectRatio: 2,
+                    borderRadius: 5,
+                    weight: 5,
+                    cutout: 35,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            labels: {
+                                usePointStyle: true,
+                                boxWidth: 12,
+                                padding: 10,
+                                pointStyle: 'circle',
+                                generateLabels(chart) {
+                                    const data = chart.data;
+                                    if (data.labels.length && data.datasets.length) {
+                                        const { labels: { pointStyle } } = chart.legend.options;
+
+                                        return data.labels.map((label, i) => {
+                                            const meta = chart.getDatasetMeta(0);
+                                            const style = meta.controller.getStyle(i);
+                                            const value = data['datasets'][0].data[i];
+                                            const per = value / $scope.total * 100;
+
+                                            return {
+                                                text: `${label}: ${data['datasets'][0].data[i]} รายการ (${per.toFixed(2)}%)`,
+                                                fillStyle: style.backgroundColor,
+                                                strokeStyle: style.borderColor,
+                                                lineWidth: style.borderWidth,
+                                                pointStyle: pointStyle,
+                                                hidden: !chart.getDataVisibility(i),
+
+                                                // Extra data used for toggling the correct item
+                                                index: i,
+                                            };
+                                        });
+                                    }
+                                    return [];
+                                }
+                            },
+                            position: 'right'
+                        }
+                    },
+                }
+            }
+        );
+
+        $scope.LoadChar = function (lData) {
+            chart.data = {
+                labels: lData.map(i => i.keys),
+                datasets: [{
+                    data: lData.map(i => i.value),
+                }],
+            };
+
+            chart.update();
+        }
+
+        $scope.init = function () {
+            $scope.$emit('LoadWorkSLA');
+        };
+        $scope.init();
+    });
+</script>

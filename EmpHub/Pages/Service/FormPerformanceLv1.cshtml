@@ -38,7 +38,7 @@
                     ตำแหน่ง
                 </div>
                 <div class="col-sm-4 mb-3">
-                    <input ng-model="iForm.position" class="form-control position" maxlength="50" />
+                    <select ng-model="iForm.position" class="form-select position" ng-options="x.desc_th as x.desc_th for x in lPosition"></select>
                 </div>
             </div>
             <div class="row">
@@ -46,13 +46,13 @@
                     ส่วน
                 </div>
                 <div class="col-sm-4 mb-3">
-                    <input ng-model="iForm.section" class="form-control section" maxlength="100" />
+                    <select ng-model="iForm.section" class="form-select section" ng-options="x.desc_th as x.desc_th for x in lDepartment" ng-change="SelectSection()"></select>
                 </div>
                 <div class="col-sm-2 mb-3">
                     ฝ่าย
                 </div>
                 <div class="col-sm-4 mb-3">
-                    <input ng-model="iForm.department" class="form-control department" maxlength="50" />
+                    <div class="p-2">{{ iForm.department }}</div>
                 </div>
             </div>
             <div class="row">
@@ -414,6 +414,60 @@
             , answer10: 0
             , total: 0
             , create_by:'@User.UserId()'
+        }
+
+        $scope.LoadData = function(){
+             $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'departmentCode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lDepartment = result.filter(item => item.condition_4 == 'Department');
+                        $scope.lGroup = result.filter(item => item.condition_4 == 'Group');
+                        $scope.lBusinessUnit = result.filter(item => item.condition_4 == 'Business Unit');
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'positionCode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lPosition = result.filter(item=>item.code == "POS14" || item.code == "POS15");
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+        $scope.SelectSection = function(){
+            $scope.iForm.department = '';
+
+            var find_section = $scope.lDepartment.find(item=>item.desc_th == $scope.iForm.section);
+
+            if(find_section){
+                var find_department = $scope.lGroup.find(item=>item.code == find_section.condition_3);
+
+                if(find_department){
+                    $scope.iForm.department = find_department.desc_th;
+                }
+            }
         }
 
         $scope.CalcTotal = function(){

@@ -9,17 +9,100 @@
     }
 </style>
 <div ng-controller="ReportCtrl" class="p-2">
-    <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            @*  <li class="breadcrumb-item"><a href="#">Report</a></li> *@
-            <li class="breadcrumb-item active" aria-current="page">Report</li>
-        </ol>
-    </nav>
-    <div class="rounded-4 p-3 bg-white shadow-sm border">
-        <div class="list-group list-group-flush">
-            <a href='@Url.Page("/Report/Employee")' class="text-decoration-none list-group-item list-group-item-action">
-                <div><i class="bi bi-chevron-double-right"></i> รายงานข้อมูลพนักงาน</div>
-            </a>
+    @section PageHeader {
+        <!-- [ page-header ] start -->
+        <div class="page-header">
+            <div class="page-header-left d-flex align-items-center">
+                <div class="page-header-title">
+                    <h5 class="m-b-10">Report</h5>
+                </div>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="@Url.Page("/Index")">Home</a></li>
+                    <li class="breadcrumb-item">All Report</li>
+                </ul>
+            </div>
+        </div>
+    }
+    <div>
+        <div class="row">
+            <div class="col-sm-6 mb-3">
+                <div class="rounded-4 p-3 bg-white shadow-sm border text-dark h-100">
+                    <div class="fs-5 fw-bolder mb-2">Workforce</div>
+                    <div class="list-group list-group-flush">
+                        <a href='@Url.Page("/Report/workforce-overview")' class="text-decoration-none list-group-item list-group-item-action" target="_blank">
+                            รายงานข้อมูลพนักงาน
+                        </a>
+                        <a href='@Url.Page("/Report/headcount-section")' class="text-decoration-none list-group-item list-group-item-action" target="_blank">
+                            รายงานจำนวนพนักงานแยกตามแผนก
+                        </a>
+                        <a href='@Url.Page("/Report/headcount-sex")' class="text-decoration-none list-group-item list-group-item-action" target="_blank">
+                            รายงานจำนวนพนักงานแยกตามเพศ
+                        </a>
+                        <a href='@Url.Page("/Report/headcount-age")' class="text-decoration-none list-group-item list-group-item-action" target="_blank">
+                            รายงานจำนวนพนักงานแยกตามอายุ
+                        </a>
+                        <a href='@Url.Page("/Report/headcount-position")' class="text-decoration-none list-group-item list-group-item-action" target="_blank">
+                            รายงานจำนวนพนักงานแยกตามตำแหน่ง
+                        </a>
+                        <a href='@Url.Page("/Report/headcount-movement")' class="text-decoration-none list-group-item list-group-item-action" target="_blank">
+                            รายงานสรุปการเข้า-ออก
+                        </a>
+                        <a href='@Url.Page("/Report/turnover-attrition")' class="text-decoration-none list-group-item list-group-item-action" target="_blank">
+                            อัตราการลาออกแยกตามแผนกหรือเหตุผลการลาออก
+                        </a>
+                    </div>
+                </div>
+            </div>
+             <div class="col-sm-6 mb-3">
+                <div class="rounded-4 p-3 bg-white shadow-sm border text-dark h-100">
+                    <div class="fs-5 fw-bolder mb-2">Recruitment</div>
+                    <div class="list-group list-group-flush">
+                        <a href='@Url.Page("/Report/recruitment-dashboard")' class="text-decoration-none list-group-item list-group-item-action" target="_blank">
+                            รายงานการสรรหา
+                        </a>
+                        <a href='@Url.Page("/Report/time-to-fill")' class="text-decoration-none list-group-item list-group-item-action" target="_blank">
+                            ระยะเวลาที่ใช้ในการสรรหาเฉลี่ย
+                        </a>
+                        <a href='@Url.Page("/Report/employee-referral")' class="text-decoration-none list-group-item list-group-item-action" target="_blank">
+                            Friend get Friend
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+         <div class="row">
+            <div class="col-sm-6 mb-3">
+                <div class="rounded-4 p-3 bg-white shadow-sm border text-dark h-100">
+                    <div class="fs-5 fw-bolder mb-2">Training & Development</div>
+                    <div class="list-group list-group-flush">
+                        <a href='@Url.Page("/Report/learning-development")' class="text-decoration-none list-group-item list-group-item-action" target="_blank">
+                            รายงานพัฒนาบุคลากร
+                        </a>
+                        <a href='@Url.Page("/Report/training-hours")' class="text-decoration-none list-group-item list-group-item-action" target="_blank">
+                            จำนวนชั่วโมงการฝึกอบรมเฉลี่ยต่อพนักงาน
+                        </a>
+                        <a href='@Url.Page("/Report/training-cost")' class="text-decoration-none list-group-item list-group-item-action" target="_blank">
+                            งบประมาณที่ใช้ไปในการพัฒนาบุคลากร
+                        </a>
+                    </div>
+                </div>
+            </div>
+             <div class="col-sm-6 mb-3">
+                <div class="rounded-4 p-3 bg-white shadow-sm border text-dark h-100">
+                    <div class="fs-5 fw-bolder mb-2">Recruitment</div>
+                    <div class="list-group list-group-flush">
+                        <a href='@Url.Page("/Report/performance-dashboard")' class="text-decoration-none list-group-item list-group-item-action" target="_blank">
+                            รายงานการประเมินผล
+                        </a>
+                        <a href='@Url.Page("/Report/performance-evaluation")' class="text-decoration-none list-group-item list-group-item-action" target="_blank">
+                            สรุปผลประเมินผลงานประจำปี
+                        </a>
+                        <a href='@Url.Page("/Report/high-potential")' class="text-decoration-none list-group-item list-group-item-action" target="_blank">
+                            รายงานกลุ่มพนักงานศักยภาพสูง
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

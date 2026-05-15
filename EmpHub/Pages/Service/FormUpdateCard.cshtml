@@ -30,11 +30,11 @@
         </div>
         <div class="row text-dark fs-6">
             <div class="col-sm-4 mb-3">
-                <div class="text-dark fw-bolder">บัตรพนักงาน</div>
+                <div class="text-dark fw-bolder">บัตรพนักงาน <span class="text-danger">*</span></div>
                 <input ng-model="iForm.employeeCode" class="form-control form-input employeeCode" maxlength="6" />
             </div>
             <div class="col-sm-4 mb-3">
-                <div class="text-dark fw-bolder">บัตรประชาชน</div>
+                <div class="text-dark fw-bolder">บัตรประชาชน <span class="text-danger">*</span></div>
                 <input ng-model="iForm.idcard" class="form-control form-input idcard" maxlength="13" />
             </div>
             <div class="col-sm-4 mb-3">
@@ -44,6 +44,10 @@
             <div class="col-sm-4 mb-3">
                 <div class="text-dark fw-bolder">ใบอนุญาตทำงานคนต่างด้าว</div>
                 <input ng-model="iForm.workPermitNo" class="form-control form-input workPermitNo" maxlength="20" />
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">เลขบัญชีธนาคาร</div>
+                <input ng-model="iForm.bookNo" class="form-control form-input bookNo" maxlength="20" />
             </div>
         </div>
     </div>
@@ -67,8 +71,6 @@
             var flag = true;
             JS_Reset($(".employeeCode"));
             JS_Reset($(".idcard"));
-
-            console.log($scope.iForm);
 
             if ($scope.iForm.employeeCode == '') {
                 flag = false;
@@ -101,6 +103,7 @@
                         $scope.iForm.idcard = iData.idcard;
                         $scope.iForm.passport = iData.passport;
                         $scope.iForm.workPermitNo = iData.workPermitNo;
+                        $scope.iForm.userId = iData.userId;
                     }, 0);
                 }, error: AjaxError
             });

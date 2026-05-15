@@ -18,15 +18,47 @@
     .joint-element {
         cursor: pointer !important;
     }
+
+    #orgHelp {
+        position: absolute;
+        top: 15px;
+        right: 30px;
+        z-index: 999;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-size: 13px;
+        line-height: 1.7;
+        color: #444;
+        user-select: none;
+        pointer-events: none;
+    }
 </style>
-<div ng-controller="OrgChartCtrl" class="p-2">
-    <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item">Organization</li>
-            <li class="breadcrumb-item active" aria-current="page">Organization Structure</li>
-        </ol>
-    </nav>
+@section PageHeader {
+    <!-- [ page-header ] start -->
+    <div class="page-header">
+        <div class="page-header-left d-flex align-items-center">
+            <div class="page-header-title">
+                <h5 class="m-b-10">Organization</h5>
+            </div>
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Page("/Index")">Home</a></li>
+                <li class="breadcrumb-item">Organization</li>
+                <li class="breadcrumb-item">My Team</li>
+            </ul>
+        </div>
+    </div>
+}
+<div ng-controller="OrgChartCtrl">
+
     <div id="paper" class="p-3 border bg-white rounded-4" style="width:100%; height:calc(100vh - 200px);"></div>
+    <div id="orgHelp" class="bg-gray bg-opacity-50">
+        <div>
+            🖱️ กดเม้าส์ตรงกลาง + ลาก เพื่อ Move
+        </div>
+        <div>
+            🔍 กด Ctrl + Scroll เพื่อ Zoom
+        </div>
+    </div>
 </div>
 <link rel="stylesheet" href="~/lib/jointjs/joint.min.css">
 <script src="https://unpkg.com/graphlib@2.1.8/dist/graphlib.min.js"></script>
@@ -50,67 +82,114 @@
         const maxScale = 2.5;
         const graph = new joint.dia.Graph();
 
+        function runLayout() {
+
+            joint.layout.DirectedGraph.layout(graph, {
+                rankDir: 'TB',
+                ranker: 'tight-tree',
+                nodeSep: 100,
+                edgeSep: 80,
+                rankSep: 140,
+                marginX: 100,
+                marginY: 100,
+                setVertices: true
+            });
+        }
+
         const paper = new joint.dia.Paper({
             el: document.getElementById('paper'),
             model: graph,
             width: '100%',
-            height: 600,
+            height: 'calc(100vh - 210px)',
             gridSize: 10,
             drawGrid: false,
-            interactive: {
-                blankMove: false,
-                elementMove: false,
+            interactive: function (cellView) {
+
+                // ปิด link interaction
+                if (cellView.model.isLink()) {
+                    return false;
+                }
+
+                // ปิดลาก node
+                return {
+                    elementMove: false
+                };
             },
             background: { color: '#F5F5F5' },
-            defaultRouter: { name: 'orthogonal' },
-            defaultConnector: { name: 'straight', args: { cornerType: 'line' } },
+            defaultConnector: { name: 'rounded', args: { cornerType: 'line', radius: 8 } },
             defaultLink: new joint.shapes.standard.Link({
                 attrs: {
-                    line: { stroke: '#555', strokeWidth: 2 }
+                    line: {
+                        stroke: '#333',
+                        strokeWidth: 2,
+                        targetMarker: null
+                    },
+                    wrapper: {
+                        strokeWidth: 12, // 🔥 เพิ่ม hit area
+                        stroke: 'transparent',
+                        cursor: 'default'
+                    }
                 }
             }),
-            linkPinning: false
+            linkPinning: false,
+            defaultAnchor: {
+                name: 'center'
+            },
+            connectionStrategy: joint.connectionStrategies.pinAbsolute
         });
 
-        // paper.on('element:pointerdblclick', function (elementView, evt) {
-        //     evt.stopPropagation();   // กัน event ซ้อน
-        //     evt.preventDefault();
+        //zoom in out
 
-        //     const model = elementView.model;
-        //     const nodeId = model.get('nodeId');
+        function handleZoom(evt, x, y, delta) {
+            // 🔥 ต้องกด Ctrl ค้างไว้เท่านั้น
+            if (!evt.ctrlKey) return;
 
-        //     // 👉 เรียก function drill down
-        //     if ($scope.root == nodeId) {
-        //         var find = $scope.lData.find(item => item.id == nodeId);
-        //         //dill up
-        //         location.href = '@Url.Page("Index")?id=' + find.parentId;
-        //     } else {
-        //         //dill down
-        //         location.href = '@Url.Page("Index")?id=' + nodeId;
-        //     }
-        // });
-
-        paper.on('blank:mousewheel', function (evt, x, y, delta) {
             evt.preventDefault();
 
             const factor = delta > 0 ? 1.1 : 0.9;
             zoom(factor, { x, y });
+        }
+
+        //zoom in out
+        paper.on('blank:mousewheel', function (evt, x, y, delta) {
+            handleZoom(evt, x, y, delta);
         });
 
+        paper.on('element:mousewheel', function (elementView, evt, x, y, delta) {
+            handleZoom(evt, x, y, delta);
+        });
+
+        paper.on('link:mousewheel', function (linkView, evt, x, y, delta) {
+            handleZoom(evt, x, y, delta);
+        });
+
+        //drag paper (start)
         paper.on('blank:pointerdown', function (evt, x, y) {
-            selectedElement = null;
+            console.log('blank:pointerdown');
+
+            // ปุ่มกลาง = 1
+            if (evt.button !== 1) {
+                isMiddleDragging = false;
+                return;
+            }
+
+            isMiddleDragging = true;
+
+            const t = paper.translate();
+
             start = {
                 mouseX: evt.clientX,
                 mouseY: evt.clientY,
-                x,
-                y,
-                t: paper.translate(),
-                scale: paper.scale().sx
+                t: { tx: t.tx, ty: t.ty }
             };
         });
 
+        //drag paper (stop)
         paper.on('blank:pointermove', function (evt, x, y) {
-            if (!start) return;
+
+            if (!start || !isMiddleDragging) return;
+
+            console.log('blank:pointermove');
 
             const dx = (evt.clientX - start.mouseX) + start.t.tx;
             const dy = (evt.clientY - start.mouseY) + start.t.ty;
@@ -118,131 +197,650 @@
             paper.translate(dx, dy);
         });
 
-        paper.on('blank:pointerup', function () {
-            start = null;
-        });
-
-
-        function clamp(value, min, max) {
-            return Math.min(Math.max(value, min), max);
-        }
-
-        function getPanBounds() {
-            const paperSize = paper.getComputedSize();
-            const contentBBox = graph.getBBox(graph.getCells());
-
-            return {
-                minX: paperSize.width - contentBBox.x - contentBBox.width - 100,
-                maxX: -contentBBox.x + 100,
-                minY: paperSize.height - contentBBox.y - contentBBox.height - 100,
-                maxY: -contentBBox.y + 100
-            };
-        }
-
         function zoom(factor, center) {
             scale = Math.min(maxScale, Math.max(minScale, scale * factor));
             paper.scale(scale, scale, center);
         }
 
-        $scope.LoadData = function (id) {
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/OrgChart/Team'
-                , headers: { 'authorization': 'Bearer @token' }
-                , type: 'post'
-                , contentType: 'application/json'
-                , dataType: 'json'
-                , cache: false
-                , data: JSON.stringify({
-                    id: id
-                    , chartId: chartId
-                })
-                , success: function (result) {
-                    $timeout(function () {
-                        $scope.lData = result.data;
+        //Click เพื่อดูทีม
+        paper.on('element:pointerclick', async function (elementView) {
 
-                        const nodeMap = {};
-                        graph.clear();
+            const model = elementView.model;
 
-                        $scope.lData.forEach(item => {
-                            const rect = new joint.shapes.standard.Rectangle();
+            const type = model.get('nodeType');
 
-                            // rect.position(item.pos_x, item.pos_y);
-                            rect.resize(item.pos_w, item.pos_h);
+            const expanded = model.get('expanded');
+            
+            const hasChildTeam = model.get('hasChildTeam');
 
-                            rect.attr({
-                                label: {
-                                    text: item.title + '\n' + item.position + '\n' + item.department
-                                },
-                                body: {
-                                    fill: '#FFF3CD',        // สีพื้น
-                                    stroke: '#F59E0B',      // สีเส้น
-                                    strokeWidth: 2,
-                                    rx: 6,                  // มุมโค้ง (optional)
-                                    ry: 6
-                                }
-                            });
+            if (hasChildTeam > 0) {
+                // ถ้ากดซ้ำ -> ยุบ
+                if (expanded) {
 
-                            // ⭐ key สำคัญ
-                            rect.set('nodeId', item.id);
+                    collapseNode(model);
+                    model.attr('toggleText/text', '+');
+                    model.attr('toggleText/fill', '#FFFFFF');
+                    model.attr('toggleBg/fill', '#2563EB');
 
-                            rect.addTo(graph);
-
-                            //add
-                            nodeMap[item.id] = rect;
-                        });
-
-                        $scope.lData.forEach(item => {
-                            if (!item.parentId) return;
-
-                            const parent = nodeMap[item.parentId];
-                            const child = nodeMap[item.id];
-
-                            if (!parent || !child) return;
-
-                            const link = new joint.shapes.standard.Link();
-
-                            link.source(parent);
-                            link.target(child);
-                            link.router({ name: 'orthogonal' });   // ⭐ หัวใจ
-                            link.connector({ name: 'rounded' });   // มุมโค้งนิด ๆ ดูสวย
-                            link.attr({
-                                line: {
-                                    stroke: '#555',
-                                    strokeWidth: 2,
-                                    targetMarker: {
-                                        type: 'path',
-                                        d: 'M 10 -5 0 0 10 5 z'
-                                    }
-                                }
-                            });
-
-                            link.addTo(graph);
-                        });
-
-                        joint.layout.DirectedGraph.layout(graph, {
-                            setLinkVertices: false,
-                            rankDir: 'TB',   // TB = Top to Bottom (ผังองค์กร)
-                            align: 'UL',
-                            marginX: 50,
-                            marginY: 50,
-                            nodeSep: 50,
-                            rankSep: 80,
-                            setLinkVertices: false
-                        });
-
-                        paper.scaleContentToFit({
-                            padding: 40,
-                            preserveAspectRatio: true,
-                            minScale: 1,
-                            maxScale: 1
-                        });
-
-                    }, 0);
+                    return;
                 }
-                , error: AjaxError
+
+                if (type === 'team') {
+
+                    await loadTeamMembers(model);
+                    model.attr('toggleText/text', '-');
+                    model.attr('toggleText/fill', '#000000');
+                    model.attr('toggleBg/fill', '#CCCCCC');
+                }
+
+                if (type === 'employee') {
+
+                    await loadEmployeeTeams(model);
+                    model.attr('toggleText/text', '-');
+                    model.attr('toggleText/fill', '#000000');
+                    model.attr('toggleBg/fill', '#CCCCCC');
+                }
+
+                // auto layout
+                runLayout();
+            }
+        });
+
+        $scope.DataTeamMy = function (empId) {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/OrgChart/TeamMy'
+                    , headers: { 'authorization': 'Bearer @token' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , dataType: 'json'
+                    , cache: false
+                    , data: JSON.stringify({
+                        empId: empId
+                    })
+                    , success: function (result) {
+                        $timeout(function () {
+                            resolve(result);
+                        }, 0);
+                    }
+                    , error: function () {
+                        console.log('Load_TeamMy : Error');
+                    }
+                });
             });
         }
-        $scope.LoadData($scope.root);
 
+        $scope.DataTeamMember = function (teamId) {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/OrgChart/TeamMember'
+                    , headers: { 'authorization': 'Bearer @token' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , dataType: 'json'
+                    , cache: false
+                    , data: JSON.stringify({
+                        teamId: teamId
+                    })
+                    , success: function (result) {
+                        $timeout(function () {
+                            resolve(result);
+                        }, 0);
+                    }
+                    , error: function () {
+                        console.log('Load_TeamMember : Error');
+                    }
+                });
+            });
+        }
+
+        $scope.DataEmployeeTeam = function (empId) {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/OrgChart/EmployeeTeam'
+                    , headers: { 'authorization': 'Bearer @token' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , dataType: 'json'
+                    , cache: false
+                    , data: JSON.stringify({
+                        empId: empId
+                    })
+                    , success: function (result) {
+                        $timeout(function () {
+                            resolve(result);
+                        }, 0);
+                    }
+                    , error: function () {
+                        console.log('Load_TeamMember : Error');
+                    }
+                });
+            });
+        }
+
+        $scope.loadMyTeam = async function () {
+
+            const team = await $scope.DataTeamMy('@User.UserId()');
+            team.hasChildTeam = 1;
+
+            const teamNode = createNode(
+                team,
+                'team',
+                500,
+                50
+            );
+            
+            teamNode.attr('toggleText/text', '-');
+            teamNode.attr('toggleText/fill', '#000000');
+            teamNode.attr('toggleBg/fill', '#CCCCCC');
+
+            await loadTeamMembers(teamNode);
+
+            // auto layout
+            runLayout();
+
+            paper.scaleContentToFit({
+                padding: 50,
+                preserveAspectRatio: true
+            });
+        }
+        $scope.loadMyTeam();
+
+        async function loadTeamMembers(teamNode) {
+
+            const teamId = teamNode.get('nodeId');
+
+            const members = await $scope.DataTeamMember(teamId);
+
+            const teamPos = teamNode.position();
+
+            let childIds = [];
+
+            members.forEach((m, index) => {
+
+                const memberX = teamPos.x + (index * 220) - 100;
+
+                const memberY = teamPos.y + 150;
+
+                const empNode = createNode(
+                    m,
+                    'employee',
+                    memberX,
+                    memberY
+                );
+
+                empNode.set('hasChildTeam', m.hasChildTeam);
+
+                connect(teamNode, empNode);
+
+                childIds.push(empNode.id);
+            });
+
+            teamNode.set('children', childIds);
+
+            teamNode.set('expanded', true);
+        }
+
+        function collapseNode(node) {
+
+            const childIds = node.get('children') || [];
+
+            childIds.forEach(id => {
+
+                const child = graph.getCell(id);
+
+                if (!child) {
+                    return;
+                }
+
+                // ยุบลูกต่อ
+                collapseNode(child);
+
+                // ลบ link ที่เกี่ยวข้อง
+                const links = graph.getConnectedLinks(child);
+
+                links.forEach(link => link.remove());
+
+                // ลบ node
+                child.remove();
+            });
+
+            node.set('expanded', false);
+
+            node.set('children', []);
+        }
+
+        async function loadEmployeeTeams(empNode) {
+
+            // ถ้ากำลัง expand อยู่ -> ยุบ
+            if (empNode.get('expanded')) {
+
+                collapseNode(empNode);
+
+                runLayout();
+
+                return;
+            }
+
+            const hasChildTeam = empNode.get('hasChildTeam');
+
+            if (hasChildTeam == 0) {
+                return;
+            }
+
+            const empId = empNode.get('nodeId');
+
+            const teams = await $scope.DataEmployeeTeam(empId);
+
+            const empPos = empNode.position();
+
+            let childIds = [];
+
+            teams.forEach((t, index) => {
+
+                const teamX = empPos.x + (index * 240) - 100;
+
+                const teamY = empPos.y + 150;
+
+                const teamNode = createNode(
+                    t,
+                    'team',
+                    teamX,
+                    teamY
+                );
+
+                teamNode.set('expanded', false);
+
+                connect(empNode, teamNode);
+
+                childIds.push(teamNode.id);
+            });
+
+            // เก็บลูกไว้ใช้ collapse
+            empNode.set('children', childIds);
+
+            empNode.set('expanded', true);
+
+            // auto layout
+            runLayout();
+        }
+
+        // =========================
+        // TEAM SHAPE
+        // =========================
+
+        const TeamShape = joint.dia.Element.define(
+            'custom.Team',
+
+            {
+                attrs: {
+
+                    body: {
+                        refWidth: '100%',
+                        refHeight: '100%',
+                        fill: '#2563EB',
+                        stroke: '#1D4ED8',
+                        strokeWidth: 1,
+                        rx: 12,
+                        ry: 12
+                    },
+
+                    teamText: {
+                        fontSize: 14,
+                        fontWeight: 'bold',
+                        fill: '#FFFFFF',
+                        textAnchor: 'middle',
+                        textVerticalAnchor: 'middle',
+                        refX: '50%',
+                        refY: '50%'
+                    },
+                    
+                    //toggle
+                    toggleBg: {
+                        r: 10,
+                        refCx: '50%',
+                        refDy: 0,
+                        fill: '#2563EB',
+                        stroke: '#FFFFFF',
+                        strokeWidth: 2,
+                        cursor: 'pointer',
+                        visibility: 'hidden'
+                    },
+
+                    toggleText: {
+                        text: '+',
+                        fontSize: 14,
+                        fontWeight: 'bold',
+                        fill: '#FFFFFF',
+                        textAnchor: 'middle',
+                        textVerticalAnchor: 'middle',
+                        refX: '50%',
+                        refDy: 0,
+                        cursor: 'pointer',
+                        visibility: 'hidden'
+                    }
+                }
+            },
+
+            {
+                markup: [
+                    {
+                        tagName: 'rect',
+                        selector: 'body'
+                    },
+                    {
+                        tagName: 'text',
+                        selector: 'teamText'
+                    },
+                    {
+                        tagName: 'circle',
+                        selector: 'toggleBg'
+                    },
+                    {
+                        tagName: 'text',
+                        selector: 'toggleText'
+                    }
+                ]
+            }
+        );
+
+
+        // =========================
+        // EMPLOYEE SHAPE
+        // =========================
+
+        const EmployeeShape = joint.dia.Element.define(
+
+            'custom.Employee',
+
+            {
+                attrs: {
+
+                    body: {
+                        refWidth: '100%',
+                        refHeight: '100%',
+                        fill: '#FFFFFF',
+                        stroke: '#E5E7EB',
+                        strokeWidth: 1,
+                        rx: 12,
+                        ry: 12
+                    },
+
+                    nameText: {
+                        fontSize: 14,
+                        fontWeight: 'bold',
+                        fill: '#111827',
+                        textAnchor: 'middle',
+                        textVerticalAnchor: 'middle',
+                        refX: '50%',
+                        refY: 28
+                    },
+
+                    // เปลี่ยนเป็น path
+                    positionBg: {
+
+                        fill: '#10B981'
+                    },
+
+                    positionText: {
+                        fontSize: 12,
+                        fontWeight: 'bold',
+                        fill: '#FFFFFF',
+                        textAnchor: 'middle',
+                        textVerticalAnchor: 'middle',
+                        refX: '50%',
+                        refY: 70
+                    },
+                    
+                    //toggle
+                    toggleBg: {
+                        r: 10,
+                        refCx: '50%',
+                        refDy: 10,
+                        fill: '#2563EB',
+                        stroke: '#FFFFFF',
+                        strokeWidth: 2,
+                        cursor: 'pointer',
+                        visibility: 'hidden'
+                    },
+                    toggleText: {
+                        text: '+',
+                        fontSize: 14,
+                        fontWeight: 'bold',
+                        fill: '#FFFFFF',
+                        textAnchor: 'middle',
+                        textVerticalAnchor: 'middle',
+                        refX: '50%',
+                        refDy: 10,
+                        cursor: 'pointer',
+                        visibility: 'hidden'
+                    }
+                }
+            },
+
+            {
+                markup: [
+                    {
+                        tagName: 'rect',
+                        selector: 'body'
+                    },
+                    {
+                        tagName: 'text',
+                        selector: 'nameText'
+                    },
+
+                    // rect -> path
+                    {
+                        tagName: 'path',
+                        selector: 'positionBg'
+                    },
+                    {
+                        tagName: 'text',
+                        selector: 'positionText'
+                    },
+                    {
+                        tagName: 'circle',
+                        selector: 'toggleBg'
+                    },
+                    {
+                        tagName: 'text',
+                        selector: 'toggleText'
+                    }
+                ]
+            }
+        );
+
+        function createNode(data, type, x, y) {
+
+            // ===== auto width =====
+
+            const minWidth = 180;
+            const maxWidth = 420;
+            const label = type == "employee" ? data.name : data.teamName;
+
+            // ประมาณความกว้างต่ออักษร
+            const charWidth = 10;
+
+            let dynamicWidth = (label.length * charWidth) + 40;
+
+            if (dynamicWidth < minWidth) {
+                dynamicWidth = minWidth;
+            }
+
+            if (dynamicWidth > maxWidth) {
+                dynamicWidth = maxWidth;
+            }
+
+            // ======================
+
+            let node;
+
+            if (type === 'employee') {
+
+                node = new EmployeeShape();
+                node.resize(dynamicWidth, 80);
+
+                // path dynamic
+                const radius = 12;
+
+                const path = `
+                    M 0 52
+                    L ${dynamicWidth} 52
+                    L ${dynamicWidth} ${90 - radius}
+                    Q ${dynamicWidth} 90 ${dynamicWidth - radius} 90
+                    L ${radius} 90
+                    Q 0 90 0 ${90 - radius}
+                    Z
+                `;
+
+                node.attr({
+
+                    nameText: {
+
+                        text: data.name,
+
+                        textWrap: {
+                            width: dynamicWidth - 20,
+                            height: 40,
+                            ellipsis: true
+                        }
+                    },
+
+                    positionBg: {
+                        d: path,
+                        fill: '#10B981'
+                    },
+
+                    positionText: {
+                        text: data.position || '-'
+                    }
+
+                });
+                
+                if (data.hasChildTeam > 0) {
+
+                    node.attr({
+
+                        toggleBg: {
+                            visibility: 'visible'
+                        },
+
+                        toggleText: {
+                            visibility: 'visible',
+                            text: '+'
+                        }
+                    });
+                }
+
+                node.set('hasChildTeam', data.hasChildTeam);
+                node.set('nodeId', data.empId);
+
+            } else {
+
+                node = new TeamShape();
+
+                node.resize(dynamicWidth, 60);
+
+                node.attr({
+
+                    teamText: {
+
+                        text: data.teamName,
+
+                        textWrap: {
+                            width: dynamicWidth - 20,
+                            height: 40,
+                            ellipsis: true
+                        }
+                    }
+                });
+
+                if (data.hasChildTeam > 0) {
+
+                    node.attr({
+
+                        toggleBg: {
+                            visibility: 'visible'
+                        },
+
+                        toggleText: {
+                            visibility: 'visible',
+                            text: '+'
+                        }
+                    });
+                }
+
+                node.set('hasChildTeam', data.hasChildTeam);
+                node.set('nodeId', data.teamId);
+
+            }
+
+            node.position(x, y);
+
+            node.set('nodeType', type);
+
+            node.set('expanded', false);
+
+            node.set('children', []);
+
+            node.addTo(graph);
+
+            return node;
+        }
+
+        function connect(source, target) {
+            const link = paper.options.defaultLink.clone();
+            const sourceBBox = source.getBBox();
+            const targetBBox = target.getBBox();
+
+            // center x
+            const sourceCenterX =
+                sourceBBox.x + (sourceBBox.width / 2);
+
+            const targetCenterX =
+                targetBBox.x + (targetBBox.width / 2);
+
+            // y หลังลง
+            const turnY =
+                sourceBBox.y +
+                sourceBBox.height +
+                100;
+
+            link.source(source, {
+                anchor: {
+                    name: 'bottom'
+                }
+            });
+
+            link.target(target, {
+                anchor: {
+                    name: 'top'
+                }
+            });
+
+            link.vertices([
+                // ลงก่อน
+                {
+                    x: sourceCenterX,
+                    y: turnY
+                },
+
+                // ค่อยเลี้ยวไปหา child
+                {
+                    x: targetCenterX,
+                    y: turnY
+                }
+            ]);
+
+            link.connector('rounded', {
+                radius: 8
+            });
+
+            link.router('orthogonal', {
+                padding: 0
+            });
+
+            graph.addCell(link);
+        }
     });
 </script>

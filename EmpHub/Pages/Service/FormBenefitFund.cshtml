@@ -159,6 +159,29 @@
             , create_by:'@User.UserId()'
         }
 
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/Detail',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        var data = result;
+
+                        $scope.iForm.fullname = data.employeeName;
+                        $scope.iForm.idcard = data.idcard;
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
         $scope.ChangeTotal = function(){
             if ($scope.iForm.total < 3){
                 $scope.iForm.benefitname3 = '';

@@ -1,0 +1,107 @@
+﻿@{
+    var token = User.AccessToken(Context);
+}
+<div ng-controller="ChartMonthSummaryCtrl" class="bg-white rounded shadow-sm p-4" style="height:calc(100vh - 242px);">
+    <div class="fw-bolder mb-3 border-start-tip-blue">สถานะใบงาน <span class="text-blue">{{ month + '/' + year }}</span></div>
+    <canvas id="chart_dashboard_month_summary" style="height:90%;"></canvas>
+</div>
+<script>
+    app.controller('ChartMonthSummaryCtrl', function ($scope, $http, $timeout, $filter) {
+        var dt = new Date();
+        $scope.year = dt.getFullYear();
+        $scope.month = dt.getMonth() + 1;
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Service/DashboardMonthSummary'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , dataType: 'json'
+                , cache: false
+                , success: function (result) {
+                    $timeout(function () {
+                        var lData = result;
+                        $scope.LoadChar(lData);
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+        $scope.timer = setInterval(() => {
+            $scope.LoadData();
+        }, 600000);
+
+        $scope.LoadChar = function (lData) {
+            new Chart(
+                document.getElementById('chart_dashboard_month_summary'),
+                {
+                    type: 'bar',
+                    data: {
+                        labels: lData.map(x => x.title)
+                        , datasets: [{
+                            label: 'ปิดใบงาน',
+                            data: lData.map(x => x.total_complete),
+                            borderColor: '#36a2eb',
+                            backgroundColor: '#36a2eb',
+                        }, {
+                            label: 'เปลี่ยนประเภท',
+                            data: lData.map(x => x.total_change),
+                            borderColor: '#db84fa',
+                            backgroundColor: '#db84fa',
+                        }, {
+                            label: 'ไม่อนุมัติ',
+                            data: lData.map(x => x.total_reject),
+                            borderColor: '#f9538d',
+                            backgroundColor: '#f9538d',
+                        },{
+                            label: 'รอดำเนินการ',
+                            data: lData.map(x => x.total_work),
+                            borderColor: '#ff9f40',
+                            backgroundColor: '#ff9f40',
+                        },{
+                            label: 'รออนุมัติ',
+                            data: lData.map(x => x.total_approve),
+                            borderColor: '#ffcd56',
+                            backgroundColor: '#ffcd56',
+                        }],
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        aspectRatio: 2,
+                        borderRadius: 5,
+                        weight: 5,
+                        cutout: 80,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    usePointStyle: true,
+                                    pointStyle: 'circle'
+                                },
+                                position: 'bottom'
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                stacked: true
+                            },
+                            y: {
+                                stacked: true
+                            },
+                        },
+                        layout: {
+                            padding: {
+                                bottom: 30 // เพิ่มพื้นที่ด้านล่างให้ legend
+                            }
+                        }
+                    }
+                }
+            );
+        }
+    });
+</script>

@@ -1,0 +1,149 @@
+﻿@page
+@model EmpHub.Pages.Report.headcount_ageModel
+@{
+    var token = User.AccessToken(HttpContext);
+}
+<div ng-controller="ReportCtrl" class="p-2">
+    <div class="d-flex mb-3 align-items-center">
+        <div class="fs-5 fw-bolder text-dark flex-fill">
+            รายงานจำนวนพนักงาน (แยกตามอายุ)
+        </div>
+        <div class="">
+            <div class="btn btn-light bg-white" ng-click="Download()">
+                <i class="bi bi-download me-2"></i> Download
+            </div>
+        </div>
+    </div>
+    <div class="rounded-2 p-3 bg-white shadow-sm border">
+        <div class="d-flex mb-2">
+            <div class="flex-fill">
+            </div>
+            <div class="text-end d-flex flex-nowrap align-items-center">
+                <span class="d-none d-md-block">
+                    {{ (total > 0 ? ((page - 1) * row) + 1 : 0) | number }} - {{ (page * row < total ? page * row : total) | number }} of {{ total | number }}
+                </span>
+                <button class="btn btn-circle" ng-click="LoadData(page - 1)" ng-disabled="page <= 1">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="btn btn-circle" ng-click="LoadData(page + 1)" ng-disabled="page * row >= total">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+        <div class="overflow-auto d-none d-lg-block">
+            <div class="pt-3" style="height:calc(100vh - 265px);">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th class="text-nowrap" ng-click="SetSort('age')">
+                               อายุ
+                                <i ng-show="sortBy.indexOf('age') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                            </th>
+                            <th class="text-nowrap text-center" ng-click="SetSort('total')">
+                                รวม
+                                <i ng-show="sortBy.indexOf('total') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="x in lData">
+                            <td>
+                                {{ x.age }}
+                            </td>
+                            <td class="text-center">
+                                {{ x.total | number }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ReportCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.page = 1
+        $scope.row = 10;
+
+        $scope.LoadData = function (page = 1) {
+            $scope.page = page;
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Report/ReportHeadcountAge'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    page: $scope.page
+                    , row: $scope.row
+                    , sortBy: $scope.sortBy
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lData = JSON.parse(result.data);
+                        $scope.total = result.total;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+        $scope.SetSort = function (sortBy) {
+            if ($scope.sortBy != null && $scope.sortBy.indexOf(sortBy) > -1) {
+                if ($scope.sortBy.indexOf("-") > -1) {
+                    $scope.sortBy = sortBy;
+                } else {
+                    $scope.sortBy = '-' + sortBy;
+                }
+            } else {
+                $scope.sortBy = sortBy;
+            }
+            $scope.LoadData();
+        }
+
+
+        $scope.Download = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Report/ReportHeadcountAge'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    page: 1
+                    , row: $scope.total
+                    , sortBy: $scope.sortBy
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        var lData = JSON.parse(result.data);
+
+                        if (lData.length > 0) {
+                            var JSData = [[
+                                { 'text': 'อายุ' }
+                                , { 'text': 'รวม' }
+                            ]];
+
+                            for (var i = 0; i < lData.length; i++) {
+                                var iData = lData[i];
+
+                                JSData.splice(JSData.length, 0, [
+                                    { 'text': iData.age }
+                                    , { 'text': iData.total }
+                                ]);
+                            }
+
+                            var dt = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+                            ExportFile(JSData, 'รายงานจำนวนพนักงาน (แยกตามอายุ)_' + dt);
+                        }
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+    });
+</script>

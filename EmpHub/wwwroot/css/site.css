@@ -571,6 +571,7 @@ main {
 
 .bg-light-orange {
     background-color: var(--light-orange) !important;
+    color: var(--bs-orange) !important;
 }
 
 .bg-light-green {

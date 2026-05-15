@@ -1,0 +1,98 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var token = User.AccessToken(Context);
+}
+<style>
+    input[type="radio"]:disabled {
+        background-color: #0d6efd !important;
+        border-color: #0d6efd !important;
+        background-image: none !important;
+        opacity: 1 !important;
+    }
+</style>
+<div ng-controller="ServiceUpdateTalentCtrl">
+    <div class="bg-white rounded-4 border mb-4 overflow-hidden p-4">
+        <div class="px-4 py-3 border-bottom d-flex align-items-center">
+            <div class="fs-5 fw-bolder text-dark flex-fill">
+                ปรับปรุงข้อมูลความสามารถทางภาษา
+            </div>
+        </div>
+        <div class="p-4 fs-6 text-dark">
+            <div class="list-group list-group-flush">
+                <div class="list-group-item px-0" ng-repeat="x in lTraining">
+                    <div class="d-flex mb-3">
+                        <div class="flex-fill me-3">
+                            <div class="text-dark fw-bolder">
+                                ภาษา
+                            </div>
+                            <div class="text-gray">{{ x.language != '' ? x.language : '-' }}</div>
+                        </div>
+                        <div class="flex-fill me-3">
+                            <div class="text-dark fw-bolder">
+                                ระดับ
+                            </div>
+                            <div class="text-gray">{{ x.level_desc != '' ? x.level_desc : '-' }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ServiceUpdateTalentCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.lLevel = [
+            { "id": 1, "code": "BEGINNER", "name_th": "ระดับเริ่มต้น" },
+            { "id": 2, "code": "ELEMENTARY", "name_th": "ระดับพื้นฐาน" },
+            { "id": 3, "code": "INTERMEDIATE", "name_th": "ระดับปานกลาง" },
+            { "id": 4, "code": "UPPER_INTERMEDIATE", "name_th": "ระดับดี" },
+            { "id": 5, "code": "ADVANCED", "name_th": "ระดับเชี่ยวชาญ" }
+        ]
+
+        $scope.LoadDetail = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormUpdateTalentDetail',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        refId: $scope.refId
+                    }),
+                    success: function (result) {
+                        $timeout(async function () {
+                            $scope.lTraining = result;
+
+                            $scope.lTraining = $scope.lTraining.map(item => {
+                                var find = $scope.lLevel.find(a => a.code == item.level);
+                                item.level_desc = find ? find.name_th : item.level;
+
+                                return item;
+                            });
+
+                            resolve(true);
+                        }, 0);
+                    }, error: function () {
+                        resolve(false);
+                    }
+                });
+            });
+        }
+
+        $scope.init = async function (x) {
+            $scope.refId = x.id;
+            $scope.userId = x.userId;
+            $scope.status = x.status;
+
+            await $scope.LoadDetail();
+        }
+
+        $scope.$on('EDIT_TALENT_LOAD', function (e, data) {
+            $scope.init(data);
+        });
+    });
+</script>

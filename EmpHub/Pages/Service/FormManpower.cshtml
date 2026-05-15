@@ -7,6 +7,16 @@
     .main-content {
         min-height: calc(100vh - 150px) !important;
     }
+
+    .box-group {
+        border: 1px solid white;
+        border-radius: 15px;
+    }
+
+        .box-group.input-error {
+            padding: 15px;
+        border: 1px solid red;
+    }
 </style>
 <div ng-controller="FormCtrl" id="tab_education">
     @* Header *@
@@ -22,21 +32,41 @@
                     <div class="text-dark text-nowrap fw-bolder">ตำแหน่งที่ต้องการ</div>
                     <div class="text-dark text-nowrap">Position Required</div>
                 </div>
-                <input ng-model="iForm.position" class="form-control form-control-input position" maxlength="50" />
+                <div class="dropdown flex-fill">
+                    <input ng-model="iForm.position" class="form-control form-control-input form-select position dropdown-toggle bg-white text-dark border" readonly data-bs-toggle="dropdown" />
+                    <div class="dropdown-menu p-2 rounded-3" style="width:400px;">
+                        <input ng-model="find_position" class="form-control mb-2" />
+                        <div class="overflow-auto list-group list-group-flush" style="height:400px">
+                            <div class="list-group-item list-group-item-action select" ng-repeat="d in lPosition | filter : find_position" ng-click="SelectPosition(d)">
+                                {{ d.desc_th }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="col-sm-6 mb-3 d-lg-flex">
                 <div class="me-3">
                     <div class="text-dark text-nowrap fw-bolder">แผนก / ฝ่าย</div>
                     <div class="text-dark text-nowrap">Division / Department</div>
                 </div>
-                <input ng-model="iForm.department" class="form-control form-control-input department" maxlength="50" />
+                <div class="dropdown flex-fill">
+                    <input ng-model="iForm.department" class="form-control form-control-input form-select department dropdown-toggle bg-white text-dark border" readonly data-bs-toggle="dropdown" />
+                    <div class="dropdown-menu p-2 rounded-3" style="width:400px;">
+                        <input ng-model="find_department" class="form-control mb-2" />
+                        <div class="overflow-auto list-group list-group-flush" style="height:400px">
+                            <div class="list-group-item list-group-item-action select" ng-repeat="d in lDepartment | filter : find_department" ng-click="SelectDepartment(d)">
+                                {{ d.desc_th }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="col-sm-4 mb-3 d-lg-flex">
                 <div class="me-3">
                     <div class="text-dark text-nowrap fw-bolder">วันที่ต้องการ</div>
                     <div class="text-dark text-nowrap">Date Required</div>
                 </div>
-                <input class="form-control form-control-input icon-calendar date required_date_select"
+                <input class="form-control form-control-input icon-calendar date required_date"
                        ng-model="iForm.required_date_select"
                        ng-model-options="{ updateOn: 'blur' }"
                        moment-picker="iForm.required_date_select"
@@ -54,7 +84,7 @@
                 <input ng-model="iForm.num_employee" class="form-control form-control-input num_employee" maxlength="50" />
             </div>
             <div class="col-sm-12 mb-3">
-                <div class="type_employment d-lg-flex align-items-center">
+                <div class="type_employment box-group d-lg-flex align-items-center">
                     <div class="me-3">
                         <div class="text-dark text-nowrap fw-bolder">ประเภทของการจ้างงาน</div>
                         <div class="text-dark text-nowrap">Type of Employment</div>
@@ -85,7 +115,7 @@
                 </div>
             </div>
             <div class="col-sm-12 mb-3">
-                <div class="type_requirement d-lg-flex">
+                <div class="type_requirement box-group d-lg-flex">
                     <div class="me-3">
                         <div class="text-dark text-nowrap fw-bolder">ประเภทของความต้องการ</div>
                         <div class="text-dark text-nowrap">Type of Requirement</div>
@@ -102,7 +132,7 @@
             </div>
         </div>
         <div class="col-sm-12 mb-3">
-            <div class="type_reason">
+            <div class="type_reason box-group">
                 <div class="mb-2">
                     <div class="text-dark text-nowrap fw-bolder">เหตุผลการขอกำลังคนเพิ่ม</div>
                     <div class="text-dark text-nowrap">Reason of Additional Manpower Requisition</div>
@@ -160,7 +190,17 @@
                                 <div class="text-dark text-nowrap fw-bolder">การศึกษา</div>
                                 <div class="text-dark text-nowrap">Education</div>
                             </div>
-                            <input ng-model="iForm.education" class="form-control form-control-input education" maxlength="100" />
+                            <div class="dropdown flex-fill">
+                                <input ng-model="iForm.education" class="form-control form-control-input form-select education dropdown-toggle bg-white text-dark border" readonly data-bs-toggle="dropdown" />
+                                <div class="dropdown-menu p-2 rounded-3" style="width:400px;">
+                                    <input ng-model="find_education" class="form-control mb-2" />
+                                    <div class="overflow-auto list-group list-group-flush" style="height:400px">
+                                        <div class="list-group-item list-group-item-action select" ng-repeat="d in lEducation | filter : find_education" ng-click="SelectEducation(d)">
+                                            {{ d.desc_th }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-sm-12 d-lg-flex mb-3">
                             <div class="me-3">
@@ -229,44 +269,141 @@
     app.controller('FormCtrl', function ($scope, $http, $timeout, $filter) {
         $scope.mode = '@Model.mode';
         $scope.iData = {};
-        $scope.iForm = {create_by:'@User.UserId()'}
+        $scope.iForm = {
+            position : ''
+            , department: ''
+            , required_date: ''
+            , num_employee: ''
+            , type_employment : ''
+            , type_employment_desc: ''
+            , type_requirement: ''
+            , type_reason: ''
+            , description_work: ''
+            , create_by:'@User.UserId()'}
         // $scope.lStatus = [{ value: 'modify', key: 'เพิ่ม/แก้ไข' }, { value: 'delete', key: 'ลบข้อมูล' }]
 
         $scope.LoadMaster = function () {
-            if (!$scope.lEduction) {
-                $.ajax({
-                    url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
-                    , headers: { 'authorization': 'Bearer @token' }
-                    , type: 'post'
-                    , contentType: 'application/json'
-                    , dataType: 'json'
-                    , cache: false
-                    , data: JSON.stringify({
-                        groupName: 'educationCode'
-                    })
-                    , success: function (result) {
-                        $timeout(function () {
-                            $scope.lEduction = result;
-                        }, 0);
-                    }
-                    , error: AjaxError
-                });
-            }
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'Degree'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lEducation = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'positionCode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lPosition = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'departmentCode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lDepartment = result.filter(item=>item.condition_4 == 'Department');
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadMaster();
+
+        $scope.SelectPosition = function (d) {
+            $scope.iForm.position = d.desc_th;
+        }
+
+        $scope.SelectDepartment = function (d) {
+            $scope.iForm.department = d.desc_th;
+        }
+
+        $scope.SelectEducation = function (d) {
+            $scope.iForm.education = d.desc_th;
         }
 
         $scope.Validate = function () {
             var flag = true;
-            // JS_Reset($(".firstname_th"));
-            // JS_Reset($(".lastname_th"));
 
-            // if($scope.iForm.firstname_th == ''){
-            //     flag = false;
-            //     JS_Require($(".firstname_th"));
-            // }
-            // if($scope.iForm.lastname_th == ''){
-            //     flag = false;
-            //     JS_Require($(".lastname_th"));
-            // }
+            JS_Reset($(".position"));
+            JS_Reset($(".department"));
+            JS_Reset($(".required_date"));
+            JS_Reset($(".num_employee"));
+            JS_Reset($(".type_employment"));
+            JS_Reset($(".type_employment_desc"));
+            JS_Reset($(".type_requirement"));
+            JS_Reset($(".type_reason"));
+            JS_Reset($(".description_work"));
+
+            $scope.iForm.required_date = '';
+
+            if ($scope.iForm.required_date_select){
+                $scope.iForm.required_date = $scope.iForm.required_date_select.format("DD/MM/YYYY");
+            }
+
+            if ($scope.iForm.position == '') {
+                flag = false;
+                JS_Require($(".position"));
+            }
+            if ($scope.iForm.department == '') {
+                flag = false;
+                JS_Require($(".department"));
+            }
+            if ($scope.iForm.required_date == '') {
+                flag = false;
+                JS_Require($(".required_date"));
+            }
+            if ($scope.iForm.num_employee == '') {
+                flag = false;
+                JS_Require($(".num_employee"));
+            }
+            if ($scope.iForm.type_employment == '') {
+                flag = false;
+                JS_Require($(".type_employment"));
+            }
+            if ($scope.iForm.type_employment == 'outsource' && $scope.iForm.type_employment_desc == '') {
+                flag = false;
+                JS_Require($(".type_employment_desc"));
+            }
+            if ($scope.iForm.type_requirement == '') {
+                flag = false;
+                JS_Require($(".type_requirement"));
+            }
+            if ($scope.iForm.type_reason == '') {
+                flag = false;
+                JS_Require($(".type_reason"));
+            }
+            if ($scope.iForm.description_work == '') {
+                flag = false;
+                JS_Require($(".description_work"));
+            }
 
             return flag;
         }

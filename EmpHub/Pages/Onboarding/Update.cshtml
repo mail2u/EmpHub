@@ -41,6 +41,7 @@
     app.controller('ManageCtrl', function ($scope, $http, $timeout, $filter) {
         $scope.page = 1
         $scope.row = 10;
+        $scope.step_index = 1;
         $scope.userId = '@Model.userId';
 
         $scope.lProcessType = [
@@ -258,8 +259,33 @@
                 }
                 , error: AjaxError
             });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'employeeType'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lEmployeeType = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
         }
         $scope.LoadInit();
+
+        $scope.SelectPrefixTH = function () {
+            $scope.iPersonal.prefix_en = $scope.iPersonal.prefix_th;
+        }
+
+        $scope.SelectPrefixEN = function () {
+            $scope.iPersonal.prefix_th = $scope.iPersonal.prefix_en;
+        }
 
         $scope.LoadData = function () {
             $.ajax({
@@ -619,33 +645,29 @@
             });
         }
 
-        $scope.Validate = function(){
+
+        $scope.CheckStep1 = function () {
             var flag = true;
-            
+
             JS_Reset($(".processType"));
             JS_Reset($(".employeeCode"));
-            JS_Reset($(".idcard"));
             JS_Reset($(".nationality"));
+            JS_Reset($(".idcard"));
             JS_Reset($(".prefix_th"));
             JS_Reset($(".firstname_th"));
             JS_Reset($(".lastname_th"));
             JS_Reset($(".birth_date"));
             JS_Reset($(".sex"));
             JS_Reset($(".maritalStatus"));
-            JS_Reset($(".registered_home"));
-            JS_Reset($(".registered_provinceName"));
-            JS_Reset($(".card_home"));
-            JS_Reset($(".card_provinceName"));
-            JS_Reset($(".live_home"));
-            JS_Reset($(".live_provinceName"));
-            JS_Reset($(".phoneNo"));
-            JS_Reset($(".join_date"));
-            JS_Reset($(".sectionCode"));
-            JS_Reset($(".positionCode"));
-            JS_Reset($(".levelCode"));
-            JS_Reset($(".employeeType"));
-            JS_Reset($(".employeeMode"));
-            
+
+            $scope.iPersonal.birth_date = '';
+
+            if ($scope.iPersonal.birth_date_select) {
+                $scope.iPersonal.birth_date = $scope.iPersonal.birth_date_select.format("DD/MM/YYYY");
+            }
+
+            console.log($scope.iPersonal.birth_date);
+
             if ($scope.iEmployee.processType == '') {
                 flag = false;
                 JS_Require($(".processType"));
@@ -686,6 +708,24 @@
                 flag = false;
                 JS_Require($(".maritalStatus"));
             }
+
+            if (flag) {
+                $scope.step_index = 1;
+            } else {
+                alertWarning("Form Validate", "Please fill in all the required fields.");
+            }
+        }
+
+        $scope.CheckStep2 = function () {
+            var flag = true;
+            JS_Reset($(".registered_home"));
+            JS_Reset($(".registered_provinceName"));
+            JS_Reset($(".card_home"));
+            JS_Reset($(".card_provinceName"));
+            JS_Reset($(".live_home"));
+            JS_Reset($(".live_provinceName"));
+
+
             if ($scope.iAddress.registered_home == '') {
                 flag = false;
                 JS_Require($(".registered_home"));
@@ -710,10 +750,51 @@
                 flag = false;
                 JS_Require($(".live_provinceName"));
             }
+
+            if (flag) {
+                $scope.step_index = 2;
+            } else {
+                alertWarning("Form Validate", "Please fill in all the required fields.");
+            }
+
+            return flag;
+        }
+
+        $scope.CheckStep3 = function () {
+            var flag = true;
+
+            JS_Reset($(".phoneNo"));
+
             if ($scope.iPersonal.phoneNo == '') {
                 flag = false;
                 JS_Require($(".phoneNo"));
             }
+
+            if (flag) {
+                $scope.step_index = 3;
+            } else {
+                alertWarning("Form Validate", "Please fill in all the required fields.");
+            }
+
+            return flag;
+        }
+
+        $scope.CheckStep4 = function () {
+            var flag = true;
+
+            JS_Reset($(".join_date"));
+            JS_Reset($(".sectionCode"));
+            JS_Reset($(".positionCode"));
+            JS_Reset($(".levelCode"));
+            JS_Reset($(".employeeType"));
+            JS_Reset($(".employeeMode"));
+
+            $scope.join_date = '';
+
+            if ($scope.join_date_select) {
+                $scope.join_date = $scope.join_date_select.format("DD/MM/YYYY");
+            }
+
             if ($scope.iEmployee.join_date == '') {
                 flag = false;
                 JS_Require($(".join_date"));
@@ -741,6 +822,7 @@
 
             return flag;
         }
+
         
         //Action 
         
@@ -759,7 +841,7 @@
             flag = await $scope.SaveEmployee();
             flag = await $scope.SaveAddress();
 
-            if($scope.Validate()){
+            if ($scope.CheckStep4()) {
                 flag = await $scope.SendOnboard();
 
                 if (flag) {

@@ -1,0 +1,81 @@
+﻿@{
+    var token = User.AccessToken(Context);
+}
+<div ng-controller="ChartDayCtrl">
+    <div class="label-dashboard mb-2">สถานะงานรายเดือน</div>
+    <canvas id="chart_dashboard_day"></canvas>
+</div>
+<script>
+    app.controller('ChartDayCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Service/DashboardDay'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , dataType: 'json'
+                , cache: false
+                , success: function (result) {
+                    $timeout(function () {
+                        var lData = result;
+                        $scope.LoadChar(lData);
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+        $scope.LoadChar = function (lData) {
+            new Chart(
+                document.getElementById('chart_dashboard_day'),
+                {
+                    type: 'doughnut',
+                    data: {
+                        labels: lData.map(x => x.title)
+                        , datasets: [{
+                            data: lData.map(x => x.total_complete),
+                            borderColor: '#36a2eb',
+                            backgroundColor: '#36a2eb',
+                        }, {
+                            data: lData.map(x => x.total_work),
+                            borderColor: '#ff9f40',
+                            backgroundColor: '#ff9f40',
+                        }, {
+                            data: lData.map(x => x.total_approve),
+                            borderColor: '#ffcd56',
+                            backgroundColor: '#ffcd56',
+                        }],
+                    },
+                    options: {
+                        responsive: true,
+                        aspectRatio: 2,
+                        borderRadius: 5,
+                        weight: 5,
+                        cutout: 80,
+                        plugins: {
+                            legend: {
+                                display: false,
+                                labels: {
+                                    usePointStyle: true,
+                                    pointStyle: 'circle'
+                                },
+                                position: 'bottom'
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                stacked: true
+                            },
+                            y: {
+                                stacked: true
+                            },
+                        },
+                    }
+                }
+            );
+        }
+    });
+</script>

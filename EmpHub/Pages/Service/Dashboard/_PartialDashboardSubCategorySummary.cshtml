@@ -1,0 +1,115 @@
+﻿@{
+    var token = User.AccessToken(Context);
+}
+<div ng-controller="ChartSubCategorySummaryCtrl" class="bg-white rounded shadow-sm p-4 h-100">
+    <div class="d-flex">
+        <div class="flex-fill fw-bolder mb-2 border-start-tip-blue">หมวดหมู่ย่อยใบงานปี {{year}}</div>
+        <div class="badge bg-gray p-2"></div>
+    </div>
+    <table class="table table-tsi">
+        <thead>
+            <tr>
+                <th width="40"></th>
+                <th>ประเภทหมวดหมู่ย่อย</th>
+                <th width="100">จำนวน</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="x in lData">
+                <td>{{ $index + 1 }}</td>
+                <td>{{ x.subCategoryDesc }}</td>
+                <td>{{ x.total }}</td>
+            </tr>
+        </tbody>
+    </table>
+    @* <canvas id="chart_dashboard_subcategory_summary"></canvas> *@
+</div>
+<script>
+    app.controller('ChartSubCategorySummaryCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.$parent.LoadSubCategorySummary = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Service/DashboardSubCategorySummary'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data:JSON.stringify({
+                    departmentCode: $scope.$parent.departmentCode
+                    , year: $scope.$parent.year
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lData = result;
+                        //$scope.LoadChar(result);
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+
+        // var chart = new Chart(
+        //     document.getElementById('chart_dashboard_subcategory_summary'),
+        //     {
+        //         type: 'pie',
+        //         options: {
+        //             responsive: true,
+        //             aspectRatio: 2,
+        //             borderRadius: 5,
+        //             weight: 5,
+        //             cutout: 35,
+        //             plugins: {
+        //                 legend: {
+        //                     display: true,
+        //                     labels: {
+        //                         usePointStyle: true,
+        //                         pointStyle: 'circle',
+        //                         generateLabels(chart) {
+        //                             const data = chart.data;
+        //                             if (data.labels.length && data.datasets.length) {
+        //                                 const { labels: { pointStyle } } = chart.legend.options;
+
+        //                                     return data.labels.map((label, i) => {
+        //                                     const meta = chart.getDatasetMeta(0);
+        //                                     const style = meta.controller.getStyle(i);
+
+        //                                         return {
+        //                                         text: `${label}: ${data['datasets'][0].data[i]} รายการ`,
+        //                                         fillStyle: style.backgroundColor,
+        //                                         strokeStyle: style.borderColor,
+        //                                         lineWidth: style.borderWidth,
+        //                                         pointStyle: pointStyle,
+        //                                         hidden: !chart.getDataVisibility(i),
+
+        //                                             // Extra data used for toggling the correct item
+        //                                         index: i
+        //                                         };
+        //                                     });
+        //                                 }
+        //                             return [];
+        //                             }
+        //                         },
+        //                     position: 'right'
+        //                     }
+        //                 },
+        //             }
+        //         }
+        //     );
+
+        $scope.LoadChar = function (lData) {
+            chart.data = {
+                labels: lData.map(i => i.subCategoryDesc),
+                datasets: [{
+                    data: lData.map(i => i.total),
+                }],
+            };
+
+            chart.update();
+        }
+
+        $scope.init = function() {
+            $scope.$emit('LoadSubCategorySummary');
+        };
+        $scope.init();
+    });
+</script>

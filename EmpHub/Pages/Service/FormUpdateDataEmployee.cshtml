@@ -36,6 +36,7 @@
                        moment-picker="iData.join_date_select"
                        locale="th"
                        format="DD/MM/YYYY"
+                       change="CalcWorkDay()"
                        max-date="iData.probation_end_date_select"
                        min-view="month"
                        max-view="month" />
@@ -52,13 +53,13 @@
                        min-view="month"
                        max-view="month" change="calcProbationDay()" />
             </div>
-            <div class="col-sm-4 mb-3">
+           @*  <div class="col-sm-4 mb-3">
                 <div class="text-dark fw-bolder">สถานะ</div>
                 
-            </div>
+            </div> *@
             <div class="col-sm-4 mb-3">
                 <div class="text-dark fw-bolder">อายุงาน</div>
-                <div>{{ iData.work_day == '' ? '-' : iData.work_day  }}</div>
+                <div class="p-2">{{ iData.work_day == '' ? '-' : iData.work_day  }}</div>
             </div>
             @*         <div class="col-sm-4 mb-3">
             <div class="text-dark fw-bolder">บริษัท</div>
@@ -69,32 +70,32 @@
             <div>{{ iData.location == '' ? '-' : iData.location }}</div>
             </div> *@
             <div class="col-sm-4 mb-3">
-                <div class="text-dark fw-bolder">ด้าน</div>
-                <div>{{ iData.divisionDesc == '' ? '-' : iData.divisionDesc }}</div>
+                <div class="text-dark fw-bolder">ฝ่าย</div>
+                <select ng-model="iData.sectionCode" class="form-select form-input sectionCode" ng-options="x.code as x.desc_th for x in lDepartment" ng-change="SelectDepartment()"></select>
             </div>
             <div class="col-sm-4 mb-3">
                 <div class="text-dark fw-bolder">สายงาน</div>
-                <div>{{ iData.departmentDesc == '' ? '-' : iData.departmentDesc }}</div>
+                <div class="p-2">{{ iData.departmentDesc == '' ? '-' : iData.departmentDesc }}</div>
             </div>
             <div class="col-sm-4 mb-3">
-                <div class="text-dark fw-bolder">ฝ่าย</div>
-                <select ng-model="iData.sectionCode" class="form-select form-input sectionCode" ng-options="x.code as x.desc_th for x in lDepartment"></select>
-            </div>
-            <div class="col-sm-4 mb-3">
-                <div class="text-dark fw-bolder">ตำแหน่งงาน</div>
-                <select ng-model="iData.positionCode" class="form-select form-input positionCode" ng-options="x.code as x.desc_th for x in lPosition"></select>
-            </div>
-            <div class="col-sm-4 mb-3">
-                <div class="text-dark fw-bolder">ประเภทพนักงาน</div>
-                <input ng-model="iData.employeeType" class="form-control form-input employeeType" maxlength="50" />
+                <div class="text-dark fw-bolder">ด้าน</div>
+                <div class="p-2">{{ iData.divisionDesc == '' ? '-' : iData.divisionDesc }}</div>
             </div>
             <div class="col-sm-4 mb-3">
                 <div class="text-dark fw-bolder">ระดับพนักงาน</div>
-                <input ng-model="iData.levelCode" class="form-control form-input levelCode" maxlength="50" />
+                <select ng-model="iData.levelCode" class="form-select form-input levelCode" ng-options="x.code as x.desc_th for x in lLevel"></select>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">ตำแหน่งงาน</div>
+                <select ng-model="iData.positionCode" class="form-select form-input positionCode" ng-options="x.code as x.desc_th for x in lPosition" ng-change="SelectPosition()"></select>
             </div>
             <div class="col-sm-4 mb-3">
                 <div class="text-dark fw-bolder">เกรด</div>
-                <input ng-model="iData.grade" class="form-control form-input grade" maxlength="50" />
+                <div class="p-2">{{ iData.grade == '' ? '-' : iData.grade }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">ประเภทพนักงาน</div>
+                <select ng-model="iData.employeeType" class="form-select form-input employeeType" ng-options="x.code as x.desc_th for x in lEmployeeType"></select>
             </div>
             <div class="col-sm-4 mb-3">
                 <div class="text-dark fw-bolder">หัวหน้างาน</div>
@@ -155,84 +156,170 @@
         $scope.userId = '@Model.id';
 
         $scope.LoadMaster = function () {
-            if (!$scope.lEmployeeType) {
-                $.ajax({
-                    url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
-                    , headers: { 'authorization': 'Bearer @token' }
-                    , type: 'post'
-                    , contentType: 'application/json'
-                    , dataType: 'json'
-                    , cache: false
-                    , data: JSON.stringify({
-                        groupName: 'employeeType'
-                    })
-                    , success: function (result) {
-                        $timeout(function () {
-                            $scope.lEmployeeType = result;
-                        }, 0);
-                    }
-                    , error: AjaxError
-                });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'employeeType'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lEmployeeType = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'levelCode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lLevel = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'departmentCode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lDepartment = result.filter(item => item.condition_4 == 'Department');
+                        $scope.lGroup = result.filter(item => item.condition_4 == 'Group');
+                        $scope.lBusinessUnit = result.filter(item => item.condition_4 == 'Business Unit');
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'positionCode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lPosition = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    page: 1
+                    , row: 999
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lEmployee = result.data;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+
+        $scope.CalcWorkDay = function () {
+            $scope.iData.work_day = '';
+
+            $scope.iData.join_date = '';
+
+            if ($scope.iData.join_date_select){
+                $scope.iData.join_date = $scope.iData.join_date_select.format("DD/MM/YYYY");
             }
-            if(!$scope.lDepartment){
-                $.ajax({
-                    url: '@webAPI.CurrentValue.APIEmpHub/api/Department/DataList'
-                    , headers: { 'authorization': 'Bearer @token' }
-                    , type: 'post'
-                    , contentType: 'application/json'
-                    , dataType: 'json'
-                    , cache: false
-                    , data: JSON.stringify({
-                        page: 1
-                        , row: 99
-                    })
-                    , success: function (result) {
-                        $timeout(function () {
-                            $scope.lDepartment = result;
-                        }, 0);
-                    }
-                    , error: AjaxError
-                });
+
+            if ($scope.iData.join_date != '') {
+                const b = ConvertToDate($scope.iData.join_date);
+                const c = new Date();
+
+                let years = c.getFullYear() - b.getFullYear();
+                let months = c.getMonth() - b.getMonth();
+                let days = c.getDate() - b.getDate();
+
+                // ถ้าวันติดลบ → ยืมเดือน
+                if (days < 0) {
+                    months--;
+
+                    // เอาจำนวนวันของเดือนก่อนหน้า
+                    const prevMonth = new Date(c.getFullYear(), c.getMonth(), 0);
+                    days += prevMonth.getDate();
+                }
+
+                // ถ้าเดือนติดลบ → ยืมปี
+                if (months < 0) {
+                    years--;
+                    months += 12;
+                }
+
+                if (years > 0) {
+                    $scope.iData.work_day = years + ' ปี ';
+                }
+                if (months > 0) {
+                    $scope.iData.work_day += months + ' เดือน ';
+                }
+                if (days > 0) {
+                    $scope.iData.work_day += days + ' วัน';
+                }
             }
-            if(!$scope.lPosition){
-                $.ajax({
-                    url: '@webAPI.CurrentValue.APIEmpHub/api/Position/DataList'
-                    , headers: { 'authorization': 'Bearer @token' }
-                    , type: 'post'
-                    , contentType: 'application/json'
-                    , dataType: 'json'
-                    , cache: false
-                    , data: JSON.stringify({
-                        page: 1
-                        , row: 99
-                    })
-                    , success: function (result) {
-                        $timeout(function () {
-                            $scope.lPosition = result;
-                        }, 0);
-                    }
-                    , error: AjaxError
-                });
+        }
+
+        $scope.SelectPosition = function(){
+            $scope.iData.grade = '';
+
+            var find = $scope.lPosition.find(item => item.code == $scope.iData.positionCode);
+
+            if(find){
+                $scope.iData.grade = find.condition_1;
             }
-            if(!$scope.lEmployee){
-                $.ajax({
-                    url: '@webAPI.CurrentValue.APIEmpHub/api/User/DataList'
-                    , headers: { 'authorization': 'Bearer @token' }
-                    , type: 'post'
-                    , contentType: 'application/json'
-                    , dataType: 'json'
-                    , cache: false
-                    , data: JSON.stringify({
-                        page: 1
-                        , row: 999
-                    })
-                    , success: function (result) {
-                        $timeout(function () {
-                            $scope.lEmployee = result.data;
-                        }, 0);
+        }
+
+        $scope.SelectDepartment = function(){
+            $scope.iData.departmentDesc = '';
+            $scope.iData.divisionDesc = '';
+
+            var find_department = $scope.lDepartment.find(item => item.code == $scope.iData.sectionCode);
+
+            if (find_department) {
+                var find_group = $scope.lGroup.find(item => item.code == find_department.condition_3);
+
+                if (find_group) {
+                    $scope.iData.departmentDesc = find_group.desc_th;
+                    $scope.iData.departmentCode = find_group.code;
+
+                    var find_business_unit = $scope.lBusinessUnit.find(item => item.code == find_group.condition_3);
+
+                    if (find_business_unit) {
+                        $scope.iData.divisionDesc = find_business_unit.desc_th;
+                        $scope.iData.divisionCode = find_business_unit.code;
                     }
-                    , error: AjaxError
-                });
+                }
             }
         }
 

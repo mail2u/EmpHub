@@ -1,0 +1,525 @@
+﻿@page
+@model EmpHub.Pages.SurveySetting.DetailModel
+@{
+    var token = User.AccessToken(HttpContext);
+}
+<style>
+    .box-section {
+        border-left: 3px solid var(--bs-blue) !important;
+    }
+
+    .box-question {
+        border-left: 3px solid var(--bs-warning) !important;
+    }
+
+    .main-content{
+        padding: 5px !important;
+    }
+</style>
+@* @section PageHeader {
+    <!-- [ page-header ] start -->
+    <div class="page-header">
+        <div class="page-header-left d-flex align-items-center">
+            <div class="page-header-title">
+                <h5 class="m-b-10">HR Service</h5>
+            </div>
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Page("/Index")">Home</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Page("/SurveySetting/Index")">Survey Setting</a></li>
+                <li class="breadcrumb-item">Question</li>
+            </ul>
+        </div>
+    </div>
+} *@
+<div ng-controller="SurveyCtrl" class="position-relative p-0">
+    <div class="d-flex align-items-center mb-2">
+        <div class="flex-fill">
+            <a class="btn btn-circle" href="@Url.Page("/SurveySetting/Index")">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+        </div>
+        <div class="btn btn-primary me-2" ng-click="NewSection()">
+            New Section
+        </div>
+        <a class="btn btn-light bg-white me-2" href="@Url.Page("/SurveySetting/Preview")?id={{ surveyId }}" target="_blank">
+            <i class="bi bi-view-list me-2"></i> Preview
+        </a>
+        <div class="vr me-2"></div>
+        <div class="btn btn-light bg-white me-2" ng-click="DeleteSection(iSection)">
+            <i class="bi bi-trash"></i>
+        </div>
+        <button class="btn btn-circle" ng-click="SelectSection(section_index - 1)" ng-disabled="section_index <= 0">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+        <div class="mx-3 text-nowrap fw-bolder text-dark">
+            {{ (section_index + 1) }} / {{ lSection.length }}
+        </div>
+        <button class="btn btn-circle" ng-click="SelectSection(section_index + 1)" ng-disabled="section_index >= lSection.length - 1">
+            <i class="bi bi-chevron-right"></i>
+        </button>
+    </div>
+    <div class="container">
+        @* Section *@
+        <div>
+            <div class="border rounded-4 bg-white shadow-sm p-4 mb-3 box-section">
+                <div class="d-flex align-items-center mb-2">
+                    <div class="flex-fill text-blue me-2">section {{ (section_index + 1) }}</div>
+                   @*  <div class="btn shadow-sm text-blue me-2" ng-click="NewQuestion(s)">
+                        ADD QUESTION
+                    </div> *@
+                 @*    <div class="btn btn-circle shadow-sm me-2" ng-click="ShowEditSection(iSection)">
+                        <i class="bi bi-pencil-square"></i>
+                    </div> *@
+                </div>
+                <input ng-model="iSection.title" class="form-control form-text fw-bolder bg-light mb-2" maxlength="2000" ng-blur="UpdateSection(iSection)" />
+                <textarea ng-model="iSection.description" class="form-control form-text" rows="4" ng-blur="UpdateSection(iSection)"></textarea>
+            </div>
+            @* Question *@
+            <div ng-repeat="q in iSection.lQuestion">
+                <div class="border rounded-4 bg-white shadow-sm p-4 mb-3 box-question">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="flex-fill text-warning me-2">question {{ $index + 1 }}</div>
+                        <div class="me-2">
+                            <input ng-model="q.is_required" type="checkbox" ng-true-value="1" ng-false-value="0" class="btn-check" id="chk_{{ q.id }}" autocomplete="off" ng-change="UpdateQuestion(q)" />
+                            <label class="btn btn-outline-primary" for="chk_{{ q.id }}">Required</label>
+                        </div>
+                        <select ng-model="q.type" class="form-select rounded-3 me-2 border-0 shadow-sm p-2 bg-{{ q.type }}" ng-options="t as t for t in lType" style="width:120px;" ng-change="UpdateQuestion(q)"></select>
+                       @*  <div class="btn btn-circle shadow-sm me-2" ng-click="ShowEditQuestion(iSection, q)">
+                            <i class="bi bi-pencil-square"></i>
+                        </div> *@
+                        <div class="btn btn-circle shadow-sm" ng-click="DeleteQuestion(iSection, q)">
+                            <i class="bi bi-trash"></i>
+                        </div>
+                    </div>
+                    <input ng-model="q.title" class="form-control form-text fw-bolder bg-light mb-2" maxlength="2000" ng-blur="UpdateQuestion(q)" />
+                    <textarea ng-model="q.description" class="form-control form-text" rows="4" ng-blur="UpdateQuestion(q)"></textarea>
+                    @* Choice *@
+                    <div ng-show="['radio', 'checkbox'].indexOf(q.type) > -1" class="mt-3">
+                        <div ng-repeat="c in q.lChoice" class="d-flex mb-2">
+                            <div class="flex-fill me-2">
+                                <input ng-model="c.text" class="form-control" placeholder="data text" ng-blur="UpdateChoice(c)" maxlength="400" />
+                            </div>
+                            <div class="flex-fill me-2">
+                                <input ng-model="c.value" class="form-control" placeholder="data value" ng-blur="UpdateChoice(c)" maxlength="50" />
+                            </div>
+                        <div class="btn btn-circle shadow-sm" ng-click="DeleteQuestion(q, c)">
+                            <i class="bi bi-trash"></i>
+                        </div>
+                        </div>
+                        <div class="mt-2" ng-click="NewChoice(q)">
+                            <div class="btn btn-light-dash bg-white text-blue">
+                                Add Choice
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="btn btn-light-dash bg-white text-blue me-2 mb-4" ng-click="NewQuestion(iSection)" style="padding:40px;">
+                NEW QUESTION
+            </div>
+        </div>
+        @* Section Modal *@
+        <div class="modal fade" id="SectionModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-fullscreen modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5">Edit Section</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body d-flex flex-column">
+                        <div class="mb-3">
+                            <div class="fs-6 text-dark">
+                                Title
+                            </div>
+                            <textarea ng-model="iSection.title" class="form-control" rows="4" maxlength="2000" ng-blur="UpdateSection(iSection)"></textarea>
+                        </div>
+                        <div class="d-flex flex-column flex-fill">
+                            <div class="fs-6 text-dark">
+                                Description
+                            </div>
+                            <textarea ng-model="iSection.description" class="form-control flex-fill" ng-blur="UpdateSection(iSection)"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @* Question Modal *@
+        <div class="modal fade" id="QuestionModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-fullscreen modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5">Edit Question</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body d-flex flex-column">
+                        <div class="mb-3">
+                            <div class="fs-6 text-dark">
+                                Title
+                            </div>
+                            <textarea ng-model="iQuestion.title" class="form-control" rows="4" maxlength="2000" ng-blur="UpdateQuestion(iQuestion)"></textarea>
+                        </div>
+                        <div class="d-flex flex-column flex-fill">
+                            <div class="fs-6 text-dark">
+                                Description
+                            </div>
+                            <textarea ng-model="iQuestion.description" class="form-control flex-fill" ng-blur="UpdateQuestion(iQuestion)"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @* Footer *@
+    <div class="position-fixed bottom-0 end-0">
+        <div ng-show="is_save == 1" class="p-2 text-dark"
+             data-bs-toggle="tooltip"
+             data-bs-placement="top"
+             data-bs-custom-class="custom-tooltip"
+             data-bs-title="พบการเปลี่ยนแปลงกำลังบันทึก">
+            <i class="bi bi-cloud-arrow-up fs-5 text-blue"></i>
+        </div>
+        <div ng-show="is_save == 0" class="p-2 text-dark"
+             data-bs-toggle="tooltip"
+             data-bs-placement="top"
+             data-bs-custom-class="custom-tooltip"
+             data-bs-title="บันทึกการเปลี่ยนแปลงแล้ว">
+            <i class="bi bi-cloud-check-fill fs-5"></i>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('SurveyCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.surveyId = '@Model.id';
+        $scope.is_save = 0;
+        $scope.section_index = 0;
+        $scope.iSection = {};
+        $scope.lSection = [];
+        $scope.lType = ['radio', 'checkbox', 'text', 'textarea', 'number'];
+
+        if ($scope.surveyId == '') {
+            location.href = '@Url.Page("Index")';
+        }
+
+        $scope.LoadSection = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/SurveySection/DataList',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    surveyId: $scope.surveyId
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.lSection = result;
+
+                        for (var i = 0; i < $scope.lSection.length; i++) {
+                            $scope.SelectSection(0)
+                        }
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+        $scope.LoadSection();
+
+        $scope.SelectSection = function(index){
+            $scope.section_index = index;
+            $scope.iSection = $scope.lSection[$scope.section_index];
+            $scope.LoadQuestion($scope.iSection);
+        }
+
+        $scope.NewSection = function () {
+            var title = 'New Section ' + ($scope.lSection.length + 1);
+            var iSection = {
+                surveyId: $scope.surveyId
+                , title: title
+                , create_by: '@User.UserId()'
+            };
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/SurveySection/Create',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify(iSection),
+                success: function (result) {
+                    $timeout(function () {
+                        iSection.id = result.id;
+                        iSection.description = '';
+                        iSection.lQuestion = [];
+
+                        $scope.lSection.splice($scope.lSection.length, 0, iSection);
+                        $scope.SelectSection($scope.lSection.length - 1);
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+
+        $scope.UpdateSection = function (x) {
+            $scope.is_save = 1;
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/SurveySection/Update',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                cache: false,
+                data: JSON.stringify(x),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.is_save = 0;
+                    }, 1000);
+                },
+                error: AjaxError
+            });
+        }
+
+        $scope.DeleteSection = function (x) {
+            alertConfirm("Delete Section", "ยืนยันการทำรายการ", () => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/SurveySection/Delete'
+                    , headers: { 'authorization': 'Bearer @token' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , cache: false
+                    , data: JSON.stringify({
+                        id: x.id
+                        , update_by: '@User.UserId()'
+                    })
+                    , success: function () {
+                        $timeout(function () {
+                            var index = $scope.lSection.findIndex(item => item.id == x.id);
+
+                            if (index > -1) {
+                                $scope.lSection.splice(index, 1);
+                            }
+
+                            if($scope.section_index >= $scope.lSection.length){
+                                $scope.section_index = $scope.section_index - 1;
+                            }
+
+                            $scope.SelectSection($scope.section_index);
+                        }, 0);
+                    }
+                    , error: AjaxError
+                });
+            });
+        }
+
+        $scope.ShowEditSection = function (x) {
+            $scope.iSection = x;
+            $("#SectionModal").modal('show');
+        }
+
+        /* Question */
+
+        $scope.LoadQuestion = function (x) {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/SurveyQuestion/DataList',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    sectionId: x.id
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        x.lQuestion = result;
+
+                        for(var i = 0; i < x.lQuestion.length; i++){
+                            var iQuestion = x.lQuestion[i];
+
+                            if(['radio', 'checkbox'].indexOf(iQuestion.type) > -1){
+                                $scope.LoadChoice(iQuestion);
+                            }
+                        }
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+
+        $scope.NewQuestion = function (x) {
+            var title = 'New Question ' + (x.lQuestion.length + 1);
+            var iQuestion = {
+                sectionId: x.id
+                , title: title
+                , type: 'radio'
+                , create_by: '@User.UserId()'
+            };
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/SurveyQuestion/Create',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify(iQuestion),
+                success: function (result) {
+                    $timeout(function () {
+                        iQuestion.id = result.id;
+                        iQuestion.description = '';
+
+                        x.lQuestion.splice(x.lQuestion.length, 0, iQuestion);
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+
+        $scope.UpdateQuestion = function (x) {
+            $scope.is_save = 1;
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/SurveyQuestion/Update',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                cache: false,
+                data: JSON.stringify(x),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.is_save = 0;
+                    }, 1000);
+                },
+                error: AjaxError
+            });
+        }
+
+        $scope.DeleteQuestion = function (section, x) {
+            alertConfirm("Delete Question", "ยืนยันการทำรายการ", () => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/SurveyQuestion/Delete'
+                    , headers: { 'authorization': 'Bearer @token' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , cache: false
+                    , data: JSON.stringify({
+                        id: x.id
+                        , update_by: '@User.UserId()'
+                    })
+                    , success: function () {
+                        $timeout(function () {
+                            var index = section.lQuestion.findIndex(item => item.id == x.id);
+
+                            if (index > -1) {
+                                section.lQuestion.splice(index, 1);
+                            }
+                        }, 0);
+                    }
+                    , error: AjaxError
+                });
+            });
+        }
+
+        $scope.ShowEditQuestion = function (section, x) {
+            $scope.iSection = x;
+            $scope.iQuestion = x;
+            $("#QuestionModal").modal('show');
+        }
+
+        @* Choice *@
+        
+        $scope.LoadChoice = function (x) {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/SurveyChoice/DataList',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    questionId: x.id
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        x.lChoice = result;
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+
+        $scope.NewChoice = function (x) {
+
+            if(!x.lChoice){
+                x.lChoice = [];
+            }
+
+            var title = 'Choice ' + (x.lChoice.length + 1);
+            var iChoice = {
+                questionId: x.id
+                , text: ''
+                , value: ''
+            };
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/SurveyChoice/Create',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify(iChoice),
+                success: function (result) {
+                    $timeout(function () {
+                        iChoice.id = result.id;
+
+                        x.lChoice.splice(x.lChoice.length, 0, iChoice);
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+
+        $scope.UpdateChoice = function (x) {
+            $scope.is_save = 1;
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/SurveyChoice/Update',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                cache: false,
+                data: JSON.stringify(x),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.is_save = 0;
+                    }, 1000);
+                },
+                error: AjaxError
+            });
+        }
+
+        $scope.DeleteChoice = function (question, x) {
+            alertConfirm("Delete Choice", "ยืนยันการทำรายการ", () => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/SurveyQuestion/Delete'
+                    , headers: { 'authorization': 'Bearer @token' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , cache: false
+                    , data: JSON.stringify({
+                        id: x.id
+                    })
+                    , success: function () {
+                        $timeout(function () {
+                            var index = question.lChoice.findIndex(item => item.id == x.id);
+
+                            if (index > -1) {
+                                question.lChoice.splice(index, 1);
+                            }
+                        }, 0);
+                    }
+                    , error: AjaxError
+                });
+            });
+        }
+    });
+</script>

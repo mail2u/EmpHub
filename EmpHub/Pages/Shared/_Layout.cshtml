@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="google" content="notranslate">
     <title>Core HR</title>
-    <link rel="shortcut icon" href="~/icon-logo-pros.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="~/partners.ico" type="image/x-icon" />
     @* <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
     <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
@@ -96,8 +96,7 @@
                             <span class="nxl-mtext">Dashboards</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                         </a>
                         <ul class="nxl-submenu">
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Dashboard/CRM")">CRM</a></li>
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Dashboard/Analytics")">Analytics</a></li>
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/Dashboard")">HR Service</a></li>
                         </ul>
                     </li>
                     <li class="nxl-item nxl-hasmenu">
@@ -106,9 +105,10 @@
                             <span class="nxl-mtext">Organization</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                         </a>
                         <ul class="nxl-submenu">
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Organization/Index")">Company</a></li>
-                           @*  <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Organization/Team")">Team</a></li> *@
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Organization/Inquire")?id=CEO&chartId=TIPOrgChart1"><i class="bi bi-gear me-1"></i> Manage</a></li>
+                            @* <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Organization/Index")">Company</a></li> *@
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/organization/Company")">Company</a></li>
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/organization/team")">My Team</a></li>
+                            @* <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Organization/Inquire")?id=CEO&chartId=TIPOrgChart1"><i class="bi bi-gear me-1"></i> Manage</a></li> *@
                         </ul>
                     </li>
                     @*   <li class="nxl-item nxl-hasmenu">
@@ -169,7 +169,17 @@
                             <span class="nxl-mtext">Reports</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                         </a>
                         <ul class="nxl-submenu">
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Report/Traning")">Traning Report</a></li>
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Report/Index")">All Report</a></li>
+                        </ul>
+                    </li>
+                    <li class="nxl-item nxl-hasmenu">
+                        <a href="javascript:void(0);" class="nxl-link">
+                            <span class="nxl-micon"><i class="bi bi-clipboard-check"></i></span>
+                            <span class="nxl-mtext">Survey</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                        </a>
+                        <ul class="nxl-submenu">
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Survey/Index")">My Survey</a></li>
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/SurveySetting/Index")"><i class="bi bi-gear me-1"></i>Survey Manage</a></li>
                         </ul>
                     </li>
                     @*  <li class="nxl-item nxl-hasmenu">
@@ -605,7 +615,7 @@
             <!-- [ Main Content ] end -->
         </div>
         <!-- [ Footer ] start -->
-        <footer class="footer">
+       @*  <footer class="footer">
             <p class="fs-11 text-muted fw-medium text-uppercase mb-0 copyright">
                 <span>Copyright ©</span>
                 <script>
@@ -617,7 +627,7 @@
                 <a href="javascript:void(0);" class="fs-11 fw-semibold text-uppercase">Terms</a>
                 <a href="javascript:void(0);" class="fs-11 fw-semibold text-uppercase">Privacy</a>
             </div>
-        </footer>
+        </footer> *@
         <!-- [ Footer ] end -->
     </main>
     <!--! ================================================================ !-->

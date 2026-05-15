@@ -26,37 +26,41 @@
         <div class="text-center fs-4 fw-bolder mb-4 text-dark">
             แบบฟอร์มโอนย้ายฝ่ายงาน
         </div>
-        <div class="text-dark fs-6">
+        <div class="fs-6">
             <div class="row">
-                <div class="col-sm-2 mb-3">
+                <div class="col-sm-2 text-dark mb-3">
                     ชื่อ-นามสกุล
                 </div>
                 <div class="col-sm-4 mb-3">
-                    <input ng-model="iForm.fullname" class="form-control fullname" maxlength="100" />
+                    <div class="p-2">{{ iForm.fullname }}</div>
+                   @*  <input ng-model="iForm.fullname" class="form-control fullname" maxlength="100" /> *@
                 </div>
-                <div class="col-sm-2 mb-3">
+                <div class="col-sm-2 text-dark mb-3">
                     ตำแหน่ง
                 </div>
                 <div class="col-sm-4 mb-3">
-                    <input ng-model="iForm.position" class="form-control position" maxlength="50" />
+                    <div class="p-2">{{ iForm.position }}</div>
+                 @*    <input ng-model="iForm.position" class="form-control position" maxlength="50" /> *@
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-2 mb-3">
+                <div class="col-sm-2 text-dark mb-3">
                     สังกัดฝ่ายงาน
                 </div>
                 <div class="col-sm-4 mb-3">
-                    <input ng-model="iForm.department" class="form-control department" maxlength="50" />
+                    <div class="p-2">{{ iForm.department }}</div>
+                  @*   <input ng-model="iForm.department" class="form-control department" maxlength="50" /> *@
                 </div>
-                <div class="col-sm-2 mb-3">
+                <div class="col-sm-2 text-dark mb-3">
                     สายงาน
                 </div>
                 <div class="col-sm-4 mb-3">
-                    <input ng-model="iForm.section" class="form-control section" maxlength="100" />
+                    <div class="p-2">{{ iForm.section }}</div>
+                   @*  <input ng-model="iForm.section" class="form-control section" maxlength="100" /> *@
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-2 mb-3">
+                <div class="col-sm-2 text-dark mb-3">
                     วันเริ่มงาน
                 </div>
                 <div class="col-sm-4 mb-3">
@@ -66,31 +70,34 @@
                         ng-model-options="{ updateOn: 'blur' }"
                         moment-picker="iForm.join_date_select"
                         locale="th"
+                        change="CalcWorkDay()"
                         format="DD/MM/YYYY"
                         min-view="month"
                         max-view="month" required />
                 </div>
-                <div class="col-sm-2 mb-3">
+                <div class="col-sm-2 text-dark mb-3">
                     อายุงาน
                 </div>
                 <div class="col-sm-4 mb-3">
-                    <input ng-model="iForm.age" class="form-control" readonly disabled />
+                    <div class="p-2">{{ iForm.age }}</div>
+                   @*  <input ng-model="iForm.age" class="form-control" readonly disabled /> *@
                 </div>
             </div>
             <div class="mb-3">
-                <div class="fw-bolder">หน้าที่ความรับผิดชอบปัจจุบัน</div>
+                <div class="fw-bolder text-dark ">หน้าที่ความรับผิดชอบปัจจุบัน</div>
                 <textarea ng-model="iForm.job_description" class="form-control job_description" rows=5 maxlength="2000"></textarea>
             </div>
             <div class="row">
-                <div class="col-sm-6 mb-3">
+                <div class="col-sm-6 text-dark mb-3">
                     มีความประสงค์ขอโอนย้ายไปยังฝ่ายงาน ดังนี้
                 </div>
                 <div class="col-sm-6 mb-3">
-                    <input ng-model="iForm.new_department" class="form-control new_department" maxlength="50" />
+                    <select ng-model="iForm.new_department" class="form-select new_department" ng-options="x.desc_th as x.desc_th for x in lDepartment"></select>
+                  @*   <input ng-model="iForm.new_department" class="form-control new_department" maxlength="50" /> *@
                 </div>
             </div>
             <div class="mb-3">
-                <div class="fw-bolder">เหตุผลที่ขอโอนย้าย</div>
+                <div class="fw-bolder text-dark ">เหตุผลที่ขอโอนย้าย</div>
                 <textarea ng-model="iForm.description" class="form-control description" rows=5 maxlength="2000"></textarea>
             </div>
         </div>
@@ -120,6 +127,102 @@
             , description: ''
             , create_by:'@User.UserId()'
         }
+
+        $scope.LoadMaster = function(){
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'departmentCode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lDepartment = result.filter(item=>item.codition_4 == 'Department');
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadMaster();
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/Detail'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    userId: '@User.UserId()'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        var data = result;
+                        $scope.iForm.fullname = data.employeeName;
+                        $scope.iForm.position = data.positionDesc;
+                        $scope.iForm.section = data.sectionDesc;
+                        $scope.iForm.department = data.departmentDesc;
+
+                        if (data.join_date != '') {
+                            $scope.iForm.join_date_select = moment(data.join_date);
+                        }
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+
+        $scope.CalcWorkDay = function () {
+            $scope.iForm.age = '';
+
+            $scope.iForm.join_date = '';
+
+            if ($scope.iForm.join_date_select) {
+                $scope.iForm.join_date = $scope.iForm.join_date_select.format("DD/MM/YYYY");
+            }
+
+            if ($scope.iForm.join_date != '') {
+                const b = ConvertToDate($scope.iForm.join_date);
+                const c = new Date();
+
+                let years = c.getFullYear() - b.getFullYear();
+                let months = c.getMonth() - b.getMonth();
+                let days = c.getDate() - b.getDate();
+
+                // ถ้าวันติดลบ → ยืมเดือน
+                if (days < 0) {
+                    months--;
+
+                    // เอาจำนวนวันของเดือนก่อนหน้า
+                    const prevMonth = new Date(c.getFullYear(), c.getMonth(), 0);
+                    days += prevMonth.getDate();
+                }
+
+                // ถ้าเดือนติดลบ → ยืมปี
+                if (months < 0) {
+                    years--;
+                    months += 12;
+                }
+
+                if (years > 0) {
+                    $scope.iForm.age = years + ' ปี ';
+                }
+                if (months > 0) {
+                    $scope.iForm.age += months + ' เดือน ';
+                }
+                if (days > 0) {
+                    $scope.iForm.age += days + ' วัน';
+                }
+            }
+        }
+
 
         $scope.Validate = function () {
             var flag = true;

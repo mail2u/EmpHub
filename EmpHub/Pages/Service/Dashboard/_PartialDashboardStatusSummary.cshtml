@@ -1,0 +1,135 @@
+﻿@{
+    var token = User.AccessToken(Context);
+}
+<div ng-controller="ChartStatusSummaryCtrl">
+    <div class="fw-bolder mb-2 border-start-tip-blue">
+        สรุปยอดรวม <span class="text-blue">{{ month + '/' + year }}</span>
+    </div>
+    <div class="row">
+        <div class="col-sm-2 mb-3">
+            <div class="bg-white rounded shadow-sm p-3" style="border-left:10px solid #ffcd56;">
+                <div class="d-flex">
+                    <div class="flex-fill fw-bolder">
+                        รออนุมัติ
+                    </div>
+                    <div class="text-blue">
+                        <i class="bi bi-record-circle"></i>
+                    </div>
+                </div>
+                <div class="text-end fs-2 fw-bolder">
+                    {{ iApprove.total | number }}
+                </div>
+            </div>
+        </div>
+         <div class="col-sm-2 mb-3">
+            <div class="bg-white rounded shadow-sm p-3" style="border-left:10px solid #ff9f40;">
+                <div class="d-flex">
+                    <div class="flex-fill fw-bolder">
+                        รอดำเนินการ
+                    </div>
+                    <div class="text-orange">
+                        <i class="bi bi-person-workspace"></i>
+                    </div>
+                </div>
+                <div class="text-end fs-2 fw-bolder">
+                    {{ iWork.total | number }}
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2 mb-3">
+            <div class="bg-white rounded shadow-sm p-3" style="border-left:10px solid #f9538d;">
+                <div class="d-flex">
+                    <div class="flex-fill fw-bolder">
+                        ไม่อนุมัติ
+                    </div>
+                    <div class="text-danger">
+                        <i class="bi bi-x-circle"></i>
+                    </div>
+                </div>
+                <div class="text-end fs-2 fw-bolder">
+                    {{ iReject.total | number }}
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2 mb-3">
+            <div class="bg-white rounded shadow-sm p-3" style="border-left:10px solid #db84fa;">
+                <div class="d-flex">
+                    <div class="flex-fill fw-bolder">
+                        เปลี่ยนประเภท
+                    </div>
+                    <div class="text-blue">
+                        <i class="bi bi-arrow-repeat"></i>
+                    </div>
+                </div>
+                <div class="text-end fs-2 fw-bolder">
+                    {{ iChange.total | number }}
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2 mb-3">
+            <div class="bg-white rounded shadow-sm p-3" style="border-left:10px solid #36a2eb;">
+                <div class="d-flex">
+                    <div class="flex-fill fw-bolder">
+                        ปิดใบงาน
+                    </div>
+                    <div class="text-green">
+                        <i class="bi bi-check2-circle"></i>
+                    </div>
+                </div>
+                <div class="text-end fs-2 fw-bolder">
+                    {{ iComplete.total | number }}
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2 mb-3">
+            <div class="bg-secondary text-white rounded p-3">
+                <div class="d-flex">
+                    <div class="flex-fill fw-bolder">
+                        ยอดรวม
+                    </div>
+                    <div>
+                        <i class="bi bi-flag"></i>
+                    </div>
+                </div>
+                <div class="text-end fs-2 fw-bolder">
+                    {{ total | number }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ChartStatusSummaryCtrl', function ($scope, $http, $timeout, $filter) {
+        var dt = new Date();
+        $scope.year = dt.getFullYear();
+        $scope.month = dt.getMonth() + 1;
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Service/DashboardStatusCurrent'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , dataType: 'json'
+                , cache: false
+                , success: function (result) {
+                    $timeout(function () {
+                        var lData = result;
+                        $scope.iApprove = lData.find(x => x.status == 'Approve');
+                        $scope.iReject = lData.find( x=>x.status == 'Reject');
+                        $scope.iWork = lData.find(x=>x.status == 'Work');
+                        $scope.iChange = lData.find( x=>x.status == 'Change');
+                        $scope.iComplete = lData.find(x=>x.status == 'Complete');
+                        $scope.total = $scope.iApprove.total +  $scope.iWork.total + $scope.iComplete.total;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+
+        }
+        $scope.LoadData();
+
+        $scope.timer = setInterval(() => {
+            $scope.LoadData();
+        }, 600000);
+    });
+</script>

@@ -1,0 +1,163 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var token = User.AccessToken(Context);
+}
+<style>
+    input[type="radio"]:disabled {
+        background-color: #0d6efd !important;
+        border-color: #0d6efd !important;
+        background-image: none !important;
+        opacity: 1 !important;
+    }
+</style>
+<div ng-controller="ServiceUpdatePersonalCtrl">
+    <div class="bg-white rounded-4 border mb-4 overflow-hidden p-4">
+        <div class="pb-3 mb-3 border-bottom d-flex align-items-center">
+            <div class="fs-5 fw-bolder text-dark flex-fill">
+                ปรับปรุงข้อมูลส่วนบุคคล
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">ชื่อ-นามสกุล</div>
+                <div class="text-blue">{{ iForm.prefix_th }} {{ iForm.firstname_th }} {{ iForm.lastname_th }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">ชื่อ-นามสกุล (ภาษาอังกฤษ)</div>
+                <div class="text-blue">{{ iForm.prefix_en }} {{ iForm.firstname_en }} {{ iForm.lastname_en }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">ชื่อเล่น</div>
+                <div class="text-blue">{{ iForm.nickname == '' ? '-' : iForm.nickname }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">วันเกิด</div>
+                <div class="text-blue">{{ iForm.birth_date == '' ? '-' : iForm.birth_date }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">อายุ</div>
+                <div class="text-blue">{{ iForm.age == '' ? '-' : iForm.age }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">เพศ</div>
+                <div class="text-blue">{{ iForm.sex == '' ? '-' : iForm.sex }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">น้ำหนัก</div>
+                <div class="text-blue">{{ iForm.weight == '' ? '-' : iForm.weight }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">ส่วนสูง</div>
+                <div class="text-blue">{{ iForm.height == '' ? '-' : iForm.height }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">กรุ๊ปเลือด</div>
+                <div class="text-blue">{{ iForm.blood == '' ? '-' : iForm.blood }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">สัญชาติ</div>
+                <div class="text-blue">{{ iForm.nationality == '' ? '-' : iForm.nationality }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">เชื้อชาติ</div>
+                <div class="text-blue">{{ iForm.ethnicity == '' ? '-' : iForm.ethnicity }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">ศาสนา</div>
+                <div class="text-blue">{{ iForm.religion == '' ? '-' : iForm.religion }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">สถานภาพการสมรส</div>
+                <div class="text-blue">{{ iForm.maritalStatus == '' ? '-' : iForm.maritalStatus }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">สถานะทางการทหาร</div>
+                <div class="text-blue">{{ iForm.militaryStatus == '' ? '-' : iForm.militaryStatus }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">สถานะความพิการ</div>
+                <div class="text-blue">{{ iForm.disabilityStatus == '' ? '-' : iForm.disabilityStatus }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ServiceUpdatePersonalCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.LoadDetail = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormUpdatePersonalDetail',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        refId: $scope.refId
+                    }),
+                    success: function (result) {
+                        $timeout(async function () {
+                            $scope.iForm = result;
+                            $scope.CalcAge();
+                            resolve(true);
+                        }, 0);
+                    }, error: function () {
+                        resolve(false);
+                    }
+                });
+            });
+        }
+
+        $scope.init = async function (x) {
+            $scope.refId = x.id;
+            $scope.userId = x.userId;
+            $scope.status = x.status;
+
+            await $scope.LoadDetail();
+        }
+
+        $scope.CalcAge = function () {
+            $scope.iForm.age = '';
+
+            if ($scope.iForm.birth_date) {
+                const b = ConvertToDate($scope.iForm.birth_date);
+                const c = new Date();
+
+                let years = c.getFullYear() - b.getFullYear();
+                let months = c.getMonth() - b.getMonth();
+                let days = c.getDate() - b.getDate();
+
+                // ถ้าวันติดลบ → ยืมเดือน
+                if (days < 0) {
+                    months--;
+
+                    // เอาจำนวนวันของเดือนก่อนหน้า
+                    const prevMonth = new Date(c.getFullYear(), c.getMonth(), 0);
+                    days += prevMonth.getDate();
+                }
+
+                // ถ้าเดือนติดลบ → ยืมปี
+                if (months < 0) {
+                    years--;
+                    months += 12;
+                }
+
+                if (years > 0) {
+                    $scope.iForm.age = years + ' ปี ';
+                }
+                if (months > 0) {
+                    $scope.iForm.age += months + ' เดือน ';
+                }
+                if (days > 0) {
+                    $scope.iForm.age += days + ' วัน';
+                }
+            }
+        }
+
+        $scope.$on('EDIT_PERSONAL_LOAD', function (e, data) {
+            $scope.init(data);
+        });
+    });
+</script>

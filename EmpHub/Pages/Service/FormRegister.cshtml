@@ -1,4 +1,90 @@
 ﻿@page
 @model EmpHub.Pages.Service.FormRegisterModel
 @{
+    var token = User.AccessToken(HttpContext);
 }
+<style>
+    .main-content {
+        min-height: calc(100vh - 150px) !important;
+    }
+
+    .box-group {
+        padding: 15px;
+        border: 1px solid white;
+        border-radius: 15px;
+    }
+
+    .box-group.input-error {
+        border: 1px solid red;
+    }
+</style>
+<div ng-controller="FormCtrl">
+    @* Header *@
+    <partial name="_PartialFormHeader" />
+    <div class="position-relative" style="height:calc(100vh - 250px);">
+        <div class="position-absolute top-50 start-50 translate-middle p-3">
+            <div class="bg-white rounded-4 shadow-sm p-4 text-center" style="width:600px;">
+                <div class="fw-border fs-4">ดาวน์โหลดเอกสาร</div>
+                <div class="fw-bolder fs-5 text-dark mb-4">{{ fileName }}.pdf</div>
+                <div class="btn btn-primary" ng-click="LoadFile()">คลิ๊กเพื่อดาวน์โหลด</div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('FormCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.mode = '@Model.mode';
+        $scope.iData = {};
+        $scope.fileName = 'ใบสมัครงาน Dhipaya Life';
+      
+        $scope.LoadFile = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Download/FormStorage'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , xhrFields: {
+                    responseType: 'blob'
+                }
+                , cache: false
+                , data: JSON.stringify({
+                    code: $scope.mode
+                    , userId: '@User.UserId()'
+                })
+                , success: function (data, status, xhr) {
+                    // อ่านชื่อไฟล์จาก header
+                    var fileName = $scope.fileName;
+
+                    var disposition = xhr.getResponseHeader('Content-Disposition');
+
+                    if (disposition && disposition.indexOf('filename=') !== -1) {
+
+                        var fileNameMatch = disposition.match(/filename="?([^"]+)"?/);
+
+                        if (fileNameMatch.length > 1) {
+                            fileName = fileNameMatch[1];
+                        }
+                    }
+
+                    // create download link
+                    var url = window.URL.createObjectURL(data);
+
+                    var a = document.createElement('a');
+
+                    a.href = url;
+                    a.download = fileName;
+
+                    document.body.appendChild(a);
+
+                    a.click();
+
+                    a.remove();
+
+                    window.URL.revokeObjectURL(url);
+                }
+                , error: AjaxError
+            });
+        }
+    });
+
+</script>

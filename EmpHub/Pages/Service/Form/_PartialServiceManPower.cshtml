@@ -1,0 +1,277 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var token = User.AccessToken(Context);
+}
+<div ng-controller="ServiceRequestManpowerCtrl" class="mb-4 text-dark">
+    <div class="bg-white rounded-4 border mb-4 overflow-hidden">
+        <div class="px-4 py-3 border-bottom d-flex align-items-center">
+            <div class="fs-5 fw-bolder text-dark flex-fill">Request Manpower</div>
+        </div>
+        <div class="p-4">
+            <div class="row">
+                <div class="col-sm-6 mb-3 d-lg-flex align-items-center">
+                    <div class="me-3">
+                        <div class="text-dark text-nowrap fw-bolder">ตำแหน่งที่ต้องการ</div>
+                        <div class="text-dark text-nowrap">Position Required</div>
+                    </div>
+                    <div class="text-blue">{{ iForm.position != '' ? iForm.position : '-' }}</div>
+                </div>
+                <div class="col-sm-6 mb-3 d-lg-flex align-items-center">
+                    <div class="me-3">
+                        <div class="text-dark text-nowrap fw-bolder">แผนก / ฝ่าย</div>
+                        <div class="text-dark text-nowrap">Division / Department</div>
+                    </div>
+                    <div class="text-blue">{{ iForm.department != '' ? iForm.department : '-' }}</div>
+                </div>
+                <div class="col-sm-6 mb-3 d-lg-flex align-items-center">
+                    <div class="me-3">
+                        <div class="text-dark text-nowrap fw-bolder">วันที่ต้องการ</div>
+                        <div class="text-dark text-nowrap">Date Required</div>
+                    </div>
+                    <div class="text-blue">{{ iForm.required_date != '' ? iForm.required_date : '-' }}</div>
+                </div>
+                <div class="col-sm-6 mb-3 d-lg-flex align-items-center">
+                    <div class="me-3">
+                        <div class="text-dark text-nowrap fw-bolder">จำนวนพนักงานที่ต้องการ</div>
+                        <div class="text-dark text-nowrap">Number of Employee Required</div>
+                    </div>
+                    <div class="text-blue">{{ iForm.num_employee != '' ? iForm.num_employee : '-' }}</div>
+                </div>
+                <div class="col-sm-8 mb-3">
+                    <div class="type_employment d-lg-flex align-items-center">
+                        <div class="me-3">
+                            <div class="text-dark text-nowrap fw-bolder">ประเภทของการจ้างงาน</div>
+                            <div class="text-dark text-nowrap">Type of Employment</div>
+                        </div>
+                        <div class="flex-fill">
+                            <div class="d-lg-flex align-items-center text-blue">
+                                <div ng-show="iForm.type_employment == 'permanent'">
+                                    ประจำ / Permanent
+                                </div>
+                                <div ng-show="iForm.type_employment == 'daily'">
+                                    รายวัน / Daily
+                                </div>
+                                <div ng-show="iForm.type_employment == 'monthly'">
+                                    รายเดือน / Monthly
+                                </div>
+                                <div ng-show="iForm.type_employment == 'outsource'">
+                                    จ้างช่วงระยะเวลา / Temporarily, Outsource
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="d-lg-flex align-items-center" ng-show="iForm.type_employment == 'outsource'">
+                        <div class="me-3">
+                            <div class="text-dark text-nowrap fw-bolder">ระยะเวลาการจ้าง</div>
+                            <div class="text-dark text-nowrap">Duration</div>
+                        </div>
+                        <div class="text-blue me-3">{{ iForm.type_employment_desc != '' ? iForm.type_employment_desc : '-' }}</div>
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-3">
+                    <div class="type_requirement d-lg-flex">
+                        <div class="me-3">
+                            <div class="text-dark text-nowrap fw-bolder">ประเภทของความต้องการ</div>
+                            <div class="text-dark text-nowrap">Type of Requirement</div>
+                        </div>
+                        <div class="d-lg-flex align-items-center flex-fill text-blue">
+                            <div ng-show="iForm.type_requirement == 'external_recruit'">
+                                สรรหาภายนอก (External Recruit)
+                            </div>
+                            <div ng-show="iForm.type_requirement == 'internal_recruit'">
+                                สรรหาภายใน (Internal Recruit)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-3">
+                    <div class="type_reason">
+                        <div class="">
+                            <div class="text-dark text-nowrap fw-bolder">เหตุผลการขอกำลังคนเพิ่ม</div>
+                            <div class="text-dark text-nowrap">Reason of Additional Manpower Requisition</div>
+                        </div>
+                        <div ng-show="iForm.type_reason == 'additional_budget'" class="text-blue">
+                            จ้างตามงบประมาณ / Additional Budget
+                        </div>
+                        <div ng-show="iForm.type_reason == 'additional_hire'" class="text-blue">
+                            จ้างเพิ่ม / Additional Hire : {{ iForm.type_reason_additional_hire_desc }}
+                        </div>
+                        <div ng-show="iForm.type_reason == 'replacement'" class="text-blue">
+                            ทดแทน / Replacement (Whom ?) : {{ iForm.type_reason_replacement_desc }}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-3">
+                    <div class="text-dark fw-bolder">ลักษณะงานที่ทำโดยสังเขป</div>
+                    <div class="text-dark">Description of Work</div>
+                    <div class="text-blue">{{ iForm.description_work }}</div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="mb-2 ">
+                        <div class="text-warning fw-bolder">คุณสมบัติ Qualification</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3 mb-3">
+                            <div class="sex d-lg-flex">
+                                <div class="me-3">
+                                    <div class="text-dark text-nowrap fw-bolder">เพศ</div>
+                                    <div class="text-dark text-nowrap">Sex</div>
+                                </div>
+                                <div class="d-lg-flex align-items-center flex-fill">
+                                    <div ng-show="iForm.sex == 'male'" class="text-blue">
+                                        ชาย / Male
+                                    </div>
+                                    <div ng-show="iForm.sex == 'female'" class="text-blue">
+                                        หญิง / Female
+                                    </div>
+                                    <div ng-show="iForm.sex == ''" class="text-blue">
+                                        ไม่ระบุ
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2 d-lg-flex align-items-center mb-3">
+                            <div class="me-3">
+                                <div class="text-dark text-nowrap fw-bolder">อายุ</div>
+                                <div class="text-dark text-nowrap">Age</div>
+                            </div>
+                            <div class="text-blue">
+                                {{ iForm.age }}
+                            </div>
+                        </div>
+                        <div class="col-sm-7 d-lg-flex align-items-center mb-3">
+                            <div class="me-3">
+                                <div class="text-dark text-nowrap fw-bolder">การศึกษา</div>
+                                <div class="text-dark text-nowrap">Education</div>
+                            </div>
+                            <div class="text-blue">
+                                {{ iForm.education }}
+                            </div>
+                        </div>
+                        <div class="col-sm-12 d-lg-flex align-items-center mb-3">
+                            <div class="me-3">
+                                <div class="text-dark text-nowrap fw-bolder">สาขา</div>
+                                <div class="text-dark text-nowrap">Major</div>
+                            </div>
+                            <div class="text-blue">
+                                {{ iForm.major }}
+                            </div>
+                        </div>
+                        <div class="col-sm-12 d-lg-flex align-items-center mb-3">
+                            <div class="me-3">
+                                <div class="text-dark text-nowrap fw-bolder">ความรู้ในงาน</div>
+                                <div class="text-dark text-nowrap">Knowledge</div>
+                            </div>
+                            <div class="text-blue">
+                                {{ iForm.knowledge }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-3">
+                    <div class="text-dark fw-bolder">ความสามารถพิเศษ / Speial Skill</div>
+                    <div class="" ng-show="iForm.skill_language == 1">
+                        ภาษาต่างประเทศ / Foreign Language Command
+                        <div class="text-blue">{{ iForm.skill_language_desc }}</div>
+                    </div>
+                    <div class="mt-2" ng-show="iForm.skill_computer == 1">
+                        ความรู้เรื่องคอมพิวเตอร์ / Computer Knowledge
+                        <div class="text-blue">{{ iForm.skill_computer_desc }}</div>
+                    </div>
+                    <div class="mt-2" ng-show="iForm.skill_other == 1">
+                        อื่น ๆ / Other
+                        <div class="text-blue">{{ iForm.skill_other_desc }}</div>
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-3">
+                    <div class="text-dark fw-bolder">ประสบการณ์ / Experience</div>
+                    <div ng-show="iForm.type_experience == 'no'">
+                        ไม่มีประสบการณ์ / Inexperience
+                    </div>
+                    <div ng-show="iForm.type_experience == 'yes'">
+                        ประสบการณ์ขั้นต่ำ / Minimum Experience
+                        <div class="">{{ iForm.type_experience_yes_desc }}</div>
+                    </div>
+                    <div ng-show="iForm.type_experience == 'other'">
+                        อื่น ๆ / Other
+                        <div class="">{{ iForm.type_experience_other_desc }}</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="text-dark fw-bolder">คำบรรยายลักษณะงาน (JOB DESCRIPTION)</div>
+                    <a href="@Url.Page("/Service/FormJobDescription")?id={{ iForm.refId }}" class="btn btn-light-dash bg-white" ng-show="iJD.refId == null && iJD.can_edit == 1" target="_blank">
+                        <i class="fas fa-plus me-2"></i> เพิ่มรายละเอียด
+                    </a>
+                    <a href="@Url.Page("/Service/FormJobDescription")?id={{ iForm.refId }}" class="btn btn-primary" ng-show="iJD.refId != null" target="_blank">
+                        ดูรายละเอียด
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ServiceRequestManpowerCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.LoadDetail = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormManpowerDetail',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        refId: $scope.refId
+                    }),
+                    success: function (result) {
+                        $timeout(async function () {
+                            $scope.iForm = result;
+                            resolve(true);
+                        }, 0);
+                    }, error: function () {
+                        resolve(false);
+                    }
+                });
+            });
+        }
+
+        $scope.init = async function (x) {
+            $scope.refId = x.id;
+            $scope.userId = x.userId;
+            $scope.status = x.status;
+
+            await $scope.LoadDetail();
+        }
+
+        $scope.$on('FORM_REQUEST_MANPOWER_LOAD', function (e, data) {
+            $scope.init(data);
+        });
+
+        $scope.LoadJD = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceJobDescription/Detail',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    refId: $scope.refId
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.iJD = result.data;
+                        $scope.iJD.can_edit = result.can_edit;
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+    });
+</script>

@@ -1,0 +1,180 @@
+﻿@{
+    var token = User.AccessToken(Context);
+}
+<div ng-controller="ChartRequestNoCloseCtrl">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="bg-white rounded shadow-sm p-4 h-100">
+                <div class="d-flex">
+                    <div class="flex-fill fw-bolder mb-2 border-start-tip-blue">ใบงานค้างปิด 31 - 59 วัน <b>TOP 50</b></div>
+                    <div class="btn btn-circle" title="download" ng-click="Download('Group1')">
+                        <i class="bi bi-download"></i>
+                    </div>
+                </div>
+                <div class="overflow-auto" style="height:450px;">
+                    <table class="table table-tsi">
+                        <thead>
+                            <tr>
+                                <th width="40"></th>
+                                <th>เลขที่ใบงาน</th>
+                                @*   <th>วันที่สร้าง</th> *@
+                                <th width="100">วัน</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="x in lData30">
+                                <td>{{ $index + 1 }}</td>
+                                <td>{{ x.serviceNo }}</td>
+                                @*  <td>{{ x.requestDate }}</td> *@
+                                <td>{{ x.days | number }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="bg-white rounded shadow-sm p-4 h-100">
+                <div class="d-flex">
+                    <div class="flex-fill fw-bolder mb-2 border-start-tip-blue">ใบงานค้างปิด 60 - 180 วัน <b>TOP 50</b></div>
+                    <div class="btn btn-circle" title="download" ng-click="Download('Group2')">
+                        <i class="bi bi-download"></i>
+                    </div>
+                </div>
+                <div class="overflow-auto" style="height:450px;">
+                    <table class="table table-tsi">
+                        <thead>
+                            <tr>
+                                <th width="40"></th>
+                                <th>เลขที่ใบงาน</th>
+                              @*   <th>วันที่สร้าง</th> *@
+                                <th width="100">วัน</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="x in lData60">
+                                <td>{{ $index + 1 }}</td>
+                                <td>{{ x.serviceNo }}</td>
+                               @*  <td>{{ x.requestDate }}</td> *@
+                                <td>{{ x.days | number }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="bg-white rounded shadow-sm p-4 h-100">
+                <div class="d-flex">
+                    <div class="flex-fill fw-bolder mb-2 border-start-tip-blue">ใบงานค้างปิดมากกว่า 180 วัน <b>TOP 50</b></div>
+                    <div class="btn btn-circle" title="download" ng-click="Download('Group3')">
+                        <i class="bi bi-download"></i>
+                    </div>
+                </div>
+                <div class="overflow-auto" style="height:450px;">
+                    <table class="table table-tsi">
+                        <thead>
+                            <tr>
+                                <th width="40"></th>
+                                <th>เลขที่ใบงาน</th>
+                               @*  <th>วันที่สร้าง</th> *@
+                                <th width="100">วัน</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="x in lData180">
+                                <td>{{ $index + 1 }}</td>
+                                <td>{{ x.serviceNo }}</td>
+                              @*   <td>{{ x.requestDate }}</td> *@
+                                <td>{{ x.days | number }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ChartRequestNoCloseCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.$parent.LoadRequestNoClose = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Service/DashboardRequestNoClose'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    year: $scope.$parent.year
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lData60 = result.Table;
+                        $scope.lData180 = result.Table1;
+                        $scope.lData30 = result.Table2;
+                        //$scope.LoadChar(result);
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+
+        $scope.LoadChar = function (lData) {
+            chart.data = {
+                labels: lData.map(i => i.subCategoryDesc),
+                datasets: [{
+                    data: lData.map(i => i.total),
+                }],
+            };
+
+            chart.update();
+        }
+
+        $scope.init = function () {
+            $scope.$emit('LoadRequestNoClose');
+        };
+        $scope.init();
+
+
+        $scope.Download = function (groupId) {
+
+            var lData = [];
+            var label = 'ใบงานค้างปิด_';
+
+            if (groupId == 'Group1') {
+                lData = $scope.lData30;
+                label = 'ใบงานค้างปิด 31 - 59 วัน_';
+            } else if (groupId == 'Group2') {
+                lData = $scope.lData60;
+                label = 'ใบงานค้างปิด 60 - 180 วัน_';
+            } else if (groupId == 'Group3') {
+                lData = $scope.lData180;
+                label = 'ใบงานค้างปิดมากกว่า 180 วัน_';
+            }
+
+            if (lData.length > 0) {
+                var JSData = [[
+                    { 'text': 'เลขที่ใบงาน' }
+                    , { 'text': 'เรื่อง' }
+                    , { 'text': 'วัน' }
+                    , { 'text': 'ผู้ดำเนินการ' }
+                ]];
+
+                for (var i = 0; i < lData.length; i++) {
+                    var iData = lData[i];
+
+                    JSData.splice(JSData.length, 0, [
+                        { 'text': iData.serviceNo }
+                        , { 'text': iData.title }
+                        , { 'text': iData.days }
+                        , { 'text': iData.worker }
+                    ]);
+                }
+
+                var dt = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+                ExportFile(JSData, label + dt);
+            }
+        }
+    });
+</script>

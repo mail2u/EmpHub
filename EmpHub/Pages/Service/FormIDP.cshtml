@@ -31,7 +31,8 @@
                 <div class="text-nowrap me-2">Name</div><input ng-model="iForm.fullname" class="form-text fullname" maxlength="100" />
             </div>
             <div class="col-sm-4 mb-3 d-flex">
-                <div class="text-nowrap me-2">Department</div><input ng-model="iForm.department" class="form-text department" maxlength="50" />
+                <div class="text-nowrap me-2">Department</div>
+                <select ng-model="iForm.department" class="form-text department" ng-options="x.desc_th as x.desc_th for x in lDepartment"></select>
             </div>
             <div class="col-sm-4 mb-3 d-flex">
                 <div class="text-nowrap me-2">Date</div>
@@ -248,6 +249,27 @@
             , answer11_desc: ''
             , create_by:'@User.UserId()'
         }
+
+        $scope.LoadMaster = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'departmentCode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lDepartment = result.filter(item => item.condition_4 == 'Department');
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadMaster();
 
         $scope.Validate = function () {
             var flag = true;
