@@ -1,0 +1,234 @@
+﻿@page
+@model EmpHub.Pages.Service.FormUpdate.FormUpdateDataAddressModel
+
+@{
+    var token = User.AccessToken(HttpContext);
+}
+<div ng-controller="ServiceAddressCtrl" id="tab_address">
+    @* Header *@
+    <partial name="_PartialFormUpdate" />
+    @* View *@
+    <div class="rounded-4 mb-3 bg-white shadow-sm p-4">
+        <div class="row">
+            <div class="col-sm-6 mb-3">
+                <div class="text-dark fs-5">บ้านเลขที่</div>
+                <input ng-model="iData.home" class="form-control" maxlength="200" />
+            </div>
+            <div class="col-sm-6 mb-3">
+                <div class="text-dark fs-5">ถนน</div>
+                <input ng-model="iData.road" class="form-control" maxlength="100" />
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fs-5">แขวง/ตำบล</div>
+                <input ng-model="iData.subDistrictName" class="form-select bg-light-blue" data-bs-toggle="modal" data-bs-target="#addressModal" readonly />
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fs-5">เขต/อำเภอ</div>
+                <input ng-model="iData.districtName" class="form-select bg-light-blue" data-bs-toggle="modal" data-bs-target="#addressModal" readonly />
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fs-5">จังหวัด</div>
+                <input ng-model="iData.provinceName" class="form-select bg-light-blue" data-bs-toggle="modal" data-bs-target="#addressModal" readonly />
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fs-5">รหัสไปรษณีย์</div>
+                <input ng-model="iData.postcode" class="form-control postcode" />
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-end">
+        <div class="btn btn-primary" ng-click="Save()">
+            <i class="far fa-paper-plane me-2"></i> Send Request
+        </div>
+    </div>
+
+    @* Modal *@
+    <div id="addressModal" class="modal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div>
+                        <div class="mb-2">
+                            <input ng-model="filter_name" class="form-control" />
+                            <div class="list-group list-group-flush overflow-auto" style="max-height: 400px;">
+                                <div class="list-group-item list-group-item-action d-flex align-items-center justify-content-between" ng-repeat="x in lAddress | filter : filter_name | limitTo : 50">
+                                    <div class="p-2">
+                                        <nav aria-label="breadcrumb">
+                                            <ol class="breadcrumb mb-0">
+                                                <li class="breadcrumb-item active">{{ x.subDistrictName }}</li>
+                                                <li class="breadcrumb-item active">{{ x.districtName }}</li>
+                                                <li class="breadcrumb-item active">{{ x.provinceName }}</li>
+                                                <li class="breadcrumb-item active">{{ x.postcode }}</li>
+                                            </ol>
+                                        </nav>
+                                    </div>
+                                    <div>
+                                        <button ng-click="SelectAddress(x)" class="btn btn-circle">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <button class="btn btn-light" data-bs-dismiss="modal" aria-label="Close">
+                                ปิด
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(".postcode").mask("00000");
+
+    app.controller('ServiceAddressCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.id = '@Model.refId';
+
+        $scope.LoadForm = function(){
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormRequestTrainingDetail',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                cache: false,
+                data: JSON.stringify({
+                    refId: $scope.id
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.iForm = result
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+        
+        $scope.$on('FORM_LOAD', function (e) {
+            $scope.LoadForm();
+        });
+
+        $scope.LoadMaster = function () {
+            if(!$scope.lAddress){
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/Address'
+                    , headers: { 'authorization': 'Bearer @token' }
+                    , type: 'post'
+                    , dataType: 'json'
+                    , cache: false
+                    , success: function (result) {
+                        $timeout(function () {
+                            $scope.lAddress = result;
+                        }, 0);
+                    }
+                    , error: AjaxError
+                });
+            }
+        }
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserAddress',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.userId
+                    , create_by: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.iData = result.data;
+
+                        if(result.can_edit != 1){
+                            alertWarning("ท่านไม่ได้สิทธิ์ให้เข้าถึงหน้านี้","กรุณาตรวจสอบ",function(){
+                                location.href = '@Url.Page("/Service/Index")';
+                            })
+                        }else{
+                            $scope.LoadMaster();
+                        }
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+        $scope.SelectAddress = function (x) {
+            $scope.iData.subDistrictCode = x.subDistrictCode;
+            $scope.iData.subDistrictName = x.subDistrictName;
+            $scope.iData.districtCode = x.districtCode;
+            $scope.iData.districtName = x.districtName;
+            $scope.iData.provinceCode = x.provinceCode;
+            $scope.iData.provinceName = x.provinceName;
+            $scope.iData.postcode = x.postcode;
+
+            $("#addressModal").modal('hide');
+        }
+        
+        $scope.Validate = function(){
+            var flag = true;
+            // JS_Reset($(".firstname_th"));
+            // JS_Reset($(".lastname_th"));
+
+            // if($scope.iData.firstname_th == ''){
+            //     flag = false;
+            //     JS_Require($(".firstname_th"));
+            // }
+            // if($scope.iData.lastname_th == ''){
+            //     flag = false;
+            //     JS_Require($(".lastname_th"));
+            // }
+
+            return flag;
+        }
+
+        $scope.Save = async function () {
+            if ($scope.Validate()) {
+                alertConfirm("ยืนยันการทำรายการ", "ท่านต้องการส่งใบคำขอ", async function () {
+                    var flag = await $scope.CreateForm();
+
+                    if (flag) {
+                        var serviceNo = await $scope.ServiceRequest();
+
+                        if (serviceNo) {
+                            alertSuccess("ทำรายการสำเร็จ", "ระบบบันทึกใบคำขอของท่านเรียบร้อย", function () {
+                                location.href = '@Url.Page("/Service/Index")';
+                            });
+                        }
+                    }
+                });
+            } else {
+                alertWarning("แจ้งเตือน", "กรุณากรอกข้อมูลให้ครบ");
+            }
+        }
+        
+        $scope.CreateForm = function(){
+            return new Promise((resolve)=>{
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceAddress/Save',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify($scope.iData),
+                    success: function () {
+                        $timeout(async function () {
+                           resolve(true);
+                        }, 0);
+                    }, error: function(jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "ระบบเกิดข้อผิดพลาด",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+    });
+</script>

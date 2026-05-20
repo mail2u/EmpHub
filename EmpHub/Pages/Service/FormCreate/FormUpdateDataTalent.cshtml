@@ -1,0 +1,234 @@
+﻿@page
+@model EmpHub.Pages.Service.FormCreate.FormUpdateDataTalentModel
+
+@{
+    var token = User.AccessToken(HttpContext);
+}
+<style>
+    .main-content{
+        min-height:calc(100vh - 150px) !important;
+    }
+
+    .list-item-box{
+        border: 2px solid white;
+        background-color: var(--bs-light);
+    }
+
+    .list-item-box:hover{
+        border: 2px solid var(--bs-blue);
+    }
+
+    .form-input {
+        padding: 5px;
+        border: 0px;
+        border-radius: 0;
+        border-bottom: 2px solid var(--bs-gray-400);
+        background-color: #fcfcfc;
+    }
+
+    .form-input:focus {
+        border-bottom: 2px solid var(--tip-blue);
+    }
+
+    input.form-input:read-only {
+        background-color: var(--bs-gray-200);
+    }
+</style>
+<div ng-controller="ServiceTalentCtrl">
+    @* Header *@
+    <partial name="_PartialFormHeader" />
+    @* View *@
+    <div class="rounded-4 mb-3 bg-white shadow-sm p-4">
+        <div class="list-group list-group-flush">
+            <div class="list-group-item p-0" ng-repeat="x in lForm | filter : {mode:'modify'}">
+                <div class="list-item-box p-4 mb-3 rounded-3">
+                    <div class="fw-bolder">
+                        #{{ $index + 1 }}
+                    </div>
+                    <div class="d-flex flex-fill mb-3">
+                        <div class="flex-fill me-3">
+                            <div class="text-dark fs-5">ภาษา</div>
+                            <input ng-model="x.language" class="form-control" />
+                        </div>
+                        <div class="me-3">
+                            <div class="text-dark fs-5 mb-2">ระดับ</div>
+                            <div class="d-flex align-items-center">
+                                <div class="form-check me-3" ng-repeat="lvl in lLevel">
+
+                                    <input class="form-check-input"
+                                           type="radio"
+                                           ng-model="x.level"
+                                           ng-value="lvl.code"
+                                           name="level_{{$index}}">
+
+                                    <label class="form-check-label">
+                                        {{lvl.name_th}}
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="btn btn-light" ng-click="New()">
+            เพิ่มข้อมูล
+        </div>
+    </div>
+    <div class="d-flex justify-content-end">
+        <div class="btn btn-primary" ng-click="Save()">
+            <i class="far fa-paper-plane me-2"></i> Send Request
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ServiceTalentCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.mode = '@Model.mode';
+        $scope.userId = '@Model.id';
+        $scope.iData = {};
+        $scope.lForm = [];
+
+        $scope.LoadMaster = function () {
+            $scope.lLevel = [
+                { "id": 1, "code": "BEGINNER", "name_th": "ระดับเริ่มต้น" },
+                { "id": 2, "code": "ELEMENTARY", "name_th": "ระดับพื้นฐาน" },
+                { "id": 3, "code": "INTERMEDIATE", "name_th": "ระดับปานกลาง" },
+                { "id": 4, "code": "UPPER_INTERMEDIATE", "name_th": "ระดับดี" },
+                { "id": 5, "code": "ADVANCED", "name_th": "ระดับเชี่ยวชาญ" }
+            ]
+        }
+        $scope.LoadMaster();
+
+        $scope.New = function () {
+            $timeout(function () {
+                $scope.lForm.splice($scope.lForm.length, 0, { mode: "modify" });
+            }, 0);
+        }
+
+        $scope.LoadData = function () {
+            // $.ajax({
+            //     url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserTalent',
+            //     headers: { 'authorization': 'Bearer @token' },
+            //     type: "POST",
+            //     contentType: 'application/json',
+            //     dataType: 'json',
+            //     cache: false,
+            //     data: JSON.stringify({
+            //         userId: $scope.userId
+            //         , create_by: '@User.UserId()'
+            //     }),
+            //     success: function (result) {
+            //         $timeout(async function () {
+            //             $scope.iData = {};
+            //             $scope.lForm = result.data;
+            $scope.lForm = [];
+            //             if(result.can_edit != 1){
+            //                 alertWarning("ท่านไม่ได้สิทธิ์ให้เข้าถึงหน้านี้","กรุณาตรวจสอบ",function(){
+            //                     location.href = '@Url.Page("/Service/Index")';
+            //                 })
+            //             }else{
+            //                 $scope.LoadMaster();
+
+            //                 if($scope.lForm.length == 0){
+                                $scope.New();
+            //                 }else{
+            //                     $scope.lForm = $scope.lForm.map(item=>{
+            //                         item.mode = "modify";
+
+            //                         return item;
+            //                     });
+            //                 }
+            //             }
+            //         }, 0);
+            //     }, error: AjaxError
+            // });
+        }
+        $scope.LoadData();
+
+        $scope.Delete = function(x){
+            $timeout(function () {
+                x.mode = "delete";
+            }, 0);
+        }
+
+        $scope.Validate = function(){
+            var flag = true;
+            // JS_Reset($(".firstname_th"));
+            // JS_Reset($(".lastname_th"));
+
+            // if($scope.iData.firstname_th == ''){
+            //     flag = false;
+            //     JS_Require($(".firstname_th"));
+            // }
+            // if($scope.iData.lastname_th == ''){
+            //     flag = false;
+            //     JS_Require($(".lastname_th"));
+            // }
+
+            return flag;
+        }
+
+        $scope.Save = async function () {
+            if($scope.Validate()){
+                alertConfirm("ยืนยันการทำรายการ","ท่านต้องการส่งใบคำขอ", async function(){
+                    var id = await $scope.CreateService();
+
+                    if(id){
+                        $scope.iData.id = id;
+                        $scope.lForm = $scope.lForm.map(item => {
+                            item.id = id;
+                            item.refId = id;
+                            item.userId = $scope.userId;
+
+                            return item;
+                        });
+
+                        var flag = await $scope.CreateTalent();
+
+                        if(flag){
+                            var serviceNo = await $scope.ServiceRequest();
+
+                            if(serviceNo){
+                                alertSuccess("ทำรายการสำเร็จ","ระบบบันทึกใบคำขอของท่านเรียบร้อย", function(){
+                                    location.href = '@Url.Page("/Service/Index")';
+                                });
+                            }else{
+                                $scope.CancelService();
+                            }
+                        }else{
+                            $scope.CancelService();
+                        }
+                    }
+                });
+            }else{
+                alertWarning("แจ้งเตือน","กรุณากรอกข้อมูลให้ครบ");
+            }
+        }
+
+        $scope.CreateTalent = function () {
+            return new Promise((resolve)=>{
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormUpdateTalentCreate',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify($scope.lForm),
+                    success: function () {
+                        $timeout(async function () {
+                           resolve(true);
+                        }, 0);
+                    }, error: function(jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "ระบบเกิดข้อผิดพลาด",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+    });
+</script>

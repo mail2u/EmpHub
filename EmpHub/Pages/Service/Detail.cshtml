@@ -27,7 +27,7 @@
             <div class="btn btn-light me-2">
                 <i class="bi bi-clock-history me-2"></i> View History
             </div>
-            <div class="btn btn-light">
+            <div class="btn btn-light" ng-click="formAction.DownloadPDF()">
                 <i class="bi bi-printer-fill"></i>
             </div>
         </div>
@@ -140,20 +140,32 @@
             </div>
             <div class="" style="width:300px; min-width:300px;">
                 @* Review Action *@
-                <div class="bg-white rounded-4 border mb-4 p-4" ng-if="iData.can_cancel == 1 || iData.can_approve == 1 || iData.can_work == 1">
+                <div class="bg-white rounded-4 border mb-4 p-4" ng-if="iData.can_cancel == 1 || iData.can_approve == 1 || iData.can_work == 1 || iData.can_edit == 1 || iData.can_previous == 1">
                     <div class="fw-bolder text-gray mb-4">REVIEW ACTIONS</div>
                     <div class="d-grid gap-2">
-                        <button ng-if="iData.can_approve == 1" class="btn btn-primary" ng-click="Approve()">
-                            <i class="bi bi-check-circle-fill me-2"></i> Approve
+                        <button ng-if="iData.can_approve == 1" class="btn btn-primary d-flex" ng-click="Approve()">
+                            <i class="bi bi-check-circle-fill me-2"></i> 
+                            <span class="flex-fill">Approve</span>
                         </button>
-                        <button ng-if="iData.can_work == 1" class="btn btn-success" ng-click="Work()">
-                            <i class="bi bi-arrow-right-circle me-2"></i> Process
+                        <button ng-if="iData.can_work == 1" class="btn btn-success d-flex" ng-click="Work()">
+                            <i class="bi bi-arrow-right-circle me-2"></i>
+                            <span class="flex-fill">Process</span>
                         </button>
-                        <button ng-if="iData.can_approve == 1 || iData.can_work == 1" class="btn btn-danger-secondary" ng-click="Reject()">
-                            <i class="bi bi-x-circle-fill me-2"></i> Reject Request
+                        <button ng-if="iData.can_approve == 1 || iData.can_work == 1" class="btn btn-danger-invert d-flex" ng-click="Reject()">
+                            <i class="bi bi-x-circle-fill me-2"></i>
+                            <span class="flex-fill">Reject</span>
                         </button>
-                        <button ng-if="iData.can_cancel == 1" class="btn btn-warning-secondary" ng-click="Cancel()">
-                            Cancel
+                        <button ng-if="iData.can_cancel == 1" class="btn btn-warning-invert d-flex bg-light-orange" ng-click="Cancel()">
+                            <i class="bi bi-x-square me-2"></i>
+                            <span class="flex-fill">Cancel</span>
+                        </button>
+                        <button ng-if="iData.can_edit == 1" class="btn btn-light d-flex" ng-click="Edit()">
+                            <i class="bi bi-pen me-2"></i>
+                            <span class="flex-fill">Edit</span>
+                        </button>
+                        <button ng-if="iData.can_previous == 1" class="btn btn-light d-flex" ng-click="Previous()">
+                            <i class="bi bi-backspace me-2"></i>
+                            <span class="flex-fill">Send Back</span>
                         </button>
                     </div>
                 </div>
@@ -219,6 +231,10 @@
             });
         }
         $scope.LoadData();
+
+        $scope.formAction = {
+            DownloadPDF: angular.noop
+        };
 
         $scope.$watch('iData.subCategoryCode', function (val) {
             switch (val) {
@@ -471,12 +487,13 @@
                     success: function (result) {
                         $timeout(function () {
                             hidePreloader();
-                            $scope.LoadData();
 
                             alertSuccess("Cancellation Successful", "The request has been cancelled successfully.", () => {
                                 if (window.opener && typeof window.opener.ReloadRequest === 'function') {
                                     if (!window.opener.ReloadRequest()) { window.opener.ReloadRequest(); }
                                 }
+
+                                location.href = '@Url.Page("Index")';
                             });
                         }, 0);
                     },
@@ -515,5 +532,83 @@
             });
         }
 
+        $scope.Edit = function(){
+            console.log($scope.iData);
+            if ($scope.iData.subCategoryCode == "FORM_REQUEST_MANPOWER") {
+                location.href = '@Url.Page("/Service/FormUpdate/FormManpower")?refId=' + $scope.id;
+            } else if ($scope.iData.subCategoryCode == "FORM_NEED_NEW_CARD") {
+                location.href = '@Url.Page("/Service/FormUpdate/FormNewCard")?refId=' + $scope.id;
+            } else if ($scope.iData.subCategoryCode == "FORM_PARKING_STICKER") {
+                location.href = '@Url.Page("/Service/FormUpdate/FormParkingSticker")?refId=' + $scope.id;
+            } else if ($scope.iData.subCategoryCode == "FORM_BUY_UNIFORM") {
+                location.href = '@Url.Page("/Service/FormUpdate/FormBuyUniform")?refId=' + $scope.id;
+            } else if ($scope.iData.subCategoryCode == "FORM_RESET_PASSWORD") {
+                location.href = '@Url.Page("/Service/FormUpdate/FormResetPassword")?refId=' + $scope.id;
+            } else if ($scope.iData.subCategoryCode == "FORM_SALARY_CERTIFICATE") {
+                location.href = '@Url.Page("/Service/FormUpdate/FormSalaryCertificate")?refId=' + $scope.id;
+            } else if ($scope.iData.subCategoryCode == "FORM_EMPLOYEE_CERTIFICATE") {
+                location.href = '@Url.Page("/Service/FormUpdate/FormEmployeeCertificate")?refId=' + $scope.id;
+            } else if ($scope.iData.subCategoryCode == "FORM_REQUEST_TRAINING") {
+                location.href = '@Url.Page("/Service/FormUpdate/FormRequestTraining")?refId=' + $scope.id;
+            } else if ($scope.iData.subCategoryCode == "FORM_BENEFIT_FUND") {
+                location.href = '@Url.Page("/Service/FormUpdate/FormBenefitFund")?refId=' + $scope.id;
+            } else if ($scope.iData.subCategoryCode == "FORM_BENEFIT_INSURANCE") {
+                location.href = '@Url.Page("/Service/FormUpdate/FormBenefitInsurance")?refId=' + $scope.id;
+            } else if ($scope.iData.subCategoryCode == "FORM_PERFORMANCE_LV1") {
+                location.href = '@Url.Page("/Service/FormUpdate/FormPerformanceLv1")?refId=' + $scope.id;
+            } else if ($scope.iData.subCategoryCode == "FORM_PERFORMANCE_LV2") {
+                location.href = '@Url.Page("/Service/FormUpdate/FormPerformanceLv2")?refId=' + $scope.id;
+            } else if ($scope.iData.subCategoryCode == "FORM_MOVE_EMPLOYEE") {
+                location.href = '@Url.Page("/Service/FormUpdate/FormMoveEmployee")?refId=' + $scope.id;
+            } else if ($scope.iData.subCategoryCode == "FORM_HIRING_EMPLOYEE") {
+                location.href = '@Url.Page("/Service/FormUpdate/FormHiringEmployee")?refId=' + $scope.id;
+            } else if ($scope.iData.subCategoryCode == "FORM_PDPA_EMPLOYEE") {
+                location.href = '@Url.Page("/Service/FormUpdate/FormPdpaEmployee")?refId=' + $scope.id;
+            } else if ($scope.iData.subCategoryCode == "FORM_WFH_EMPLOYEE") {
+                location.href = '@Url.Page("/Service/FormUpdate/FormWfhEmployee")?refId=' + $scope.id;
+            } else if ($scope.iData.subCategoryCode == "FORM_AGREEMENT_EMPLOYEE") {
+                location.href = '@Url.Page("/Service/FormUpdate/FormAgreementEmployee")?refId=' + $scope.id;
+            } else if ($scope.iData.subCategoryCode == "FORM_PREPARE_EMPLOYEE") {
+                location.href = '@Url.Page("/Service/FormUpdate/FormPrepareEmployee")?refId=' + $scope.id;
+            } else if ($scope.iData.subCategoryCode == "FORM_PROBATION_REPORT") {
+                location.href = '@Url.Page("/Service/FormUpdate/FormProbationReport")?refId=' + $scope.id;
+            } else if ($scope.iData.subCategoryCode == "FORM_REGISTER") {
+                location.href = '@Url.Page("/Service/FormUpdate/FormRegister")?refId=' + $scope.id;
+            } else if ($scope.iData.subCategoryCode == "FORM_PROMOTE_EMPLOYEE") {
+                location.href = '@Url.Page("/Service/FormUpdate/FormPromoteEmployee")?refId=' + $scope.id;
+            } else if ($scope.iData.subCategoryCode == "FORM_IDP") {
+                location.href = '@Url.Page("/Service/FormUpdate/FormIDP")?refId=' + $scope.id;
+            }
+        }
+
+        $scope.Previous = function () {
+            alertConfirm("Process Confirmed", "Do you want to send this item back to the requester to revise the details?", function () {
+                showPreloader();
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Service/Previous',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify({
+                        id: $scope.id
+                        , userBy: '@User.UserId()'
+                    }),
+                    success: function (result) {
+                        $timeout(function () {
+                            hidePreloader();
+                            $scope.LoadData();
+
+                            alertSuccess("Processed Successful", "The request has been processed successfully.", () => {
+                                if (window.opener && typeof window.opener.ReloadApprove === 'function') {
+                                    if (!window.opener.ReloadWork()) { window.opener.ReloadWork(); }
+                                }
+                            });
+                        }, 0);
+                    },
+                    error: AjaxError
+                });
+            });
+        }
     });
 </script>

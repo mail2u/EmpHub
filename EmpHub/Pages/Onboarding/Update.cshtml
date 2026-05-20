@@ -21,27 +21,12 @@
 }
 <div ng-controller="ManageCtrl" class="p-2">
     <partial name="_PartialOnboard" />
-    <div class="d-flex mt-2">
-        <div class="flex-fill">
-
-        </div>
-        <div class="me-2">
-            <button class="btn btn-primary" ng-click="Save()">
-                Save Change
-            </button>
-        </div>
-        <div class="">
-            <button class="btn btn-success" ng-click="Send()">
-                <i class="far fa-paper-plane me-2"></i> Submit
-            </button>
-        </div>
-    </div>
 </div>
 <script>
     app.controller('ManageCtrl', function ($scope, $http, $timeout, $filter) {
         $scope.page = 1
         $scope.row = 10;
-        $scope.step_index = 1;
+        $scope.step_index = 0;
         $scope.userId = '@Model.userId';
 
         $scope.lProcessType = [
@@ -89,6 +74,23 @@
                 , success: function (result) {
                     $timeout(function () {
                         $scope.lPosition = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'levelCode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lLevel = result;
                     }, 0);
                 }
                 , error: AjaxError
@@ -287,6 +289,14 @@
             $scope.iPersonal.prefix_th = $scope.iPersonal.prefix_en;
         }
 
+        $scope.SelectPosition = function () {
+            var find = $scope.lPosition.find(item => item.code == $scope.iEmployee.positionCode);
+
+            if (find) {
+                $scope.iEmployee.grade = find.condition_1;
+            }
+        }
+
         $scope.LoadData = function () {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/Onboard/Detail'
@@ -302,9 +312,7 @@
                     $timeout(function () {
                         $scope.iData = result;
 
-                        if ($scope.iData.status == 'Complete') {
-                            location.href = '@Url.Page("Detail")?userId=' + $scope.iData.userId;
-                        } else if ($scope.iData.status != 'Draft') {
+                        if ($scope.iData.status != 'Draft') {
                             location.href = '@Url.Page("Index")';
                         }
                     }, 0);
@@ -507,7 +515,8 @@
             }
         }
 
-        $scope.SelectSupervisor = function(x){
+        $scope.SelectSupervisor = function (x) {
+            $("#supervisorModal").modal('hide');
             $scope.iEmployee.supervisorId = x.userId;
             $scope.iEmployee.supervisorName = x.firstname_th + ' ' + x.lastname_th;
         }
@@ -815,10 +824,11 @@
                 flag = false;
                 JS_Require($(".employeeType"));
             }
-            if ($scope.iEmployee.employeeMode == '') {
-                flag = false;
-                JS_Require($(".employeeMode"));
-            }
+            // if ($scope.iEmployee.employeeMode == '') {
+            //     flag = false;
+            //     console.log('validate : employeeMode');
+            //     JS_Require($(".employeeMode"));
+            // }
 
             return flag;
         }
@@ -846,7 +856,7 @@
 
                 if (flag) {
                     alertSuccess("Create Onboarding", "Success", function () {
-                        window.close();
+                        location.href = '@Url.Page("Index")';
                     });
                 }
             }else{

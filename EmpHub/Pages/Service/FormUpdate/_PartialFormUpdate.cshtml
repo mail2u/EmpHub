@@ -1,0 +1,74 @@
+﻿@{
+    var token = User.AccessToken(Context);
+}
+<div ng-controller="ServiceHeaderCtrl">
+    <div class="mb-3">
+    </div>
+</div>
+<script>
+    app.controller('ServiceHeaderCtrl', function ($scope, $http, $timeout, $filter) {
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Service/Detail',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    id: $scope.id
+                    , userBy: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.$parent.iData = result;
+
+                        if ($scope.$parent.iData.can_edit != 1) {
+                            alertWarning("Warning", "คุณไม่ได้รับสิทธิ์ให้เข้าถึงหน้านี้", function () {
+                                location.href = '@Url.Page("Service/Index")';
+                            });
+                        } else {
+                            $timeout(function () {
+                                $scope.$parent.$broadcast('FORM_LOAD');
+                            });
+                        }
+                    }, 0);
+                },
+                error: function (jqXHR, error, errorThrown) {
+                    alertWarning("ระบบเกิดข้อผิดพลาด", jqXHR.responseText, function () {
+                        location.href = '@Url.Page("Service/Index")';
+                    });
+                }
+            });
+        }
+        $scope.LoadData();
+
+        $scope.$parent.ServiceRequest = function(){
+            return new Promise((resolve)=>{
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Service/RequestResend',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify($scope.$parent.iData),
+                    success: function (result) {
+                        $timeout(async function () {
+                            resolve(result.serviceNo)
+                        }, 0);
+                    }, error: function(jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "ระบบเกิดข้อผิดพลาด",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+    });
+</script>

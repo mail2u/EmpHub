@@ -328,9 +328,6 @@
             $scope.refId = x.id;
             $scope.userId = x.userId;
             $scope.status = x.status;
-            $scope.can_approve = x.can_approve;
-
-            x.can_approve = 0;
 
             await $scope.LoadDetail();
         }

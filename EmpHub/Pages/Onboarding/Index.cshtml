@@ -78,6 +78,7 @@
             <thead>
                 <tr>
                     <th>EMPLOYEE</th>
+                    <th>FULLNAME</th>
                     <th>ROLE & DEPARTMENT</th>
                     <th>Create</th>
                     <th class="text-center">Status</th>
@@ -93,9 +94,13 @@
                             </div>
                             <div>
                                 <div class="text-dark fw-bolder">{{ x.employeeCode }}</div>
-                                <div class="text-dark">{{ x.firstname_th + ' ' + x.lastname_th }}</div>
+                                <div class="text-dark">{{ x.employeeType }}</div>
                             </div>
                         </div>
+                    </td>
+                    <td>
+                        <div class="text-dark">{{ x.prefix_th + ' ' + x.firstname_th + ' ' + x.lastname_th }}</div>
+                        <div class="text-gray">{{ x.prefix_en + ' ' + x.firstname_en + ' ' + x.lastname_en }}</div>
                     </td>
                     <td>
                         <div class="text-dark">{{ x.positionDesc }}</div>

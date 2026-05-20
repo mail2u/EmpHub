@@ -1,0 +1,294 @@
+﻿@page
+@model EmpHub.Pages.Service.FormUpdate.FormHiringEmployeeModel
+@{
+    var token = User.AccessToken(HttpContext);
+}
+<style>
+    .main-content {
+        min-height: calc(100vh - 150px) !important;
+    }
+
+    .box-group{
+        padding: 15px;
+        border: 1px solid white;
+        border-radius: 15px;
+    }
+
+    .box-group.input-error {
+        border: 1px solid red;
+    }
+</style>
+<div ng-controller="FormCtrl" id="tab_education">
+    @* Header *@
+    <partial name="_PartialFormUpdate" />
+    @* View *@
+    <div class="rounded-4 mb-3 bg-white shadow-sm p-4">
+        <div class="text-center fs-4 fw-bolder mb-4 text-dark">
+            ใบขออนุมัติจ้าง
+        </div>
+        <div class="text-dark fs-6">
+            <div class="row">
+                <div class="col-sm-2 mb-3">
+                    ชื่อ-นามสกุล
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <input ng-model="iForm.fullname" class="form-control fullname" maxlength="100" />
+                </div>
+                <div class="col-sm-2 mb-3">
+                    ตำแหน่ง
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <select ng-model="iForm.position" class="form-select position" ng-options="x.desc_th as x.desc_th for x in lPosition"></select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2 mb-3">
+                    สังกัดฝ่ายงาน
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <select ng-model="iForm.section" class="form-select section" ng-options="x.desc_th as x.desc_th for x in lDepartment" ng-change="SelectSection()"></select>
+                </div>
+                <div class="col-sm-2 mb-3">
+                    สายงาน
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <input ng-model="iForm.department" class="form-control department" maxlength="50" disabled />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2 mb-3">
+                    วันที่จ้าง
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <input class="form-control date join_date"
+                        placeholder="__/__/____"
+                        ng-model="iForm.join_date_select"
+                        ng-model-options="{ updateOn: 'blur' }"
+                        moment-picker="iForm.join_date_select"
+                        locale="th"
+                        format="DD/MM/YYYY"
+                        min-view="month"
+                        max-view="month" required />
+                </div>
+                <div class="col-sm-2 mb-3">
+                    อัตราเงินเดือนเริ่มต้น
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <input ng-model="iForm.probation_salary" amount="iForm.probation_salary" class="form-control probation_salary" format-to-currency  />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2 mb-3">
+                    ระยะเวลาทดลองงาน
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <input ng-model="iForm.probation_period" class="form-control probation_period" maxlength="50" />
+                </div>
+                <div class="col-sm-2 mb-3">
+                    ปรับเงินเดือนหลังผ่านทดลองงาน
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <input ng-model="iForm.salary" amount="iForm.salary" class="form-control salary" format-to-currency  />
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="fw-bolder">เงื่อนไขอื่นๆ</div>
+                <textarea ng-model="iForm.description" class="form-control description" rows=5 maxlength="2000"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-end">
+        <div class="btn btn-primary" ng-click="Save()">
+            <i class="far fa-paper-plane me-2"></i> Send Request
+        </div>
+    </div>
+</div>
+<script>
+    $(".day").mask("00");
+    $(".score").mask("00");
+    $(".date").mask("00/00/0000");
+    app.controller('FormCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.id = '@Model.refId';
+
+        $scope.LoadForm = function(){
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormHiringEmployeeDetail',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                cache: false,
+                data: JSON.stringify({
+                    refId: $scope.id
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.iForm = result
+
+                        if ($scope.iForm.join_date != '') {
+                            $scope.iForm.join_date_select = moment($scope.iForm.join_date, "DD/MM/YYYY");
+                        }
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+        
+        $scope.$on('FORM_LOAD', function (e) {
+            $scope.LoadForm();
+        });
+
+        $scope.LoadMaster = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'departmentCode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lDepartment = result.filter(item => item.condition_4 == 'Department');
+                        $scope.lGroup = result.filter(item => item.condition_4 == 'Group');
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'positionCode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lPosition = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadMaster();
+
+        $scope.SelectSection = function(){
+            var find_department = $scope.lDepartment.find(item => item.desc_th == $scope.iForm.section);
+
+            $scope.iForm.department = '';
+
+            if (find_department) {
+                var find_group = $scope.lGroup.find(item => item.code = find_department.condition_3);
+
+                if (find_group) {
+                    $scope.iForm.department = find_group.desc_th;
+                }
+            }
+        }
+
+        $scope.Validate = function () {
+            var flag = true;
+            JS_Reset($(".fullname"));
+            JS_Reset($(".position"));
+            JS_Reset($(".section"));
+            JS_Reset($(".department"));
+            JS_Reset($(".join_date"));
+            JS_Reset($(".probation_salary"));
+            JS_Reset($(".probation_period"));
+            JS_Reset($(".salary"));
+            JS_Reset($(".description"));
+
+            if($scope.iForm.join_date_select){
+                $scope.iForm.join_date = $scope.iForm.join_date_select.format("DD/MM/YYYY");
+            }
+
+            if ($scope.iForm.fullname == '') {
+                flag = false;
+                JS_Require($(".fullname"));
+            }
+            if ($scope.iForm.position == '') {
+                flag = false;
+                JS_Require($(".position"));
+            }
+            if ($scope.iForm.section == '') {
+                flag = false;
+                JS_Require($(".section"));
+            }
+            if ($scope.iForm.department == '') {
+                flag = false;
+                JS_Require($(".department"));
+            }
+            if ($scope.iForm.join_date == '') {
+                flag = false;
+                JS_Require($(".join_date"));
+            }
+            if ($scope.iForm.probation_salary == 0) {
+                flag = false;
+                JS_Require($(".probation_salary"));
+            }
+            if ($scope.iForm.probation_period == '') {
+                flag = false;
+                JS_Require($(".probation_period"));
+            }
+            if ($scope.iForm.salary == 0) {
+                flag = false;
+                JS_Require($(".salary"));
+            }
+            if ($scope.iForm.description == '') {
+                flag = false;
+                JS_Require($(".description"));
+            }
+
+            return flag;
+        }
+
+        $scope.Save = async function () {
+            if ($scope.Validate()) {
+                alertConfirm("ยืนยันการทำรายการ", "ท่านต้องการส่งใบคำขอ", async function () {
+                    var flag = await $scope.CreateForm();
+
+                    if (flag) {
+                        var serviceNo = await $scope.ServiceRequest();
+
+                        if (serviceNo) {
+                            alertSuccess("ทำรายการสำเร็จ", "ระบบบันทึกใบคำขอของท่านเรียบร้อย", function () {
+                                location.href = '@Url.Page("/Service/Index")';
+                            });
+                        }
+                    }
+                });
+            } else {
+                alertWarning("แจ้งเตือน", "กรุณากรอกข้อมูลให้ครบ");
+            }
+        }
+
+        $scope.CreateForm = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormHiringEmployeeCreate',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify($scope.iForm),
+                    success: function () {
+                        $timeout(async function () {
+                            resolve(true);
+                        }, 0);
+                    }, error: function (jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "ระบบเกิดข้อผิดพลาด",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+    });
+</script>

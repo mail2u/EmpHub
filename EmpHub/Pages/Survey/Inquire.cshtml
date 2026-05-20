@@ -1,0 +1,308 @@
+﻿@page
+@model EmpHub.Pages.Survey.InquireModel
+@{
+    var token = User.AccessToken(HttpContext);
+}
+<style>
+    .bg-expired{
+        background-color:var(--bs-gray);
+        color:var(--light-gray);
+    }
+    .bg-active{
+        background-color:var(--light-green);
+        color:var(--bs-green);
+    }
+    .bg-pending{
+        background-color:var(--light-orange);
+        color:var(--bs-orange);
+    }
+</style>
+@section PageHeader {
+    <!-- [ page-header ] start -->
+    <div class="page-header">
+        <div class="page-header-left d-flex align-items-center">
+            <div class="page-header-title">
+                <h5 class="m-b-10">Survey</h5>
+            </div>
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Page("/Index")">Home</a></li>
+                <li class="breadcrumb-item">Inquire</li>
+            </ul>
+        </div>
+    </div>
+}
+
+<div ng-controller="SurveyCtrl">
+    <div class="d-md-flex mb-2">
+        <div class="fs-4 me-3">Inquire</div>
+        <div class="overflow-auto flex-fill">
+            <div class="flex-fill d-flex flex-nowrap align-items-center">
+                <div class="btn btn-link text-nowrap {{ iStatus == '' ? 'active' : '' }}" ng-click="SelectStatus('')">
+                    All <span class="badge ms-1" ng-show="sum_all > 0">{{ sum_all | number }}</span>
+                </div> |
+                <div class="btn btn-link border-0 text-nowrap {{ iStatus == 'pending' ? 'active' : '' }}" ng-click="SelectStatus('pending')">
+                    Pending <span class="badge ms-1" ng-show="sum_pending > 0">{{ sum_pending | number }}</span>
+                </div>
+                <div class="btn btn-link border-0 text-nowrap {{ iStatus == 'active' ? 'active' : '' }}" ng-click="SelectStatus('active')">
+                    Active <span class="badge ms-1" ng-show="sum_active > 0">{{ sum_active | number }}</span>
+                </div>
+                <div class="btn btn-link border-0 text-nowrap {{ iStatus == 'expired' ? 'active' : '' }}" ng-click="SelectStatus('expired')">
+                    Expire <span class="badge ms-1" ng-show="sum_expired > 0">{{ sum_close | number }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mb-4">
+        <div style="min-height:calc(100vh - 410px);" class="position-relative">
+            <table class="table table-tip border shadow-sm">
+                <thead>
+                    <tr>
+                        <th width="50"></th>
+                        <th>
+                            Title
+                        </th>
+                        <th width="150">
+                            Participants
+                        </th>
+                        <th class="text-center">
+                            Status
+                        </th>
+                        <th width="100">
+                            Actions
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="x in lData" class="{{ x.statusCss }} {{ x.is_not_read == 1 ? 'fw-bolder' : '' }}">
+                        <td class="text-center align-middle">
+                            <span ng-show="x.status == 'expired'" class="text-gray" title="Expired">
+                               <i class="bi bi-x-circle"></i>
+                            </span>
+                            <span ng-show="x.status == 'active'" class="text-green" title="Active">
+                                <i class="bi bi-check-circle text-success"></i>
+                            </span>
+                            <span ng-show="x.status == 'pending'" class="text-orange" title="Pending">
+                                <i class="bi bi-stopwatch"></i>
+                            </span>
+                        </td>
+                        <td>
+                            <div class="fw-bolder text-truncate">
+                                {{ x.title }}
+                            </div>
+                            <div>{{ x.start_date }} - {{ x.end_date }}</div>
+                        </td>
+                        <td class="align-middle">
+                            {{ x.participants | number }}
+                            <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="{{ x.participants }}" aria-valuemin="0" aria-valuemax="{{ x.total }}" style="height:5px;" title="{{ x.total }} totals">
+                                <div class="progress-bar" style="width:{{ x.participants / x.total * 100 }}%"></div>
+                            </div>
+                        </td>
+                        <td class="text-center align-middle">
+                            <div class="badge bg-{{ x.status }}">{{ x.status }}</div>
+                        </td>
+                        <td>
+                            <div class="d-flex">
+                                <button ng-click="ShowHistory(x)" class="btn btn-circle bg-light-orange me-2" title="History">
+                                   <i class="bi bi-people-fill"></i>
+                                </button>
+                                <button ng-click="ShowDetail(x)" class="btn btn-circle bg-light-blue" title="Detail">
+                                    <i class="bi bi-arrow-right"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3">
+                            <div class="text-light-gray">Showing {{ ((page - 1) * row) + 1 }} to {{ (page * row) > total ? total : page * row }} of {{ total }} requests</div>
+                        </td>
+                        <td colspan="3">
+                            <div class="d-flex">
+                                <div class="flex-fill"></div>
+                                <button class="btn btn-circle me-2" ng-click="LoadData(page - 1)" ng-disabled="page <= 1">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <button class="btn btn-circle" ng-click="LoadData(page + 1)" ng-disabled="page * row >= total">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    @* Modal *@
+    <div class="modal fade" id="historyModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content rounded-0">
+                <div class="modal-header">
+                <h1 class="modal-title fs-5">Survey Info</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-2">
+                        <input ng-model="find_history" class="form-control" placeholder="ค้นหา" />
+                    </div>
+                    <div class="d-flex align-items-cetner mb-2">
+                        <div class="flex-fill fw-bolder">
+                            total : {{ lHistory.length | number }}
+                        </div>
+                        <div class="badge bg-success me-2">
+                            complete : {{ history_complete_count | number }}
+                        </div>
+                        <div class="badge bg-orange">
+                            waiting : {{ history_wait_count | number }}
+                        </div>
+                    </div>
+                    <div class="overflow-auto" style="height:calc(100vh - 200px);">
+                        <table class="table table-bolderless">
+                            <tbody>
+                                <tr ng-repeat="x in lHistory | orderBy : ['status','-create_date'] | filter : find_history">
+                                    <td width="50">
+                                        {{ $index + 1 }}
+                                    </td>
+                                    <td>
+                                        <div class="fw-bolder">
+                                            {{ x.fullname }}
+                                        </div>
+                                        <div class="">
+                                            {{ x.position }} {{ x.department }}
+                                        </div>
+                                    </td>
+                                    <td class="align-middle">
+                                        {{ x.create_date }}
+                                    </td>
+                                    <td class="align-middle width="50">
+                                        <div ng-show="x.status == 'complete'">
+                                            <i class="bi bi-check-circle text-success"></i>
+                                        </div>
+                                        <div ng-show="x.status == 'waiting'">
+                                           <i class="bi bi-hourglass-split text-orange"></i>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('SurveyCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.is_not_read = 99;
+        $scope.createBy = '';
+        $scope.iStatus = '';
+
+        $scope.page = 1;
+        $scope.row = 10;
+        $scope.lData = [];
+        
+        $scope.LoadData = function(page = 1){
+            $scope.page = page;
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Survey/InquireList',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    page: $scope.page
+                    , row: $scope.row
+                    , status: $scope.iStatus
+                    , userId: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.lData = result.data;
+                        $scope.total = result.total;
+                    }, 0);
+                },
+                error: AjaxError
+            });
+            
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Survey/InquireSummary', 
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.sum_close = 0;
+                        $scope.sum_active = 0;
+                        
+                        var find = result.find(x => x.status == 'expired');
+                        if (find) { 
+                            $scope.sum_close = find.total; 
+                        }
+                        find = result.find(x => x.status == 'active');
+                        if (find) { 
+                            $scope.sum_active = find.total; 
+                        }
+                        find = result.find(x => x.status == 'pending');
+                        if (find) { 
+                            $scope.sum_pending = find.total; 
+                        }
+
+                        $scope.sum_all = $scope.sum_close
+                            + $scope.sum_active
+                            + $scope.sum_pending;
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+        $scope.SelectStatus = function (status) {
+            $scope.iStatus = status;
+            $scope.LoadData();
+        }
+
+        $scope.SetPage = function (page) {
+            $scope.LoadData(page);
+        }
+        
+        $scope.ShowDetail = function(x){
+            x.is_not_read = 0;
+            window.open('@Url.Page("Summary")?id=' + x.id, '_blank');
+        }
+
+        $scope.ShowHistory = function(x){
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/SurveyResponse/HistoryList',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    surveyId: x.id
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.lHistory = result;
+                        $scope.history_complete_count = result.filter(item => item.status == 'complete').length;
+                        $scope.history_wait_count = result.filter(item => item.status == 'waiting').length;
+                        $("#historyModal").modal('show');
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+        
+        window.parent.ReloadRequest = function () {
+            $scope.LoadData();
+        }
+    })
+</Script>

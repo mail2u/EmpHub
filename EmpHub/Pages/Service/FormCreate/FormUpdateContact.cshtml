@@ -1,0 +1,435 @@
+﻿@page
+@model EmpHub.Pages.Service.FormCreate.FormUpdateContactModel
+@{
+    var token = User.AccessToken(HttpContext);
+}
+<style>
+    .form-input {
+        padding: 5px;
+        border: 0px;
+        border-radius: 0;
+        border-bottom: 2px solid var(--bs-gray-400);
+        background-color: #fcfcfc;
+    }
+
+    .form-input:focus {
+        border-bottom: 2px solid var(--tip-blue);
+    }
+
+    input.form-input:read-only {
+        background-color: var(--bs-gray-200);
+    }
+</style>
+<div ng-controller="FormCtrl" id="tab_education">
+    @* Header *@
+    <partial name="_PartialFormHeader" />
+    @* View *@
+    <div class="rounded-4 mb-3 bg-white shadow-sm p-4">
+        <div class="text-center fs-4 fw-bolder mb-4 text-dark">
+            ปรับปรุงข้อมูลบัตร
+        </div>
+        <div class="text-dark fs-6">
+            <div class="fw-bolder fs-6">ที่อยู่ทะเบียนบ้าน</div>
+            <div class="row">
+                <div class="col-sm-6 mb-3">
+                    <div>บ้านเลขที่ <span class="text-danger">*</span></div>
+                    <input ng-model="iForm.registered_home" class="form-control form-input registered_home" maxlength="100" ng-disabled="is_readonly" />
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <div>ถนน</div>
+                    <input ng-model="iForm.registered_road" class="form-control form-input registered_road" maxlength="100" ng-disabled="is_readonly" />
+                </div>
+                <div class="col-sm-3 mb-3">
+                    <div>แขวง/ตำบล</div>
+                    <input ng-model="iForm.registered_subDistrictName" class="form-control form-input icon-search registered_subDistrictName" maxlength="50" ng-click="ShowAddress('registered')" readonly />
+                </div>
+                <div class="col-sm-3 mb-3">
+                    <div>เขต/อำเภอ</div>
+                    <input ng-model="iForm.registered_districtName" class="form-control form-input icon-search registered_districtName" maxlength="50" ng-click="ShowAddress('registered')" readonly />
+                </div>
+                <div class="col-sm-3 mb-3">
+                    <div>จังหวัด <span class="text-danger">*</span></div>
+                    <input ng-model="iForm.registered_provinceName" class="form-control form-input icon-search registered_provinceName" maxlength="50" ng-click="ShowAddress('registered')" readonly />
+                </div>
+                <div class="col-sm-3 mb-3">
+                    <div>ไปรษณีย์</div>
+                    <input ng-model="iForm.registered_postcode" class="form-control form-input registered_postcode" maxlength="5" ng-disabled="is_readonly" />
+                </div>
+            </div>
+            <div class="fw-bolder fs-6 me-2">ที่อยู่ตามบัตรประชาชน</div>
+            <div class="mb-2">
+                <input ng-model="is_card_same_register" type="checkbox" ng-change="SelectCardAddressUserRegistered()" ng-disabled="is_readonly" /> ใช้ที่อยู่เดียวกับทะเบียนบ้าน
+            </div>
+            <div class="row">
+                <div class="col-sm-6 mb-3">
+                    <div>บ้านเลขที่ <span class="text-danger">*</span></div>
+                    <input ng-model="iForm.card_home" class="form-control form-input card_home" maxlength="100" ng-disabled="is_readonly" />
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <div>ถนน</div>
+                    <input ng-model="iForm.card_road" class="form-control form-input card_road" maxlength="100" ng-disabled="is_readonly" />
+                </div>
+                <div class="col-sm-3 mb-3">
+                    <div>แขวง/ตำบล</div>
+                    <input ng-model="iForm.card_subDistrictName" class="form-control form-input icon-search card_subDistrictName" maxlength="50" ng-click="ShowAddress('card')" readonly />
+                </div>
+                <div class="col-sm-3 mb-3">
+                    <div>เขต/อำเภอ</div>
+                    <input ng-model="iForm.card_districtName" class="form-control form-input icon-search card_districtName" maxlength="50" ng-click="ShowAddress('card')" readonly />
+                </div>
+                <div class="col-sm-3 mb-3">
+                    <div>จังหวัด <span class="text-danger">*</span></div>
+                    <input ng-model="iForm.card_provinceName" class="form-control form-input icon-search card_provinceName" maxlength="50" ng-click="ShowAddress('card')" readonly />
+                </div>
+                <div class="col-sm-3 mb-3">
+                    <div>ไปรษณีย์</div>
+                    <input ng-model="iForm.card_postcode" class="form-control form-input card_postcode" maxlength="5" ng-disabled="is_readonly" />
+                </div>
+            </div>
+            <div class="fw-bolder fs-6">ที่อยู่พักอาศัย</div>
+            <div class="mb-2">
+                <input ng-model="is_live_same_register" type="checkbox" ng-change="SelectLiveAddressUserRegistered()" ng-disabled="is_readonly" /> ใช้ที่อยู่เดียวกับทะเบียนบ้าน
+            </div>
+            <div class="row">
+                <div class="col-sm-6 mb-3">
+                    <div>บ้านเลขที่ <span class="text-danger">*</span></div>
+                    <input ng-model="iForm.live_home" class="form-control form-input live_home" maxlength="100" ng-disabled="is_readonly" />
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <div>ถนน</div>
+                    <input ng-model="iForm.live_road" class="form-control form-input live_road" maxlength="100" ng-disabled="is_readonly" />
+                </div>
+                <div class="col-sm-3 mb-3">
+                    <div>แขวง/ตำบล</div>
+                    <input ng-model="iForm.live_subDistrictName" class="form-control form-input icon-search live_subDistrictName" maxlength="50" ng-click="ShowAddress('live')" readonly />
+                </div>
+                <div class="col-sm-3 mb-3">
+                    <div>เขต/อำเภอ</div>
+                    <input ng-model="iForm.live_districtName" class="form-control form-input icon-search live_districtName" maxlength="50" ng-click="ShowAddress('live')" readonly />
+                </div>
+                <div class="col-sm-3 mb-3">
+                    <div>จังหวัด <span class="text-danger">*</span></div>
+                    <input ng-model="iForm.live_provinceName" class="form-control form-input icon-search live_provinceName" maxlength="50" ng-click="ShowAddress('live')" readonly />
+                </div>
+                <div class="col-sm-3 mb-3">
+                    <div>ไปรษณีย์</div>
+                    <input ng-model="iForm.live_postcode" class="form-control form-input live_postcode" maxlength="5" ng-disabled="is_readonly" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">มือถือ</div>
+                    <input ng-model="iForm.mobile" class="form-control form-input mobile" maxlength="50" />
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">เบอร์ติดต่อ</div>
+                    <input ng-model="iForm.phone" class="form-control form-input phone" maxlength="50" />
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">อีเมล์ติดต่อ</div>
+                    <input ng-model="iForm.email" class="form-control form-input email" maxlength="50" />
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">มือถือบริษัท</div>
+                    <input ng-model="iForm.phone_office" class="form-control form-input phone_office" maxlength="50" />
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">อีเมล์บริษัท</div>
+                    <input ng-model="iForm.email_office" class="form-control form-input email_office" maxlength="50" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-end">
+        <div class="btn btn-primary" ng-click="Save()">
+            <i class="far fa-paper-plane me-2"></i> Send Request
+        </div>
+    </div>
+    @* modal *@
+    <div id="addressModal" class="modal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div>
+                        <div class="mb-2">
+                            <input ng-model="filter_name" class="form-control" placeholder="ค้นหาที่อยู่" />
+                            <div class="list-group list-group-flush overflow-auto" style="max-height: 400px;">
+                                <div class="list-group-item list-group-item-action d-flex align-items-center justify-content-between" ng-repeat="x in lAddress | filter : filter_name | limitTo : 50">
+                                    <div class="p-2">
+                                        <nav aria-label="breadcrumb">
+                                            <ol class="breadcrumb mb-0">
+                                                <li class="breadcrumb-item active">{{ x.subDistrictName }}</li>
+                                                <li class="breadcrumb-item active">{{ x.districtName }}</li>
+                                                <li class="breadcrumb-item active">{{ x.provinceName }}</li>
+                                                <li class="breadcrumb-item active">{{ x.postcode }}</li>
+                                            </ol>
+                                        </nav>
+                                    </div>
+                                    <div>
+                                        <button ng-click="SelectAddress(x)" class="btn btn-circle">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <button class="btn btn-light" data-bs-dismiss="modal" aria-label="Close">
+                                ปิด
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(".day").mask("00");
+    $(".score").mask("00");
+    $(".date").mask("00/00/0000");
+    app.controller('FormCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.mode = '@Model.mode';
+        $scope.userId = '@Model.id';
+        $scope.iData = {};
+        $scope.iForm = {}
+
+        $scope.Validate = function () {
+            var flag = true;
+            JS_Reset($(".employeeCode"));
+            JS_Reset($(".idcard"));
+
+            if ($scope.iForm.employeeCode == '') {
+                flag = false;
+                JS_Require($(".employeeCode"));
+            }
+            if ($scope.iForm.idcard == '') {
+                flag = false;
+                JS_Require($(".idcard"));
+            }
+
+            return flag;
+        }
+
+        $scope.MasterData = function(){
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/Address'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , dataType: 'json'
+                , cache: false
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lAddress = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.MasterData();
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserPersonal',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.userId
+                    , create_by: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        var iData = result.data;
+
+                        $scope.iForm.mobile = iData.mobile;
+                        $scope.iForm.phone = iData.phone;
+                        $scope.iForm.email = iData.email;
+                    }, 0);
+                }, error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserEmployee',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.userId
+                    , create_by: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        var iData = result.data;
+
+                        $scope.iForm.phone_office = iData.phone_office;
+                        $scope.iForm.email_office = iData.email;
+                    }, 0);
+                }, error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserAddress',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.userId
+                    , create_by: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        var iData = result.data;
+
+                        $scope.iForm.registered_home = iData.registered_home;
+                        $scope.iForm.registered_road = iData.registered_road;
+                        $scope.iForm.registered_subDistrictName = iData.registered_subDistrictName;
+                        $scope.iForm.registered_districtName = iData.registered_districtName;
+                        $scope.iForm.registered_provinceName = iData.registered_provinceName;
+                        $scope.iForm.registered_postcode = iData.registered_postcode;
+
+                        $scope.iForm.card_home = iData.card_home;
+                        $scope.iForm.card_road = iData.card_road;
+                        $scope.iForm.card_subDistrictName = iData.card_subDistrictName;
+                        $scope.iForm.card_districtName = iData.card_districtName;
+                        $scope.iForm.card_provinceName = iData.card_provinceName;
+                        $scope.iForm.card_postcode = iData.card_postcode;
+
+                        $scope.iForm.live_home = iData.live_home;
+                        $scope.iForm.live_road = iData.live_road;
+                        $scope.iForm.live_subDistrictName = iData.live_subDistrictName;
+                        $scope.iForm.live_districtName = iData.live_districtName;
+                        $scope.iForm.live_provinceName = iData.live_provinceName;
+                        $scope.iForm.live_postcode = iData.live_postcode;
+
+                        $scope.iForm.userId = $scope.userId;
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+
+        $scope.ShowAddress = function (type) {
+            $scope.address_type = type;
+            $("#addressModal").modal('show');
+        }
+
+        $scope.SelectAddress = function (x) {
+            $timeout(function () {
+                console.log($scope.address_type);
+                if ($scope.address_type == 'registered') {
+                    $scope.iForm.registered_subDistrictCode = x.subDistrictCode;
+                    $scope.iForm.registered_subDistrictName = x.subDistrictName;
+                    $scope.iForm.registered_districtCode = x.districtCode;
+                    $scope.iForm.registered_districtName = x.districtName;
+                    $scope.iForm.registered_provinceCode = x.provinceCode;
+                    $scope.iForm.registered_provinceName = x.provinceName;
+                    $scope.iForm.registered_postcode = x.postcode;
+                } else if ($scope.address_type == 'card') {
+                    $scope.iForm.card_subDistrictCode = x.subDistrictCode;
+                    $scope.iForm.card_subDistrictName = x.subDistrictName;
+                    $scope.iForm.card_districtCode = x.districtCode;
+                    $scope.iForm.card_districtName = x.districtName;
+                    $scope.iForm.card_provinceCode = x.provinceCode;
+                    $scope.iForm.card_provinceName = x.provinceName;
+                    $scope.iForm.card_postcode = x.postcode;
+                } else if ($scope.address_type == 'live') {
+                    $scope.iForm.live_subDistrictCode = x.subDistrictCode;
+                    $scope.iForm.live_subDistrictName = x.subDistrictName;
+                    $scope.iForm.live_districtCode = x.districtCode;
+                    $scope.iForm.live_districtName = x.districtName;
+                    $scope.iForm.live_provinceCode = x.provinceCode;
+                    $scope.iForm.live_provinceName = x.provinceName;
+                    $scope.iForm.live_postcode = x.postcode;
+                }
+                $("#addressModal").modal('hide');
+            }, 0);
+        }
+
+        $scope.SelectCardAddressUserRegistered = function () {
+            $scope.iForm.card_home = $scope.is_card_same_register ? $scope.iForm.registered_home : '';
+            $scope.iForm.card_road = $scope.is_card_same_register ? $scope.iForm.registered_road : '';
+            $scope.iForm.card_subDistrictCode = $scope.is_card_same_register ? $scope.iForm.registered_subDistrictCode : '';
+            $scope.iForm.card_subDistrictName = $scope.is_card_same_register ? $scope.iForm.registered_subDistrictName : '';
+            $scope.iForm.card_districtCode = $scope.is_card_same_register ? $scope.iForm.registered_districtCode : '';
+            $scope.iForm.card_districtName = $scope.is_card_same_register ? $scope.iForm.registered_districtName : '';
+            $scope.iForm.card_provinceCode = $scope.is_card_same_register ? $scope.iForm.registered_provinceCode : '';
+            $scope.iForm.card_provinceName = $scope.is_card_same_register ? $scope.iForm.registered_provinceName : '';
+            $scope.iForm.card_postcode = $scope.is_card_same_register ? $scope.iForm.registered_postcode : '';
+        }
+
+        $scope.SelectLiveAddressUserRegistered = function () {
+            $scope.iForm.live_home = $scope.is_live_same_register ? $scope.iForm.registered_home : '';
+            $scope.iForm.live_road = $scope.is_live_same_register ? $scope.iForm.registered_road : '';
+            $scope.iForm.live_subDistrictCode = $scope.is_live_same_register ? $scope.iForm.registered_subDistrictCode : '';
+            $scope.iForm.live_subDistrictName = $scope.is_live_same_register ? $scope.iForm.registered_subDistrictName : '';
+            $scope.iForm.live_districtCode = $scope.is_live_same_register ? $scope.iForm.registered_districtCode : '';
+            $scope.iForm.live_districtName = $scope.is_live_same_register ? $scope.iForm.registered_districtName : '';
+            $scope.iForm.live_provinceCode = $scope.is_live_same_register ? $scope.iForm.registered_provinceCode : '';
+            $scope.iForm.live_provinceName = $scope.is_live_same_register ? $scope.iForm.registered_provinceName : '';
+            $scope.iForm.live_postcode = $scope.is_live_same_register ? $scope.iForm.registered_postcode : '';
+        }
+
+        $scope.Save = async function () {
+            if ($scope.Validate()) {
+                alertConfirm("ยืนยันการทำรายการ", "ท่านต้องการส่งใบคำขอ", async function () {
+                    var id = await $scope.CreateService();
+
+                    if (id) {
+                        $scope.iData.id = id;
+                        $scope.iForm.refId = id;
+
+                        var flag = await $scope.CreateForm();
+
+                        if (flag) {
+                            var serviceNo = await $scope.ServiceRequest();
+
+                            if (serviceNo) {
+                                alertSuccess("ทำรายการสำเร็จ", "ระบบบันทึกใบคำขอของท่านเรียบร้อย", function () {
+                                    location.href = '@Url.Page("/Service/Index")';
+                                });
+                            } else {
+                                $scope.CancelService();
+                            }
+                        } else {
+                            $scope.CancelService();
+                        }
+                    }
+                });
+            } else {
+                alertWarning("แจ้งเตือน", "กรุณากรอกข้อมูลให้ครบ");
+            }
+        }
+
+        $scope.CreateForm = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormUpdateContactCreate',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify($scope.iForm),
+                    success: function () {
+                        $timeout(async function () {
+                            resolve(true);
+                        }, 0);
+                    }, error: function (jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "ระบบเกิดข้อผิดพลาด",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+    });
+</script>

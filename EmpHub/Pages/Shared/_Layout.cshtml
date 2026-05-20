@@ -37,6 +37,7 @@
     <script src="~/js/xlsx.core.js"></script>
     <script src="~/js/moment.js"></script>
     <script src="~/js/charjs.js"></script>
+    <script src="~/lib/html-to-image/html-to-image.js"></script>
   @*   <script src="~/js/sweetalert.js"></script> *@
     @*  <script src="~/js/papaparse.js"></script> *@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -96,6 +97,7 @@
                             <span class="nxl-mtext">Dashboards</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                         </a>
                         <ul class="nxl-submenu">
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Dashboard/Index")">Employee</a></li>
                             <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/Dashboard")">HR Service</a></li>
                         </ul>
                     </li>
@@ -179,6 +181,7 @@
                         </a>
                         <ul class="nxl-submenu">
                             <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Survey/Index")">My Survey</a></li>
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Survey/Inquire")"><i class="bi bi-search me-1"></i> Inquire</a></li>
                             <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/SurveySetting/Index")"><i class="bi bi-gear me-1"></i>Survey Manage</a></li>
                         </ul>
                     </li>

@@ -1,0 +1,654 @@
+﻿@page
+@model EmpHub.Pages.Service.FormUpdate.FormPerformanceLv1Model
+@{
+    var token = User.AccessToken(HttpContext);
+}
+<style>
+    .main-content {
+        min-height: calc(100vh - 150px) !important;
+    }
+
+    .box-group{
+        padding: 15px;
+        border: 1px solid white;
+        border-radius: 15px;
+    }
+
+    .box-group.input-error {
+        border: 1px solid red;
+    }
+</style>
+<div ng-controller="FormCtrl" id="tab_education">
+    @* Header *@
+    <partial name="_PartialFormUpdate" />
+    @* View *@
+    <div class="rounded-4 mb-3 bg-white shadow-sm p-4">
+        <div class="text-center fs-4 fw-bolder mb-4 text-dark">
+            แบบประเมินผลการปฏิบัติงาน สำหรับพนักงาน ระดับเจ้าหน้าที่  -  หัวหน้างาน
+        </div>
+        <div class="text-dark fs-6">
+            <div class="row">
+                <div class="col-sm-2 mb-3">
+                    ชื่อ-นามสกุล
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <input ng-model="iForm.fullname" class="form-control fullname" maxlength="100" />
+                </div>
+                <div class="col-sm-2 mb-3">
+                    ตำแหน่ง
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <select ng-model="iForm.position" class="form-select position" ng-options="x.desc_th as x.desc_th for x in lPosition"></select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2 mb-3">
+                    ส่วน
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <select ng-model="iForm.section" class="form-select section" ng-options="x.desc_th as x.desc_th for x in lDepartment" ng-change="SelectSection()"></select>
+                </div>
+                <div class="col-sm-2 mb-3">
+                    ฝ่าย
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="p-2">{{ iForm.department }}</div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2 mb-3">
+                    วันเริ่มงาน
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <input class="form-control date join_date"
+                        placeholder="__/__/____"
+                        ng-model="iForm.join_date_select"
+                        ng-model-options="{ updateOn: 'blur' }"
+                        moment-picker="iForm.join_date_select"
+                        locale="th"
+                        format="DD/MM/YYYY"
+                        min-view="month"
+                        max-view="month" required />
+                </div>
+                <div class="col-sm-2 mb-3">
+                    ช่วงเวลาประเมิน
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="input-group">
+                        <input class="form-control date probation_start_date"
+                            placeholder="__/__/____"
+                            ng-model="iForm.probation_start_date_select"
+                            ng-model-options="{ updateOn: 'blur' }"
+                            moment-picker="iForm.probation_start_date_select"
+                            locale="th"
+                            format="DD/MM/YYYY"
+                            min-view="month"
+                            max-view="month" required />
+                        <div class="input-group-text">
+                            ถึง
+                        </div>
+                        <input class="form-control date probation_end_date"
+                            placeholder="__/__/____"
+                            ng-model="iForm.probation_end_date_select"
+                            ng-model-options="{ updateOn: 'blur' }"
+                            moment-picker="iForm.probation_end_date_select"
+                            locale="th"
+                            format="DD/MM/YYYY"
+                            min-view="month"
+                            max-view="month" required />
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-sm-2 mb-3">
+                    <div class="text-decoration-underline">
+                    สรุปเวลาปฏิบัติงาน
+                    </div>
+                </div>
+                <div class="col-sm-10 mb-3">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <td>สาย</td>
+                                <td><input type="number" ng-model="iForm.late" class="form-control day" /></td>
+                                <td>ครั้ง</td>
+                                <td>ลาไม่รับค่าจ้าง</td>
+                                <td><input type="number" ng-model="iForm.absence" class="form-control day" /></td>
+                                <td>ครั้ง</td>
+                            </tr>
+                            <tr>
+                                <td>ลากิจ</td>
+                                <td><input type="number" ng-model="iForm.personal_leave" class="form-control day" /></td>
+                                <td>ครั้ง</td>
+                                <td>ลาป่วย</td>
+                                <td><input type="number" ng-model="iForm.sick_leave" class="form-control day" /></td>
+                                <td>ครั้ง</td>
+                            </tr>
+                            <tr>
+                                <td>จำนวนใบเตือน</td>
+                                <td><input type="number" ng-model="iForm.warning" class="form-control day" /></td>
+                                <td>วัน</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="mt-4">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="text-center align-middle" width="50">ที่</th>
+                            <th class="text-center align-middle">หัวข้อประเมิน</th>
+                            <th class="text-center align-middle" width="100">น้ำหนัก</th>
+                            <th class="text-center align-middle" width="150">
+                                คะแนนที่ได้<br />(คะแนนเต็ม 10)
+                            </th>
+                            <th class="text-center align-middle" width="120">
+                                คะแนน<br />x น้ำหนัก
+                            </th>
+                            <th class="text-center align-middle" width="300">หมายเหตุ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-center align-middle">
+                                1
+                            </td>
+                            <td class="align-middle">
+                                คุณภาพงาน
+                            </td>
+                            <td class="text-center align-middle">
+                                15
+                            </td>
+                            <td>
+                                <input ng-model="iForm.answer1" amount="iForm.answer1" class="form-control text-center score answer1" format-to-number ng-change="CalcTotal()" />
+                            </td>
+                            <td class="text-center align-middle">
+                                {{ iForm.answer1 * 15 }}
+                            </td>
+                            <td class="align-middle">
+                                950-1000= A = Excellent 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-center align-middle">
+                                2
+                            </td>
+                            <td class="align-middle">
+                                ปริมาณงานที่ทำสำเร็จ
+                            </td>
+                            <td class="text-center align-middle">
+                                15
+                            </td>
+                            <td>
+                                <input ng-model="iForm.answer2" amount="iForm.answer2" class="form-control text-center score answer2" format-to-number ng-change="CalcTotal()" />
+                            </td>
+                            <td class="text-center align-middle">
+                                {{ iForm.answer2 * 15 }}
+                            </td>
+                            <td class="align-middle">
+                                700-949 = B = Good
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-center align-middle">
+                                3
+                            </td>
+                            <td class="align-middle">
+                                ความรอบรู้ในงาน และการตัดสินใจแก้ปัญหา
+                            </td>
+                            <td class="text-center align-middle">
+                                10
+                            </td>
+                            <td>
+                                <input ng-model="iForm.answer3" amount="iForm.answer3" class="form-control text-center score answer3" format-to-number ng-change="CalcTotal()" />
+                            </td>
+                            <td class="text-center align-middle">
+                                {{ iForm.answer3 * 10 }}
+                            </td>
+                            <td class="align-middle">
+                                500-699 = C = Fair
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-center align-middle">
+                                4
+                            </td>
+                            <td class="align-middle">
+                                ความคิดริเริ่มสร้างสรรค์
+                            </td>
+                            <td class="text-center align-middle">
+                                10
+                            </td>
+                            <td>
+                                <input ng-model="iForm.answer4" amount="iForm.answer4" class="form-control text-center score answer4" format-to-number ng-change="CalcTotal()" />
+                            </td>
+                            <td class="text-center align-middle">
+                                {{ iForm.answer4 * 10 }}
+                            </td>
+                            <td class="align-middle">
+                                < 500 = D = Need Improvement 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-center align-middle">
+                                5
+                            </td>
+                            <td class="align-middle">
+                                ความสามารถในการเรียนรู้และพัฒนาตนเอง
+                            </td>
+                            <td class="text-center align-middle">
+                                10
+                            </td>
+                            <td>
+                                <input ng-model="iForm.answer5" amount="iForm.answer5" class="form-control text-center score answer5" format-to-number ng-change="CalcTotal()" />
+                            </td>
+                            <td class="text-center align-middle">
+                                {{ iForm.answer5 * 10 }}
+                            </td>
+                            <td class="align-middle">
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-center align-middle">
+                                6
+                            </td>
+                            <td class="align-middle">
+                               ความขยันและเอาใจใส่ต่องาน
+                            </td>
+                            <td class="text-center align-middle">
+                                10
+                            </td>
+                            <td>
+                                <input ng-model="iForm.answer6" amount="iForm.answer6" class="form-control text-center score answer6" format-to-number ng-change="CalcTotal()" />
+                            </td>
+                            <td class="text-center align-middle">
+                                {{ iForm.answer6 * 10 }}
+                            </td>
+                            <td class="align-middle">
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-center align-middle">
+                                7
+                            </td>
+                            <td class="align-middle">
+                                มนุษยสัมพันธ์และการสร้างความสามัคคี
+                            </td>
+                            <td class="text-center align-middle">
+                                10
+                            </td>
+                            <td>
+                                <input ng-model="iForm.answer7" amount="iForm.answer7" class="form-control text-center score answer7" format-to-number ng-change="CalcTotal()" />
+                            </td>
+                            <td class="text-center align-middle">
+                                {{ iForm.answer7 * 10 }}
+                            </td>
+                            <td class="align-middle">
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-center align-middle">
+                                8
+                            </td>
+                            <td class="align-middle">
+                                ความไว้วางใจในการปฏิบัติงานตามคำสั่ง
+                            </td>
+                            <td class="text-center align-middle">
+                                10
+                            </td>
+                            <td>
+                                <input ng-model="iForm.answer8" amount="iForm.answer8" class="form-control text-center score answer8" format-to-number ng-change="CalcTotal()" />
+                            </td>
+                            <td class="text-center align-middle">
+                                {{ iForm.answer8 * 10 }}
+                            </td>
+                            <td class="align-middle">
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-center align-middle">
+                                9
+                            </td>
+                            <td class="align-middle">
+                                การปฏิบัติตามระเบียบข้อบังคับการทำงาน
+                            </td>
+                            <td class="text-center align-middle">
+                                5
+                            </td>
+                            <td>
+                                <input ng-model="iForm.answer9" amount="iForm.answer9" class="form-control text-center score answer9" format-to-number ng-change="CalcTotal()" />
+                            </td>
+                            <td class="text-center align-middle">
+                                {{ iForm.answer9 * 5 }}
+                            </td>
+                            <td class="align-middle">
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-center align-middle">
+                                10
+                            </td>
+                            <td class="align-middle">
+                               การใช้เวลา และตรงต่อเวลา
+                            </td>
+                            <td class="text-center align-middle">
+                                5
+                            </td>
+                            <td>
+                                <input ng-model="iForm.answer10" amount="iForm.answer10" class="form-control text-center score answer10" format-to-number ng-change="CalcTotal()" />
+                            </td>
+                            <td class="text-center align-middle">
+                                {{ iForm.answer10 * 5 }}
+                            </td>
+                            <td class="align-middle">
+
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td rowspan=2></td>
+                            <td class="text-center">คะแนนรวม</td>
+                            <td class="text-center">100</td>
+                            <td class="text-center fw-bolder">รวมคะแนนที่ได้</td>
+                            <td class="text-center fw-bolder"> {{ iForm.total }} </td>
+                            <td rowspan=2></td>
+                        </tr>
+                        <tr>
+                            <td colspan=2 class="text-center fw-bolder">
+                                เกรดที่ได้
+                            </td>
+                            <td colspan=2 class="text-center fw-bolder">
+                                {{ iForm.grade }}
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-end">
+        <div class="btn btn-primary" ng-click="Save()">
+            <i class="far fa-paper-plane me-2"></i> Send Request
+        </div>
+    </div>
+</div>
+<script>
+    $(".day").mask("00");
+    $(".score").mask("00");
+    $(".date").mask("00/00/0000");
+    app.controller('FormCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.id = '@Model.refId';
+
+        $scope.LoadForm = function(){
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormPerformanceLv2Detail',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                cache: false,
+                data: JSON.stringify({
+                    refId: $scope.id
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.iForm = result
+
+                        if ($scope.iForm.join_date != '') {
+                            $scope.iForm.join_date_select = moment($scope.iForm.join_date, "DD/MM/YYYY");
+                        }
+                        if ($scope.iForm.probation_start_date != '') {
+                            $scope.iForm.probation_start_date_select = moment($scope.iForm.probation_start_date, "DD/MM/YYYY");
+                        }
+                        if ($scope.iForm.probation_end_date != '') {
+                            $scope.iForm.probation_end_date_select = moment($scope.iForm.probation_end_date, "DD/MM/YYYY");
+                        }
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+        
+        $scope.$on('FORM_LOAD', function (e) {
+            $scope.LoadForm();
+        });
+
+        $scope.LoadData = function(){
+             $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'departmentCode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lDepartment = result.filter(item => item.condition_4 == 'Department');
+                        $scope.lGroup = result.filter(item => item.condition_4 == 'Group');
+                        $scope.lBusinessUnit = result.filter(item => item.condition_4 == 'Business Unit');
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'positionCode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lPosition = result.filter(item=>item.code == "POS14" || item.code == "POS15");
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+        $scope.SelectSection = function(){
+            $scope.iForm.department = '';
+
+            var find_section = $scope.lDepartment.find(item=>item.desc_th == $scope.iForm.section);
+
+            if(find_section){
+                var find_department = $scope.lGroup.find(item=>item.code == find_section.condition_3);
+
+                if(find_department){
+                    $scope.iForm.department = find_department.desc_th;
+                }
+            }
+        }
+
+        $scope.CalcTotal = function(){
+            var total = 0;
+            total += (parseFloat($scope.iForm.answer1) * 15);
+            total += (parseFloat($scope.iForm.answer2) * 15);
+            total += (parseFloat($scope.iForm.answer3) * 10);
+            total += (parseFloat($scope.iForm.answer4) * 10);
+            total += (parseFloat($scope.iForm.answer5) * 10);
+            total += (parseFloat($scope.iForm.answer6) * 10);
+            total += (parseFloat($scope.iForm.answer7) * 10);
+            total += (parseFloat($scope.iForm.answer8) * 10);
+            total += (parseFloat($scope.iForm.answer9) * 5);
+            total += (parseFloat($scope.iForm.answer10) * 5);
+
+            $scope.iForm.total = total;
+            $scope.iForm.grade = '';
+
+            if($scope.iForm.total > 949){
+                $scope.iForm.grade = 'A';
+            }else if($scope.iForm.total > 699){
+                $scope.iForm.grade = 'B';
+            }else if($scope.iForm.total > 499){
+                $scope.iForm.grade = 'C';
+            }else if($scope.iForm.total > 0){
+                $scope.iForm.grade = 'D';
+            }
+
+        }
+
+        $scope.Validate = function () {
+            var flag = true;
+            JS_Reset($(".fullname"));
+            JS_Reset($(".position"));
+            JS_Reset($(".section"));
+            JS_Reset($(".department"));
+            JS_Reset($(".join_date"));
+            JS_Reset($(".probation_start_date"));
+            JS_Reset($(".probation_end_date"));
+            JS_Reset($(".answer1"));
+            JS_Reset($(".answer2"));
+            JS_Reset($(".answer3"));
+            JS_Reset($(".answer4"));
+            JS_Reset($(".answer5"));
+            JS_Reset($(".answer6"));
+            JS_Reset($(".answer7"));
+            JS_Reset($(".answer8"));
+            JS_Reset($(".answer9"));
+            JS_Reset($(".answer10"));
+
+            if($scope.iForm.join_date_select){
+                $scope.iForm.join_date = $scope.iForm.join_date_select.format("DD/MM/YYYY");
+            }
+            if($scope.iForm.probation_start_date_select){
+                $scope.iForm.probation_start_date = $scope.iForm.probation_start_date_select.format("DD/MM/YYYY");
+            }
+            if($scope.iForm.probation_end_date_select){
+                $scope.iForm.probation_end_date = $scope.iForm.probation_end_date_select.format("DD/MM/YYYY");
+            }
+
+            if ($scope.iForm.fullname == '') {
+                flag = false;
+                JS_Require($(".fullname"));
+            }
+            if ($scope.iForm.position == '') {
+                flag = false;
+                JS_Require($(".position"));
+            }
+            if ($scope.iForm.section == '') {
+                flag = false;
+                JS_Require($(".section"));
+            }
+            if ($scope.iForm.department == '') {
+                flag = false;
+                JS_Require($(".department"));
+            }
+            if ($scope.iForm.join_date == '') {
+                flag = false;
+                JS_Require($(".join_date"));
+            }
+            if ($scope.iForm.probation_start_date == '') {
+                flag = false;
+                JS_Require($(".probation_start_date"));
+            }
+            if ($scope.iForm.probation_end_date == '') {
+                flag = false;
+                JS_Require($(".probation_end_date"));
+            }
+            if (parseFloat($scope.iForm.answer1) == 0 || parseFloat($scope.iForm.answer1) > 10) {
+                flag = false;
+                JS_Require($(".answer1"));
+            }
+            if (parseFloat($scope.iForm.answer2) == 0 || parseFloat($scope.iForm.answer2) > 10) {
+                flag = false;
+                JS_Require($(".answer2"));
+            }
+            if (parseFloat($scope.iForm.answer3) == 0 || parseFloat($scope.iForm.answer3) > 10) {
+                flag = false;
+                JS_Require($(".answer3"));
+            }
+            if (parseFloat($scope.iForm.answer4) == 0 || parseFloat($scope.iForm.answer4) > 10) {
+                flag = false;
+                JS_Require($(".answer4"));
+            }
+            if (parseFloat($scope.iForm.answer5) == 0 || parseFloat($scope.iForm.answer5) > 10) {
+                flag = false;
+                JS_Require($(".answer5"));
+            }
+            if (parseFloat($scope.iForm.answer6) == 0 || parseFloat($scope.iForm.answer6) > 10) {
+                flag = false;
+                JS_Require($(".answer6"));
+            }
+            if (parseFloat($scope.iForm.answer7) == 0 || parseFloat($scope.iForm.answer7) > 10) {
+                flag = false;
+                JS_Require($(".answer7"));
+            }
+            if (parseFloat($scope.iForm.answer8) == 0 || parseFloat($scope.iForm.answer8) > 10) {
+                flag = false;
+                JS_Require($(".answer8"));
+            }
+            if (parseFloat($scope.iForm.answer9) == 0 || parseFloat($scope.iForm.answer9) > 10) {
+                flag = false;
+                JS_Require($(".answer9"));
+            }
+            if (parseFloat($scope.iForm.answer10) == 0 || parseFloat($scope.iForm.answer10) > 10) {
+                flag = false;
+                JS_Require($(".answer10"));
+            }
+
+            return flag;
+        }
+
+        $scope.Save = async function () {
+            if ($scope.Validate()) {
+                alertConfirm("ยืนยันการทำรายการ", "ท่านต้องการส่งใบคำขอ", async function () {
+                    var flag = await $scope.CreateForm();
+
+                    if (flag) {
+                        var serviceNo = await $scope.ServiceRequest();
+
+                        if (serviceNo) {
+                            alertSuccess("ทำรายการสำเร็จ", "ระบบบันทึกใบคำขอของท่านเรียบร้อย", function () {
+                                location.href = '@Url.Page("/Service/Index")';
+                            });
+                        }
+                    }
+                });
+            } else {
+                alertWarning("แจ้งเตือน", "กรุณากรอกข้อมูลให้ครบ");
+            }
+        }
+
+        $scope.CreateForm = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormPerformanceLv2Create',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify($scope.iForm),
+                    success: function () {
+                        $timeout(async function () {
+                            resolve(true);
+                        }, 0);
+                    }, error: function (jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "ระบบเกิดข้อผิดพลาด",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+    });
+</script>

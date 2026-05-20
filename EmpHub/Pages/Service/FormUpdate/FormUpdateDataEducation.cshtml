@@ -1,0 +1,327 @@
+﻿@page
+@model EmpHub.Pages.Service.FormUpdate.FormUpdateDataEducationModel
+@{
+    var token = User.AccessToken(HttpContext);
+}
+<style>
+    .main-content{
+        min-height:calc(100vh - 150px) !important;
+    }
+
+    .list-item-box{
+        border: 2px solid white;
+        background-color: var(--bs-light);
+    }
+
+    .list-item-box:hover{
+        border: 2px solid var(--bs-blue);
+    }
+</style>
+<style>
+    .form-input {
+        padding: 5px;
+        border: 0px;
+        border-radius: 0;
+        border-bottom: 2px solid var(--bs-gray-400);
+        background-color: #fcfcfc;
+    }
+
+    .form-input:focus {
+        border-bottom: 2px solid var(--tip-blue);
+    }
+
+    input.form-input:read-only {
+        background-color: var(--bs-gray-200);
+    }
+</style>
+<div ng-controller="ServiceEducationCtrl" id="tab_education">
+    @* Header *@
+    <partial name="_PartialFormUpdate" />
+    @* View *@
+    <div class="rounded-4 mb-3 bg-white shadow-sm p-4">
+        <div class="list-group list-group-flush">
+            <div class="list-group-item p-0" ng-repeat="x in lData | filter : {mode:'modify'}">
+                <div class="list-item-box p-4 mb-3 rounded-3">
+                    <div class="fw-bolder">
+                        #{{ $index + 1 }}
+                    </div>
+                    <div class="d-flex flex-fill mb-3">
+                        <div class="flex-fill me-3">
+                            <div class="text-gray">
+                                สถาบันการศึกษา
+                            </div>
+                            <div class="dropdown">
+                                <input ng-model="x.institutionDesc" class="form-control form-input bg-white icon-search dropdown-toggle" readonly data-bs-toggle="dropdown" />
+                                <div class="dropdown-menu p-2 rounded-3" style="width:400px;">
+                                    <input ng-model="find_institution" class="form-control mb-2" />
+                                    <div class="overflow-auto list-group list-group-flush" style="height:400px">
+                                        <div class="list-group-item list-group-item-action" ng-repeat="d in lInstitution | filter : find_institution" ng-click="SelectInstitution(d, x)">
+                                            {{ d.desc_th }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="me-3" style="width:150px;">
+                            <div class="text-gray">
+                                ปีที่สำเร็จการศึกษา
+                            </div>
+                            <input ng-model="x.year" class="form-control form-input" year />
+                        </div>
+                        <div class="" style="width:150px;">
+                            <div class="text-gray">
+                                เกรดเฉลี่ย
+                            </div>
+                            <input ng-model="x.grade" amount="x.grade" class="form-control form-input grade" format-to-currency maxlength="4" />
+                        </div>
+                    </div>
+                    <div class="d-flex mb-3">
+                        <div class="flex-fill me-3">
+                            <div class="text-gray">
+                                วุฒิการศึกษา
+                            </div>
+                            <select ng-model="x.degreeCode" class="form-select form-input" ng-options="d.code as d.desc_th for d in lDegree"></select>
+                        </div>
+                        <div class="flex-fill me-3">
+                            <div class="text-gray">
+                                หลักสูตร
+                            </div>
+                            <select ng-model="x.programCode" class="form-select form-input" ng-options="d.code as d.desc_th for d in lProgram"></select>
+                        </div>
+                        <div class="flex-fill me-3">
+                            <div class="text-gray">
+                                สาขาวิชา
+                            </div>
+                            <input ng-model="x.major" class="form-control form-input" maxlength="200" />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="text-gray">
+                            เพิ่มกิจกรรม เกียรตินิยม รางวัล หรือโครงการพิเศษที่ประสบความสำเร็จระหว่างการศึกษา
+                        </div>
+                        <textarea ng-model="x.description" class="form-control form-input" rows="5" maxlength="4000"></textarea>
+                    </div>
+                   @*  <div class="text-end">
+                        <div class="btn btn-warning-invert bg-white" ng-click="Delete(x)">
+                            <i class="far fa-trash-alt me-2"></i>ลบรายการ
+                        </div>
+                    </div> *@
+                </div>
+            </div>
+        </div>
+        <div class="btn btn-light" ng-click="New()">
+            เพิ่มข้อมูลการศึกษา
+        </div>
+    </div>
+    <div class="d-flex justify-content-end">
+        <div class="btn btn-primary" ng-click="Save()">
+            <i class="far fa-paper-plane me-2"></i> Send Request
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ServiceEducationCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.id = '@Model.refId';
+
+        $scope.LoadForm = function(){
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormRequestTrainingDetail',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                cache: false,
+                data: JSON.stringify({
+                    refId: $scope.id
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.iForm = result
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+        
+        $scope.$on('FORM_LOAD', function (e) {
+            $scope.LoadForm();
+        });
+
+        $scope.LoadMaster = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'educationCode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lEduction = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'institution'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lInstitution = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+
+            
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'Degree'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lDegree = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadMaster();
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserEducation',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.userId
+                    , create_by: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.iData = {id:''};
+                        $scope.lData = result.data;
+
+                        if(result.can_edit != 1){
+                            alertWarning("ท่านไม่ได้สิทธิ์ให้เข้าถึงหน้านี้","กรุณาตรวจสอบ",function(){
+                                location.href = '@Url.Page("/Service/Index")';
+                            })
+                        }else{
+
+                            if($scope.lData.length == 0){
+                                $scope.New();
+                            }else{
+                                $scope.lData = $scope.lData.map(item=>{
+                                    item.mode = "modify";
+
+                                    return item;
+                                });
+                            }
+                        }
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+        $scope.SelectInstitution = function(d, x){
+            x.institution = d.code;
+            x.institutionDesc = d.desc_th;
+        }
+
+        $scope.New = function(){
+            $timeout(function () {
+                $scope.lData.splice($scope.lData.length, 0, { institution:'', grade: 0, mode: "modify" });
+            }, 0);
+        }
+
+        $scope.Delete = function(x){
+            $timeout(function () {
+                x.mode = "delete";
+            }, 0);
+        }
+
+        $scope.Validate = function(){
+            var flag = true;
+
+            $scope.lData = $scope.lData.filter(item => item.institution != '');
+            // JS_Reset($(".firstname_th"));
+            // JS_Reset($(".lastname_th"));
+
+            // if($scope.iData.firstname_th == ''){
+            //     flag = false;
+            //     JS_Require($(".firstname_th"));
+            // }
+            // if($scope.iData.lastname_th == ''){
+            //     flag = false;
+            //     JS_Require($(".lastname_th"));
+            // }
+
+            return flag;
+        }
+
+        $scope.Save = async function () {
+            if ($scope.Validate()) {
+                alertConfirm("ยืนยันการทำรายการ", "ท่านต้องการส่งใบคำขอ", async function () {
+                    var flag = await $scope.CreateForm();
+
+                    if (flag) {
+                        var serviceNo = await $scope.ServiceRequest();
+
+                        if (serviceNo) {
+                            alertSuccess("ทำรายการสำเร็จ", "ระบบบันทึกใบคำขอของท่านเรียบร้อย", function () {
+                                location.href = '@Url.Page("/Service/Index")';
+                            });
+                        }
+                    }
+                });
+            } else {
+                alertWarning("แจ้งเตือน", "กรุณากรอกข้อมูลให้ครบ");
+            }
+        }
+
+        $scope.CreateForm = function () {
+            return new Promise((resolve)=>{
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceEducation/Save',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify($scope.lData),
+                    success: function () {
+                        $timeout(async function () {
+                           resolve(true);
+                        }, 0);
+                    }, error: function(jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "ระบบเกิดข้อผิดพลาด",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+    });
+</script>

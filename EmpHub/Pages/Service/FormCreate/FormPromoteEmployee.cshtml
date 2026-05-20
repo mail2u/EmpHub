@@ -1,0 +1,414 @@
+﻿@page
+@model EmpHub.Pages.Service.FormCreate.FormPromoteEmployeeModel
+@{
+    var token = User.AccessToken(HttpContext);
+}
+<style>
+    .main-content {
+        min-height: calc(100vh - 150px) !important;
+    }
+
+    .box-group {
+        padding: 15px;
+        border: 1px solid white;
+        border-radius: 15px;
+    }
+
+        .box-group.input-error {
+            border: 1px solid red;
+        }
+</style>
+<div ng-controller="FormCtrl" id="tab_education">
+    @* Header *@
+    <partial name="_PartialFormHeader" />
+    @* View *@
+    <div class="rounded-4 mb-3 bg-white shadow-sm text-dark" style="padding:25px 120px;">
+        <div class="text-center fs-4 fw-bolder mb-4 text-dark">
+            แบบเสนอขอปรับเลื่อนตาแหน่งงานบุคลากร
+        </div>
+        <div class="fs-5 fw-bolder mb-4 bg-light p-2 d-flex align-items-center">
+            <div class="flex-fill">
+                ข้อมูลบุคลากรที่ขอเสนอปรับเลื่อนตาแหน่งงาน
+            </div>
+            <div class="btn btn-primary" ng-click="ShowUser()">
+                <i class="bi bi-search me-2"></i> ค้นหา
+            </div>
+        </div>
+        <div class="row fs-5">
+            <div class="col-sm-6 mb-3 d-flex">
+                <div class="text-nowrap me-2">ชื่อ-สกุล</div>
+                <input ng-model="iForm.fullname" class="form-text fullname" maxlength="100" />
+            </div>
+            <div class="col-sm-6 mb-3 d-flex">
+                <div class="text-nowrap me-2">ตำแหน่ง</div><input ng-model="iForm.position" class="form-text position" maxlength="50" />
+            </div>
+            <div class="col-sm-6 mb-3 d-flex">
+                <div class="text-nowrap me-2">ส่วน</div><input ng-model="iForm.section" class="form-text section" maxlength="50" />
+            </div>
+            <div class="col-sm-6 mb-3 d-flex">
+                <div class="text-nowrap me-2">ฝ่าย</div><input ng-model="iForm.department" class="form-text department" maxlength="50" />
+            </div>
+            <div class="col-sm-6 mb-3 d-flex">
+                <div class="text-nowrap me-2">วันที่เริ่มงาน</div>
+                <input class="form-text icon-calendar join_date date mx-2"
+                       ng-model="iForm.join_date_select"
+                       ng-model-options="{ updateOn: 'blur' }"
+                       moment-picker="iForm.join_date_select"
+                       locale="th"
+                       format="DD/MM/YYYY"
+                       min-view="month"
+                       max-view="month" required change="CalcAge()" />
+            </div>
+            <div class="col-sm-6 mb-3 d-flex">
+                <div class="text-nowrap me-2">อายุงาน (ปี)</div><div class="text-blue">{{ iForm.year }}</div>
+            </div>
+            <div class="col-sm-12 mb-3 d-flex text-nowrap">
+                <div class="text-nowrap me-2">ผลการปฏิบัติงานของบุคลากร 2 ปี ย้อนหลัง :</div> 
+                <div class="fw-bolder text-decoration-underline text-nowrap me-2">ย้อนหลัง 1 ปี</div> ได้เกรด <input ng-model="iForm.grade1" class="form-text text-center grade1 mx-2" style="width:50px" maxlength="2" />
+                <div class="fw-bolder text-decoration-underline text-nowrap me-2">ย้อนหลัง 2 ปี</div> ได้เกรด <input ng-model="iForm.grade2" class="form-text text-center grade2 mx-2" style="width:50px" maxlength="2" />
+            </div>
+        </div>
+        <div class="fs-5 mb-4">
+            เห็นสมควรเรียนเสนอ เพื่อพิจารณา <b>ปรับเลื่อนตาแหน่งงาน</b> บุคลากร ดังนี้
+        </div>
+        <div class="fs-5 mb-4">
+            <table class="table table-bolder">
+                <thead>
+                    <tr class="">
+                        <td class="fw-bolder bg-light" width="200">เปลี่ยนแปลงจาก</td>
+                        <td class="fw-bolder bg-light text-center">ตำแหน่งงาน</td>
+                        <td class="fw-bolder bg-light text-center">ฝ่าย</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="align-middle">ปัจจุบัน</td>
+                        <td>
+                            <select ng-model="iForm.position_current" class="form-select position_current" ng-options="x.desc_th as x.desc_th for x in lPosition"></select>
+                        </td>
+                        <td>
+                            <select ng-model="iForm.department_current" class="form-select department_current" ng-options="x.desc_th as x.desc_th for x in lDepartment"></select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="align-middle">ใหม่</td>
+                        <td>
+                            <select ng-model="iForm.position_new" class="form-select position_new" ng-options="x.desc_th as x.desc_th for x in lPosition"></select>
+                        </td>
+                        <td>
+                            <select ng-model="iForm.department_new" class="form-select department_new" ng-options="x.desc_th as x.desc_th for x in lDepartment"></select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="fs-5 fw-bolder mb-3">
+            เหตุผลที่เสนอปรับเลื่อนตาแหน่งงาน
+        </div>
+        <textarea ng-model="iForm.description" class="form-control description" rows="5" maxlength="4000"></textarea>
+    </div>
+    <div class="d-flex justify-content-end">
+        <div class="btn btn-primary" ng-click="Save()">
+            <i class="far fa-paper-plane me-2"></i> Send Request
+        </div>
+    </div>
+    @* modal *@
+    <div class="modal" id="UserModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body overflow-auto" style="max-height:calc(100vh - 200px);">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item list-group-item-action select" ng-repeat="x in lUser" ng-click="SelectUser(x)">
+                            <div class="text-primary fw-bolder">
+                                {{ x.employeeName }}
+                            </div>
+                            <div>
+                                {{ x.positionDesc }} {{ x.departmentDesc }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(".day").mask("00");
+    $(".score").mask("00");
+    $(".date").mask("00/00/0000");
+    app.controller('FormCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.mode = '@Model.mode';
+        $scope.iData = {};
+        $scope.iForm = {
+            fullname:''
+            , position:''
+            , department:''
+            , section: ''
+            , join_date:''
+            , year: ''
+            , grade1: ''
+            , grade2: ''
+            , position_current: ''
+            , department_current: ''
+            , position_new: ''
+            , department_new: ''
+            , description: ''
+            , create_by:'@User.UserId()'
+        }
+
+        $scope.LoadMaster = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'positionCode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lPosition = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'departmentCode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lDepartment = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadMaster();
+
+
+        $scope.LoadUser = function () {
+            if ($scope.lUser == undefined) {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserSub',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify({
+                        userId: '@User.UserId()'
+                    }),
+                    success: function (result) {
+                        $timeout(async function () {
+                            $scope.lUser = result
+                        }, 0);
+                    }, error: AjaxError
+                });
+            }
+        }
+
+        $scope.ShowUser = function () {
+            $scope.LoadUser();
+            $("#UserModal").modal('show');
+        }
+
+        $scope.SelectUser = function (x) {
+            $("#UserModal").modal('hide');
+            $scope.iForm.userId = x.userId;
+            $scope.iForm.fullname = x.employeeName;
+            $scope.iForm.position = x.positionDesc;
+            $scope.iForm.section = x.sectionDesc;
+            $scope.iForm.department = x.departmentDesc;
+            $scope.iForm.division = x.divisionDesc;
+
+            $scope.iForm.position_current = x.positionDesc;
+            $scope.iForm.department_current = x.sectionDesc;
+
+            if(x.join_date != ''){
+                $scope.iForm.join_date_select = moment(x.join_date);
+            }
+        }
+
+        $scope.CalcAge = function(){
+            $scope.iForm.year = '';
+            $scope.iForm.join_date = '';
+
+            if ($scope.iForm.join_date_select) {
+                $scope.iForm.join_date = $scope.iForm.join_date_select.format("DD/MM/YYYY");
+            }
+
+            if ($scope.iForm.join_date != '') {
+                const b = ConvertToDate($scope.iForm.join_date);
+                const c = new Date();
+
+                let years = c.getFullYear() - b.getFullYear();
+                let months = c.getMonth() - b.getMonth();
+                let days = c.getDate() - b.getDate();
+
+                // ถ้าวันติดลบ → ยืมเดือน
+                if (days < 0) {
+                    months--;
+
+                    // เอาจำนวนวันของเดือนก่อนหน้า
+                    const prevMonth = new Date(c.getFullYear(), c.getMonth(), 0);
+                    days += prevMonth.getDate();
+                }
+
+                // ถ้าเดือนติดลบ → ยืมปี
+                if (months < 0) {
+                    years--;
+                    months += 12;
+                }
+
+                if (years > 0) {
+                    $scope.iForm.year = years + ' ปี ';
+                }
+                if (months > 0) {
+                    $scope.iForm.year += months + ' เดือน ';
+                }
+                if (days > 0) {
+                    $scope.iForm.year += days + ' วัน';
+                }
+            }
+        }
+
+        $scope.Validate = function () {
+            var flag = true;
+            JS_Reset($(".fullname"));
+            JS_Reset($(".position"));
+            JS_Reset($(".department"));
+            JS_Reset($(".section"));
+            JS_Reset($(".join_date"));
+            JS_Reset($(".grade1"));
+            JS_Reset($(".grade2"));
+            JS_Reset($(".position_current"));
+            JS_Reset($(".department_current"));
+            JS_Reset($(".position_new"));
+            JS_Reset($(".department_new"));
+            JS_Reset($(".description"));
+
+            if ($scope.iForm.join_date_select) {
+                $scope.iForm.join_date = $scope.iForm.join_date_select.format('DD/MM/YYYY');
+            }else{
+                $scope.iForm.join_date = '';
+            }
+
+            if ($scope.iForm.fullname == '') {
+                flag = false;
+                JS_Require($(".fullname"));
+            }
+            if ($scope.iForm.position == '') {
+                flag = false;
+                JS_Require($(".position"));
+            }
+            if ($scope.iForm.department == '') {
+                flag = false;
+                JS_Require($(".department"));
+            }
+            if ($scope.iForm.section == '') {
+                flag = false;
+                JS_Require($(".section"));
+            }
+            if ($scope.iForm.join_date == '') {
+                flag = false;
+                JS_Require($(".join_date"));
+            }
+            if ($scope.iForm.grade1 == '') {
+                flag = false;
+                JS_Require($(".grade1"));
+            }
+            if ($scope.iForm.grade2 == '') {
+                flag = false;
+                JS_Require($(".grade2"));
+            }
+            if ($scope.iForm.position_current == '') {
+                flag = false;
+                JS_Require($(".position_current"));
+            }
+            if ($scope.iForm.department_current == '') {
+                flag = false;
+                JS_Require($(".department_current"));
+            }
+            if ($scope.iForm.position_new == '') {
+                flag = false;
+                JS_Require($(".position_new"));
+            }
+            if ($scope.iForm.department_new == '') {
+                flag = false;
+                JS_Require($(".department_new"));
+            }
+            if ($scope.iForm.description == '') {
+                flag = false;
+                JS_Require($(".description"));
+            }
+
+            return flag;
+        }
+
+        $scope.Save = async function () {
+            if ($scope.Validate()) {
+                alertConfirm("ยืนยันการทำรายการ", "ท่านต้องการส่งใบคำขอ", async function () {
+                    var id = await $scope.CreateService();
+
+                    if (id) {
+                        $scope.iData.id = id;
+                        $scope.iForm.refId = id;
+
+                        var flag = await $scope.CreateForm();
+
+                        if (flag) {
+                            var serviceNo = await $scope.ServiceRequest();
+
+                            if (serviceNo) {
+                                alertSuccess("ทำรายการสำเร็จ", "ระบบบันทึกใบคำขอของท่านเรียบร้อย", function () {
+                                    location.href = '@Url.Page("/Service/Index")';
+                                });
+                            } else {
+                                $scope.CancelService();
+                            }
+                        } else {
+                            $scope.CancelService();
+                        }
+                    }
+                });
+            } else {
+                alertWarning("แจ้งเตือน", "กรุณากรอกข้อมูลให้ครบ");
+            }
+        }
+
+        $scope.CreateForm = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormPromoteEmployeeCreate',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify($scope.iForm),
+                    success: function () {
+                        $timeout(async function () {
+                            resolve(true);
+                        }, 0);
+                    }, error: function (jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "ระบบเกิดข้อผิดพลาด",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+    });
+
+</script>

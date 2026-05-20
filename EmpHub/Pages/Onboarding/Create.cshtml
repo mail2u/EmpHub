@@ -20,23 +20,6 @@
     </div>
 }
 <div ng-controller="ManageCtrl" class="p-2">
-    <div class="position-relative m-4 pb-3">
-        <div class="progress" role="progressbar" aria-label="Progress" aria-valuenow="{{ lStep[step_index].value }}" aria-valuemin="0" aria-valuemax="100" style="height: 1px;">
-            <div class="progress-bar" style="width: {{ lStep[step_index].left }}"></div>
-        </div>
-        <div class="position-absolute top-0 translate-middle text-center" style="left:0%;">
-            <button type="button" class="btn btn-sm rounded-pill btn-primary" style="width: 2rem; height:2rem;">1</button>
-        </div>
-        <div class="position-absolute top-0 translate-middle text-center" style="left:33.33%;">
-            <button type="button" class="btn btn-sm rounded-pill {{ step_index >= 1 ? 'btn-primary' : 'btn-secondary' }}" style="width: 2rem; height:2rem;" ng-disabled="step_index < 1">2</button>
-        </div>
-        <div class="position-absolute top-0 translate-middle text-center" style="left:66.66%;">
-            <button type="button" class="btn btn-sm rounded-pill {{ step_index >= 2 ? 'btn-primary' : 'btn-secondary' }}" style="width: 2rem; height:2rem;" ng-disabled="step_index < 2">3</button>
-        </div>
-        <div class="position-absolute top-0 translate-middle text-center" style="left:100%;">
-            <button type="button" class="btn btn-sm rounded-pill {{ step_index >= 3 ? 'btn-primary' : 'btn-secondary' }}" style="width: 2rem; height:2rem;" ng-disabled="step_index < 3">4</button>
-        </div>
-    </div>
     <partial name="_PartialOnboard" />
     @* <div class="d-flex mt-2">
         <div class="flex-fill">
@@ -57,7 +40,7 @@
     app.controller('ManageCtrl', function ($scope, $http, $timeout, $filter) {
         $scope.page = 1
         $scope.row = 10;
-        $scope.step_index = 3;
+        $scope.step_index = 0;
         $scope.lStep = [
             { left: '0%',value:0 }
             , { left: '33.33%', value: 33.33 }
@@ -136,6 +119,23 @@
                 , success: function (result) {
                     $timeout(function () {
                         $scope.lPosition = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'levelCode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lLevel = result;
                     }, 0);
                 }
                 , error: AjaxError
@@ -332,6 +332,14 @@
 
         $scope.SelectPrefixEN = function () {
             $scope.iPersonal.prefix_th = $scope.iPersonal.prefix_en;
+        }
+
+        $scope.SelectPosition = function(){
+            var find = $scope.lPosition.find(item => item.code == $scope.iEmployee.positionCode);
+
+            if(find){
+                $scope.iEmployee.grade = find.condition_1;
+            }
         }
 
         $scope.LoadData = function (userId) {
@@ -539,6 +547,7 @@
         }
 
         $scope.SelectSupervisor = function (x) {
+            $("#supervisorModal").modal('hide');
             $scope.iEmployee.supervisorId = x.userId;
             $scope.iEmployee.supervisorName = x.firstname_th + ' ' + x.lastname_th;
         }
@@ -593,6 +602,13 @@
         }
 
         $scope.SavePersonal = function () {
+
+            $scope.iPersonal.birth_date = '';
+
+            if ($scope.iPersonal.birth_date_select) {
+                $scope.iPersonal.birth_date = $scope.iPersonal.birth_date_select.format("DD/MM/YYYY");
+            }
+
             return new Promise((resolve) => {
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserPersonalSave'
@@ -683,7 +699,7 @@
             });
         }
 
-        $scope.SendOnboard = function () {
+        $scope.SendOnboard = function (userId) {
             return new Promise((resolve) => {
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/Onboard/Send'
@@ -692,7 +708,7 @@
                     , contentType: 'application/json'
                     , cache: false
                     , data: JSON.stringify({
-                        userId: $scope.userId
+                        userId: userId
                         , update_by: '@User.UserId()'
                     })
                     , success: function () {
@@ -882,10 +898,10 @@
             JS_Reset($(".employeeType"));
             JS_Reset($(".employeeMode"));
 
-            $scope.join_date = '';
+            $scope.iEmployee.join_date = '';
 
-            if ($scope.join_date_select) {
-                $scope.join_date = $scope.join_date_select.format("DD/MM/YYYY");
+            if ($scope.iEmployee.join_date_select) {
+                $scope.iEmployee.join_date = $scope.iEmployee.join_date_select.format("DD/MM/YYYY");
             }
 
             if ($scope.iEmployee.join_date == '') {
@@ -908,10 +924,10 @@
                 flag = false;
                 JS_Require($(".employeeType"));
             }
-            if ($scope.iEmployee.employeeMode == '') {
-                flag = false;
-                JS_Require($(".employeeMode"));
-            }
+            // if ($scope.iEmployee.employeeMode == '') {
+            //     flag = false;
+            //     JS_Require($(".employeeMode"));
+            // }
 
             return flag;
         }
@@ -939,7 +955,7 @@
                     }
                 }
 
-                flag = await $scope.SendOnboard();
+                flag = await $scope.SendOnboard(iUser.userId);
 
                 if (flag) {
                     alertSuccess("Create Onboarding", "Success", function () {

@@ -27,6 +27,12 @@
                 <div class="btn btn-link text-nowrap {{ iStatus == '' ? 'active' : '' }}" ng-click="SelectStatus('')">
                     All <span class="badge ms-1" ng-show="sum_all > 0">{{ sum_all | number }}</span>
                 </div> |
+                <div class="btn btn-link border-0 text-nowrap {{ iStatus == 'Request' ? 'active' : '' }}" ng-click="SelectStatus('Request')">
+                    <span ng-show="alert_request > 0" class="ms-1 badge rounded-circle bg-danger p-1">
+                        <span class="visually-hidden">unread messages</span>
+                    </span>
+                    Revision <span class="badge ms-1" ng-show="sum_request > 0">{{ sum_request | number }}</span>
+                </div>
                 <div class="btn btn-link border-0 text-nowrap {{ iStatus == 'Approve' ? 'active' : '' }}" ng-click="SelectStatus('Approve')">
                     Wait Approval <span class="badge ms-1" ng-show="sum_approve > 0">{{ sum_approve | number }}</span>
                 </div>
@@ -158,11 +164,17 @@
                             $scope.sum_complete = find.total; 
                             $scope.alert_complete = find.alert_total; 
                         }
+                        find = result.find(x => x.status == 'Request');
+                        if (find) { 
+                            $scope.sum_request = find.total; 
+                            $scope.alert_request = find.alert_total; 
+                        }
 
-                        $scope.sum_all = $scope.sum_approve
-                            + $scope.sum_reject
-                            + $scope.sum_work
-                            + $scope.sum_complete;
+                        $scope.sum_all = $scope.sum_request
+                        + $scope.sum_approve
+                        + $scope.sum_reject
+                        + $scope.sum_work
+                        + $scope.sum_complete;
                     }, 0);
                 },
                 error: AjaxError

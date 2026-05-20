@@ -1,223 +1,114 @@
 ﻿@page
 @model EmpHub.Pages.Survey.DetailModel
 @{
+    var token = User.AccessToken(HttpContext);
 }
+<style>
+    .main-content {
+        padding: 5px !important;
+    }
+</style>
+<div ng-controller="SurveyCtrl" class="position-relative p-0">
+    @* Survey *@
+    <div class="container" ng-show="iSurvey.status != 'Complete'">
+        <div class="fs-5 text-blue mb-2">
+            STEP {{ section_index + 1 }} OF {{ lSection.length }}
+        </div>
+        <div>
+            @* Section *@
+            <div class="fs-5 text-dark fw-bolder mb-1">
+                {{ iSection.title }}
+            </div>
+            <div class="fs-5 text-dark mb-3">
+                <p ng-bind-html="iSection.description"></p>
+            </div>
+            @* Question *@
+            <div ng-repeat="q in iSection.lQuestion">
+                <div class="rounded-4 bg-white shadow-sm p-4 mb-4">
+                    <div class="d-flex">
+                        <div class="flex-fill fs-5 fw-bolder text-dark">
+                            {{ q.title }}
+                        </div>
+                        <div ng-show="q.is_required > 0" class="text-danger">
+                            (require)
+                        </div>
+                    </div>
+                    <div class="fs-5 text-dark">
+                        {{ q.description }}
+                    </div>
+                    @* Radio *@
+                    <div ng-if="q.type == 'radio'" class="mt-3">
+                        <div ng-repeat="c in q.lChoice" class="mb-2">
+                            <label>
+                                <input type="radio"
+                                       ng-model="q.choiceId"
+                                       ng-value="c.id"
+                                       name="r_{{ q.id }}"
+                                       class="me-2" />
 
-<div ng-controller="SurveyCtrl">
-    <div class="d-md-flex mb-2">
-        <div class="fs-4 me-3">Survey</div>
-        <div class="overflow-auto flex-fill">
-            <div class="flex-fill d-flex flex-nowrap align-items-center">
-                <div class="btn btn-link text-nowrap {{ iStatus == '' ? 'active' : '' }}" ng-click="SelectStatus('')">
-                    All <span class="badge ms-1" ng-show="sum_all > 0">{{ sum_all | number }}</span>
-                </div> |
-                <div class="btn btn-link border-0 text-nowrap {{ iStatus == 'Private' ? 'active' : '' }}" ng-click="SelectStatus('Private')">
-                    Private <span class="badge ms-1" ng-show="sum_private > 0">{{ sum_private | number }}</span>
-                </div>
-                <div class="btn btn-link border-0 text-nowrap {{ iStatus == 'Publish' ? 'active' : '' }}" ng-click="SelectStatus('Publish')">
-                    Publish <span class="badge ms-1" ng-show="sum_publish > 0">{{ sum_publish | number }}</span>
-                </div>
-            </div>
-        </div>
-        <div class="d-none d-sm-block">
-            <div class="btn btn-primary" ng-click="ShowCreate()">
-                <i class="fas fa-plus me-2"></i> Create New Survey
-            </div>
-        </div>
-    </div>
-    <div class="rounded-4 p-3 bg-white shadow-sm border mb-4">
-        <div class="d-flex mb-1">
-            <div class="flex-fill">
-                <div class="d-flex align-items-end">
-                    <div class="me-2">
-                        <small>Title</small>
-                        <div class="d-flex">
-                            <input class="form-control form-control-sm" ng-model="title" my-enter="LoadData()" />
+                                {{ c.text }}
+                            </label>
                         </div>
                     </div>
-              @*       <div class="me-2">
-                        <small>Request Date</small>
-                        <div class="d-flex">
-                            <input class="form-control form-control-sm icon-calendar date"
-                                   ng-model="createDate"
-                                   ng-model-options="{ updateon: 'blur' }"
-                                   moment-picker="createDate"
-                                   locale="th"
-                                   format="DD/MM/YYYY"
-                                   min-view="month"
-                                   max-view="month"
-                                   start-view="month"
-                                   my-enter="LoadData()" />
+                    @* Checkbox *@
+                    <div ng-if="q.type == 'checkbox'" class="mt-3">
+                        <div ng-repeat="c in q.lChoice" class="mb-2">
+                            <label>
+                                <input type="checkbox"
+                                       ng-checked="q.choiceIds.indexOf(c.id) > -1"
+                                       ng-click="toggleCheckbox(q, c.id)"
+                                       class="me-2" />
+                                {{ c.text }}
+                            </label>
                         </div>
-                    </div> *@
-                    <div class="me-2">
-                        <button ng-click="LoadData()" class="btn btn-circle" title="Search">
-                            <i class="fas fa-search"></i>
-                        </button>
                     </div>
-                    <div class="me-2">
-                        <button ng-click="Download()" class="btn btn-circle" title="Download" ng-disabled="total == 0">
-                            <i class="fas fa-arrow-down"></i>
-                        </button>
+                    @* Text *@
+                    <div ng-if="q.type == 'text'" class="mt-3">
+                        <input ng-model="q.answerText" class="form-control" maxlength="200" />
                     </div>
-                    <div class="flex-fill">
-
+                    @* Textarea *@
+                    <div ng-if="q.type == 'textarea'" class="mt-3">
+                        <textarea ng-model="q.answerText" class="form-control" rows="5" maxlength="2000"></textarea>
                     </div>
+                </div>
+            </div>
+            @* Action *@
+            <div class="d-flex mb-4">
+                <div class="btn btn-light bg-white " ng-click="BackSection()" ng-show="section_index > 0">
+                    <i class="bi bi-chevron-left me-2"></i> Back
+                </div>
+                <div class="flex-fill">
+                </div>
+                <div class="btn btn-primary" ng-click="NextSection()" ng-show="section_index < lSection.length - 1">
+                    Next <i class="bi bi-chevron-right ms-2"></i>
+                </div>
+                <div class="btn btn-success" ng-click="Submit()" ng-show="section_index == lSection.length - 1">
+                    <i class="bi bi-send me-2"></i> Submit
                 </div>
             </div>
         </div>
     </div>
-    <div class="mb-4">
-        <div style="min-height:calc(100vh - 410px);" class="position-relative">
-            <table class="table table-tip border shadow-sm">
-                <thead>
-                    <tr>
-                        <th width="50"></th>
-                        <th class="select" ng-click="SetSort('title')">
-                            Title
-                            <i ng-show="sortBy.indexOf('title') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
-                        </th>
-                        <th class="select text-center" ng-click="SetSort('status')">
-                            Status
-                            <i ng-show="sortBy.indexOf('status') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
-                        </th>
-                        <th class="select text-center" ng-click="SetSort('total')">
-                            Total Questions
-                            <i ng-show="sortBy.indexOf('total') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
-                        </th>
-                        <th class="select" ng-click="SetSort('create_date')">
-                            Create
-                            <i ng-show="sortBy.indexOf('create_date') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
-                        </th>
-                        <th>
-                            Actions
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="x in lData" class="{{ x.statusCss }} {{ x.is_not_read == 1 ? 'fw-bolder' : '' }}">
-                        <td class="text-center align-middle">
-                            <span ng-show="x.status == 'Private'" class="text-warning" title="Private">
-                                <i class="bi bi-clipboard"></i>
-                            </span>
-                            <span ng-show="x.status == 'Publish'" class="text-green" title="Publish">
-                                <i class="bi bi-clipboard-check"></i>
-                            </span>
-                        </td>
-                        <td>
-                            <div class="fw-bolder text-truncate">
-                                {{ x.title }}
-                            </div>
-                            <div>{{ x.start_date }} - {{ x.end_date }}</div>
-                        </td>
-                        <td class="text-center align-middle">
-                            <div class="badge bg-{{ x.status }}">{{ x.status }}</div>
-                        </td>
-                        <td class="text-center align-middle">
-                            {{ x.total | number }}
-                        </td>
-                        <td class="align-middle">
-                            {{ x.create_date }}
-                        </td>
-                        <td>
-                            <div class="d-flex">
-                                <button ng-click="ShowEdit(x)" class="btn btn-circle me-2" title="Edit">
-                                    <i class="bi bi-pen"></i>
-                                </button>
-                                <button ng-click="Delete(x)" class="btn btn-circle me-2" title="Delete">
-                                   <i class="bi bi-trash"></i>
-                                </button>
-                                <button ng-click="ShowDetail(x)" class="btn btn-circle" title="Detail">
-                                    <i class="bi bi-arrow-right"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="3">
-                            <div class="text-light-gray">Showing {{ ((page - 1) * row) + 1 }} to {{ (page * row) > total ? total : page * row }} of {{ total }} requests</div>
-                        </td>
-                        <td colspan="3">
-                            <div class="d-flex">
-                                <div class="flex-fill"></div>
-                                <button class="btn btn-circle me-2" ng-click="LoadData(page - 1)" ng-disabled="page <= 1">
-                                    <i class="fas fa-chevron-left"></i>
-                                </button>
-                                <button class="btn btn-circle" ng-click="LoadData(page + 1)" ng-disabled="page * row >= total">
-                                    <i class="fas fa-chevron-right"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
-    </div>
-    @* Modal *@
-    <div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                <h1 class="modal-title fs-5">Survey Info</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    @* Complete *@
+    <div class="container position-relative" style="height:calc(100vh - 100px);">
+        <div class=" position-absolute top-50 start-50 translate-middle" ng-show="iSurvey.status == 'Complete'">
+            <div class="py-4">
+                <div class="text-center" style="margin-bottom: 100px;">
+                    <img src="~/Images/check.png" width="100" class="mb-4" />
+                    <div class="fw-bolder fs-4 text-dark">Submission Received</div>
+                    <div class="fs-5 text-dark">Thank you for participating in our research.</div>
                 </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <div class="fs-6 text-dark">
-                            Title
-                        </div>
-                        <textarea ng-model="iData.title" class="form-control" rows="3" maxlength="2000"></textarea>
+                <div class="rounded-4 border bg-light-blue d-flex p-3">
+                    <div class="text-primary me-2 p-2">
+                        <i class="bi bi-info-circle"></i>
                     </div>
-                    <div class="mb-3">
-                        <div class="fs-6 text-dark">
-                            Description
+                    <div class="flex-fill text-dark">
+                        <div class="fs-6 fw-bolder">
+                            การป้องกันการป้อนข้อมูลซ้ำ
                         </div>
-                        <textarea ng-model="iData.description" class="form-control" rows="7"></textarea>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-4 mb-3">
-                            <div class="fs-6 text-dark">
-                                Status
-                            </div>
-                            <select ng-model="iData.status" class="form-select" ng-options="x as x for x in lStatus"></select>
-                        </div>
-                        <div class="col-sm-4 mb-3">
-                            <div class="fs-6 text-dark">
-                                Start Date
-                            </div>
-                            <input class="form-control form-control-sm icon-calendar date"
-                                   ng-model="iData.start_date_select"
-                                   ng-model-options="{ updateon: 'blur' }"
-                                   moment-picker="iData.start_date_select"
-                                   locale="th"
-                                   format="DD/MM/YYYY"
-                                   min-view="month"
-                                   max-view="month"
-                                   max-date="iData.end_date_select"
-                                   start-view="month" />
-                        </div>
-                        <div class="col-sm-4 mb-3">
-                            <div class="fs-6 text-dark">
-                                End Date
-                            </div>
-                            <input class="form-control form-control-sm icon-calendar date"
-                                   ng-model="iData.end_date_select"
-                                   ng-model-options="{ updateon: 'blur' }"
-                                   moment-picker="iData.end_date_select"
-                                   locale="th"
-                                   format="DD/MM/YYYY"
-                                   min-view="month"
-                                   max-view="month"
-                                   min-date="iData.start_date_select"
-                                   start-view="month" />
+                        <div>
+                            จากการตรวจสอบของเราพบว่าคุณได้ทำแบบสำรวจความพึงพอใจของลูกค้าเสร็จสิ้นแล้ว เนื่องจากข้อจำกัดเรื่องความถูกต้องของข้อมูล จึงอนุญาตให้ตอบได้เพียงหนึ่งครั้งต่อผู้ใช้ คำตอบเดิมของคุณได้ถูกบันทึกไว้เรียบร้อยแล้ว
                         </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" ng-click="SaveChange()" ng-disabled="iData.title == ''">Save changes</button>
                 </div>
             </div>
         </div>
@@ -225,6 +116,375 @@
 </div>
 <script>
     app.controller('SurveyCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.surveyId = '@Model.id';
+        $scope.is_save = 0;
+        $scope.section_index = 0;
+        $scope.iSection = {};
+        $scope.lSection = [];
+        $scope.lType = ['radio', 'checkbox', 'text', 'textarea', 'number'];
 
+        if ($scope.surveyId == '') {
+            location.href = '@Url.Page("Index")';
+        }
+
+        $scope.LoadSection = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/SurveySection/DataList',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    surveyId: $scope.surveyId
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.lSection = result;
+
+                        if ($scope.lSection.length > 0) {
+                            for (var i = 0; i < $scope.lSection.length; i++) {
+                                var iSection = $scope.lSection[i];
+
+                                $scope.LoadQuestion(iSection);
+                            }
+                            $scope.SelectSection(0)
+                        } else {
+                            alertWarning("Warning", "ไม่พบข้อมูลแบบสอบถาม", function () {
+                                location.href = '@Url.Page("Index")';
+                            });
+                        }
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+
+        $scope.LoadDetail = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Survey/MyDetail',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    id: $scope.surveyId
+                    , userId: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.iSurvey = result;
+                        $scope.LoadSection();
+                    }, 0);
+                },
+                error: function () {
+                    alertWarning("Warning", "ไม่พบข้อมูลแบบสอบถาม", function () {
+                        location.href = '@Url.Page("Index")';
+                    })
+                }
+            });
+        }
+        $scope.LoadDetail();
+
+        $scope.SelectSection = function (index) {
+            $scope.section_index = index;
+            $scope.iSection = $scope.lSection[$scope.section_index];
+        }
+
+        /* Question */
+
+        $scope.LoadQuestion = function (x) {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/SurveyQuestion/DataList',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    sectionId: x.id
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        x.lQuestion = result;
+
+                        for (var i = 0; i < x.lQuestion.length; i++) {
+                            var iQuestion = x.lQuestion[i];
+
+                            iQuestion.choiceId = '';
+                            iQuestion.answerText = '';
+
+                            if (['radio', 'checkbox'].indexOf(iQuestion.type) > -1) {
+                                $scope.LoadChoice(iQuestion);
+                            }
+                        }
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+
+    @* Choice *@
+
+            $scope.LoadChoice = function (x) {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/SurveyChoice/DataList',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        questionId: x.id
+                    }),
+                    success: function (result) {
+                        $timeout(function () {
+                            x.lChoice = result;
+                        }, 0);
+                    },
+                    error: AjaxError
+                });
+            }
+
+        /* Action */
+        $scope.toggleCheckbox = function (q, choiceId) {
+
+            if (!q.choiceIds) {
+                q.choiceIds = [];
+            }
+
+            var index = q.choiceIds.indexOf(choiceId);
+
+            if (index > -1) {
+                q.choiceIds.splice(index, 1);
+            }
+            else {
+                q.choiceIds.push(choiceId);
+            }
+        };
+
+        $scope.BackSection = function () {
+            if ($scope.section_index > 0) {
+                $scope.SelectSection($scope.section_index - 1);
+            }
+        }
+
+        $scope.validateSurvey = function () {
+
+            var isValid = true;
+
+            angular.forEach($scope.iSection.lQuestion, function (q) {
+
+                q.is_invalid = false;
+
+                // ข้ามถ้าไม่ required
+                if (q.is_required != 1) {
+                    return;
+                }
+
+                // radio
+                if (q.type == 'radio') {
+
+                    if (!q.choiceId) {
+                        q.is_invalid = true;
+                        isValid = false;
+                    }
+
+                }
+
+                // checkbox
+                else if (q.type == 'checkbox') {
+
+                    if (!q.choiceIds || q.choiceIds.length == 0) {
+                        q.is_invalid = true;
+                        isValid = false;
+                    }
+
+                }
+
+                // text / textarea
+                else if (q.type == 'text'
+                    || q.type == 'textarea') {
+
+                    if (!q.answerText
+                        || q.answerText.trim() == '') {
+
+                        q.is_invalid = true;
+                        isValid = false;
+                    }
+
+                }
+
+            });
+
+            return isValid;
+        };
+
+        $scope.NextSection = function () {
+            /* Validate */
+            if ($scope.validateSurvey()) {
+                if ($scope.section_index < $scope.lSection.length - 1) {
+                    $scope.SelectSection($scope.section_index + 1);
+                }
+            } else {
+                alertWarning("Validate Form", "กรุณากรอกข้อมูลให้ครบ");
+            }
+
+        }
+
+        $scope.BuildAnswer = function () {
+            var lAnswer = [];
+
+            angular.forEach($scope.lSection, function (s) {
+                angular.forEach(s.lQuestion, function (q) {
+
+                    // radio
+                    if (q.type == 'radio' && q.choiceId) {
+
+                        lAnswer.push({
+                            questionId: q.id,
+                            choiceId: q.choiceId,
+                            answerText: null
+                        });
+
+                    }
+
+                    // checkbox
+                    if (q.type == 'checkbox' && q.choiceIds) {
+
+                        angular.forEach(q.choiceIds, function (choiceId) {
+
+                            lAnswer.push({
+                                questionId: q.id,
+                                choiceId: choiceId,
+                                answerText: null
+                            });
+
+                        });
+
+                    }
+
+                    // text
+                    if ((q.type == 'text' || q.type == 'textarea')
+                        && q.answerText) {
+
+                        lAnswer.push({
+                            questionId: q.id,
+                            choiceId: null,
+                            answerText: q.answerText
+                        });
+
+                    }
+
+                });
+            });
+            return lAnswer;
+        }
+
+        $scope.Submit = async function () {
+            if ($scope.validateSurvey()) {
+                var lAnswer = $scope.BuildAnswer();
+
+                if (lAnswer.length > 0) {
+                    var responseId = await $scope.CreateSurveyResponse();
+
+                    if (responseId) {
+                        lAnswer = lAnswer.map(item => {
+                            item.responseId = responseId;
+                            return item;
+                        });
+
+                        var flag = $scope.CreateSurveyAnswer(lAnswer);
+
+                        if (flag) {
+                            alertSuccess("Save Success", "ระบบบันทึกข้อมูลเรียบร้อย", function () {
+                                $scope.LoadDetail();
+                            });
+                        } else {
+                            $scope.CancelSurveyResponse(responseId);
+                            alertWarning("Warning", "บันทึกไม่สำเร็จ กรุณาตรวจสอบ");
+                        }
+                    }
+
+                } else {
+                    alertWarning("Warning", "ไม่พบข้อมูลคำตอบ");
+                }
+            } else {
+                alertWarning("Validate Form", "กรุณากรอกข้อมูลให้ครบ");
+            }
+        }
+
+        $scope.CreateSurveyResponse = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/SurveyResponse/Create',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        surveyId: $scope.surveyId
+                        , userId: '@User.UserId()'
+                    }),
+                    success: function (result) {
+                        $timeout(function () {
+                            resolve(result.id);
+                        }, 0);
+                    },
+                    error: function () {
+                        resolve(null);
+                    }
+                });
+            })
+        }
+
+        $scope.CreateSurveyAnswer = function (lAnswer) {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/SurveyAnswer/Create',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify(lAnswer),
+                    success: function (result) {
+                        $timeout(function () {
+                            resolve(true);
+                        }, 0);
+                    },
+                    error: function () {
+                        resolve(false);
+                    }
+                });
+            })
+        }
+
+        $scope.CancelSurveyResponse = function (id) {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/SurveyResponse/Cancel',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        id: $scope.id
+                        , userId: '@User.UserId()'
+                    }),
+                    success: function (result) {
+                        $timeout(function () {
+                            resolve(result.id);
+                        }, 0);
+                    },
+                    error: function () {
+                        resolve(null);
+                    }
+                });
+            })
+        }
     });
 </script>

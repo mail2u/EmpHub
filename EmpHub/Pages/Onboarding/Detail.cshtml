@@ -14,18 +14,19 @@
             <ul class="breadcrumb">
                 <li class="breadcrumb-item"><a href="@Url.Page("/Index")">Home</a></li>
                 <li class="breadcrumb-item"><a href="@Url.Page("Index")">Onboarding</a></li>
-                <li class="breadcrumb-item">Update</li>
+                <li class="breadcrumb-item">Info</li>
             </ul>
         </div>
     </div>
 }
 <div ng-controller="ManageCtrl" class="p-2">
-    <partial name="_PartialOnboard" />
+    <partial name="_PartialOnboardDetail" />
 </div>
 <script>
     app.controller('ManageCtrl', function ($scope, $http, $timeout, $filter) {
         $scope.page = 1
         $scope.row = 10;
+        $scope.step_index = 3;
         $scope.userId = '@Model.userId';
         $scope.is_readonly = true;
 
@@ -44,206 +45,223 @@
         $scope.iAddress = {};
 
         $scope.LoadInit = function(){
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
-                , headers: { 'authorization': 'Bearer @token' }
-                , type: 'post'
-                , contentType: 'application/json'
-                , dataType: 'json'
-                , cache: false
-                , data: JSON.stringify({
-                    groupName: 'departmentCode'
-                })
-                , success: function (result) {
-                    $timeout(function () {
-                        $scope.lDepartment = result;
-                    }, 0);
-                }
-                , error: AjaxError
-            });
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
-                , headers: { 'authorization': 'Bearer @token' }
-                , type: 'post'
-                , contentType: 'application/json'
-                , dataType: 'json'
-                , cache: false
-                , data: JSON.stringify({
-                    groupName: 'positionCode'
-                })
-                , success: function (result) {
-                    $timeout(function () {
-                        $scope.lPosition = result;
-                    }, 0);
-                }
-                , error: AjaxError
-            });
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
-                , headers: { 'authorization': 'Bearer @token' }
-                , type: 'post'
-                , contentType: 'application/json'
-                , dataType: 'json'
-                , cache: false
-                , data: JSON.stringify({
-                    groupName: 'Disability'
-                })
-                , success: function (result) {
-                    $timeout(function () {
-                        $scope.lDisability = result;
-                    }, 0);
-                }
-                , error: AjaxError
-            });
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
-                , headers: { 'authorization': 'Bearer @token' }
-                , type: 'post'
-                , contentType: 'application/json'
-                , dataType: 'json'
-                , cache: false
-                , data: JSON.stringify({
-                    groupName: 'Ethnicity'
-                })
-                , success: function (result) {
-                    $timeout(function () {
-                        $scope.lEthnicity = result;
-                    }, 0);
-                }
-                , error: AjaxError
-            });
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
-                , headers: { 'authorization': 'Bearer @token' }
-                , type: 'post'
-                , contentType: 'application/json'
-                , dataType: 'json'
-                , cache: false
-                , data: JSON.stringify({
-                    groupName: 'Marital'
-                })
-                , success: function (result) {
-                    $timeout(function () {
-                        $scope.lMarital = result;
-                    }, 0);
-                }
-                , error: AjaxError
-            });
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
-                , headers: { 'authorization': 'Bearer @token' }
-                , type: 'post'
-                , contentType: 'application/json'
-                , dataType: 'json'
-                , cache: false
-                , data: JSON.stringify({
-                    groupName: 'Military'
-                })
-                , success: function (result) {
-                    $timeout(function () {
-                        $scope.lMilitary = result;
-                    }, 0);
-                }
-                , error: AjaxError
-            });
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
-                , headers: { 'authorization': 'Bearer @token' }
-                , type: 'post'
-                , contentType: 'application/json'
-                , dataType: 'json'
-                , cache: false
-                , data: JSON.stringify({
-                    groupName: 'Nationality'
-                })
-                , success: function (result) {
-                    $timeout(function () {
-                        $scope.lNationality = result;
-                    }, 0);
-                }
-                , error: AjaxError
-            });
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
-                , headers: { 'authorization': 'Bearer @token' }
-                , type: 'post'
-                , contentType: 'application/json'
-                , dataType: 'json'
-                , cache: false
-                , data: JSON.stringify({
-                    groupName: 'Religion'
-                })
-                , success: function (result) {
-                    $timeout(function () {
-                        $scope.lReligion = result;
-                    }, 0);
-                }
-                , error: AjaxError
-            });
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
-                , headers: { 'authorization': 'Bearer @token' }
-                , type: 'post'
-                , contentType: 'application/json'
-                , dataType: 'json'
-                , cache: false
-                , data: JSON.stringify({
-                    groupName: 'Prefix'
-                })
-                , success: function (result) {
-                    $timeout(function () {
-                        $scope.lPrefix = result;
-                    }, 0);
-                }
-                , error: AjaxError
-            });
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
-                , headers: { 'authorization': 'Bearer @token' }
-                , type: 'post'
-                , contentType: 'application/json'
-                , dataType: 'json'
-                , cache: false
-                , data: JSON.stringify({
-                    groupName: 'WorkMode'
-                })
-                , success: function (result) {
-                    $timeout(function () {
-                        $scope.lWorkMode = result;
-                    }, 0);
-                }
-                , error: AjaxError
-            });
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
-                , headers: { 'authorization': 'Bearer @token' }
-                , type: 'post'
-                , contentType: 'application/json'
-                , dataType: 'json'
-                , cache: false
-                , data: JSON.stringify({
-                    groupName: 'OTMode'
-                })
-                , success: function (result) {
-                    $timeout(function () {
-                        $scope.lOTMode = result;
-                    }, 0);
-                }
-                , error: AjaxError
-            });
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/Address'
-                , headers: { 'authorization': 'Bearer @token' }
-                , type: 'post'
-                , dataType: 'json'
-                , cache: false
-                , success: function (result) {
-                    $timeout(function () {
-                        $scope.lAddress = result;
-                    }, 0);
-                }
-                , error: AjaxError
-            });
+            // $.ajax({
+            //     url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+            //     , headers: { 'authorization': 'Bearer @token' }
+            //     , type: 'post'
+            //     , contentType: 'application/json'
+            //     , dataType: 'json'
+            //     , cache: false
+            //     , data: JSON.stringify({
+            //         groupName: 'departmentCode'
+            //     })
+            //     , success: function (result) {
+            //         $timeout(function () {
+            //             $scope.lDepartment = result;
+            //         }, 0);
+            //     }
+            //     , error: AjaxError
+            // });
+            // $.ajax({
+            //     url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+            //     , headers: { 'authorization': 'Bearer @token' }
+            //     , type: 'post'
+            //     , contentType: 'application/json'
+            //     , dataType: 'json'
+            //     , cache: false
+            //     , data: JSON.stringify({
+            //         groupName: 'positionCode'
+            //     })
+            //     , success: function (result) {
+            //         $timeout(function () {
+            //             $scope.lPosition = result;
+            //         }, 0);
+            //     }
+            //     , error: AjaxError
+            // });
+            // $.ajax({
+            //     url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+            //     , headers: { 'authorization': 'Bearer @token' }
+            //     , type: 'post'
+            //     , contentType: 'application/json'
+            //     , dataType: 'json'
+            //     , cache: false
+            //     , data: JSON.stringify({
+            //         groupName: 'levelCode'
+            //     })
+            //     , success: function (result) {
+            //         $timeout(function () {
+            //             $scope.lLevel = result;
+            //         }, 0);
+            //     }
+            //     , error: AjaxError
+            // });
+            // $.ajax({
+            //     url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+            //     , headers: { 'authorization': 'Bearer @token' }
+            //     , type: 'post'
+            //     , contentType: 'application/json'
+            //     , dataType: 'json'
+            //     , cache: false
+            //     , data: JSON.stringify({
+            //         groupName: 'Disability'
+            //     })
+            //     , success: function (result) {
+            //         $timeout(function () {
+            //             $scope.lDisability = result;
+            //         }, 0);
+            //     }
+            //     , error: AjaxError
+            // });
+            // $.ajax({
+            //     url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+            //     , headers: { 'authorization': 'Bearer @token' }
+            //     , type: 'post'
+            //     , contentType: 'application/json'
+            //     , dataType: 'json'
+            //     , cache: false
+            //     , data: JSON.stringify({
+            //         groupName: 'Ethnicity'
+            //     })
+            //     , success: function (result) {
+            //         $timeout(function () {
+            //             $scope.lEthnicity = result;
+            //         }, 0);
+            //     }
+            //     , error: AjaxError
+            // });
+            // $.ajax({
+            //     url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+            //     , headers: { 'authorization': 'Bearer @token' }
+            //     , type: 'post'
+            //     , contentType: 'application/json'
+            //     , dataType: 'json'
+            //     , cache: false
+            //     , data: JSON.stringify({
+            //         groupName: 'Marital'
+            //     })
+            //     , success: function (result) {
+            //         $timeout(function () {
+            //             $scope.lMarital = result;
+            //         }, 0);
+            //     }
+            //     , error: AjaxError
+            // });
+            // $.ajax({
+            //     url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+            //     , headers: { 'authorization': 'Bearer @token' }
+            //     , type: 'post'
+            //     , contentType: 'application/json'
+            //     , dataType: 'json'
+            //     , cache: false
+            //     , data: JSON.stringify({
+            //         groupName: 'Military'
+            //     })
+            //     , success: function (result) {
+            //         $timeout(function () {
+            //             $scope.lMilitary = result;
+            //         }, 0);
+            //     }
+            //     , error: AjaxError
+            // });
+            // $.ajax({
+            //     url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+            //     , headers: { 'authorization': 'Bearer @token' }
+            //     , type: 'post'
+            //     , contentType: 'application/json'
+            //     , dataType: 'json'
+            //     , cache: false
+            //     , data: JSON.stringify({
+            //         groupName: 'Nationality'
+            //     })
+            //     , success: function (result) {
+            //         $timeout(function () {
+            //             $scope.lNationality = result;
+            //         }, 0);
+            //     }
+            //     , error: AjaxError
+            // });
+            // $.ajax({
+            //     url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+            //     , headers: { 'authorization': 'Bearer @token' }
+            //     , type: 'post'
+            //     , contentType: 'application/json'
+            //     , dataType: 'json'
+            //     , cache: false
+            //     , data: JSON.stringify({
+            //         groupName: 'Religion'
+            //     })
+            //     , success: function (result) {
+            //         $timeout(function () {
+            //             $scope.lReligion = result;
+            //         }, 0);
+            //     }
+            //     , error: AjaxError
+            // });
+            // $.ajax({
+            //     url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+            //     , headers: { 'authorization': 'Bearer @token' }
+            //     , type: 'post'
+            //     , contentType: 'application/json'
+            //     , dataType: 'json'
+            //     , cache: false
+            //     , data: JSON.stringify({
+            //         groupName: 'Prefix'
+            //     })
+            //     , success: function (result) {
+            //         $timeout(function () {
+            //             $scope.lPrefix = result;
+            //         }, 0);
+            //     }
+            //     , error: AjaxError
+            // });
+            // $.ajax({
+            //     url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+            //     , headers: { 'authorization': 'Bearer @token' }
+            //     , type: 'post'
+            //     , contentType: 'application/json'
+            //     , dataType: 'json'
+            //     , cache: false
+            //     , data: JSON.stringify({
+            //         groupName: 'WorkMode'
+            //     })
+            //     , success: function (result) {
+            //         $timeout(function () {
+            //             $scope.lWorkMode = result;
+            //         }, 0);
+            //     }
+            //     , error: AjaxError
+            // });
+            // $.ajax({
+            //     url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+            //     , headers: { 'authorization': 'Bearer @token' }
+            //     , type: 'post'
+            //     , contentType: 'application/json'
+            //     , dataType: 'json'
+            //     , cache: false
+            //     , data: JSON.stringify({
+            //         groupName: 'OTMode'
+            //     })
+            //     , success: function (result) {
+            //         $timeout(function () {
+            //             $scope.lOTMode = result;
+            //         }, 0);
+            //     }
+            //     , error: AjaxError
+            // });
+            // $.ajax({
+            //     url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/Address'
+            //     , headers: { 'authorization': 'Bearer @token' }
+            //     , type: 'post'
+            //     , dataType: 'json'
+            //     , cache: false
+            //     , success: function (result) {
+            //         $timeout(function () {
+            //             $scope.lAddress = result;
+            //         }, 0);
+            //     }
+            //     , error: AjaxError
+            // });
         }
         $scope.LoadInit();
 

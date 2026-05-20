@@ -4,11 +4,11 @@
     var token = User.AccessToken(HttpContext);
 }
 <style>
-    .bg-Private{
+    .bg-private{
         background-color:var(--light-orange);
         color:var(--bs-orange);
     }
-    .bg-Publish{
+    .bg-publish{
         background-color:var(--light-green);
         color:var(--bs-green);
     }
@@ -36,17 +36,22 @@
     .bg-Business{
         background-color: #dc3545;
     }
+
+    .btn:disabled{
+        background-color: var(--bs-gray-100) !important;
+        color: var(--bs-gray-500) !important
+    }
 </style>
 @section PageHeader {
     <!-- [ page-header ] start -->
     <div class="page-header">
         <div class="page-header-left d-flex align-items-center">
             <div class="page-header-title">
-                <h5 class="m-b-10">Survey Manage</h5>
+                <h5 class="m-b-10">Survey</h5>
             </div>
             <ul class="breadcrumb">
                 <li class="breadcrumb-item"><a href="@Url.Page("/Index")">Home</a></li>
-                <li class="breadcrumb-item">Index</li>
+                <li class="breadcrumb-item">Manage</li>
             </ul>
         </div>
     </div>
@@ -54,16 +59,16 @@
 
 <div ng-controller="SurveyCtrl">
     <div class="d-md-flex mb-2">
-        <div class="fs-4 me-3">Survey</div>
+        <div class="fs-4 me-3">Manage</div>
         <div class="overflow-auto flex-fill">
             <div class="flex-fill d-flex flex-nowrap align-items-center">
                 <div class="btn btn-link text-nowrap {{ iStatus == '' ? 'active' : '' }}" ng-click="SelectStatus('')">
                     All <span class="badge ms-1" ng-show="sum_all > 0">{{ sum_all | number }}</span>
                 </div> |
-                <div class="btn btn-link border-0 text-nowrap {{ iStatus == 'Private' ? 'active' : '' }}" ng-click="SelectStatus('Private')">
+                <div class="btn btn-link border-0 text-nowrap {{ iStatus == 'private' ? 'active' : '' }}" ng-click="SelectStatus('private')">
                     Private <span class="badge ms-1" ng-show="sum_private > 0">{{ sum_private | number }}</span>
                 </div>
-                <div class="btn btn-link border-0 text-nowrap {{ iStatus == 'Publish' ? 'active' : '' }}" ng-click="SelectStatus('Publish')">
+                <div class="btn btn-link border-0 text-nowrap {{ iStatus == 'publish' ? 'active' : '' }}" ng-click="SelectStatus('publish')">
                     Publish <span class="badge ms-1" ng-show="sum_publish > 0">{{ sum_publish | number }}</span>
                 </div>
             </div>
@@ -146,10 +151,10 @@
                 <tbody>
                     <tr ng-repeat="x in lData" class="{{ x.statusCss }} {{ x.is_not_read == 1 ? 'fw-bolder' : '' }}">
                         <td class="text-center align-middle">
-                            <span ng-show="x.status == 'Private'" class="text-warning" title="Private">
+                            <span ng-show="x.status == 'private'" class="text-warning" title="private">
                                 <i class="bi bi-clipboard"></i>
                             </span>
-                            <span ng-show="x.status == 'Publish'" class="text-green" title="Publish">
+                            <span ng-show="x.status == 'publish'" class="text-green" title="publish">
                                 <i class="bi bi-clipboard-check"></i>
                             </span>
                         </td>
@@ -170,16 +175,19 @@
                         </td>
                         <td>
                             <div class="d-flex">
-                                <button ng-click="ShowPublish(x)" class="btn btn-circle bg-light-green me-2" title="Publish">
-                                    <i class="bi bi-send"></i>
+                                <button ng-click="ShowPublish(x)" class="btn btn-circle bg-light-green me-2" title="Publish" ng-show="x.status == 'private'" ng-disabled="x.total == 0">
+                                   <i class="bi bi-play-fill"></i>
                                 </button>
-                                <button ng-click="ShowEdit(x)" class="btn btn-circle bg-light-orange me-2" title="Edit">
+                                <button ng-click="Cancel(x)" class="btn btn-circle bg-light-red me-2" title="Stop" ng-show="x.status == 'publish'">
+                                   <i class="bi bi-stop-circle"></i>
+                                </button>
+                                <button ng-click="ShowEdit(x)" class="btn btn-circle bg-light-orange me-2" title="Edit" ng-disabled="x.status == 'publish'">
                                     <i class="bi bi-pen"></i>
                                 </button>
-                                <button ng-click="Delete(x)" class="btn btn-circle bg-light-red me-2" title="Delete">
+                                <button ng-click="Delete(x)" class="btn btn-circle bg-light-red me-2" title="Delete" ng-disabled="x.status == 'publish'">
                                    <i class="bi bi-trash"></i>
                                 </button>
-                                <button ng-click="ShowDetail(x)" class="btn btn-circle bg-light-blue" title="Detail">
+                                <button ng-click="ShowDetail(x)" class="btn btn-circle bg-light-blue" title="Detail" ng-disabled="x.status == 'publish'">
                                     <i class="bi bi-arrow-right"></i>
                                 </button>
                             </div>
@@ -232,12 +240,12 @@
                             </div>
                             <div class="d-flex mb-3" ng-show="iData.id != ''">
                                 <div class="me-3" style="width:300px;">
-                                    <div class="fs-6 text-dark">
+                                    <div class="fs-6 text-dark fs-bolder">
                                         Start Date
                                     </div>
                                     <input class="form-control form-control-sm icon-calendar date"
                                            ng-model="iData.start_date_select"
-                                           ng-model-options="{ updateon: 'blur' }"
+                                           ng-model-options="{ updateOn: 'blur' }"
                                            moment-picker="iData.start_date_select"
                                            locale="th"
                                            format="DD/MM/YYYY"
@@ -247,12 +255,12 @@
                                            start-view="month" />
                                 </div>
                                 <div class="me-3" style="width:300px;">
-                                    <div class="fs-6 text-dark">
+                                    <div class="fs-6 text-dark fs-bolder">
                                         End Date
                                     </div>
                                     <input class="form-control form-control-sm icon-calendar date"
                                            ng-model="iData.end_date_select"
-                                           ng-model-options="{ updateon: 'blur' }"
+                                           ng-model-options="{ updateOn: 'blur' }"
                                            moment-picker="iData.end_date_select"
                                            locale="th"
                                            format="DD/MM/YYYY"
@@ -262,7 +270,7 @@
                                            start-view="month" />
                                 </div>
                                 <div class="me-3" style="width:300px;">
-                                    <div class="fs-6 text-dark">
+                                    <div class="fs-6 text-dark fs-bolder">
                                         Authorized
                                     </div>
                                     <select ng-model="iData.mode" class="form-select" ng-options="x.value as x.key for x in lMode"></select>
@@ -281,7 +289,7 @@
                             <div class="overflow-auto p-2 border rounded-3" style="height:calc(100vh - 250px);">
                                 <table class="table table-borderless">
                                     <tbody>
-                                        <tr ng-repeat="p in iData.lPermission | filter : {is_active:1}">
+                                        <tr ng-repeat="p in iData.lPermission | filter : {is_active:1}" class="border-bottom">
                                             <td class="align-middle">
                                                 <div class="badge bg-{{ p.permission_type }}">
                                                     {{ p.permission_type }}
@@ -310,7 +318,7 @@
         </div>
     </div>
     @* Modal Publish *@
-    <div class="modal fade" id="publishmodal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="publishModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -320,35 +328,67 @@
                 <div class="modal-body">
                     <div class="d-flex">
                         <div class="flex-fill">
-                            <div class="fs-5 fw-bolder text-dark">
-                                {{ idata.title }}
+                            <div class="fs-5 fw-bolder text-dark mb-2">
+                                {{ iData.title }}
                             </div>
                             <div class="mb-3 fs-5 text-dark bg-gray rounded-3 p-3 overflow-auto" style="height:calc(100vh - 340px);">
-                                {{ idata.description }}
+                                {{ iData.description }}
+                            </div>
+                            <div class="d-flex mb-3">
+                                <div class="me-3" style="width:300px;">
+                                    <div class="fs-6 text-dark fw-bolder">
+                                        Start Date
+                                    </div>
+                                    <div class="p-3 bg-gray rounded-3">
+                                        {{ iData.start_date != '' ? iData.start_date : '-' }}
+                                    </div>
+                                </div>
+                                <div class="me-3" style="width:300px;">
+                                    <div class="fs-6 text-dark fw-bolder">
+                                        End Date
+                                    </div>
+                                    <div class="p-3 bg-gray rounded-3">
+                                        {{ iData.end_date != '' ? iData.end_date : '-' }}
+                                    </div>
+                                </div>
+                                <div class="me-3" style="width:300px;">
+                                    <div class="fs-6 text-dark fw-bolder">
+                                        Authorized
+                                    </div>
+                                    <div class="p-3 bg-gray rounded-3">
+                                        {{ iData.mode != '' ? iData.mode : '-' }}
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="ms-3" style="min-width:400px; width:400px;" ng-show="idata.mode == 'permission'">
-                            <div class="d-flex">
+                        <div class="ms-3" style="min-width:400px; width:400px;" ng-show="iData.mode == 'permission'">
+                            <div class="d-flex aling-items-center">
                                 <div class="flex-fill fs-6 fw-bolder text-dark">
-                                    กลุ่มผู้มีสิทธ์
-                                </div>
-                                <div class="btn btn-link" ng-click="showpermission()">
-                                    เพิ่ม
+                                    Permission
                                 </div>
                             </div>
                             <div class="overflow-auto p-2 border rounded-3" style="height:calc(100vh - 250px);">
-                                <div class="list-group list-group-flush">
-                                    <div class="list-group-item list-group-item-action" ng-repeat="p in idata.lpermission">
-
-                                    </div>
-                                </div>
+                                <table class="table table-borderless">
+                                    <tbody>
+                                        <tr ng-repeat="p in iData.lPermission | filter : {is_active:1}" class="border-bottom">
+                                            <td class="align-middle">
+                                                <div class="badge bg-{{ p.permission_type }}">
+                                                    {{ p.permission_type }}
+                                                </div>
+                                            </td>
+                                            <td class="align-middle">
+                                                {{ p.description }}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">close</button>
-                    <button type="button" class="btn btn-success" ng-click="publish()" ng-disabled="idata.title == ''">
+                    <button type="button" class="btn btn-success" ng-click="Publish()">
                         <i class="bi bi-send me-2"></i> publish
                     </button>
                 </div>
@@ -470,7 +510,7 @@
         $scope.lData = [];
         
         $scope.lMode = [
-            { key: 'ทุกคนในระบบ', value: 'everyonce' }
+            { key: 'ทุกคนในระบบ', value: 'everyone' }
             ,  { key: 'เฉพาะผู้มีสิทธิ์', value: 'permission' }
         ];
 
@@ -644,11 +684,11 @@
                         $scope.sum_private = 0;
                         $scope.sum_publish = 0;
                         
-                        var find = result.find(x => x.status == 'Private');
+                        var find = result.find(x => x.status == 'private');
                         if (find) { 
                             $scope.sum_private = find.total; 
                         }
-                        find = result.find(x => x.status == 'Publish');
+                        find = result.find(x => x.status == 'publish');
                         if (find) { 
                             $scope.sum_publish = find.total; 
                         }
@@ -707,7 +747,6 @@
             if($scope.iData.start_date != ''){
                 $scope.iData.start_date_select = moment($scope.iData.start_date, "DD/MM/YYYY");
             }
-            console.log($scope.iData.end_date);
             if($scope.iData.end_date != ''){
                 $scope.iData.end_date_select = moment($scope.iData.end_date, "DD/MM/YYYY");
             }
@@ -725,6 +764,9 @@
             }
 
             $scope.iData.create_by = '@User.UserId()';
+
+            $scope.iData.start_date = '';
+            $scope.iData.end_date = '';
 
             if($scope.iData.start_date_select){
                 $scope.iData.start_date = $scope.iData.start_date_select.format("DD/MM/YYYY");
@@ -793,7 +835,7 @@
             $scope.iData = x;
             $scope.LoadPermission($scope.iData);
 
-            $("#publishmodal").modal('show');
+            $("#publishModal").modal('show');
         }
 
         /* Permission */
@@ -923,6 +965,50 @@
                             var dt = new Date().toISOString().slice(0, 10).replace(/-/g, "");
                             ExportFile(JSData, 'SurveyList_' + dt);
                         }
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+        
+        $scope.Publish = function(){
+             $("#publishModal").modal('hide');
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Survey/Publish',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                cache: false,
+                data: JSON.stringify({
+                    id: $scope.iData.id
+                    , create_by: '@User.UserId()'
+                }),
+                success: function () {
+                    $timeout(function () {
+                        $scope.LoadData();
+                        alertSuccess("Publish Success","เปิดให้ทำแบบสอบถาม");
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+        
+        $scope.Cancel = function(x){
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Survey/Cancel',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                cache: false,
+                data: JSON.stringify({
+                    id: x.id
+                    , update_by: '@User.UserId()'
+                }),
+                success: function () {
+                    $timeout(function () {
+                        $scope.LoadData();
+                        alertSuccess("Stop Survey","หยุดการทำแบบสอบถาม");
                     }, 0);
                 },
                 error: AjaxError

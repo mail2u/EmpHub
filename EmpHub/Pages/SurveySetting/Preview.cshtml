@@ -19,7 +19,7 @@
                 {{ iSection.title }}
             </div>
             <div class="fs-5 text-dark mb-3">
-                {{ iSection.description }}
+                <p ng-bind-html="iSection.description"></p>
             </div>
             @* Question *@
             <div ng-repeat="q in iSection.lQuestion">

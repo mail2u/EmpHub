@@ -15,6 +15,34 @@
     .main-content{
         padding: 5px !important;
     }
+
+/* 
+    .simditor {
+        max-width: 825px !important; /* old 825 */
+    }
+ */
+    .simditor.is-invalid {
+        border: 1px solid red;
+    }
+
+    .simditor .simditor-body, .simditor .simditor-body p, .simditor .simditor-body div, .editor-style p, .editor-style div {
+        color: #000 !important;
+        font-size: 27px !important;
+        font-family: THSarabun !important;
+        line-height: 34px !important;
+        margin: 0px !important;
+    }
+
+    .simditor .simditor-body p {
+        color: #000 !important;
+    }
+
+    .simditor-placeholder {
+        position: absolute;
+        padding-top: 25px;
+        padding-left: 17px;
+        color: var(--gray);
+    }
 </style>
 @* @section PageHeader {
     <!-- [ page-header ] start -->
@@ -72,7 +100,8 @@
                     </div> *@
                 </div>
                 <input ng-model="iSection.title" class="form-control form-text fw-bolder bg-light mb-2" maxlength="2000" ng-blur="UpdateSection(iSection)" />
-                <textarea ng-model="iSection.description" class="form-control form-text" rows="4" ng-blur="UpdateSection(iSection)"></textarea>
+               @*  <textarea ng-model="iSection.description" class="form-control form-text" rows="4" ng-blur="UpdateSection(iSection)"></textarea> *@
+                <textarea id="editor" class="form-control detail " rows="10" maxlength="4000"></textarea>
             </div>
             @* Question *@
             <div ng-repeat="q in iSection.lQuestion">
@@ -187,7 +216,15 @@
         </div>
     </div>
 </div>
+<link rel="stylesheet" href="~/lib/simditor/simditor.css" />
+<script src="~/lib/simditor/module.js"></script>
+<script src="~/lib/simditor/hotkeys.js"></script>
+<script src="~/lib/simditor/uploader.js"></script>
+<script src="~/lib/simditor/simditor.js"></script>
 <script>
+    $(".simditor-body").bind('scroll', function () {
+        this.scrollTo(0, 0);
+    });
     app.controller('SurveyCtrl', function ($scope, $http, $timeout, $filter) {
         $scope.surveyId = '@Model.id';
         $scope.is_save = 0;
@@ -195,6 +232,43 @@
         $scope.iSection = {};
         $scope.lSection = [];
         $scope.lType = ['radio', 'checkbox', 'text', 'textarea', 'number'];
+        Simditor.locale = 'en-US';
+        var editor = new Simditor({
+            textarea: $('#editor')
+            , placeholder: 'กรุณากรอกรายละเอียดให้อยู่ในกรอบ'
+            , upload: {
+                url: '@Url.Page("/Service/UploadImage")', // URL สำหรับการอัปโหลดรูปภาพ
+                params: null,         // พารามิเตอร์เพิ่มเติม (ถ้ามี)
+                fileKey: 'file',      // ชื่อของไฟล์ที่จะอัปโหลด
+                connectionCount: 3,   // จำนวนการอัปโหลดพร้อมกัน
+                leaveConfirm: 'กำลังอัปโหลดไฟล์อยู่ หากคุณออก การอัปโหลดจะถูกยกเลิก' // ข้อความแจ้งเตือนเมื่อออกหน้า
+            }
+            , pasteImage: true
+            //optional options
+            , toolbar: [
+                'bold'
+                , 'italic'
+                , 'underline'
+                , 'strikethrough'
+                , 'fontScale'
+                , 'color'
+                , 'ol'
+                , 'ul'
+                , 'blockquote'
+                , 'code'
+                , 'link'
+                , 'image'
+                , 'alignment'
+                , 'indent'
+                , 'outdent'
+                , 'table'
+            ]
+        });
+
+        editor.on('blur', function () {
+            $scope.iSection.description = editor.getValue();
+            $scope.UpdateSection($scope.iSection);
+        });
 
         if ($scope.surveyId == '') {
             location.href = '@Url.Page("Index")';
@@ -215,6 +289,9 @@
                     $timeout(function () {
                         $scope.lSection = result;
 
+                        if($scope.lSection.length == 0){
+                            $scope.NewSection();
+                        }
                         for (var i = 0; i < $scope.lSection.length; i++) {
                             $scope.SelectSection(0)
                         }
@@ -228,6 +305,7 @@
         $scope.SelectSection = function(index){
             $scope.section_index = index;
             $scope.iSection = $scope.lSection[$scope.section_index];
+            editor.setValue($scope.iSection.description);
             $scope.LoadQuestion($scope.iSection);
         }
 
@@ -347,6 +425,10 @@
         }
 
         $scope.NewQuestion = function (x) {
+            if(x.lQuestion == null){
+                x.lQuestion = [];
+            }
+
             var title = 'New Question ' + (x.lQuestion.length + 1);
             var iQuestion = {
                 sectionId: x.id

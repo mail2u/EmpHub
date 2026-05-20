@@ -1,0 +1,334 @@
+﻿@page
+@model EmpHub.Pages.Service.FormUpdate.FormBenefitFundModel
+@{
+    var token = User.AccessToken(HttpContext);
+}
+<style>
+    .main-content {
+        min-height: calc(100vh - 150px) !important;
+    }
+
+    .box-group{
+        padding: 15px;
+        border: 1px solid white;
+        border-radius: 15px;
+    }
+
+    .box-group.input-error {
+        border: 1px solid red;
+    }
+</style>
+<div ng-controller="FormCtrl" id="tab_education">
+    @* Header *@
+    <partial name="_PartialFormUpdate" />
+    @* View *@
+    <div class="rounded-4 mb-3 bg-white shadow-sm" style="padding:25px 120px;">
+        <div class="text-center fs-4 fw-bolder mb-4 text-dark">
+            แบบแสดงเจตนาระบุผู้รับประโยชน์
+        </div>
+        <div class="text-dark fs-6">
+            <div class="mb-4">
+                กองทุนสำรองเลี้ยงชีพ <b>เอ็มเอฟซี  มาสเตอร์ฟันด์</b> ซึ่งจดทะเบียนแล้ว
+                <b>บริษัท ทิพยประกันชีวิต จำกัด (มหาชน)</b>
+            </div>
+            <div class="row">
+                <div class="col-sm-2 mb-3">
+                    ข้าพเจ้า
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <input ng-model="iForm.fullname" class="form-control fullname" maxlength="100" />
+                </div>
+                <div class="col-sm-2 mb-3">
+                    บัตรประจำตัวประชาชนเลขที่
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <input ng-model="iForm.idcard" class="form-control idcard" maxlength="13" />
+                </div>
+            </div>
+            <div style="padding-left:50px;" class="mode box-group mb-3">
+                <div class="mb-1">
+                    <input ng-model="iForm.mode" type="radio" value="new" /> ขอแสดงเจตนาระบุตัวผู้รับประโยชน์จากกองทุน
+                </div>
+                <div>
+                    <input ng-model="iForm.mode" type="radio" value="change" /> ขอเปลี่ยนแปลงผู้รับประโยชน์จากกองทุน  โดยยกเลิกหนังสือแสดงเจตนาฉบับเดิม
+                </div>
+            </div>
+            <div class="mb-3 d-flex align-items-center">
+                เมื่อข้าพเจ้าถึงแก่ความตาย  ข้าพเจ้าประสงค์ให้จ่ายเงินกองทุนแก่บุคคลจำนวน <input ng-model="iForm.total" type="number" class="form-control total mx-3" style="width:80px;" ng-change="ChangeTotal()" /> คนดังมีรายชื่อดังต่อไปนี้
+            </div>
+            <table class="table table-borderless">
+                <tbody>
+                    <tr>
+                        <td class="align-middle" width="20">
+                            1
+                        </td>
+                        <td>
+                            <input ng-model="iForm.benefitname1" class="form-control benefitname1" />
+                        </td>
+                        <td class="align-middle">
+                            เกี่ยวข้องเป็น
+                        </td>
+                        <td width="200">
+                            <input ng-model="iForm.benefitrelation1" class="form-control benefitrelation1" />
+                        </td>
+                        <td class="align-middle">
+                            จำนวน
+                        </td>
+                        <td width="100">
+                            <input ng-model="iForm.benefitpercent1" class="form-control benefitpercent1" type="number" />
+                        </td>
+                        <td class="align-middle">
+                            %
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="align-middle" width="20">
+                            2
+                        </td>
+                        <td>
+                            <input ng-model="iForm.benefitname2" class="form-control benefitname2" />
+                        </td>
+                        <td class="align-middle">
+                            เกี่ยวข้องเป็น
+                        </td>
+                        <td width="200">
+                            <input ng-model="iForm.benefitrelation2" class="form-control benefitrelation2" />
+                        </td>
+                        <td class="align-middle">
+                            จำนวน
+                        </td>
+                        <td width="100">
+                            <input ng-model="iForm.benefitpercent2" class="form-control benefitpercent2" type="number" />
+                        </td>
+                        <td class="align-middle">
+                            %
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="align-middle" width="20">
+                            3
+                        </td>
+                        <td>
+                            <input ng-model="iForm.benefitname3" class="form-control benefitname3" />
+                        </td>
+                        <td class="align-middle">
+                            เกี่ยวข้องเป็น
+                        </td>
+                        <td width="200">
+                            <input ng-model="iForm.benefitrelation3" class="form-control benefitrelation3" />
+                        </td>
+                        <td class="align-middle">
+                            จำนวน
+                        </td>
+                        <td width="100">
+                            <input ng-model="iForm.benefitpercent3" class="form-control benefitpercent3" type="number" />
+                        </td>
+                        <td class="align-middle">
+                            %
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="d-flex justify-content-end">
+        <div class="btn btn-primary" ng-click="Save()">
+            <i class="far fa-paper-plane me-2"></i> Send Request
+        </div>
+    </div>
+</div>
+<script>
+    $(".idcard").mask("0000000000000");
+    app.controller('FormCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.id = '@Model.refId';
+        
+        $scope.LoadForm = function(){
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormBenefitFundDetail',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                cache: false,
+                data: JSON.stringify({
+                    refId: $scope.id
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.iForm = result
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+        
+        $scope.$on('FORM_LOAD', function (e) {
+            $scope.LoadForm();
+        });
+
+        $scope.LoadData = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/Detail',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        var data = result;
+
+                        $scope.iForm.fullname = data.employeeName;
+                        $scope.iForm.idcard = data.idcard;
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+        $scope.ChangeTotal = function(){
+            if ($scope.iForm.total < 3){
+                $scope.iForm.benefitname3 = '';
+                $scope.iForm.benefitrelation3 = '';
+                $scope.iForm.benefitpercent3 = 0;
+            }
+            if ($scope.iForm.total < 2) {
+                $scope.iForm.benefitname2 = '';
+                $scope.iForm.benefitrelation2 = '';
+                $scope.iForm.benefitpercent2 = 0;
+            }
+        }
+
+        $scope.Validate = function () {
+            var flag = true;
+            JS_Reset($(".fullname"));
+            JS_Reset($(".idcard"));
+            JS_Reset($(".mode"));
+            JS_Reset($(".total"));
+            JS_Reset($(".benefitname1"));
+            JS_Reset($(".benefitrelation1"));
+            JS_Reset($(".benefitpercent1"));
+            JS_Reset($(".benefitname2"));
+            JS_Reset($(".benefitrelation2"));
+            JS_Reset($(".benefitpercent2"));
+            JS_Reset($(".benefitname3"));
+            JS_Reset($(".benefitrelation3"));
+            JS_Reset($(".benefitpercent3"));
+
+            if ($scope.iForm.fullname == '') {
+                flag = false;
+                JS_Require($(".fullname"));
+            }
+            if ($scope.iForm.idcard == '' || $scope.iForm.idcard.length != 13) {
+                flag = false;
+                JS_Require($(".idcard"));
+            }
+            if ($scope.iForm.mode == '') {
+                flag = false;
+                JS_Require($(".mode"));
+            }
+            if ($scope.iForm.total <= 0) {
+                flag = false;
+                JS_Require($(".total"));
+            }
+
+            var totalPercent = parseFloat($scope.iForm.benefitpercent1) 
+            + parseFloat($scope.iForm.benefitpercent2)
+            + parseFloat($scope.iForm.benefitpercent3);
+
+            console.log(totalPercent);
+
+            if ($scope.iForm.total >= 1) {
+                if ($scope.iForm.benefitname1 == '') {
+                    flag = false;
+                    JS_Require($(".benefitname1"));
+                }
+                if ($scope.iForm.benefitrelation1 == '') {
+                    flag = false;
+                    JS_Require($(".benefitrelation1"));
+                }
+                if ($scope.iForm.benefitpercent1 <= 0 || totalPercent != 100) {
+                    flag = false;
+                    JS_Require($(".benefitpercent1"));
+                }
+            }
+            if ($scope.iForm.total >= 2) {
+                if ($scope.iForm.benefitname2 == '') {
+                    flag = false;
+                    JS_Require($(".benefitname2"));
+                }
+                if ($scope.iForm.benefitrelation2 == '') {
+                    flag = false;
+                    JS_Require($(".benefitrelation2"));
+                }
+                if ($scope.iForm.benefitpercent2 <= 0 || totalPercent != 100) {
+                    flag = false;
+                    JS_Require($(".benefitpercent2"));
+                }
+            }
+            if ($scope.iForm.total >= 3) {
+                if ($scope.iForm.benefitname3 == '') {
+                    flag = false;
+                    JS_Require($(".benefitname3"));
+                }
+                if ($scope.iForm.benefitrelation3 == '') {
+                    flag = false;
+                    JS_Require($(".benefitrelation3"));
+                }
+                if ($scope.iForm.benefitpercent3 <= 0 || totalPercent != 100) {
+                    flag = false;
+                    JS_Require($(".benefitpercent3"));
+                }
+            }
+
+            return flag;
+        }
+
+        $scope.Save = async function () {
+            if ($scope.Validate()) {
+                alertConfirm("ยืนยันการทำรายการ", "ท่านต้องการส่งใบคำขอ", async function () {
+                    var flag = await $scope.CreateForm();
+
+                    if (flag) {
+                        var serviceNo = await $scope.ServiceRequest();
+
+                        if (serviceNo) {
+                            alertSuccess("ทำรายการสำเร็จ", "ระบบบันทึกใบคำขอของท่านเรียบร้อย", function () {
+                                location.href = '@Url.Page("/Service/Index")';
+                            });
+                        }
+                    }
+                });
+            } else {
+                alertWarning("แจ้งเตือน", "กรุณากรอกข้อมูลให้ครบ");
+            }
+        }
+
+        $scope.CreateForm = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormBenefitFundCreate',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify($scope.iForm),
+                    success: function () {
+                        $timeout(async function () {
+                            resolve(true);
+                        }, 0);
+                    }, error: function (jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "ระบบเกิดข้อผิดพลาด",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+    });
+</script>

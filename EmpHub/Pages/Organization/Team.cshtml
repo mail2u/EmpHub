@@ -59,6 +59,14 @@
             🔍 กด Ctrl + Scroll เพื่อ Zoom
         </div>
     </div>
+    <div class="position-fixed bottom-0 end-0 m-3">
+        <button class="btn btn-light bg-white mb-2" title="full screen" ng-click="FullScreen()">
+            <i class="bi bi-fullscreen"></i>
+        </button>
+        <button class="btn btn-light bg-white" title="download to image" ng-click="DownloadPNG()">
+            <i class="bi bi-image"></i>
+        </button>
+    </div>
 </div>
 <link rel="stylesheet" href="~/lib/jointjs/joint.min.css">
 <script src="https://unpkg.com/graphlib@2.1.8/dist/graphlib.min.js"></script>
@@ -318,6 +326,15 @@
             });
         }
 
+        $scope.FullScreen = function () {
+            paper.scaleContentToFit({
+                padding: 50,
+                preserveAspectRatio: true
+            });
+
+            scale = paper.scale().sx;
+        }
+
         $scope.loadMyTeam = async function () {
 
             const team = await $scope.DataTeamMy('@User.UserId()');
@@ -339,10 +356,7 @@
             // auto layout
             runLayout();
 
-            paper.scaleContentToFit({
-                padding: 50,
-                preserveAspectRatio: true
-            });
+            $scope.FullScreen();
         }
         $scope.loadMyTeam();
 
@@ -841,6 +855,307 @@
             });
 
             graph.addCell(link);
+        }
+
+        $scope.DownloadPNG = async function () {
+            // =========================
+            // GRAPH SIZE
+            // =========================
+
+            const bbox =
+                graph.getBBox();
+
+            const padding = 50;
+
+            const width =
+                Math.ceil(bbox.width + (padding * 2));
+
+            const height =
+                Math.ceil(bbox.height + (padding * 2));
+
+            // =========================
+            // EXPORT CONTAINER
+            // =========================
+
+            const container =
+                document.createElement('div');
+
+            container.style.position =
+                'fixed';
+
+            container.style.left =
+                '-100000px';
+
+            container.style.top =
+                '0';
+
+            container.style.width =
+                width + 'px';
+
+            container.style.height =
+                height + 'px';
+
+            container.style.background =
+                '#FFFFFF';
+
+            document.body.appendChild(
+                container
+            );
+
+            // =========================
+            // EXPORT GRAPH
+            // =========================
+
+            const exportGraph =
+                new joint.dia.Graph();
+
+            const idMap = {};
+
+            // clone elements
+            graph.getElements().forEach(el => {
+
+                const clone =
+                    el.clone();
+
+                const pos =
+                    el.position();
+
+                // reset position ใหม่
+                clone.position(
+
+                    (pos.x - bbox.x) + padding,
+
+                    (pos.y - bbox.y) + padding
+                );
+
+                idMap[el.id] =
+                    clone.id;
+
+                exportGraph.addCell(clone);
+            });
+
+            // clone links
+            graph.getLinks().forEach(link => {
+
+                const clone =
+                    link.clone();
+
+                const source =
+                    link.get('source');
+
+                const target =
+                    link.get('target');
+
+                // remap source
+                if (source.id) {
+
+                    clone.set('source', {
+                        id:
+                            idMap[source.id]
+                    });
+                }
+
+                // remap target
+                if (target.id) {
+
+                    clone.set('target', {
+                        id:
+                            idMap[target.id]
+                    });
+                }
+
+                // shift vertices
+                const vertices =
+                    link.vertices() || [];
+
+                clone.vertices(
+
+                    vertices.map(v => ({
+
+                        x:
+                            (v.x - bbox.x) + padding,
+
+                        y:
+                            (v.y - bbox.y) + padding
+                    }))
+                );
+
+                exportGraph.addCell(clone);
+            });
+
+            // =========================
+            // EXPORT PAPER
+            // =========================
+
+            const exportPaper =
+                new joint.dia.Paper({
+
+                    el: container,
+
+                    model: exportGraph,
+
+                    width: width,
+
+                    height: height,
+
+                    gridSize: 10,
+
+                    async: false,
+
+                    interactive: false,
+
+                    background: {
+                        color: '#FFFFFF'
+                    }
+                });
+
+            // render wait
+            await new Promise(resolve => {
+
+                requestAnimationFrame(() => {
+
+                    requestAnimationFrame(() => {
+
+                        resolve();
+                    });
+                });
+            });
+
+            // =========================
+            // SVG -> CANVAS
+            // =========================
+
+            const svg =
+                container.querySelector('svg');
+
+            // =========================
+            // FIT SVG SIZE
+            // =========================
+
+            const g =
+                svg.querySelector('g');
+
+            const svgBBox =
+                g.getBBox();
+
+            const finalPadding = 50;
+
+            const finalWidth =
+                Math.ceil(
+                    svgBBox.width + (finalPadding * 2)
+                );
+
+            const finalHeight =
+                Math.ceil(
+                    svgBBox.height + (finalPadding * 2)
+                );
+
+            svg.setAttribute(
+                'viewBox',
+
+                `
+            ${svgBBox.x - finalPadding}
+            ${svgBBox.y - finalPadding}
+            ${finalWidth}
+            ${finalHeight}
+            `
+            );
+
+            svg.setAttribute(
+                'width',
+                finalWidth
+            );
+
+            svg.setAttribute(
+                'height',
+                finalHeight
+            );
+
+            // =========================
+            // SVG STRING
+            // =========================
+
+            const serializer =
+                new XMLSerializer();
+
+            const svgString =
+                serializer.serializeToString(svg);
+
+            const blob =
+                new Blob(
+                    [svgString],
+                    {
+                        type:
+                            'image/svg+xml;charset=utf-8'
+                    }
+                );
+
+            const url =
+                URL.createObjectURL(blob);
+
+            const img =
+                new Image();
+
+            img.onload = function () {
+
+                const scale = 2;
+
+                const canvas =
+                    document.createElement('canvas');
+
+                canvas.width =
+                    finalWidth * scale;
+
+                canvas.height =
+                    finalHeight * scale;
+
+                const ctx =
+                    canvas.getContext('2d');
+
+                // bg
+                ctx.fillStyle =
+                    '#FFFFFF';
+
+                ctx.fillRect(
+                    0,
+                    0,
+                    canvas.width,
+                    canvas.height
+                );
+
+                ctx.scale(scale, scale);
+
+                ctx.drawImage(
+                    img,
+                    0,
+                    0,
+                    finalWidth,
+                    finalHeight
+                );
+
+                URL.revokeObjectURL(url);
+
+                const png =
+                    canvas.toDataURL('image/png');
+
+                const link =
+                    document.createElement('a');
+
+                link.download =
+                    'organization-chart.png';
+
+                link.href =
+                    png;
+
+                link.click();
+
+                // cleanup
+                exportPaper.remove();
+
+                container.remove();
+            };
+
+            img.src = url;
         }
     });
 </script>
