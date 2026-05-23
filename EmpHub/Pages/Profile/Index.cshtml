@@ -1,234 +1,541 @@
-﻿@page
+@page
 @model EmpHub.Pages.Profile.IndexModel
 @{
-    ViewData["Title"] = "EmpHub";
+    ViewData["Title"] = "โปรไฟล์พนักงาน";
     var token = User.AccessToken(HttpContext);
 }
+
+<style>
+    .profile-shell {
+        display: grid;
+        grid-template-columns: 340px minmax(0, 1fr);
+        gap: 24px;
+        align-items: start;
+    }
+
+    .profile-card,
+    .profile-panel {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+    }
+
+    .profile-card-cover {
+        height: 104px;
+        background: linear-gradient(135deg, #1e3b92 0%, #2d6cdf 55%, #fbde14 55%, #fbde14 100%);
+    }
+
+    .profile-avatar {
+        width: 104px;
+        height: 104px;
+        margin: -52px auto 16px;
+        border: 4px solid #fff;
+        background: #f8fafc;
+    }
+
+    .profile-meta {
+        display: grid;
+        gap: 10px;
+    }
+
+    .profile-meta-row {
+        display: grid;
+        grid-template-columns: 28px minmax(0, 1fr);
+        gap: 10px;
+        align-items: start;
+    }
+
+    .profile-kpi {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .profile-kpi-item {
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 12px;
+        background: #f9fafb;
+        min-height: 78px;
+    }
+
+    .profile-tabs {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+    }
+
+    .profile-section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 18px;
+        color: #283c50;
+        font-weight: 700;
+        font-size: 18px;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .info-field {
+        min-height: 68px;
+        padding: 12px;
+        border: 1px solid #edf0f4;
+        border-radius: 8px;
+        background: #fcfcfc;
+    }
+
+    .info-label {
+        color: #64748b;
+        font-size: 12px;
+        margin-bottom: 6px;
+    }
+
+    .info-value {
+        color: #283c50;
+        font-weight: 600;
+        word-break: break-word;
+    }
+
+    .timeline {
+        position: relative;
+        display: grid;
+        gap: 14px;
+    }
+
+    .timeline-item {
+        display: grid;
+        grid-template-columns: 22px minmax(0, 1fr);
+        gap: 12px;
+    }
+
+    .timeline-dot {
+        width: 12px;
+        height: 12px;
+        margin-top: 6px;
+        border-radius: 50%;
+        background: #1e3b92;
+        box-shadow: 0 0 0 4px #e5ecff;
+    }
+
+    .timeline-content {
+        border: 1px solid #edf0f4;
+        border-radius: 8px;
+        padding: 14px 16px;
+        background: #fff;
+    }
+
+    .document-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+    .document-item {
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 16px;
+        background: #fff;
+        min-height: 150px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .empty-state {
+        border: 1px dashed #cbd5e1;
+        border-radius: 8px;
+        padding: 24px;
+        text-align: center;
+        color: #64748b;
+        background: #f8fafc;
+    }
+
+    @@media (max-width: 1199.98px) {
+        .profile-shell {
+            grid-template-columns: 1fr;
+        }
+
+        .info-grid,
+        .document-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @@media (max-width: 767.98px) {
+        .info-grid,
+        .document-grid,
+        .profile-kpi {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
 <div class="w-100" ng-controller="DataCtrl">
     @section PageHeader {
-        <!-- [ page-header ] start -->
         <div class="page-header">
             <div class="page-header-left d-flex align-items-center">
                 <div class="page-header-title">
-                    <h5 class="m-b-10">Employees</h5>
+                    <h5 class="m-b-10">โปรไฟล์</h5>
                 </div>
                 <ul class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="@Url.Page("/Index")">Home</a></li>
-                    <li class="breadcrumb-item"><a href="@Url.Page("/Employee/Index")">Employees</a></li>
-                    <li class="breadcrumb-item">Info {{ $parent.fullname }}</li>
+                    <li class="breadcrumb-item"><a href="@Url.Page("/Index")">หน้าหลัก</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Page("/Employee/Index")">พนักงาน</a></li>
+                    <li class="breadcrumb-item">{{ displayName() }}</li>
                 </ul>
             </div>
         </div>
     }
 
-    <div class="d-flex">
-        @* Profile *@
-        <div class=" me-4" style="width:400px">
-            <div class="rounded-4 border overflow-hidden position-relative mb-4">
-                <div class="bg-light-blue" style="height:120px;">
-                </div>
-                <div class="bg-white p-4">
-                    <div class="position-absolute start-50 translate-middle-x" style="top:75px;">
-                        <div class="border border-white rounded-pill overflow-hidden shadow">
-                            <img src="~/Images/icon-user.png" width="100px" />
+    <div class="profile-shell">
+        <aside>
+            <div class="profile-card overflow-hidden mb-3">
+                <div class="profile-card-cover"></div>
+                <div class="p-4">
+                    <div class="profile-avatar rounded-circle overflow-hidden d-flex align-items-center justify-content-center">
+                        <img src="~/Images/icon-user.png" width="78" alt="รูปพนักงาน" />
+                    </div>
+                    <div class="text-center mb-4">
+                        <div class="fs-4 fw-bold text-dark">{{ displayName() }}</div>
+                        <div class="text-primary fw-semibold">{{ valueOrDash(iEmployee.positionDesc) }}</div>
+                        <div class="text-muted">{{ valueOrDash(iEmployee.departmentDesc) }}</div>
+                    </div>
+
+                    <div class="profile-kpi mb-4">
+                        <div class="profile-kpi-item">
+                            <div class="info-label">รหัสพนักงาน</div>
+                            <div class="info-value">{{ valueOrDash(iEmployee.employeeCode) }}</div>
+                        </div>
+                        <div class="profile-kpi-item">
+                            <div class="info-label">อายุงาน</div>
+                            <div class="info-value">{{ valueOrDash(iEmployee.work_day) }}</div>
+                        </div>
+                        <div class="profile-kpi-item">
+                            <div class="info-label">สถานะ</div>
+                            <div class="info-value">{{ valueOrDash(iEmployee.employeeStatus) }}</div>
+                        </div>
+                        <div class="profile-kpi-item">
+                            <div class="info-label">ประเภท</div>
+                            <div class="info-value">{{ valueOrDash(iEmployee.employeeType || iEmployee.employeeDesc) }}</div>
                         </div>
                     </div>
-                    <div class="text-center pb-3" style="padding-top: 50px;">
-                        <div class="text-dark fs-4 fw-bolder" style="line-height:20px;">
-                            {{ iPersonal.firstname_en }} {{ iPersonal.lastname_en }}
+
+                    <div class="profile-meta">
+                        <div class="profile-meta-row">
+                            <i class="bi bi-envelope-fill text-primary"></i>
+                            <div class="text-truncate">{{ valueOrDash(iEmployee.email || iPersonal.email) }}</div>
                         </div>
-                        <div class="text-blue fs-5">{{ iEmployee.positionDesc }}</div>
-                    </div>
-                    <div class="rounded-3 bg-light text-dark-gray p-3 mb-4">
-                        <table class="">
-                            <tbody>
-                                <tr>
-                                    <td width="30px" class="p-2 align-top"><i class="bi bi-envelope-fill"></i></td>
-                                    <td class="p-2">{{ iEmployee.email }}</td>
-                                </tr>
-                                <tr>
-                                    <td class="p-2 align-top"><i class="bi bi-phone-fill"></i></td>
-                                    <td class="p-2">{{ iPersonal.phoneNo }}</td>
-                                </tr>
-                                <tr>
-                                    <td class="p-2 align-top"><i class="bi bi-geo-alt-fill"></i></td>
-                                    <td class="p-2">
-                                        {{ iAddress.home }}
-                                        <span ng-show="iAddress.road != ''">ถ.{{ iAddress.road }}</span>
-                                        {{ iAddress.subDistrictName }}
-                                        {{ iAddress.districtName }}
-                                        {{ iAddress.provinceName }}
-                                        {{ iAddress.postcode }}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                        <a class="btn btn-primary" href="@Url.Page("Edit")?id=@Model.id">
-                            <i class="bi bi-pen-fill me-2"></i> Edit Profile
-                        </a>
+                        <div class="profile-meta-row">
+                            <i class="bi bi-phone-fill text-primary"></i>
+                            <div>{{ valueOrDash(iPersonal.phoneNo) }}</div>
+                        </div>
+                        <div class="profile-meta-row">
+                            <i class="bi bi-geo-alt-fill text-primary"></i>
+                            <div>{{ addressText() }}</div>
+                        </div>
                     </div>
                 </div>
             </div>
-            @* Report To *@
-            <div class="rounded-4 bg-white border p-4">
-                <div class="text-gray mb-2">
-                    REPORT TO
-                </div>
-                <div class="d-flex">
-                    <div class="overflow-hidden me-2">
-                        <img src="~/Images/icon-user.png" class="rounded-pill" width="35px" />
-                    </div>
-                    <div>
-                        <div class="text-dark fw-bolder">{{ iEmployee.supervisorName }}</div>
-                        <div class="text-gray">{{ iEmployee.supervisorPosition }}</div>
+
+            <div class="profile-card p-4 mb-3">
+                <div class="info-label mb-2">หัวหน้างาน</div>
+                <div class="d-flex align-items-center">
+                    <img src="~/Images/icon-user.png" class="rounded-circle me-3" width="42" alt="หัวหน้างาน" />
+                    <div class="min-w-0">
+                        <div class="fw-bold text-dark text-truncate">{{ valueOrDash(iEmployee.supervisorName) }}</div>
+                        <div class="text-muted text-truncate">{{ valueOrDash(iEmployee.supervisorPosition) }}</div>
                     </div>
                 </div>
             </div>
-        </div>
-        @* Other *@
-        <div class="flex-fill bg-white overflow-hidden rounded-4 border">
+
+            <div class="profile-card p-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="fw-bold text-dark">ความครบถ้วนของข้อมูล</div>
+                    <div class="badge bg-soft-primary text-primary">{{ profileScore() }}%</div>
+                </div>
+                <div class="progress ht-5 mb-3">
+                    <div class="progress-bar bg-primary" role="progressbar" ng-style="{ width: profileScore() + '%' }"></div>
+                </div>
+                <div class="small text-muted">ประเมินจากข้อมูลพนักงาน ส่วนบุคคล ประวัติการทำงาน การศึกษา และการฝึกอบรม</div>
+            </div>
+        </aside>
+
+        <section class="profile-panel overflow-hidden">
             <nav class="border-bottom px-4 pt-2 bg-gray-100">
-                <div class="nav nav-underline" id="nav-tab" role="tablist">
-                    <a class="nav-link active" href="?tab=nav-profile"
-                       data-bs-target="#nav-profile">
-                        Profile
-                    </a>
-                    <a class="nav-link" href="?tab=nav-talent"
-                       data-bs-target="#nav-talent">
-                        Talent
-                    </a>
-                    <a class="nav-link" href="?tab=nav-lifecycle"
-                       data-bs-target="#nav-lifecycle">
-                        Lifecycle
-                    </a>
-                    <a class="nav-link" href="?tab=nav-document"
-                       data-bs-target="#nav-document">
-                        Document
-                    </a>
+                <div class="nav nav-underline profile-tabs" id="nav-tab" role="tablist">
+                    <a class="nav-link text-nowrap active" href="?tab=nav-employee" data-bs-toggle="tab" data-bs-target="#nav-employee">ข้อมูลพนักงาน</a>
+                    <a class="nav-link text-nowrap" href="?tab=nav-personal" data-bs-toggle="tab" data-bs-target="#nav-personal">ข้อมูลส่วนบุคคล</a>
+                    <a class="nav-link text-nowrap" href="?tab=nav-job" data-bs-toggle="tab" data-bs-target="#nav-job">ประวัติการทำงาน</a>
+                    <a class="nav-link text-nowrap" href="?tab=nav-education" data-bs-toggle="tab" data-bs-target="#nav-education">ประวัติการศึกษา</a>
+                    <a class="nav-link text-nowrap" href="?tab=nav-training" data-bs-toggle="tab" data-bs-target="#nav-training">ประวัติการฝึกอบรม</a>
+                    <a class="nav-link text-nowrap" href="?tab=nav-document" data-bs-toggle="tab" data-bs-target="#nav-document">เอกสารที่เกี่ยวข้อง</a>
                 </div>
             </nav>
-            <div class="tab-content p-4" id="nav-tabContent">
-                <div class="tab-pane fade show active" id="nav-profile" role="tabpanel" aria-labelledby="nav-employee-tab" tabindex="0">
-                    @* Profile *@
-                    <div class="text-dark fs-5 fw-bolder d-flex align-items-center mb-3">
-                        <i class="bi bi-person-vcard-fill fs-4 me-2 text-blue"></i> Basic Infomation
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-6 mb-3">
-                            <div class="text-gray">FULL NAME</div>
-                            <div class="text-dark">{{ iPersonal.firstname_th }} {{ iPersonal.lastname_th }}</div>
-                        </div>
-                        <div class="col-sm-6 mb-3">
-                            <div class="text-gray">NICKNAME</div>
-                            <div class="text-dark">{{ iPersonal.nickname }}</div>
-                        </div>
-                        <div class="col-sm-6 mb-3">
-                            <div class="text-gray">DEPARTMENT</div>
-                            <div class="text-dark">{{ iEmployee.departmentDesc }}</div>
-                        </div>
-                        <div class="col-sm-6 mb-3">
-                            <div class="text-gray">EMPLOYEE ID</div>
-                            <div class="text-dark">{{ iEmployee.employeeCode }}</div>
-                        </div>
-                        <div class="col-sm-6 mb-3">
-                            <div class="text-gray">EMPLOYMENT TYPE</div>
-                            <div class="text-dark">{{ iEmployee.employeeDesc }}</div>
-                        </div>
-                        <div class="col-sm-6 mb-3">
-                            <div class="text-gray">HIRE DATE</div>
-                            <div class="text-dark">{{ iEmployee.join_date }}</div>
-                        </div>
-                    </div>
-                    <hr class="my-3" />
-                    @* Job Experience *@
-                    <div class="text-dark fs-5 fw-bolder d-flex align-items-center mb-3">
-                        <i class="bi bi-person-vcard-fill fs-4 me-2 text-blue"></i> Job Experience
-                    </div>
-                    <table>
-                        <tbody>
-                            <tr ng-repeat="x in lJobExperience">
-                                <td class="align-top pt-1 px-2">
-                                    <i class="bi bi-circle-fill {{ $index == 0 ? 'text-blue shadow-sm' : '' }}"></i>
-                                </td>
-                                <td>
-                                    <div class="text-dark fw-bolder">{{ x.company }}</div>
-                                    <div class="text-gray">{{ x.position }}</div>
-                                    <div class="text-light">{{ x.from_date | date:'MMM yyyy' }} - {{ x.end_date | date:'MMM yyyy' }}</div>
-                                </td>
-                                <td>
-                                    {{ x.description }}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="d-flex">
-                        <div>
-                        </div>
 
+            <div class="tab-content p-4">
+                <div class="tab-pane fade show active" id="nav-employee" role="tabpanel" tabindex="0">
+                    <div class="profile-section-title"><i class="bi bi-building-fill text-primary"></i> ข้อมูลพนักงาน</div>
+                    <div class="info-grid">
+                        <div class="info-field"><div class="info-label">รหัสพนักงาน</div><div class="info-value">{{ valueOrDash(iEmployee.employeeCode) }}</div></div>
+                        <div class="info-field"><div class="info-label">วันเข้างาน</div><div class="info-value">{{ valueOrDash(iEmployee.join_date) }}</div></div>
+                        <div class="info-field"><div class="info-label">วันบรรจุงาน</div><div class="info-value">{{ valueOrDash(iEmployee.probation_end_date) }}</div></div>
+                        <div class="info-field"><div class="info-label">ด้าน</div><div class="info-value">{{ valueOrDash(iEmployee.divisionDesc) }}</div></div>
+                        <div class="info-field"><div class="info-label">สายงาน</div><div class="info-value">{{ valueOrDash(iEmployee.departmentDesc) }}</div></div>
+                        <div class="info-field"><div class="info-label">ฝ่าย</div><div class="info-value">{{ valueOrDash(iEmployee.sectionDesc) }}</div></div>
+                        <div class="info-field"><div class="info-label">ตำแหน่งงาน</div><div class="info-value">{{ valueOrDash(iEmployee.positionDesc) }}</div></div>
+                        <div class="info-field"><div class="info-label">ระดับพนักงาน</div><div class="info-value">{{ valueOrDash(iEmployee.levelDesc) }}</div></div>
+                        <div class="info-field"><div class="info-label">เกรด</div><div class="info-value">{{ valueOrDash(iEmployee.grade) }}</div></div>
                     </div>
-                    <hr class="my-3" />
-                    <div class="row">
-                        <div class="col-sm-6 mb-3">
-                            @* Eductaion *@
-                            <div class="text-dark fs-5 fw-bolder d-flex align-items-center mb-3">
-                                <i class="fas fa-graduation-cap fs-4 me-2 text-blue"></i> Education
-                            </div>
-                            <div class="mt-3" ng-repeat="x in lEducation">
-                                <div class="text-dark fw-bolder">{{ x.levelName }}</div>
-                                <div class="text-gray">{{ x.institution }}</div>
-                                <div class="text-light" ng-show="x.year != ''">class of {{ x.year }}</div>
+                </div>
+
+                <div class="tab-pane fade" id="nav-personal" role="tabpanel" tabindex="0">
+                    <div class="profile-section-title"><i class="bi bi-person-vcard-fill text-primary"></i> ข้อมูลส่วนบุคคล</div>
+                    <div class="info-grid">
+                        <div class="info-field"><div class="info-label">ชื่อ-นามสกุล</div><div class="info-value">{{ valueOrDash(iPersonal.prefix_th) }} {{ valueOrDash(iPersonal.firstname_th) }} {{ valueOrDash(iPersonal.lastname_th) }}</div></div>
+                        <div class="info-field"><div class="info-label">ชื่อ-นามสกุลภาษาอังกฤษ</div><div class="info-value">{{ valueOrDash(iPersonal.prefix_en) }} {{ valueOrDash(iPersonal.firstname_en) }} {{ valueOrDash(iPersonal.lastname_en) }}</div></div>
+                        <div class="info-field"><div class="info-label">ชื่อเล่น</div><div class="info-value">{{ valueOrDash(iPersonal.nickname) }}</div></div>
+                        <div class="info-field"><div class="info-label">วันเกิด</div><div class="info-value">{{ valueOrDash(iPersonal.birth_date) }}</div></div>
+                        <div class="info-field"><div class="info-label">อายุ</div><div class="info-value">{{ valueOrDash(iPersonal.age) }}</div></div>
+                        <div class="info-field"><div class="info-label">เพศ</div><div class="info-value">{{ valueOrDash(iPersonal.sex) }}</div></div>
+                        <div class="info-field"><div class="info-label">สัญชาติ</div><div class="info-value">{{ valueOrDash(iPersonal.nationality) }}</div></div>
+                        <div class="info-field"><div class="info-label">ศาสนา</div><div class="info-value">{{ valueOrDash(iPersonal.religion) }}</div></div>
+                        <div class="info-field"><div class="info-label">สถานภาพ</div><div class="info-value">{{ valueOrDash(iPersonal.maritalStatus) }}</div></div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="nav-job" role="tabpanel" tabindex="0">
+                    <div class="profile-section-title"><i class="bi bi-briefcase-fill text-primary"></i> ประวัติการทำงาน</div>
+                    <div class="empty-state" ng-show="!lJobExperience || lJobExperience.length == 0">ยังไม่มีข้อมูลประวัติการทำงาน</div>
+                    <div class="timeline" ng-show="lJobExperience.length > 0">
+                        <div class="timeline-item" ng-repeat="x in lJobExperience">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <div class="d-flex flex-wrap justify-content-between gap-2 mb-1">
+                                    <div class="fw-bold text-dark">{{ valueOrDash(x.position) }}</div>
+                                    <div class="text-muted">{{ dateRangeText(x.from_date, x.end_date) }}</div>
+                                </div>
+                                <div class="text-primary fw-semibold mb-2">{{ valueOrDash(x.company) }}</div>
+                                <div class="text-muted">{{ valueOrDash(x.description) }}</div>
                             </div>
                         </div>
-                        <div class="col-sm-6 mb-3">
-                            @* Training History *@
-                            <div class="text-dark fs-5 fw-bolder d-flex align-items-center mb-3">
-                                <i class="bi bi-patch-check fs-4 me-2 text-blue"></i> Training History
-                            </div>
-                            <div class="mt-3" ng-repeat="x in lTraining">
-                                <div class="text-dark fw-bolder">{{ x.organization }}</div>
-                                <div class="text-gray">{{ x.license }} {{ issueDate }}</div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="nav-education" role="tabpanel" tabindex="0">
+                    <div class="profile-section-title"><i class="fas fa-graduation-cap text-primary"></i> ประวัติการศึกษา</div>
+                    <div class="empty-state" ng-show="!lEducation || lEducation.length == 0">ยังไม่มีข้อมูลประวัติการศึกษา</div>
+                    <div class="info-grid" ng-show="lEducation.length > 0">
+                        <div class="info-field" ng-repeat="x in lEducation">
+                            <div class="info-label">{{ valueOrDash(x.year) }}</div>
+                            <div class="info-value mb-1">{{ valueOrDash(x.degreeName || x.levelName) }}</div>
+                            <div class="text-muted">{{ valueOrDash(x.institution) }}</div>
+                            <div class="text-muted" ng-show="x.programName || x.major">{{ valueOrDash(x.programName) }} {{ valueOrDash(x.major) }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="nav-training" role="tabpanel" tabindex="0">
+                    <div class="profile-section-title"><i class="bi bi-patch-check-fill text-primary"></i> ประวัติการฝึกอบรม</div>
+                    <div class="empty-state" ng-show="!lTraining || lTraining.length == 0">ยังไม่มีข้อมูลประวัติการฝึกอบรม</div>
+                    <div class="timeline" ng-show="lTraining.length > 0">
+                        <div class="timeline-item" ng-repeat="x in lTraining">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <div class="d-flex flex-wrap justify-content-between gap-2 mb-1">
+                                    <div class="fw-bold text-dark">{{ valueOrDash(x.license) }}</div>
+                                    <div class="text-muted">{{ valueOrDash(x.issueDate) }}</div>
+                                </div>
+                                <div class="text-primary fw-semibold mb-2">{{ valueOrDash(x.organization) }}</div>
+                                <div class="text-muted">{{ valueOrDash(x.description) }}</div>
                             </div>
                         </div>
                     </div>
-                    @* Document *@
-                    <div class="text-dark fs-5 fw-bolder d-flex align-items-center mb-3">
-                        <i class="bi bi-file-earmark-text-fill fs-4 me-2 text-blue"></i> Documents
+                </div>
+
+                <div class="tab-pane fade" id="nav-document" role="tabpanel" tabindex="0">
+                    <div class="profile-section-title"><i class="bi bi-folder-check text-primary"></i> เอกสารที่เกี่ยวข้อง</div>
+                    <div class="document-grid">
+                        <div class="document-item" ng-repeat="x in lRelatedDocument">
+                            <div class="d-flex align-items-start mb-3">
+                                <div class="avatar-text avatar-md bg-soft-primary text-primary me-3">
+                                    <i class="{{ x.icon }}"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="fw-bold text-dark">{{ x.title }}</div>
+                                    <div class="small text-muted">{{ x.desc }}</div>
+                                </div>
+                            </div>
+                            <div class="mt-auto d-flex align-items-center justify-content-between">
+                                <span class="badge {{ x.statusClass }}">{{ x.status }}</span>
+                                <a class="btn btn-sm btn-light" href="{{ x.url }}" target="_blank">
+                                    <i class="bi bi-box-arrow-up-right me-1"></i> เปิด
+                                </a>
+                            </div>
+                        </div>
                     </div>
-                    <div class="border border-dash text-gray-500 text-center p-3 rounded-3">
-                        <i class="bi bi-cloud-arrow-up-fill fs-3"></i>
-                        <div class="fw-bolder">Upload New Document</div>
-                        <div class="">PDF, DOCX up to 10MB</div>
-                    </div>
-                </div>
-                <div class="tab-pane fade" id="nav-talent" role="tabpanel" aria-labelledby="nav-talent-tab" tabindex="0">
-                    @* Partial Address *@
-                </div>
-                <div class="tab-pane fade" id="nav-lifecycle" role="tabpanel" aria-labelledby="nav-lifecycle-tab" tabindex="0">
-                    @* Lifecycle *@
-                    @*  <partial name="Employee/_PartialUserEducation" /> *@
-                </div>
-                <div class="tab-pane fade" id="nav-document" role="tabpanel" aria-labelledby="nav-document-tab" tabindex="0">
-                    @* Document *@
-                    @* <partial name="Employee/_PartialUserTraining" /> *@
                 </div>
             </div>
-        </div>
+        </section>
     </div>
 </div>
+
 <script>
     app.controller('DataCtrl', function ($scope, $http, $timeout, $filter) {
         var tabName = '@Model.tab';
-        $scope.userId = '@Model.id';
+        $scope.userId = '@Model.id' || '@User.UserId()';
+        $scope.iPersonal = {};
+        $scope.iEmployee = {};
+        $scope.iAddress = {};
+        $scope.lJobExperience = [];
+        $scope.lEducation = [];
+        $scope.lTraining = [];
+        $scope.lRelatedDocument = [
+            {
+                title: 'PDPA',
+                desc: 'เอกสารยินยอมและข้อมูลส่วนบุคคล',
+                icon: 'bi bi-shield-check',
+                status: 'เอกสารสำคัญ',
+                statusClass: 'bg-soft-primary text-primary',
+                url: '@Url.Page("/Service/FormCreate/FormPdpaEmployee")?mode=FORM_PDPA_EMPLOYEE'
+            },
+            {
+                title: 'WFH',
+                desc: 'เอกสารหรือคำขอปฏิบัติงานจากที่บ้าน',
+                icon: 'bi bi-house-check',
+                status: 'เกี่ยวกับการทำงาน',
+                statusClass: 'bg-soft-success text-success',
+                url: '@Url.Page("/Service/FormCreate/FormWfhEmployee")?mode=FORM_WFH_EMPLOYEE'
+            },
+            {
+                title: 'Job Description',
+                desc: 'หน้าที่ ความรับผิดชอบ และขอบเขตงาน',
+                icon: 'bi bi-file-earmark-text',
+                status: 'ข้อมูลตำแหน่ง',
+                statusClass: 'bg-soft-warning text-warning',
+                url: '@Url.Page("/Service/FormCreate/FormUpdateDataEmployee")?mode=EDIT_EMPLOYEE&id=' + $scope.userId
+            }
+        ];
 
         if (tabName != '') {
-            const triggerEl = document.querySelector(
-                `#nav-tab [data-bs-target="#${tabName}"]`
-            );
+            const triggerEl = document.querySelector(`#nav-tab [data-bs-target="#${tabName}"]`);
 
             if (triggerEl) {
                 new bootstrap.Tab(triggerEl).show();
+            }
+        }
+
+        $scope.valueOrDash = function (value) {
+            return value === null || value === undefined || value === '' ? '-' : value;
+        }
+
+        $scope.displayName = function () {
+            var fullnameTh = [$scope.iPersonal.firstname_th, $scope.iPersonal.lastname_th].filter(Boolean).join(' ');
+            var fullnameEn = [$scope.iPersonal.firstname_en, $scope.iPersonal.lastname_en].filter(Boolean).join(' ');
+            return fullnameTh || fullnameEn || $scope.iEmployee.fullname || 'โปรไฟล์พนักงาน';
+        }
+
+        $scope.addressText = function () {
+            var address = [
+                $scope.iAddress.live_home || $scope.iAddress.home,
+                $scope.iAddress.live_road || $scope.iAddress.road,
+                $scope.iAddress.live_subDistrictName || $scope.iAddress.subDistrictName,
+                $scope.iAddress.live_districtName || $scope.iAddress.districtName,
+                $scope.iAddress.live_provinceName || $scope.iAddress.provinceName,
+                $scope.iAddress.live_postcode || $scope.iAddress.postcode
+            ].filter(Boolean).join(' ');
+
+            return address || '-';
+        }
+
+        $scope.dateRangeText = function (fromDate, endDate) {
+            var fromText = fromDate ? $filter('date')(fromDate, 'MMM yyyy') : '-';
+            var endText = endDate ? $filter('date')(endDate, 'MMM yyyy') : 'ปัจจุบัน';
+            return fromText + ' - ' + endText;
+        }
+
+        $scope.profileScore = function () {
+            var checks = [
+                $scope.iPersonal.firstname_th,
+                $scope.iEmployee.employeeCode,
+                $scope.iEmployee.positionDesc,
+                $scope.iEmployee.departmentDesc,
+                $scope.iPersonal.phoneNo,
+                $scope.iEmployee.email || $scope.iPersonal.email,
+                $scope.lJobExperience.length,
+                $scope.lEducation.length,
+                $scope.lTraining.length
+            ];
+            var completed = checks.filter(function (x) { return !!x; }).length;
+            return Math.round((completed / checks.length) * 100);
+        }
+
+        $scope.CalcAge = function () {
+            $scope.iPersonal.age = '';
+
+            if ($scope.iPersonal.birth_date) {
+                const b = ConvertToDate($scope.iPersonal.birth_date);
+                const c = new Date();
+
+                let years = c.getFullYear() - b.getFullYear();
+                let months = c.getMonth() - b.getMonth();
+                let days = c.getDate() - b.getDate();
+
+                if (days < 0) {
+                    months--;
+                    const prevMonth = new Date(c.getFullYear(), c.getMonth(), 0);
+                    days += prevMonth.getDate();
+                }
+
+                if (months < 0) {
+                    years--;
+                    months += 12;
+                }
+
+                if (years > 0) {
+                    $scope.iPersonal.age = years + ' ปี ';
+                }
+                if (months > 0) {
+                    $scope.iPersonal.age += months + ' เดือน ';
+                }
+                if (days > 0) {
+                    $scope.iPersonal.age += days + ' วัน';
+                }
+            }
+        }
+
+        $scope.CalcWorkDay = function () {
+            $scope.iEmployee.work_day = '';
+
+            if ($scope.iEmployee.join_date) {
+                const b = ConvertToDate($scope.iEmployee.join_date);
+                const c = new Date();
+
+                let years = c.getFullYear() - b.getFullYear();
+                let months = c.getMonth() - b.getMonth();
+                let days = c.getDate() - b.getDate();
+
+                if (days < 0) {
+                    months--;
+                    const prevMonth = new Date(c.getFullYear(), c.getMonth(), 0);
+                    days += prevMonth.getDate();
+                }
+
+                if (months < 0) {
+                    years--;
+                    months += 12;
+                }
+
+                if (years > 0) {
+                    $scope.iEmployee.work_day = years + ' ปี ';
+                }
+                if (months > 0) {
+                    $scope.iEmployee.work_day += months + ' เดือน ';
+                }
+                if (days > 0) {
+                    $scope.iEmployee.work_day += days + ' วัน';
+                }
             }
         }
 
@@ -241,19 +548,19 @@
                 dataType: 'json',
                 cache: false,
                 data: JSON.stringify({
-                    userId: $scope.userId
-                    , create_by: '@User.UserId()'
+                    userId: $scope.userId,
+                    create_by: '@User.UserId()'
                 }),
                 success: function (result) {
-                    $timeout(async function () {
-                        $scope.iPersonal = result.data;
+                    $timeout(function () {
+                        $scope.iPersonal = result.data || {};
                         $scope.can_view = result.can_view;
                         $scope.can_edit = result.can_edit;
+                        $scope.CalcAge();
                     }, 0);
                 }, error: AjaxError
             });
         }
-        $scope.LoadPersonal();
 
         $scope.LoadEmployee = function () {
             $.ajax({
@@ -264,17 +571,17 @@
                 dataType: 'json',
                 cache: false,
                 data: JSON.stringify({
-                    userId: $scope.userId
-                    , create_by: '@User.UserId()'
+                    userId: $scope.userId,
+                    create_by: '@User.UserId()'
                 }),
                 success: function (result) {
-                    $timeout(async function () {
-                        $scope.iEmployee = result.data;
+                    $timeout(function () {
+                        $scope.iEmployee = result.data || {};
+                        $scope.CalcWorkDay();
                     }, 0);
                 }, error: AjaxError
             });
         }
-        $scope.LoadEmployee();
 
         $scope.LoadAddress = function () {
             $.ajax({
@@ -285,18 +592,16 @@
                 dataType: 'json',
                 cache: false,
                 data: JSON.stringify({
-                    userId: $scope.userId
-                    , create_by: '@User.UserId()'
+                    userId: $scope.userId,
+                    create_by: '@User.UserId()'
                 }),
                 success: function (result) {
-                    $timeout(async function () {
-                        $scope.iAddress = result.data;
+                    $timeout(function () {
+                        $scope.iAddress = result.data || {};
                     }, 0);
                 }, error: AjaxError
             });
         }
-        $scope.LoadAddress();
-
 
         $scope.LoadJobExperience = function () {
             $.ajax({
@@ -307,25 +612,21 @@
                 dataType: 'json',
                 cache: false,
                 data: JSON.stringify({
-                    userId: $scope.userId
-                    , create_by: '@User.UserId()'
+                    userId: $scope.userId,
+                    create_by: '@User.UserId()'
                 }),
                 success: function (result) {
-                    $timeout(async function () {
-                        $scope.lJobExperience = result.data;
-                        if ($scope.lData.length > 0) {
-                            $scope.lData = $scope.lData.map((x) => {
-                                x.from_date = x.fromDate != '' ? ConvertToDate(x.fromDate) : '';
-                                x.end_date = x.endDate != '' ? ConvertToDate(x.endDate) : '';
-                                return x;
-                            });
-                        }
-
+                    $timeout(function () {
+                        $scope.lJobExperience = result.data || [];
+                        $scope.lJobExperience = $scope.lJobExperience.map(function (x) {
+                            x.from_date = x.fromDate ? ConvertToDate(x.fromDate) : '';
+                            x.end_date = x.endDate ? ConvertToDate(x.endDate) : '';
+                            return x;
+                        });
                     }, 0);
                 }, error: AjaxError
             });
         }
-        $scope.LoadJobExperience();
 
         $scope.LoadEducation = function () {
             $.ajax({
@@ -336,17 +637,16 @@
                 dataType: 'json',
                 cache: false,
                 data: JSON.stringify({
-                    userId: $scope.userId
-                    , create_by: '@User.UserId()'
+                    userId: $scope.userId,
+                    create_by: '@User.UserId()'
                 }),
                 success: function (result) {
-                    $timeout(async function () {
-                        $scope.lEducation = result.data;
+                    $timeout(function () {
+                        $scope.lEducation = result.data || [];
                     }, 0);
                 }, error: AjaxError
             });
         }
-        $scope.LoadEducation();
 
         $scope.LoadTraining = function () {
             $.ajax({
@@ -357,16 +657,22 @@
                 dataType: 'json',
                 cache: false,
                 data: JSON.stringify({
-                    userId: $scope.userId
-                    , create_by: '@User.UserId()'
+                    userId: $scope.userId,
+                    create_by: '@User.UserId()'
                 }),
                 success: function (result) {
-                    $timeout(async function () {
-                        $scope.lTraining = result.data;
+                    $timeout(function () {
+                        $scope.lTraining = result.data || [];
                     }, 0);
                 }, error: AjaxError
             });
         }
+
+        $scope.LoadPersonal();
+        $scope.LoadEmployee();
+        $scope.LoadAddress();
+        $scope.LoadJobExperience();
+        $scope.LoadEducation();
         $scope.LoadTraining();
     });
 </script>

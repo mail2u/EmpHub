@@ -221,6 +221,39 @@
                                 %
                             </td>
                         </tr>
+                        @* Benefit 5 *@
+                        <tr>
+                            <td class="align-middle">
+                                5
+                            </td>
+                            <td>
+                                <input ng-model="iForm.benefitname5" class="form-control benefitname5" />
+                            </td>
+                            <td class="align-middle">
+                                อายุ
+                            </td>
+                            <td>
+                                <input ng-model="iForm.benefitage5" class="form-control benefitage5 age" />
+                            </td>
+                            <td class="align-middle">
+                                ปี
+                            </td>
+                            <td class="align-middle">
+                                เกี่ยวข้องเป็น
+                            </td>
+                            <td>
+                                <input ng-model="iForm.benefitrelation5" class="form-control benefitrelation5" />
+                            </td>
+                            <td class="align-middle">
+                                จำนวน
+                            </td>
+                            <td>
+                                <input ng-model="iForm.benefitpercent5" class="form-control benefitpercent5" type="number" />
+                            </td>
+                            <td class="align-middle">
+                                %
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -262,6 +295,10 @@
             , benefitage4: 0
             , benefitrelation4: ''
             , benefitpercent4: 0
+            , benefitname5: ''
+            , benefitage5: 0
+            , benefitrelation5: ''
+            , benefitpercent5: 0
             , create_by:'@User.UserId()'
         }
 
@@ -312,6 +349,10 @@
             JS_Reset($(".benefitage4"));
             JS_Reset($(".benefitrelation4"));
             JS_Reset($(".benefitpercent4"));
+            JS_Reset($(".benefitname5"));
+            JS_Reset($(".benefitage5"));
+            JS_Reset($(".benefitrelation5"));
+            JS_Reset($(".benefitpercent5"));
 
             if($scope.iForm.birth_date_select){
                 $scope.iForm.birth_date = $scope.iForm.birth_date_select.format('DD/MM/YYYY');
@@ -348,7 +389,8 @@
             var totalPercent = parseFloat($scope.iForm.benefitpercent1)
                 + parseFloat($scope.iForm.benefitpercent2)
                 + parseFloat($scope.iForm.benefitpercent3)
-                + parseFloat($scope.iForm.benefitpercent4);
+                + parseFloat($scope.iForm.benefitpercent4)
+                + parseFloat($scope.iForm.benefitpercent5);
 
             if(totalPercent != 100){
                 JS_Require($(".benefitpercent1"));
@@ -443,6 +485,29 @@
                 if ($scope.iForm.benefitpercent4 <= 0 || totalPercent != 100) {
                     flag = false;
                     JS_Require($(".benefitpercent4"));
+                }
+            }
+            
+            /* Benefit 4 */
+            if ($scope.iForm.benefitname5 != '' 
+            || parseFloat($scope.iForm.benefitage5) > 0
+            || $scope.iForm.benefitrelation5 != ''
+            || parseFloat($scope.iForm.benefitpercent5) > 0){
+                 if ($scope.iForm.benefitname5 == '') {
+                    flag = false;
+                    JS_Require($(".benefitname5"));
+                }
+                if ($scope.iForm.benefitage5 == '') {
+                    flag = false;
+                    JS_Require($(".benefitage5"));
+                }
+                if ($scope.iForm.benefitrelation5 == '') {
+                    flag = false;
+                    JS_Require($(".benefitrelation5"));
+                }
+                if ($scope.iForm.benefitpercent5 <= 0 || totalPercent != 100) {
+                    flag = false;
+                    JS_Require($(".benefitpercent5"));
                 }
             }
 

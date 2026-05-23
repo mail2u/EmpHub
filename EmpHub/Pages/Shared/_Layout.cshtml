@@ -71,6 +71,11 @@
             margin: 0;
             background-color: #f9fafb;
         }
+
+        html.minimenu .nxl-navigation.emphub-menu-open .nxl-hasmenu.nxl-trigger > .nxl-submenu {
+            display: block;
+        }
+
     </style>
     <!--! ================================================================ !-->
     <!--! [Start] Navigation Manu !-->
@@ -569,7 +574,7 @@
                                 </div>
                             </div> *@
                          @*    <div class="dropdown-divider"></div> *@
-                            <a href="@Url.Page("/Employee/Detail")/@User.UserId()" class="dropdown-item">
+                            <a href="@Url.Page("/Profile/Index")" class="dropdown-item">
                                 <i class="feather-user"></i>
                                 <span>Profile Details</span>
                             </a>
@@ -661,6 +666,89 @@
             submenu.classList.add("minimenu");
         }
 
+        function initEmpHubNavigation() {
+            const navbar = document.querySelector('.nxl-navigation .nxl-navbar');
+
+            if (!navbar) {
+                return;
+            }
+
+            if (window.empHubNavigationClick) {
+                navbar.removeEventListener('click', window.empHubNavigationClick, true);
+            }
+
+            window.empHubNavigationClick = function (event) {
+                const link = event.target.closest('.nxl-hasmenu > .nxl-link');
+
+                if (!link || !navbar.contains(link)) {
+                    return;
+                }
+
+                event.preventDefault();
+                event.stopPropagation();
+                event.stopImmediatePropagation();
+
+                const $item = $(link).parent('.nxl-hasmenu');
+                const $submenu = $item.children('.nxl-submenu');
+                const isMiniMenu = document.documentElement.classList.contains('minimenu');
+
+                if (!$submenu.length) {
+                    return;
+                }
+
+                const isOpen = $item.hasClass('nxl-trigger');
+                const $siblings = $item.siblings('.nxl-trigger');
+
+                $siblings.removeClass('nxl-trigger')
+                    .children('.nxl-submenu')
+                    .stop(true, true)
+                    .slideUp('fast');
+
+                if (isOpen) {
+                    $item.removeClass('nxl-trigger');
+                    $submenu.stop(true, true).slideUp('fast');
+                } else {
+                    $item.addClass('nxl-trigger');
+                    $submenu.stop(true, true).slideDown('fast');
+                }
+
+                if (isMiniMenu) {
+                    $('.nxl-navigation').toggleClass('emphub-menu-open', $('.nxl-navigation .nxl-hasmenu.nxl-trigger').length > 0);
+                }
+            };
+
+            navbar.addEventListener('click', window.empHubNavigationClick, true);
+
+            $(navbar).off('click.emphub-menu-close');
+            $(navbar).on('click.emphub-menu-close', '.nxl-submenu a[href]:not([href="javascript:void(0);"])', function () {
+                if (!document.documentElement.classList.contains('minimenu')) {
+                    return;
+                }
+
+                $('.nxl-navigation .nxl-hasmenu')
+                    .removeClass('nxl-trigger')
+                    .children('.nxl-submenu')
+                    .stop(true, true)
+                    .hide();
+                $('.nxl-navigation').removeClass('emphub-menu-open');
+            });
+
+            const $navbar = $(navbar);
+
+            if (document.documentElement.classList.contains('minimenu')) {
+                $('.nxl-navigation').removeClass('emphub-menu-open');
+                $navbar.find('.nxl-hasmenu')
+                    .removeClass('nxl-trigger')
+                    .children('.nxl-submenu')
+                    .hide();
+            } else {
+                $navbar.find('.nxl-hasmenu.active, .nxl-hasmenu.nxl-trigger')
+                    .addClass('nxl-trigger')
+                    .children('.nxl-submenu')
+                    .show();
+            }
+        }
+
         //enable tooltip bootstrap
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
@@ -671,7 +759,11 @@
             if (theme == 'menu-mini-theme') {
                 document.documentElement.classList.add("minimenu");
             }
+
+            initEmpHubNavigation();
         });
+
+        $(document).ready(initEmpHubNavigation);
 
     </script>
     <script>

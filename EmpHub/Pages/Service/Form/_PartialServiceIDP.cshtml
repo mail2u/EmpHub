@@ -185,12 +185,64 @@
             });
         }
 
+        $scope.DownloadPDF = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormIDPPDF',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                cache: false,
+                data: JSON.stringify({
+                    refId: $scope.refId
+                }),
+                success: function (response, status, xhr) {
+
+                    var blob = new Blob(
+                        [response],
+                        { type: 'application/pdf' }
+                    );
+
+                    // ดึง filename จาก header
+                    var disposition = xhr.getResponseHeader('Content-Disposition');
+
+                    var fileName = 'FormIDP.pdf';
+
+                    if (disposition && disposition.indexOf('filename=') !== -1) {
+
+                        fileName = disposition
+                            .split('filename=')[1]
+                            .replace(/"/g, '');
+                    }
+
+                    // create link download
+                    var link = document.createElement('a');
+
+                    link.href = window.URL.createObjectURL(blob);
+
+                    link.download = fileName;
+
+                    document.body.appendChild(link);
+
+                    link.click();
+
+                    document.body.removeChild(link);
+
+                }, error: AjaxError
+            });
+        }
+
         $scope.init = async function (x) {
             $scope.refId = x.id;
             $scope.userId = x.userId;
             $scope.status = x.status;
 
             await $scope.LoadDetail();
+
+            // register ไป parent
+            $scope.formAction.DownloadPDF = $scope.DownloadPDF;
         }
 
         $scope.$on('FORM_IDP_LOAD', function (e, data) {

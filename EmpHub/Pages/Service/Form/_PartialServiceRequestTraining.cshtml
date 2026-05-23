@@ -121,7 +121,6 @@
             });
         }
 
-
         $scope.DownloadPDF = function () {
             $.ajax({
                 url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormRequestTrainingPDF',
@@ -145,7 +144,7 @@
                     // ดึง filename จาก header
                     var disposition = xhr.getResponseHeader('Content-Disposition');
 
-                    var fileName = 'download.pdf';
+                    var fileName = 'FormRequestTraining.pdf';
 
                     if (disposition && disposition.indexOf('filename=') !== -1) {
 
