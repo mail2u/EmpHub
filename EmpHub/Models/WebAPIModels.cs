@@ -3,5 +3,6 @@
     public class WebAPIModels
     {
         public string APIEmpHub { get; set; }
+        public string APISignature { get; set; }
     }
 }

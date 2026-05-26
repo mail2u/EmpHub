@@ -1,0 +1,238 @@
+﻿@page
+@model EmpHub.Pages.Report.AreaModel
+@{
+    var token = User.AccessToken(HttpContext);
+}
+<div ng-controller="ReportCtrl" class="p-2">
+    <div class="d-flex mb-3 align-items-center">
+        <div class="fs-5 fw-bolder text-dark flex-fill">
+            รายงานที่พักอาศัย
+        </div>
+        <div class="">
+            <div class="btn btn-light bg-white" ng-click="Download()">
+                <i class="bi bi-download me-2"></i> Download
+            </div>
+        </div>
+    </div>
+    <div class="rounded-2 p-3 bg-white shadow-sm border">
+        <div class="d-flex mb-2">
+            <div class="me-2">
+                <div>ชื่อ - สกุล</div>
+                <input ng-model="name" class="form-control form-control-sm" my-enter="LoadData()" />
+            </div>
+            <div class="me-2">
+                <div>บ้านเลขที่</div>
+                <input ng-model="home" class="form-control form-control-sm" my-enter="LoadData()" />
+            </div>
+            <div class="me-2">
+                <div>ถนน</div>
+                <input ng-model="road" class="form-control form-control-sm" my-enter="LoadData()" />
+            </div>
+            <div class="me-2">
+                <div>แขวง/ตำบล</div>
+                <input ng-model="subDistrict" class="form-control form-control-sm" my-enter="LoadData()" />
+            </div>
+            <div class="me-2">
+                <div>เขต/อำเภอ</div>
+                <input ng-model="district" class="form-control form-control-sm" my-enter="LoadData()" />
+            </div>
+            <div class="me-2">
+                <div>จังหวัด</div>
+                <input ng-model="province" class="form-control form-control-sm" my-enter="LoadData()" />
+            </div>
+            <div class="me-2">
+                <div>รหัสไปรษณีย์</div>
+                <input ng-model="postcode" class="form-control form-control-sm" my-enter="LoadData()" />
+            </div>
+            <div class="flex-fill">
+            </div>
+            <div class="text-end d-flex flex-nowrap align-items-center">
+                <span class="d-none d-md-block">
+                    {{ (total > 0 ? ((page - 1) * row) + 1 : 0) | number }} - {{ (page * row < total ? page * row : total) | number }} of {{ total | number }}
+                </span>
+                <button class="btn btn-circle" ng-click="LoadData(page - 1)" ng-disabled="page <= 1">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="btn btn-circle" ng-click="LoadData(page + 1)" ng-disabled="page * row >= total">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+        <div class="overflow-auto d-none d-lg-block">
+            <div class="pt-3" style="height:calc(100vh - 265px);">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th class="text-nowrap">
+                                ชื่อ - สกุล
+                                <i ng-show="sortBy.indexOf('desc_th') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                            </th>
+                            <th class="text-nowrap">
+                                ประเภท
+                                <i ng-show="sortBy.indexOf('total') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                            </th>
+                            <th class="text-nowrap ">
+                                บ้านเลขที่
+                                <i ng-show="sortBy.indexOf('total') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                            </th>
+                            <th class="text-nowrap ">
+                                ถนน
+                                <i ng-show="sortBy.indexOf('total') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                            </th>
+                            <th class="text-nowrap ">
+                                แขวง/ตำบล
+                                <i ng-show="sortBy.indexOf('total') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                            </th>
+                            <th class="text-nowrap ">
+                                เขต/อำเภอ
+                                <i ng-show="sortBy.indexOf('total') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                            </th>
+                            <th class="text-nowrap ">
+                                จังหวัด
+                                <i ng-show="sortBy.indexOf('total') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                            </th>
+                            <th class="text-nowrap ">
+                                รหัสไปรษณีย์
+                                <i ng-show="sortBy.indexOf('total') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="x in lData">
+                            <td>
+                                {{ x.fullname }}
+                            </td>
+                            <td>
+                                {{ x.type }}
+                            </td>
+                            <td class="">
+                                {{ x.home }}
+                            </td>
+                            <td class="">
+                                {{ x.road }}
+                            </td>
+                            <td class="">
+                                {{ x.subDistrictName }}
+                            </td>
+                            <td class="">
+                                {{ x.districtName }}
+                            </td>
+                            <td class="">
+                                {{ x.provinceName }}
+                            </td>
+                            <td class="">
+                                {{ x.postcode }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ReportCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.page = 1
+        $scope.row = 10;
+
+        $scope.LoadData = function (page = 1) {
+            $scope.page = page;
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Report/ReportAddress'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    page: $scope.page
+                    , row: $scope.row
+                    , sortBy: $scope.sortBy
+                    , name: $scope.name
+                    , home: $scope.home
+                    , road: $scope.road
+                    , subDistrict: $scope.subDistrict
+                    , district: $scope.district
+                    , province: $scope.province
+                    , postcode: $scope.postcode
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lData = JSON.parse(result.data);
+                        $scope.total = result.total;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+        $scope.SetSort = function (sortBy) {
+            if ($scope.sortBy != null && $scope.sortBy.indexOf(sortBy) > -1) {
+                if ($scope.sortBy.indexOf("-") > -1) {
+                    $scope.sortBy = sortBy;
+                } else {
+                    $scope.sortBy = '-' + sortBy;
+                }
+            } else {
+                $scope.sortBy = sortBy;
+            }
+            $scope.LoadData();
+        }
+
+
+        $scope.Download = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Report/ReportAddress'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    page: 1
+                    , row: $scope.total
+                    , sortBy: $scope.sortBy
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        var lData = JSON.parse(result.data);
+
+                        if (lData.length > 0) {
+                            var JSData = [[
+                                { 'text': 'ชื่อ - สกุล' }
+                                , { 'text': 'ประเภท' }
+                                , { 'text': 'บ้านเลขที่' }
+                                , { 'text': 'ถนน' }
+                                , { 'text': 'แขวง/ตำบล' }
+                                , { 'text': 'เขต/อำเภอ' }
+                                , { 'text': 'จังหวัด' }
+                                , { 'text': 'รหัสไปรษณีย์' }
+                            ]];
+
+                            for (var i = 0; i < lData.length; i++) {
+                                var iData = lData[i];
+
+                                JSData.splice(JSData.length, 0, [
+                                    { 'text': iData.fullname }
+                                    , { 'text': iData.type }
+                                    , { 'text': iData.home }
+                                    , { 'text': iData.road }
+                                    , { 'text': iData.subDistrictName }
+                                    , { 'text': iData.districtName }
+                                    , { 'text': iData.provinceName }
+                                    , { 'text': iData.postcode }
+                                ]);
+                            }
+
+                            var dt = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+                            ExportFile(JSData, 'รายงานที่พักอาศัย_' + dt);
+                        }
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+    });
+</script>

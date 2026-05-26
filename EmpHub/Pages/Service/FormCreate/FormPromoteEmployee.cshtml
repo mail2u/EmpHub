@@ -37,16 +37,16 @@
         <div class="row fs-5">
             <div class="col-sm-6 mb-3 d-flex">
                 <div class="text-nowrap me-2">ชื่อ-สกุล</div>
-                <input ng-model="iForm.fullname" class="form-text fullname" maxlength="100" />
+                <input ng-model="iForm.fullname" class="form-text fullname bg-gray" maxlength="100" readonly />
             </div>
             <div class="col-sm-6 mb-3 d-flex">
-                <div class="text-nowrap me-2">ตำแหน่ง</div><input ng-model="iForm.position" class="form-text position" maxlength="50" />
+                <div class="text-nowrap me-2">ตำแหน่ง</div><input ng-model="iForm.position" class="form-text position bg-gray" maxlength="50" readonly />
             </div>
             <div class="col-sm-6 mb-3 d-flex">
-                <div class="text-nowrap me-2">ส่วน</div><input ng-model="iForm.section" class="form-text section" maxlength="50" />
+                <div class="text-nowrap me-2">ส่วน</div><input ng-model="iForm.section" class="form-text section bg-gray" maxlength="50" readonly />
             </div>
             <div class="col-sm-6 mb-3 d-flex">
-                <div class="text-nowrap me-2">ฝ่าย</div><input ng-model="iForm.department" class="form-text department" maxlength="50" />
+                <div class="text-nowrap me-2">ฝ่าย</div><input ng-model="iForm.department" class="form-text department bg-gray" maxlength="50" readonly />
             </div>
             <div class="col-sm-6 mb-3 d-flex">
                 <div class="text-nowrap me-2">วันที่เริ่มงาน</div>
@@ -309,10 +309,10 @@
                 flag = false;
                 JS_Require($(".position"));
             }
-            if ($scope.iForm.department == '') {
-                flag = false;
-                JS_Require($(".department"));
-            }
+            // if ($scope.iForm.department == '') {
+            //     flag = false;
+            //     JS_Require($(".department"));
+            // }
             if ($scope.iForm.section == '') {
                 flag = false;
                 JS_Require($(".section"));

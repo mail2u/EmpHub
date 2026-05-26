@@ -28,7 +28,7 @@
     <div class="rounded-4 p-3 bg-white shadow-sm border position-relative mb-3">
         <div class="d-flex align-items-center">
             <div class="me-2">
-                <button class="btn btn-light" ng-click="SyncData()" ng-disabled="roleId == ''">
+                <button class="btn btn-light" ng-click="SyncData()">
                     <i class="bi bi-cloud-download me-2"></i> Sync Data Signature
                 </button>
             </div>
@@ -160,21 +160,59 @@
         }
         $scope.LoadData();
 
-        $scope.SyncData = function () {
-            $.ajax({
-                url: url
-                , headers: { 'authorization': 'Bearer @token' }
-                , type: 'post'
-                , contentType: 'application/json'
-                , cache: false
-                , data: JSON.stringify($scope.iData)
-                , success: function () {
-                    $timeout(function () {
-                        alertSuccess("บันทึกรายการสำเร็จ", "");
-                        $scope.LoadData($scope.page);
-                    }, 0);
+        $scope.SyncData = async function () {
+            var lData = $scope.lData.filter(item => item.have_signature == 0);
+
+            for (var i = 0; i < lData.length; i++) {
+                var iData = lData[i];
+
+                var iSignature = await $scope.GetSignature(iData);
+
+                if (iSignature) {
+                    iData.base64 = iSignature.base64;
+                    await $scope.UpdateSignature(iData);
+                    iData.have_signature = 1;
                 }
-                , error: AjaxError
+            }
+        }
+
+        $scope.GetSignature = function(x){
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APISignature/api/File/Detail?refId=' + x.username
+                    , type: 'get'
+                    , dataType: 'json'
+                    , cache: false
+                    , success: function (result) {
+                        $timeout(function () {
+                            resolve(result);
+                        }, 0);
+                    }
+                    , error: function(){
+                        resolve(null);
+                    }
+                });
+            });
+        }
+
+
+        $scope.UpdateSignature = function (x) {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/User/UpdateSignature'
+                    , headers: { 'authorization': 'Bearer @token' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , cache: false
+                    , data: JSON.stringify(x)
+                    , success: function () {
+                        resolve(true);
+                    }
+                    , error: function () {
+                        resolve(false);
+                        console.log("error : " + x.username);
+                    }
+                });
             });
         }
 
