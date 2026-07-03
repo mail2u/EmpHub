@@ -25,15 +25,17 @@
                         </div>
                     </div> *@
                     <div class="me-2">
+                        <small>เลขอ้างอิง</small>
+                        <input class="form-control" ng-model="serviceNo" my-enter="LoadData()" maxlength="50" />
+                    </div>
+                    <div class="me-2">
                         <small>ตำแหน่ง</small>
-                        <div class="d-flex">
-                            <input class="form-control" ng-model="position" my-enter="LoadData()" />
-                        </div>
+                        <select class="form-select" ng-model="position" ng-options="x.code as x.desc_th for x in lPosition" ng-change="LoadData()"></select>
                     </div>
                     <div class="me-2">
                         <small>ฝ่ายงาน</small>
                         <div class="d-flex">
-                            <input class="form-control" ng-model="department" my-enter="LoadData()" />
+                            <select class="form-select" ng-model="department" ng-options="x.code as x.desc_th for x in lDepartment" ng-change="LoadData()"></select>
                         </div>
                     </div>
                     <div>
@@ -147,6 +149,46 @@
         $scope.page = 1
         $scope.row = 10;
 
+        $scope.LoadInit = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'departmentCode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lDepartment = result;
+                        $scope.lDepartment.splice(0, 0, { code: '', desc_th: '--- แสดงทั้งหมด ---' });
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'positionCode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lPosition = result;
+                        $scope.lPosition.splice(0, 0, { code: '', desc_th: '--- แสดงทั้งหมด ---' });
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadInit();
+
         $scope.LoadData = function (page = 1) {
             $scope.page = page;
 
@@ -161,6 +203,7 @@
                     page: $scope.page
                     , row: $scope.row
                     , sortBy: $scope.sortBy
+                    , serviceNo: $scope.serviceNo
                     , position: $scope.position
                     , section:$scope.department
                 })
@@ -201,6 +244,7 @@
                     page: 1
                     , row: $scope.total
                     , sortBy: $scope.sortBy
+                    , serviceNo: $scope.serviceNo
                     , position: $scope.position
                     , section: $scope.department
                 }),

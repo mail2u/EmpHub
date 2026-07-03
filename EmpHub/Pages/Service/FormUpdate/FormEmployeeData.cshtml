@@ -1,0 +1,162 @@
+﻿@page
+@model EmpHub.Pages.Service.FormUpdate.FormEmployeeDataModel
+@{
+    var token = User.AccessToken(HttpContext);
+}
+<style>
+    .main-content {
+        min-height: calc(100vh - 150px) !important;
+    }
+
+    .input-error {
+        color: red;
+        border-color: red;
+    }
+</style>
+<div ng-controller="FormCtrl" id="tab_education">
+    @* Header *@
+    <partial name="_PartialFormUpdate" />
+    @* View *@
+    <div class="d-flex justify-content-center">
+        <div class="rounded-4 mb-3 bg-white shadow-sm p-4" style="width:600px;">
+            <div class="text-center fs-4 fw-bolder mb-4 text-dark">
+                ขอข้อมูลพนักงาน
+            </div>
+            <table class="table table-borderless">
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="text-dark text-nowrap fw-bolder">ข้อมูลที่ต้องการ</div>
+                            <div class="text-dark text-nowrap">Require Field</div>
+                        </td>
+                        <td>
+                            <div>
+                                <input ng-model="iForm.is_username" name="is_username" type="checkbox" ng-true-value="1" ng-false-value="0" disabled />
+                                <label>ชื่อผู้ใช้งาน</label>
+                            </div>
+                            <div>
+                                <input ng-model="iForm.is_fullname_th" name="is_fullname_th" type="checkbox" ng-true-value="1" ng-false-value="0" disabled />
+                                <label>ชื่อ-สกุล ภาษาไทย</label>
+                            </div>
+                            <div>
+                                <input ng-model="iForm.is_fullname_en" name="is_fullname_en" type="checkbox" ng-true-value="1" ng-false-value="0" />
+                                <label>ชื่อ-สกุล ภาษาอังกฤษ</label>
+                            </div>
+                            <div>
+                                <input ng-model="iForm.is_position" name="is_position" type="checkbox" ng-true-value="1" ng-false-value="0" />
+                                <label for="is_position">ตำแหน่ง</label>
+                            </div>
+                            <div>
+                                <input ng-model="iForm.is_department" name="is_department" type="checkbox" ng-true-value="1" ng-false-value="0" />
+                                <label for="is_department">ฝ่ายงาน</label>
+                            </div>
+                            <div>
+                                <input ng-model="iForm.is_email" name="is_email" type="checkbox" ng-true-value="1" ng-false-value="0" />
+                                <label for="is_email">อีเมล์</label>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="text-dark text-nowrap fw-bolder">หมายเหตุ</div>
+                            <div class="text-dark text-nowrap">Description</div>
+                        </td>
+                        <td>
+                            <textarea ng-model="iForm.description" class="form-control description" rows=5 maxlength="2000"></textarea>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="d-flex justify-content-end">
+                <div class="btn btn-primary" ng-click="Save()">
+                    <i class="far fa-paper-plane me-2"></i> ส่งใบคำขอ
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('FormCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.id = '@Model.refId';
+
+        $scope.LoadForm = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormEmployeeDataDetail',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                cache: false,
+                data: JSON.stringify({
+                    refId: $scope.id
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.iForm = result
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+
+        $scope.$on('FORM_LOAD', function (e) {
+            $scope.LoadForm();
+        });
+
+        $scope.Validate = function () {
+            var flag = true;
+            JS_Reset($(".description"));
+
+            if ($scope.iForm.description == '') {
+                flag = false;
+                JS_Require($(".description"));
+            }
+
+            return flag;
+        }
+
+        $scope.Save = async function () {
+            if ($scope.Validate()) {
+                alertConfirm("ยืนยันการทำรายการ", "ท่านต้องการส่งใบคำขอ", async function () {
+                    var flag = await $scope.CreateForm();
+
+                    if (flag) {
+                        var serviceNo = await $scope.ServiceRequest();
+
+                        if (serviceNo) {
+                            alertSuccess("ทำรายการสำเร็จ", "ระบบบันทึกใบคำขอของท่านเรียบร้อย", function () {
+                                location.href = '@Url.Page("/Service/Index")';
+                            });
+                        }
+                    }
+                });
+            } else {
+                alertWarning("แจ้งเตือน", "กรุณากรอกข้อมูลให้ครบ");
+            }
+        }
+
+        $scope.CreateForm = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormEmployeeDataCreate',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify($scope.iForm),
+                    success: function () {
+                        $timeout(async function () {
+                            resolve(true);
+                        }, 0);
+                    }, error: function (jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "ระบบเกิดข้อผิดพลาด",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+    });
+</script>

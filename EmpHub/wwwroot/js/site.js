@@ -36,23 +36,67 @@ function ConvertToDate103(dt) {
 }
 
 function JS_ValidateMobile(text) {
-    var regex = /^\(?([0][1-9][0-9])\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+    if (!text) return false;
 
-    if (text == "" || text == null || regex.test(text) == false) {
-        return false;
-    } else {
-        return true;
-    }
+    var regex = /^([0-9]{3}-[0-9]{3}-[0-9]{4}|[0-9]{10})$/;
+
+    return regex.test(text);
 }
 
 function JS_ValidateDate(text) {
-    var regex = /(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)\d\d/;
-
-    if (text == "" || text == null || regex.test(text) == false) {
+    if (text == null || text === "") {
         return false;
-    } else {
-        return true;
     }
+
+    text = text.trim();
+
+    // ต้องเป็น dd/mm/yyyy เท่านั้น
+    var regex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+    var match = regex.exec(text);
+
+    console.log(match);
+
+    if (!match) {
+        return false;
+    }
+
+    var day = parseInt(match[1], 10);
+    var month = parseInt(match[2], 10);
+    var year = parseInt(match[3], 10);
+
+    // ตรวจช่วงเบื้องต้น
+    if (year < 1900 || year > 9999) {
+        return false;
+    }
+
+    if (month < 1 || month > 12) {
+        return false;
+    }
+
+    if (day < 1 || day > 31) {
+        return false;
+    }
+
+    // ตรวจวันที่จริง เช่น 31/02 ต้อง false
+    var date = new Date(year, month - 1, day);
+
+    return date.getFullYear() === year &&
+        date.getMonth() === month - 1 &&
+        date.getDate() === day;
+}
+
+function JS_IsValidDateDDMMYYYY(value) {
+    if (!value) return false;
+
+    if (moment.isMoment(value)) {
+        value = value.format("DD/MM/YYYY");
+    }
+
+    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(value)) {
+        return false;
+    }
+
+    return moment(value, "DD/MM/YYYY", true).isValid();
 }
 
 function JS_ValidateTime(text) {

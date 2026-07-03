@@ -1,0 +1,148 @@
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<div class="training-summary-grid">
+    <div class="training-summary-card blue">
+        <span class="training-icon blue"><i class="bi bi-clock"></i></span>
+        <div>
+            <div class="info-label">ชั่วโมงอบรมสะสม</div>
+            <div class="info-value fs-4 text-primary">{{ trainingSummary.totalHours }} ชั่วโมง</div>
+            <div class="small text-muted">เฉลี่ย {{ trainingSummary.averageHoursText }} ชม./เดือน</div>
+        </div>
+    </div>
+    <div class="training-summary-card green">
+        <span class="training-icon green"><i class="bi bi-book"></i></span>
+        <div>
+            <div class="info-label">หลักสูตรทั้งหมด</div>
+            <div class="info-value fs-4 text-success">{{ trainingSummary.completedCount }} หลักสูตร</div>
+            <div class="small text-muted">ผ่านแล้ว {{ trainingSummary.completedCount }} หลักสูตร</div>
+        </div>
+    </div>
+    <div class="training-summary-card orange">
+        <span class="training-icon orange"><i class="bi bi-calendar4-week"></i></span>
+        <div>
+            <div class="info-label">อบรมปีนี้ ({{ currentYear }})</div>
+            <div class="info-value fs-4 text-warning">{{ trainingSummary.currentYearHours }} ชั่วโมง</div>
+            <div class="small text-muted">{{ trainingSummary.currentYearCount }} หลักสูตร</div>
+        </div>
+    </div>
+    <div class="training-summary-card purple">
+        <span class="training-icon purple"><i class="bi bi-award"></i></span>
+        <div>
+            <div class="info-label">ใบรับรอง (Certificate)</div>
+            <div class="info-value fs-4 text-primary">{{ trainingSummary.certificateCount }} ใบรับรอง</div>
+            <div class="small text-muted">ใช้งานอยู่ {{ trainingSummary.activeCertificateCount }} ใบ</div>
+        </div>
+    </div>
+</div>
+
+<div class="training-layout">
+    <div class="training-panel">
+        <div class="training-panel-header">
+            <span>ประวัติการฝึกอบรม (Timeline)</span>
+            <a class="btn btn-sm btn-soft-primary text-primary" ng-href='@Url.Page("/Service/FormCreate/FormUpdateDataTraining")?mode=EDIT_TRAINING&id={{userId}}' target="_blank">
+                <i class="bi bi-plus-lg me-1"></i>เพิ่มข้อมูล
+            </a>
+        </div>
+        <div class="training-panel-body">
+            <div class="training-filter">
+                <button type="button" class="btn btn-sm" ng-class="selectedTrainingYear == null ? 'btn-primary' : 'btn-outline-primary'" ng-click="selectTrainingYear(null)">ทั้งหมด</button>
+                <button type="button" class="btn btn-sm" ng-class="selectedTrainingYear == year ? 'btn-primary' : 'btn-outline-primary'" ng-repeat="year in trainingYearsData | limitTo:3 track by year" ng-click="selectTrainingYear(year)">ปี {{ year }}</button>
+                <button type="button" class="btn btn-outline-primary btn-sm">เพิ่มเติม <i class="bi bi-chevron-down ms-1"></i></button>
+            </div>
+            <div class="empty-state" ng-show="trainingSummary.completedCount == 0">ยังไม่มีข้อมูลประวัติการฝึกอบรม</div>
+            <div ng-show="trainingSummary.completedCount > 0">
+                <div class="training-year-row" ng-repeat="group in trainingYearGroupsData track by group.year">
+                    <div class="training-year">
+                        {{ group.year }}
+                        <small>({{ group.items.length }} หลักสูตร)</small>
+                    </div>
+                    <div class="training-year-line"><span class="training-year-dot"></span></div>
+                    <div class="training-course-list">
+                        <div class="training-course-item" ng-repeat="x in group.items track by x.id || x.trainingId || x.refId || $index">
+                            <span class="training-course-icon"><i ng-class="trainingIconClass(x)"></i></span>
+                            <div class="min-w-0">
+                                <div class="fw-bold text-dark">{{ valueOrDash(x.license) }}</div>
+                                <div class="small text-muted">{{ valueOrDash(x.organization || x.description) }}</div>
+                            </div>
+                            <div class="text-end">
+                                <div class="fw-bold text-primary">{{ trainingHours(x) }} ชั่วโมง</div>
+                                <span class="badge bg-soft-success text-success">{{ trainingStatusText(x) }}</span>
+                                <div class="small text-muted">{{ valueOrDash(x.issueDate) }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="training-panel">
+            <div class="training-panel-header">
+                <span>ทักษะและความเชี่ยวชาญ (Skill Matrix)</span>
+            </div>
+            <div class="training-panel-body">
+                <div class="skill-list">
+                    <div class="skill-row" ng-repeat="skill in skillMatrixData track by skill.name">
+                        <div class="skill-label"><i ng-class="skill.icon" class="text-primary"></i>{{ skill.name }}</div>
+                        <div class="skill-bar"><span ng-style="{ width: skill.percent + '%' }"></span></div>
+                        <div class="fw-bold text-dark text-end">{{ skill.percent }}%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+                @*     
+<div class="bg-white rounded-4 border mb-4 overflow-hidden" ng-show="lTraining.length > 0">
+    <div class="px-4 py-3 border-bottom d-flex align-items-center">
+        <div class="fs-5 fw-bolder text-dark flex-fill">Training</div>
+        <div>
+            <div class="badge bg-light-green px-2 me-2" ng-show="total_add > 0">
+                {{ total_add }} Addition
+            </div>
+            <div class="badge bg-light-blue px-2 me-2" ng-show="total_modify > 0">
+                {{ total_modify }} Modification
+            </div>
+            <div class="badge bg-light-red px-2 me-2" ng-show="total_delete > 0">
+                {{ total_delete }} Deletion
+            </div>
+        </div>
+    </div>
+    <div class="">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th class="bg-light ps-4">COURSE NAME</th>
+                    <th class="bg-light">PROVIDER</th>
+                    <th class="bg-light">ISSUE</th>
+                    <th class="bg-light">ACTION</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="x in lTraining">
+                    <td class="ps-4 text-{{ x.mode }}">{{ x.license }}</td>
+                    <td class="text-{{ x.mode }}">{{ x.organization }}</td>
+                    <td class="text-{{ x.mode }}">{{ x.issueDate }}</td>
+                    <td>
+                        <div class="badge bg-light-green px-2 me-2" ng-show="x.mode == 'add'">
+                            Addition
+                        </div>
+                        <div class="badge bg-light-blue px-2 me-2" ng-show="x.mode == 'modify'">
+                            Modification
+                        </div>
+                        <div class="badge bg-light-red px-2 me-2" ng-show="x.mode == 'delete'">
+                            Deletion
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div> *@

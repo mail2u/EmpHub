@@ -40,14 +40,15 @@
             </div>
             <div class="col-sm-8 mb-3 d-lg-flex">
                 <div class="me-3">
-                    <div class="text-dark text-nowrap fw-bolder">ชื่อ – นามสกุล ผู้สมัครเอาประกัน (นาย / นาง / นางสาว )</div>
-                    <div class="text-dark text-nowrap">(Name of Employee Mr. , Mrs, , Ms.)</div>
+                    <div class="text-dark text-nowrap fw-bolder">ชื่อ – นามสกุล ผู้สมัครเอาประกัน</div>
+                    <div class="text-dark text-nowrap">(Name of Employee)</div>
                 </div>
+                <select ng-model="iForm.prefix" class="form-select prefix me-2" style="width:100px" ng-options="x for x in lPrefix"></select>
                 <input ng-model="iForm.fullname" class="form-control  fullname" maxlength="100" />
             </div>
             <div class="col-sm-4 mb-3 d-lg-flex">
                 <div class="me-3">
-                    <div class="text-dark text-nowrap fw-bolder">เกิดวันที่</div>
+                    <div class="text-dark text-nowrap fw-bolder">เกิดวันที่ (ปี ค.ศ.)</div>
                     <div class="text-dark text-nowrap">(Date of Birth)</div>
                 </div>
                 <input class="form-control  icon-calendar date birth_date"
@@ -61,7 +62,7 @@
             </div>
             <div class="col-sm-4 mb-3 d-lg-flex">
                 <div class="me-3">
-                    <div class="text-dark text-nowrap fw-bolder">วันเริ่มทำงาน</div>
+                    <div class="text-dark text-nowrap fw-bolder">วันเริ่มทำงาน (ปี ค.ศ.)</div>
                     <div class="text-dark text-nowrap">(Date of employment)</div>
                 </div>
                 <input class="form-control  icon-calendar date join_date"
@@ -78,7 +79,7 @@
                     <div class="text-dark text-nowrap fw-bolder">ตำแหน่ง</div>
                     <div class="text-dark text-nowrap">(Position)</div>
                 </div>
-                <input ng-model="iForm.position" class="form-control  position" maxlength="100" />
+                <select ng-model="iForm.position" class="form-select position" ng-options="x.desc_th as x.desc_th + ' ' + x.desc_en for x in lPosition"></select>
             </div>
         </div>
         <div class="d-flex">
@@ -116,7 +117,7 @@
                                 จำนวน
                             </td>
                             <td width="100">
-                                <input ng-model="iForm.benefitpercent1" class="form-control benefitpercent1" type="number" />
+                                <input ng-model="iForm.benefitpercent1" class="form-control benefitpercent1" type="number" min="0" max="100" />
                             </td>
                             <td class="align-middle">
                                 %
@@ -149,7 +150,7 @@
                                 จำนวน
                             </td>
                             <td>
-                                <input ng-model="iForm.benefitpercent2" class="form-control benefitpercent2" type="number" />
+                                <input ng-model="iForm.benefitpercent2" class="form-control benefitpercent2" type="number" min="0" max="100" />
                             </td>
                             <td class="align-middle">
                                 %
@@ -182,7 +183,7 @@
                                 จำนวน
                             </td>
                             <td>
-                                <input ng-model="iForm.benefitpercent3" class="form-control benefitpercent3" type="number" />
+                                <input ng-model="iForm.benefitpercent3" class="form-control benefitpercent3" type="number" min="0" max="100" />
                             </td>
                             <td class="align-middle">
                                 %
@@ -215,7 +216,7 @@
                                 จำนวน
                             </td>
                             <td>
-                                <input ng-model="iForm.benefitpercent4" class="form-control benefitpercent4" type="number" />
+                                <input ng-model="iForm.benefitpercent4" class="form-control benefitpercent4" type="number" min="0" max="100" />
                             </td>
                             <td class="align-middle">
                                 %
@@ -248,7 +249,7 @@
                                 จำนวน
                             </td>
                             <td>
-                                <input ng-model="iForm.benefitpercent5" class="form-control benefitpercent5" type="number" />
+                                <input ng-model="iForm.benefitpercent5" class="form-control benefitpercent5" type="number" min="0" max="100" />
                             </td>
                             <td class="align-middle">
                                 %
@@ -261,7 +262,7 @@
     </div>
     <div class="d-flex justify-content-end">
         <div class="btn btn-primary" ng-click="Save()">
-            <i class="far fa-paper-plane me-2"></i> Send Request
+            <i class="far fa-paper-plane me-2"></i> ส่งใบคำขอ
         </div>
     </div>
 </div>
@@ -271,6 +272,28 @@
     $(".employeeCode").mask("000000");
     app.controller('FormCtrl', function ($scope, $http, $timeout, $filter) {
         $scope.id = '@Model.refId';
+        $scope.lPrefix = ['นาย', 'นาง', 'นางสาว'];
+
+        $scope.LoadInit = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'positionCode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lPosition = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadInit();
 
         $scope.LoadForm = function(){
             $.ajax({
@@ -328,6 +351,7 @@
             var flag = true;
             JS_Reset($(".policyNo"));
             JS_Reset($(".employeeCode"));
+            JS_Reset($(".prefix"));
             JS_Reset($(".fullname"));
             JS_Reset($(".birth_date"));
             JS_Reset($(".join_date"));
@@ -368,6 +392,10 @@
                 flag = false;
                 JS_Require($(".employeeCode"));
             }
+            if ($scope.iForm.prefix == '') {
+                flag = false;
+                JS_Require($(".prefix"));
+            }
             if ($scope.iForm.fullname == '') {
                 flag = false;
                 JS_Require($(".fullname"));
@@ -396,26 +424,21 @@
             }
 
             /* Benefit 1 */
-            if ($scope.iForm.benefitname1 != '' 
-            || parseFloat($scope.iForm.benefitage1) > 0
-            || $scope.iForm.benefitrelation1 != ''
-            || parseFloat($scope.iForm.benefitpercent1) > 0){
-                 if ($scope.iForm.benefitname1 == '') {
-                    flag = false;
-                    JS_Require($(".benefitname1"));
-                }
-                if ($scope.iForm.benefitage1 == '') {
-                    flag = false;
-                    JS_Require($(".benefitage1"));
-                }
-                if ($scope.iForm.benefitrelation1 == '') {
-                    flag = false;
-                    JS_Require($(".benefitrelation1"));
-                }
-                if ($scope.iForm.benefitpercent1 <= 0 || totalPercent != 100) {
-                    flag = false;
-                    JS_Require($(".benefitpercent1"));
-                }
+            if ($scope.iForm.benefitname1 == '') {
+                flag = false;
+                JS_Require($(".benefitname1"));
+            }
+            if ($scope.iForm.benefitage1 == '') {
+                flag = false;
+                JS_Require($(".benefitage1"));
+            }
+            if ($scope.iForm.benefitrelation1 == '') {
+                flag = false;
+                JS_Require($(".benefitrelation1"));
+            }
+            if ($scope.iForm.benefitpercent1 <= 0 || totalPercent != 100) {
+                flag = false;
+                JS_Require($(".benefitpercent1"));
             }
             
             /* Benefit 2 */

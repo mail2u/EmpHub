@@ -1,0 +1,147 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var token = User.AccessToken(Context);
+}
+<div ng-controller="ServiceEmployeeCtrl">
+    <div class="bg-white rounded-4 border mb-4 overflow-hidden" ng-show="iEmployee.refId">
+        <div class="px-4 py-3 border-bottom d-flex align-items-center">
+            <div class="fs-5 fw-bolder text-dark flex-fill">Employee Infomation</div>
+            <div>
+                <div class="badge bg-light-blue px-2">
+                    {{ total_modify }} Modification
+                </div>
+            </div>
+        </div>
+        <div class="">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th class="bg-light ps-4">FIELD</th>
+                        <th class="bg-light">CURRENT VALUE</th>
+                        <th class="bg-light">PROPOSED VALUE / ACTION</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="ps-4">EMPLOYEE ID</td>
+                        <td>{{ iUserEmployee.employeeCode }}</td>
+                        <td class="{{ iUserEmployee.employeeCode != iEmployee.employeeCode ? 'text-blue fw-bolder' : '' }}">
+                            {{ iEmployee.employeeCode }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ps-4">POSITION</td>
+                        <td>{{ iUserEmployee.positionDesc }}</td>
+                        <td class="{{ iUserEmployee.positionDesc != iEmployee.positionDesc ? 'text-blue fw-bolder' : '' }}">
+                            {{ iEmployee.positionDesc }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ps-4">DEPARTMENT</td>
+                        <td>{{ iUserEmployee.departmentDesc }}</td>
+                        <td class="{{ iUserEmployee.departmentDesc != iEmployee.departmentDesc ? 'text-blue fw-bolder' : '' }}">
+                            {{ iEmployee.departmentDesc }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ps-4">HIRE DATE</td>
+                        <td>{{ iUserEmployee.join_date }}</td>
+                        <td class="{{ iUserEmployee.join_date != iEmployee.join_date ? 'text-blue fw-bolder' : '' }}">
+                            {{ iEmployee.join_date }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ps-4">EMAIL</td>
+                        <td>{{ iUserEmployee.email }}</td>
+                        <td class="{{ iUserEmployee.email != iEmployee.email ? 'text-blue fw-bolder' : '' }}">
+                            {{ iEmployee.email }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ServiceEmployeeCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.LoadModify = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceEmployee/Detail',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        refId: $scope.refId
+                    }),
+                    success: function (result) {
+                        $timeout(async function () {
+                            $scope.iEmployee = result;
+                            resolve(true);
+                        }, 0);
+                    }, error: function () {
+                        resolve(false);
+                    }
+                });
+            });
+        }
+
+        $scope.LoadCurrent = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserEmployee',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        userId: $scope.userId
+                    }),
+                    success: function (result) {
+                        $timeout(async function () {
+                            $scope.iUserEmployee = result.data;
+                            resolve(true);
+                        }, 0);
+                    }, error: function () {
+                        resolve(false);
+                    }
+                });
+            });
+        }
+
+
+        $scope.$parent.LoadEmployee = async function (x) {
+            $scope.refId = x.id;
+            $scope.userId = x.userId;
+            $scope.status = x.status;
+
+            await $scope.LoadCurrent();
+            await $scope.LoadModify();
+
+            $timeout(function () {
+                $scope.total_modify = 0;
+
+                if ($scope.iUserEmployee.employeeCode != $scope.iEmployee.employeeCode) {
+                    $scope.total_modify++;
+                }
+                if ($scope.iUserEmployee.positionDesc != $scope.iEmployee.positionDesc) {
+                    $scope.total_modify++;
+                }
+                if ($scope.iUserEmployee.departmentDesc != $scope.iEmployee.departmentDesc) {
+                    $scope.total_modify++;
+                }
+                if ($scope.iUserEmployee.join_date != $scope.iEmployee.join_date) {
+                    $scope.total_modify++;
+                }
+                if ($scope.iUserEmployee.email != $scope.iEmployee.email) {
+                    $scope.total_modify++;
+                }
+            }, 0);
+        }
+    });
+</script>

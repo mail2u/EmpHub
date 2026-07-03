@@ -29,7 +29,7 @@
         <div class="d-flex align-items-center">
             <div class="me-2">
                 <button class="btn btn-light" ng-click="ShowCreate()" ng-disabled="roleId == ''">
-                    <i class="fas fa-plus me-2"></i> Create
+                    <i class="fas fa-plus me-2"></i> ADD
                 </button>
             </div>
             <div>
@@ -91,7 +91,7 @@
                             {{ x.code }}
                         </td>
                         <td>
-                            {{ x.parentName }}
+                            {{ x.condition_3 }}
                         </td>
                         <td>
                             {{ x.desc_th }}
@@ -134,7 +134,7 @@
                     </div>
                     <div class="mb-3">
                         Parent
-                        <select ng-model="iData.parentCode" class="form-select" ng-options="x.code as x.desc_th for x in lParent"></select>
+                        <select ng-model="iData.condition_3" class="form-select" ng-options="x.code as x.desc_th for x in lParent"></select>
                     </div>
                     <div class="mb-3">
                         Name (TH)
@@ -159,6 +159,7 @@
         $scope.page = 1
         $scope.row = 10;
         $scope.search = '';
+        $scope.groupName = 'departmentCode';
 
         $scope.SetSort = function (sortBy) {
             if ($scope.sortBy != null && $scope.sortBy.indexOf(sortBy) > -1) {
@@ -177,17 +178,14 @@
             $scope.page = page;
 
             $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/Department/DataList'
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
                 , headers: { 'authorization': 'Bearer @token' }
                 , type: 'post'
                 , contentType: 'application/json'
                 , dataType: 'json'
                 , cache: false
                 , data: JSON.stringify({
-                    page: $scope.page
-                    , row: $scope.row
-                    , sortBy: $scope.sortBy
-                    , search: $scope.search_Department
+                    groupName: $scope.groupName
                 })
                 , success: function (result) {
                     $timeout(function () {
@@ -215,7 +213,11 @@
         $scope.LoadData();
 
         $scope.ShowCreate = function () {
-            $scope.iData = { rn: 0, create_by: '@User.UserId()' };
+            $scope.iData = {
+                id: 0
+                , groupName: $scope.groupName
+                , create_by: '@User.UserId()'
+            };
             $("#CreateModal").modal('show');
         }
 
@@ -226,10 +228,10 @@
         }
 
         $scope.SaveChange = function () {
-            var url = '@webAPI.CurrentValue.APIEmpHub/api/Department/Create';
+            var url = '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/Create';
 
-            if ($scope.iData.rn > 0) {
-                url = '@webAPI.CurrentValue.APIEmpHub/api/Department/Update';
+            if ($scope.iData.id > 0) {
+                url = '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/Update';
             }
 
             $("#CreateModal").modal('hide');
@@ -254,13 +256,14 @@
         $scope.Delete = function (x) {
             alertConfirm("Delete Department", "ต้องการยืนยันการทำรายการ", () => {
                 $.ajax({
-                    url: '@webAPI.CurrentValue.APIEmpHub/api/Department/Delete'
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/Delete'
                     , headers: { 'authorization': 'Bearer @token' }
                     , type: 'post'
                     , contentType: 'application/json'
                     , cache: false
                     , data: JSON.stringify({
-                        rn: x.rn
+                        id: x.id
+                        , groupName: $scope.groupName
                         , update_by: '@User.UserId()'
                     })
                     , success: function () {

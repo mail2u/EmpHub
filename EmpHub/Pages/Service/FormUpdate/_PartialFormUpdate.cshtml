@@ -26,7 +26,7 @@
 
                         if ($scope.$parent.iData.can_edit != 1) {
                             alertWarning("Warning", "คุณไม่ได้รับสิทธิ์ให้เข้าถึงหน้านี้", function () {
-                                location.href = '@Url.Page("Service/Index")';
+                                location.href = '@Url.Page("/Service/Index")';
                             });
                         } else {
                             $timeout(function () {
@@ -37,7 +37,7 @@
                 },
                 error: function (jqXHR, error, errorThrown) {
                     alertWarning("ระบบเกิดข้อผิดพลาด", jqXHR.responseText, function () {
-                        location.href = '@Url.Page("Service/Index")';
+                        location.href = '@Url.Page("/Service/Index")';
                     });
                 }
             });

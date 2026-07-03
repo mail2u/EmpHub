@@ -64,6 +64,7 @@
                     <input ng-model="iData.birth_date" class="form-control form-input date birth_date" />
                     @* <input class="form-control form-input date birth_date icon-calendar"
                            ng-model="iData.birth_date_select"
+                   ng-model-options="{ updateOn: 'blur' }"
                            moment-picker="iData.birth_date_select"
                            locale="th"
                            format="DD/MM/YYYY"
@@ -115,7 +116,7 @@
     </div>
     <div class="d-flex justify-content-end">
         <div class="btn btn-primary" ng-click="Save()">
-            <i class="far fa-paper-plane me-2"></i> Send Request
+            <i class="far fa-paper-plane me-2"></i> ส่งใบคำขอ
         </div>
     </div>
 </div>

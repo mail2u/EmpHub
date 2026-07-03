@@ -42,7 +42,7 @@
             </div>
             <div class="col-sm-4 mb-3">
                 <div class="text-dark fw-bolder">เพศ</div>
-                <div class="text-blue">{{ iForm.sex == '' ? '-' : iForm.sex }}</div>
+                <div class="text-blue">{{ iForm.sex == 'M' ? 'ชาย' : iForm.sex == 'F' ? 'หญิง' : '-' }}</div>
             </div>
             <div class="col-sm-4 mb-3">
                 <div class="text-dark fw-bolder">น้ำหนัก</div>

@@ -87,7 +87,7 @@
             </div>
             <div class="d-flex mb-1">
                 <div class="text-nowrap fw-bolder">โปรดระบุ Specifications ของคอมพิวเตอร์ที่ต้องการ </div>
-                <input ng-model="iForm.speccomputer" class="form-text mx-2" maxlength="400" />
+                <input ng-model="iForm.speccomputer" class="form-text mx-2 speccomputer" maxlength="400" />
             </div>
             <div class="d-flex mb-1 answer3 box-group">
                 <div class="text-nowrap fw-bolder">ต้องการโปรแกรม Software พิเศษหรือไม่</div>
@@ -97,58 +97,58 @@
                 <div class="ms-2 text-nowrap">
                     <input type="radio" id="answer3_yes" name="answer3" ng-model="iForm.answer3" value="Yes" /> <label for="answer3_yes">ต้องการ โปรดระบุ</label>
                 </div>
-                <input ng-model="iForm.software_desc" class="form-text mx-2" maxlength="400" />
+                <input ng-model="iForm.software_desc" class="form-text mx-2 software_desc" maxlength="400" />
             </div>
             <div class="mb-1">
                 <div class=" fw-bolder">โปรดระบุระบบที่ต้องการใช้งาน</div>
                 <div class="row">
                     <div class="col-sm-6 mb-1">
-                        <div class="d-flex">
+                        <div class="d-flex gls_system box-group">
                             <input type="checkbox" id="gls_system" ng-model="iForm.gls_system" ng-true-value="'Yes'" ng-false-value="" /> 
                             <label for="gls_system" class="text-nowrap mx-2">GLS ให้สิทธิการเข้าใช้ระบบเหมือนกับ</label>
-                            <input ng-model="iForm.gls_desc" class="form-text" />
+                            <input ng-model="iForm.gls_desc" class="form-text gls_desc" />
                         </div>
                     </div>
                     <div class="col-sm-6 mb-1">
-                        <div class="d-flex">
+                        <div class="d-flex ls_system box-group">
                             <input type="checkbox" id="ls_system" ng-model="iForm.ls_system" ng-true-value="'Yes'" ng-false-value="" />
                             <label for="ls_system" class="text-nowrap mx-2">LS ให้สิทธิการเข้าใช้ระบบเหมือนกับ</label>
-                            <input ng-model="iForm.ls_desc" class="form-text" />
+                            <input ng-model="iForm.ls_desc" class="form-text ls_desc" />
                         </div>
                     </div>
                     <div class="col-sm-6 mb-1">
-                        <div class="d-flex">
+                        <div class="d-flex linet_system box-group">
                             <input type="checkbox" id="linet_system" ng-model="iForm.linet_system" ng-true-value="'Yes'" ng-false-value="" />
                             <label for="linet_system" class="text-nowrap mx-2">Linet ให้สิทธิการเข้าใช้ระบบเหมือนกับ</label>
-                            <input ng-model="iForm.linet_desc" class="form-text" />
+                            <input ng-model="iForm.linet_desc" class="form-text linet_desc" />
                         </div>
                     </div>
                     <div class="col-sm-6 mb-1">
-                        <div class="d-flex">
+                        <div class="d-flex sun_system box-group">
                             <input type="checkbox" id="sun_system" ng-model="iForm.sun_system" ng-true-value="'Yes'" ng-false-value="" />
                             <label for="sun_system" class="text-nowrap mx-2">SUN ให้สิทธิการเข้าใช้ระบบเหมือนกับ</label>
-                            <input ng-model="iForm.sun_desc" class="form-text" />
+                            <input ng-model="iForm.sun_desc" class="form-text sun_desc" />
                         </div>
                     </div>
                     <div class="col-sm-6 mb-1">
-                        <div class="d-flex">
+                        <div class="d-flex prophet_system box-group">
                             <input type="checkbox" id="prophet_system" ng-model="iForm.prophet_system" ng-true-value="'Yes'" ng-false-value="" />
                             <label for="prophet_system" class="text-nowrap mx-2">Prophet ให้สิทธิการเข้าใช้ระบบเหมือนกับ</label>
-                            <input ng-model="iForm.prophet_desc" class="form-text" />
+                            <input ng-model="iForm.prophet_desc" class="form-text prophet_desc" />
                         </div>
                     </div>
                     <div class="col-sm-6 mb-1">
-                        <div class="d-flex">
+                        <div class="d-flex bonunza_system box-group">
                             <input type="checkbox" id="bonunza_system" ng-model="iForm.bonunza_system" ng-true-value="'Yes'" ng-false-value="" />
                             <label for="bonunza_system" class="text-nowrap mx-2">Bonunza ให้สิทธิการเข้าใช้ระบบเหมือนกับ</label>
-                            <input ng-model="iForm.bonunza_desc" class="form-text" />
+                            <input ng-model="iForm.bonunza_desc" class="form-text bonunza_desc" />
                         </div>
                     </div>
                     <div class="col-sm-12 mb-1">
-                        <div class="d-flex">
+                        <div class="d-flex other_system box-group">
                             <input type="checkbox" id="other_system" ng-model="iForm.other_system" ng-true-value="'Yes'" ng-false-value="" />
                             <label for="other_system" class="text-nowrap mx-2">ระบบอื่น ๆ โปรดระบุเพิ่มเติม</label>
-                            <input ng-model="iForm.other_desc" class="form-text" />
+                            <input ng-model="iForm.other_desc" class="form-text other_desc" />
                         </div>
                     </div>
                 </div>
@@ -171,7 +171,7 @@
                         <input type="radio" id="answer4_yes" name="answer4" ng-model="iForm.answer4" value="Yes" /> <label for="answer4_yes">ใช้ โปรดระบุบริเวณ</label>
                     </td>
                     <td>
-                        <input ng-model="iForm.answer4_desc" class="form-text" maxlength="400" />
+                        <input ng-model="iForm.answer4_desc" class="form-text answer4_desc" maxlength="400" />
                     </td>
                 </tr>
                 <tr class="answer5 box-group">
@@ -185,7 +185,7 @@
                         <input type="radio" id="answer5_yes" name="answer5" ng-model="iForm.answer5" value="Yes" /> <label for="answer5_yes">ใช้ โปรดระบุหมายเลข</label>
                     </td>
                     <td>
-                        <input ng-model="iForm.answer5_desc" class="form-text" maxlength="400" />
+                        <input ng-model="iForm.answer5_desc" class="form-text answer5_desc" maxlength="400" />
                     </td>
                 </tr>
             </tbody>
@@ -207,7 +207,7 @@
                         <input type="radio" id="answer6_yes" name="answer6" ng-model="iForm.answer6" value="Yes" /> <label for="answer6_yes">ต้องการ โปรดระบุรุ่น</label>
                     </td>
                     <td>
-                        <input ng-model="iForm.answer6_desc" class="form-text" maxlength="400" />
+                        <input ng-model="iForm.answer6_desc" class="form-text answer6_desc" maxlength="400" />
                     </td>
                 </tr>
                 <tr class="answer7 box-group">
@@ -221,7 +221,7 @@
                         <input type="radio" id="answer7_yes" name="answer7" ng-model="iForm.answer7" value="Yes" /> <label for="answer7_yes">ต้องการ โปรดระบุ package @@</label>
                     </td>
                     <td class="text-nowrap d-flex">
-                        <input ng-model="iForm.answer7_desc" class="form-text" maxlength="400" /> / เดือน
+                        <input ng-model="iForm.answer7_desc" class="form-text answer7_desc" maxlength="400" /> / เดือน
                     </td>
                 </tr>
             </tbody>
@@ -243,7 +243,7 @@
                         <input type="radio" id="answer8_yes" name="answer8" ng-model="iForm.answer8" value="Yes" /> <label for="answer8_yes">ต้องการ โปรดระบุรุ่น</label>
                     </td>
                     <td>
-                        <input ng-model="iForm.answer8_desc" class="form-text" maxlength="400" />
+                        <input ng-model="iForm.answer8_desc" class="form-text answer8_desc" maxlength="400" />
                     </td>
                 </tr>
                 <tr class="answer9 box-group">
@@ -257,7 +257,7 @@
                         <input type="radio" id="answer9_yes" name="answer9" ng-model="iForm.answer9" value="Yes" /> <label for="answer9_yes">ต้องการ โปรดระบุ</label>
                     </td>
                     <td class="text-nowrap d-flex">
-                        <input ng-model="iForm.answer9_desc" class="form-text" maxlength="400" /> บาทหรือลิตร / เดือน
+                        <input ng-model="iForm.answer9_desc" class="form-text answer9_desc" maxlength="400" /> บาทหรือลิตร / เดือน
                     </td>
                 </tr>
             </tbody>
@@ -267,13 +267,19 @@
         <div class="fs-5 fw-bolder bg-gray mb-3 p-1">
             เรื่องอื่นๆ (หากมี)
         </div>
-        <textarea ng-model="iForm.description" class="form-control" rows="5" maxlength="2000">
-
+        <textarea ng-model="iForm.description" class="form-control mb-3" rows="5" maxlength="2000">
         </textarea>
+        <div class="fs-5 fw-bolder bg-gray mb-3 p-1">
+            เอกสารแนบ
+        </div>
+        <label for="iFile" class="btn btn-secondary-invert file">
+            {{ iForm.filename != '' ? iForm.filename : 'เลือกไฟล์' }}
+        </label>
+        <input ng-show="1 == 2" id="iFile" data-file type="file" ng-model="iFile" base-sixty-four-input ng-change="AddFile()" />
     </div>
     <div class="d-flex justify-content-end">
         <div class="btn btn-primary" ng-click="Save()">
-            <i class="far fa-paper-plane me-2"></i> Send Request
+            <i class="far fa-paper-plane me-2"></i> ส่งใบคำขอ
         </div>
     </div>
 </div>
@@ -325,8 +331,20 @@
             , other_system: ''
             , other_desc: ''
             , description: ''
+            , filename: ''
+            , filetype: ''
             , create_by:'@User.UserId()'
         }
+
+        
+        $scope.AddFile = function () {
+            if (iFile) {
+                $scope.iForm.filename = $scope.iFile.filename;
+                $scope.iForm.filetype = $scope.iFile.filetype;
+                $scope.iForm.base64 = $scope.iFile.base64;
+            }
+        }
+
 
         $scope.Validate = function () {
             var flag = true;
@@ -340,7 +358,7 @@
             JS_Reset($(".answer1"));
             JS_Reset($(".answer2"));
             JS_Reset($(".answer3"));
-            JS_Reset($(".answer3_desc"));
+            JS_Reset($(".software_desc"));
             JS_Reset($(".answer4"));
             JS_Reset($(".answer4_desc"));
             JS_Reset($(".answer5"));
@@ -353,12 +371,20 @@
             JS_Reset($(".answer8_desc"));
             JS_Reset($(".answer9"));
             JS_Reset($(".answer9_desc"));
-            JS_Reset($(".aaa"));
-            JS_Reset($(".aaa"));
-            JS_Reset($(".aaa"));
-            JS_Reset($(".aaa"));
-            JS_Reset($(".aaa"));
-
+            JS_Reset($(".gls_system"));
+            JS_Reset($(".gls_desc"));
+            JS_Reset($(".ls_system"));
+            JS_Reset($(".ls_desc"));
+            JS_Reset($(".linet_system"));
+            JS_Reset($(".linet_desc"));
+            JS_Reset($(".sun_system"));
+            JS_Reset($(".sun_desc"));
+            JS_Reset($(".prophet_system"));
+            JS_Reset($(".prophet_desc"));
+            JS_Reset($(".bonunza_system"));
+            JS_Reset($(".bonunza_desc"));
+            JS_Reset($(".other_system"));
+            JS_Reset($(".other_desc"));
 
             if ($scope.iForm.join_date_select) {
                 $scope.iForm.join_date = $scope.iForm.join_date_select.format("DD/MM/YYYY");
@@ -390,7 +416,7 @@
                 flag = false;
                 JS_Require($(".username"));
             }
-            if ($scope.iForm.email == '') {
+            if (JS_ValidateEmail($scope.iForm.email) == false) {
                 flag = false;
                 JS_Require($(".email"));
             }
@@ -406,10 +432,68 @@
                 flag = false;
                 JS_Require($(".answer3"));
             }
-            if ($scope.iForm.answer3 == 'Yes' && $scope.iForm.answer3_desc == '') {
+            if ($scope.iForm.answer3 == 'Yes' && $scope.iForm.software_desc == '') {
                 flag = false;
-                JS_Require($(".answer3_desc"));
+                JS_Require($(".software_desc"));
             }
+
+            if ($scope.iForm.gls_system == '') {
+                flag = false;
+                JS_Require($(".gls_system"));
+            }
+            if ($scope.iForm.gls_system == 'Yes' && $scope.iForm.gls_desc == '') {
+                flag = false;
+                JS_Require($(".gls_desc"));
+            }
+            if ($scope.iForm.ls_system == '') {
+                flag = false;
+                JS_Require($(".ls_system"));
+            }
+            if ($scope.iForm.ls_system == 'Yes' && $scope.iForm.ls_desc == '') {
+                flag = false;
+                JS_Require($(".ls_desc"));
+            }
+            if ($scope.iForm.linet_system == '') {
+                flag = false;
+                JS_Require($(".linet_system"));
+            }
+            if ($scope.iForm.linet_system == 'Yes' && $scope.iForm.linet_desc == '') {
+                flag = false;
+                JS_Require($(".linet_desc"));
+            }
+            if ($scope.iForm.sun_system == '') {
+                flag = false;
+                JS_Require($(".sun_system"));
+            }
+            if ($scope.iForm.sun_system == 'Yes' && $scope.iForm.sun_desc == '') {
+                flag = false;
+                JS_Require($(".sun_desc"));
+            }
+            if ($scope.iForm.prophet_system == '') {
+                flag = false;
+                JS_Require($(".prophet_system"));
+            }
+            if ($scope.iForm.prophet_system == 'Yes' && $scope.iForm.prophet_desc == '') {
+                flag = false;
+                JS_Require($(".prophet_desc"));
+            }
+            if ($scope.iForm.bonunza_system == '') {
+                flag = false;
+                JS_Require($(".bonunza_system"));
+            }
+            if ($scope.iForm.bonunza_system == 'Yes' && $scope.iForm.bonunza_desc == '') {
+                flag = false;
+                JS_Require($(".bonunza_desc"));
+            }
+            if ($scope.iForm.other_system == '') {
+                flag = false;
+                JS_Require($(".other_system"));
+            }
+            if ($scope.iForm.other_system == 'Yes' && $scope.iForm.other_desc == '') {
+                flag = false;
+                JS_Require($(".other_desc"));
+            }
+
             if ($scope.iForm.answer4 == '') {
                 flag = false;
                 JS_Require($(".answer4"));
@@ -472,6 +556,7 @@
                         $scope.iForm.refId = id;
 
                         var flag = await $scope.CreateForm();
+                        flag = $scope.CreateAttach();
 
                         if (flag) {
                             var serviceNo = await $scope.ServiceRequest();
@@ -502,6 +587,32 @@
                     contentType: 'application/json',
                     cache: false,
                     data: JSON.stringify($scope.iForm),
+                    success: function () {
+                        $timeout(async function () {
+                            resolve(true);
+                        }, 0);
+                    }, error: function (jqXHR, error, errorThrown) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "ระบบเกิดข้อผิดพลาด",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+
+        $scope.CreateAttach = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/File/Create',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify($scope.iFile),
                     success: function () {
                         $timeout(async function () {
                             resolve(true);

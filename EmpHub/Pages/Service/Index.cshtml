@@ -9,11 +9,11 @@
     <div class="page-header">
         <div class="page-header-left d-flex align-items-center">
             <div class="page-header-title">
-                <h5 class="m-b-10">HR Service</h5>
+                <h5 class="m-b-10">บริการ HR</h5>
             </div>
             <ul class="breadcrumb">
-                <li class="breadcrumb-item"><a href="@Url.Page("/Index")">Home</a></li>
-                <li class="breadcrumb-item">My Request</li>
+                <li class="breadcrumb-item"><a href="@Url.Page("/Index")">หน้าแรก</a></li>
+                <li class="breadcrumb-item">บริการของฉัน</li>
             </ul>
         </div>
     </div>
@@ -21,44 +21,44 @@
 
 <div ng-controller="ServiceCtrl">
     <div class="d-md-flex mb-2">
-        <div class="fs-4 me-3">My Request</div>
+        <div class="fs-4 me-3">บริการของฉัน</div>
         <div class="overflow-auto flex-fill">
             <div class="flex-fill d-flex flex-nowrap align-items-center">
                 <div class="btn btn-link text-nowrap {{ iStatus == '' ? 'active' : '' }}" ng-click="SelectStatus('')">
-                    All <span class="badge ms-1" ng-show="sum_all > 0">{{ sum_all | number }}</span>
+                    ทั้งหมด <span class="badge ms-1" ng-show="sum_all > 0">{{ sum_all | number }}</span>
                 </div> |
                 <div class="btn btn-link border-0 text-nowrap {{ iStatus == 'Request' ? 'active' : '' }}" ng-click="SelectStatus('Request')">
-                    <span ng-show="alert_request > 0" class="ms-1 badge rounded-circle bg-danger p-1">
+                    <span ng-show="sum_request > 0" class="me-1 badge rounded-circle bg-danger p-1">
                         <span class="visually-hidden">unread messages</span>
                     </span>
-                    Revision <span class="badge ms-1" ng-show="sum_request > 0">{{ sum_request | number }}</span>
+                    รอนำส่ง <span class="badge ms-1" ng-show="sum_request > 0">{{ sum_request | number }}</span>
                 </div>
                 <div class="btn btn-link border-0 text-nowrap {{ iStatus == 'Approve' ? 'active' : '' }}" ng-click="SelectStatus('Approve')">
-                    Wait Approval <span class="badge ms-1" ng-show="sum_approve > 0">{{ sum_approve | number }}</span>
+                    รออนุมัติ <span class="badge ms-1" ng-show="sum_approve > 0">{{ sum_approve | number }}</span>
                 </div>
                 <div class="btn btn-link border-0 text-nowrap {{ iStatus == 'Reject' ? 'active' : '' }}" ng-click="SelectStatus('Reject')">
                     <span ng-show="alert_reject > 0" class="ms-1 badge rounded-circle bg-danger p-1">
                         <span class="visually-hidden">unread messages</span>
                     </span>
-                    Reject <span class="badge ms-1" ng-show="sum_reject > 0">{{ sum_reject | number }}</span>
+                    ไม่อนุมัติ <span class="badge ms-1" ng-show="sum_reject > 0">{{ sum_reject | number }}</span>
                 </div>
                 <div class="btn btn-link border-0 text-nowrap {{ iStatus == 'Work' ? 'active' : '' }}" ng-click="SelectStatus('Work')">
                     <span ng-show="alert_work > 0" class="ms-1 badge rounded-circle bg-danger p-1">
                         <span class="visually-hidden">unread messages</span>
                     </span>
-                    Pending <span class="badge ms-1" ng-show="sum_work > 0">{{ sum_work | number }}</span>
+                    รอดำเนินการ <span class="badge ms-1" ng-show="sum_work > 0">{{ sum_work | number }}</span>
                 </div>
                 <div class="btn btn-link border-0 text-nowrap {{ iStatus == 'Complete' ? 'active' : '' }}" ng-click="SelectStatus('Complete')">
                     <span ng-show="alert_complete > 0" class="ms-1 badge rounded-circle bg-danger p-1">
                         <span class="visually-hidden">unread messages</span>
                     </span>
-                    Complete <span class="badge ms-1" ng-show="sum_complete > 0">{{ sum_complete | number }}</span>
+                    สำเร็จ <span class="badge ms-1" ng-show="sum_complete > 0">{{ sum_complete | number }}</span>
                 </div>
             </div>
         </div>
         <div class="d-none d-sm-block">
             <a class="btn btn-primary" href="@Url.Page("New")">
-                <i class="fas fa-plus me-2"></i> New Request
+                <i class="fas fa-plus me-2"></i> สร้างใบคำขอ
             </a>
         </div>
     </div>
@@ -72,6 +72,7 @@
         $scope.is_not_read = 99;
         $scope.createBy = '';
         $scope.iStatus = '';
+        $scope.now = new Date();
 
         $scope.page = 1;
         $scope.row = 10;

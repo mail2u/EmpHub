@@ -22,101 +22,101 @@
                 <div class="text-dark text-nowrap fw-bolder">ชื่อตำแหน่งงาน</div>
                 <div class="text-dark text-nowrap">Position Name</div>
             </div>
-            <input ng-model="iData.positionName" class="form-control form-control-input" maxlength="100" ng-readonly="can_edit != 1" />
+            <input ng-model="iForm.positionName" class="form-control form-control-input positionName" maxlength="100" />
         </div>
         <div class="d-flex mb-2">
             <div class="me-3">
                 <div class="text-dark text-nowrap fw-bolder">สายงาน</div>
                 <div class="text-dark text-nowrap">Job Function</div>
             </div>
-            <input ng-model="iData.jobFunction" class="form-control form-control-input" maxlength="100" ng-readonly="can_edit != 1" />
+            <input ng-model="iForm.jobFunction" class="form-control form-control-input jobFunction" maxlength="100" />
         </div>
         <div class="d-flex mb-2">
             <div class="me-3">
                 <div class="text-dark text-nowrap fw-bolder">ฝ่ายงาน</div>
                 <div class="text-dark text-nowrap">Department Name</div>
             </div>
-            <input ng-model="iData.departmentName" class="form-control form-control-input" maxlength="100" ng-readonly="can_edit != 1" />
+            <input ng-model="iForm.departmentName" class="form-control form-control-input departmentName" maxlength="100" />
         </div>
         <div class="d-flex mb-2">
             <div class="me-3">
                 <div class="text-dark text-nowrap fw-bolder">ส่วนงาน</div>
                 <div class="text-dark text-nowrap">Section Name</div>
             </div>
-            <input ng-model="iData.sectionName" class="form-control form-control-input" maxlength="100" ng-readonly="can_edit != 1" />
+            <input ng-model="iForm.sectionName" class="form-control form-control-input sectionName" maxlength="100" />
         </div>
         <div class="mb-3">
             <div class="text-dark text-nowrap fw-bolder">ความรับผิดชอบโดยสังเขป (Position Summary)</div>
-            <textarea ng-model="iData.position_description" class="form-control form-control-input" maxlength="2000" rows="5" ng-readonly="can_edit != 1"></textarea>
+            <textarea ng-model="iForm.position_description" class="form-control form-control-input position_description" maxlength="2000" rows="5"></textarea>
         </div>
         @* part 2 *@
         <div class="fs-5 text-warning mb-2">2. บทบาทหน้าที่ความรับผิดชอบหลัก (Major Role Responsibilities)</div>
         <div class="mb-3">
             <div class="text-dark text-nowrap fw-bolder">บทบาทหน้าที่ความรับผิดชอบ</div>
-            <textarea ng-model="iData.major_description" class="form-control form-control-input" maxlength="2000" rows="5" ng-readonly="can_edit != 1"></textarea>
+            <textarea ng-model="iForm.major_description" class="form-control form-control-input major_description" maxlength="2000" rows="5"></textarea>
         </div>
         @* part 3 *@
         <div class="fs-5 text-warning">3. ทักษะและประสบการณ์ (Experience and Skills)</div>
         <div class="mb-2">ระบุประสบการณ์และทักษะในระดับขั้นต่ำที่ผู้ดำรงตำแหน่งต้องมีเพื่อให้ปฏิบัติงานได้สำเร็จ</div>
         <div class="mb-3">
             <div class="text-dark text-nowrap fw-bolder">การศึกษา (Education)</div>
-            <textarea ng-model="iData.education" class="form-control form-control-input" maxlength="2000" rows="5" ng-readonly="can_edit != 1"></textarea>
+            <textarea ng-model="iForm.education" class="form-control form-control-input education" maxlength="2000" rows="5"></textarea>
         </div>
         <div class="mb-3">
             <div class="text-dark text-nowrap fw-bolder">ประสบการณ์ (Experience)</div>
-            <textarea ng-model="iData.experience" class="form-control form-control-input" maxlength="2000" rows="5" ng-readonly="can_edit != 1"></textarea>
+            <textarea ng-model="iForm.experience" class="form-control form-control-input experience" maxlength="2000" rows="5"></textarea>
         </div>
         <div class="mb-3">
             <div class="text-dark text-nowrap fw-bolder">สมรรถนะเชิงสายงาน (Functional Competencies)</div>
-            <textarea ng-model="iData.functional_competencies" class="form-control form-control-input" maxlength="2000" rows="5" ng-readonly="can_edit != 1"></textarea>
+            <textarea ng-model="iForm.functional_competencies" class="form-control form-control-input functional_competencies" maxlength="2000" rows="5"></textarea>
         </div>
         <div class="mb-3">
             <div class="text-dark text-nowrap fw-bolder">สมรรถนะผู้นำ (Leadership Competencies)</div>
-            <textarea ng-model="iData.leadership_competencies" class="form-control form-control-input" maxlength="2000" rows="5" ng-readonly="can_edit != 1"></textarea>
+            <textarea ng-model="iForm.leadership_competencies" class="form-control form-control-input leadership_competencies" maxlength="2000" rows="5"></textarea>
         </div>
         @* part 4 *@
         <div class="fs-5 text-warning mb-2">4. ผลงานที่คาดหวัง (Key Result Areas)</div>
 
         <div class="mb-3">
             <div class="text-dark text-nowrap fw-bolder">ด้านการเงิน (Financial)</div>
-            <textarea ng-model="iData.financial" class="form-control form-control-input" maxlength="2000" rows="5" ng-readonly="can_edit != 1"></textarea>
+            <textarea ng-model="iForm.financial" class="form-control form-control-input financial" maxlength="2000" rows="5"></textarea>
         </div>
         <div class="mb-3">
             <div class="text-dark text-nowrap fw-bolder">ด้านลูกค้าและตลาด (Customer and Market)</div>
-            <textarea ng-model="iData.customer_and_market" class="form-control form-control-input" maxlength="2000" rows="5" ng-readonly="can_edit != 1"></textarea>
+            <textarea ng-model="iForm.customer_and_market" class="form-control form-control-input customer_and_market" maxlength="2000" rows="5"></textarea>
         </div>
         <div class="mb-3">
             <div class="text-dark text-nowrap fw-bolder">ด้านกระบวนการ (Process)</div>
-            <textarea ng-model="iData.process" class="form-control form-control-input" maxlength="2000" rows="5" ng-readonly="can_edit != 1"></textarea>
+            <textarea ng-model="iForm.process" class="form-control form-control-input process" maxlength="2000" rows="5"></textarea>
         </div>
         <div class="mb-3">
             <div class="text-dark text-nowrap fw-bolder">ด้านการพัฒนาศักยภาพบุคลากร (People Development)</div>
-            <textarea ng-model="iData.people_development" class="form-control form-control-input" maxlength="2000" rows="5" ng-readonly="can_edit != 1"></textarea>
+            <textarea ng-model="iForm.people_development" class="form-control form-control-input people_development" maxlength="2000" rows="5"></textarea>
         </div>
         @* part 5 *@
         <div class="fs-5 text-warning mb-2">5. การติดต่อสื่อสาร (Contacts and Purpose of Contact)</div>
         <div class="row">
             <div class="col-sm-6 mb-3">
                 <div class="text-dark text-nowrap fw-bolder">หน่วยงานภายใน</div>
-                <textarea ng-model="iData.internal_description" class="form-control form-control-input" maxlength="2000" rows="5" ng-readonly="can_edit != 1"></textarea>
+                <textarea ng-model="iForm.internal_description" class="form-control form-control-input internal_description" maxlength="2000" rows="5"></textarea>
             </div>
             <div class="col-sm-6 mb-3">
                 <div class="text-dark text-nowrap fw-bolder">วัตถุประสงค์ในการติดต่อสื่อสาร</div>
-                <textarea ng-model="iData.internal_contact_description" class="form-control form-control-input" maxlength="2000" rows="5" ng-readonly="can_edit != 1"></textarea>
+                <textarea ng-model="iForm.internal_contact_description" class="form-control form-control-input internal_contact_description" maxlength="2000" rows="5"></textarea>
             </div>
             <div class="col-sm-6 mb-3">
                 <div class="text-dark text-nowrap fw-bolder">หน่วยงานภายนอก</div>
-                <textarea ng-model="iData.external_description" class="form-control form-control-input" maxlength="2000" rows="5" ng-readonly="can_edit != 1"></textarea>
+                <textarea ng-model="iForm.external_description" class="form-control form-control-input external_description" maxlength="2000" rows="5"></textarea>
             </div>
             <div class="col-sm-6 mb-3">
-                <div class="text-dark text-nowrap fw-bolder">วัตถุประสงค์ในกรต่ิดต่อสื่อสาร</div>
-                <textarea ng-model="iData.external_contact_description" class="form-control form-control-input" maxlength="2000" rows="5" ng-readonly="can_edit != 1"></textarea>
+                <div class="text-dark text-nowrap fw-bolder">วัตถุประสงค์ในการติดต่อสื่อสาร</div>
+                <textarea ng-model="iForm.external_contact_description" class="form-control form-control-input external_contact_description" maxlength="2000" rows="5"></textarea>
             </div>
         </div>
     </div>
-    <div class="d-flex justify-content-end" ng-show="can_edit == 1">
+    <div class="d-flex justify-content-end">
         <div class="btn btn-primary" ng-click="Save()">
-            <i class="far fa-save me-2"></i> Save
+            <i class="far fa-save me-2"></i> ส่งใบคำขอ
         </div>
     </div>
 </div>
@@ -126,13 +126,15 @@
 
         $scope.LoadForm = function(){
             $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormRequestTrainingDetail',
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormJobDescriptionDetail',
                 headers: { 'authorization': 'Bearer @token' },
                 type: "POST",
                 contentType: 'application/json',
+                dataType: 'json',
                 cache: false,
                 data: JSON.stringify({
                     refId: $scope.id
+                    , userId: '@User.UserId()'
                 }),
                 success: function (result) {
                     $timeout(async function () {
@@ -146,47 +148,101 @@
             $scope.LoadForm();
         });
 
-        $scope.Init = function(){
-            if($scope.refId == ''){
-                alertWarning("แจ้งเตือน","ไม่พบเลขอ้างอิง", function(){
-                    location.href = '@Url.Page("/Service/Index")';
-                });
-            }
-
-            $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/ServiceJobDescription/Detail',
-                headers: { 'authorization': 'Bearer @token' },
-                type: "POST",
-                contentType: 'application/json',
-                dataType: 'json',
-                cache: false,
-                data: JSON.stringify({
-                    refId: $scope.refId
-                    , userId: '@User.UserId()'
-                }),
-                success: function (result) {
-                    $timeout(async function () {
-                        $scope.iData = result.data;
-                        $scope.can_edit = result.can_edit;
-                    }, 0);
-                }, error: AjaxError
-            });
-        }
-        $scope.Init();
-
-        $scope.Validate = function(){
+       
+        $scope.Validate = function () {
             var flag = true;
-            // JS_Reset($(".firstname_th"));
-            // JS_Reset($(".lastname_th"));
 
-            // if($scope.iData.firstname_th == ''){
-            //     flag = false;
-            //     JS_Require($(".firstname_th"));
-            // }
-            // if($scope.iData.lastname_th == ''){
-            //     flag = false;
-            //     JS_Require($(".lastname_th"));
-            // }
+            JS_Reset($(".positionName"));
+            JS_Reset($(".jobFunction"));
+            JS_Reset($(".departmentName"));
+            JS_Reset($(".sectionName"));
+            JS_Reset($(".position_description"));
+            JS_Reset($(".major_description"));
+            JS_Reset($(".education"));
+            JS_Reset($(".experience"));
+            JS_Reset($(".functional_competencies"));
+            JS_Reset($(".leadership_competencies"));
+            JS_Reset($(".financial"));
+            JS_Reset($(".customer_and_market"));
+            JS_Reset($(".process"));
+            JS_Reset($(".people_development"));
+            JS_Reset($(".internal_description"));
+            JS_Reset($(".internal_contact_descriptio"));
+            JS_Reset($(".external_description"));
+            JS_Reset($(".external_contact_description"));
+
+            if ($scope.iData.positionName == '') {
+                flag = false;
+                JS_Require($(".positionName"));
+            }
+            if ($scope.iData.jobFunction == '') {
+                flag = false;
+                JS_Require($(".jobFunction"));
+            }
+            if ($scope.iData.departmentName == '') {
+                flag = false;
+                JS_Require($(".departmentName"));
+            }
+            if ($scope.iData.sectionName == '') {
+                flag = false;
+                JS_Require($(".sectionName"));
+            }
+            if ($scope.iData.position_description == '') {
+                flag = false;
+                JS_Require($(".position_description"));
+            }
+            if ($scope.iData.major_description == '') {
+                flag = false;
+                JS_Require($(".major_description"));
+            }
+            if ($scope.iData.education == '') {
+                flag = false;
+                JS_Require($(".education"));
+            }
+            if ($scope.iData.experience == '') {
+                flag = false;
+                JS_Require($(".experience"));
+            }
+            if ($scope.iData.functional_competencies == '') {
+                flag = false;
+                JS_Require($(".functional_competencies"));
+            }
+            if ($scope.iData.leadership_competencies == '') {
+                flag = false;
+                JS_Require($(".leadership_competencies"));
+            }
+            if ($scope.iData.financial == '') {
+                flag = false;
+                JS_Require($(".financial"));
+            }
+            if ($scope.iData.customer_and_market == '') {
+                flag = false;
+                JS_Require($(".customer_and_market"));
+            }
+            if ($scope.iData.process == '') {
+                flag = false;
+                JS_Require($(".process"));
+            }
+            if ($scope.iData.people_development == '') {
+                flag = false;
+                JS_Require($(".people_development"));
+            }
+            if ($scope.iData.internal_description == '') {
+                flag = false;
+                JS_Require($(".internal_description"));
+            }
+            if ($scope.iData.internal_contact_description == '') {
+                flag = false;
+                JS_Require($(".internal_contact_description"));
+            }
+            if ($scope.iData.external_description == '') {
+                flag = false;
+                JS_Require($(".external_description"));
+            }
+            if ($scope.iData.external_contact_description == '') {
+                flag = false;
+                JS_Require($(".external_contact_description"));
+            }
 
             return flag;
         }
@@ -219,7 +275,7 @@
                     type: "POST",
                     contentType: 'application/json',
                     cache: false,
-                    data: JSON.stringify($scope.iData),
+                    data: JSON.stringify($scope.iForm),
                     success: function () {
                         $timeout(async function () {
                            resolve(true);

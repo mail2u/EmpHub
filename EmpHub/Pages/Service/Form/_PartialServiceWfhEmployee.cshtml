@@ -26,7 +26,7 @@
                 ข้อตกลงนี้ ทำขึ้นเพื่อการปฏิบัติงานนอกสถานประกอบกิจการหรือนอกสำนักงานของนายจ้าง/ทำงานผ่านการใช้เทคโนโลยีสารสนเทศในสถานที่ใด ๆ
                 ระหว่าง <b>บริษัท ทิพยประกันชีวิต จำกัด (มหาชน)</b> โดย นายนพพร บุญลาโภ ผู้รับมอบอำนาจกระทำการแทนนายจ้าง สำนักงานตั้งอยู่เลขที่ 63/2 อาคาร
                 บมจ.ทิพยประกันภัย ชั้น 1, 3, 4, 5 และ 6 ถนนพระราม 9 แขวงห้วยขวาง เขตห้วยขวาง กรุงเทพมหานคร 10310 ซึ่งต่อไปในข้อตกลงนี้เรียกว่า <b>“นายจ้าง”</b>
-                ฝ่ายหนึ่ง กับ นาย/นาง/นางสาว  <input ng-model="iForm.fullname" class="form-text fullname text-blue" style="width:400px" maxlength="100" readonly /> ซึ่งต่อไปในข้อตกลงนี้เรียกว่า <b>“ลูกจ้าง”</b> อีกฝ่ายหนึ่ง
+                ฝ่ายหนึ่ง กับ <input ng-model="iForm.prefix" class="form-text text-blue" style="width:100px" readonly />  <input ng-model="iForm.fullname" class="form-text fullname text-blue" style="width:400px" maxlength="100" readonly /> ซึ่งต่อไปในข้อตกลงนี้เรียกว่า <b>“ลูกจ้าง”</b> อีกฝ่ายหนึ่ง
             </div>
             <div class="fs-5 mb-3">
                 <span style="padding-left:100px"></span>
@@ -205,6 +205,7 @@
 
             // register ไป parent
             $scope.formAction.DownloadPDF = $scope.DownloadPDF;
+            $scope.formAction.can_download = 1;
         }
 
         $scope.$on('FORM_WFH_EMPLOYEE_LOAD', function (e, data) {

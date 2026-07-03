@@ -23,10 +23,10 @@
     <div class="d-flex align-items-center mb-3">
         <div class="flex-fill">
             <div class="fs-4 text-dark fw-bolder">
-                Employee Directory
+                รายชื่อพนักงาน
             </div>
             <div class="text-gray">
-                Manage {{ total | number }} organization members across {{ lDepartment.length }} departments
+                จำนวน {{ total | number }} คน | {{ lDepartment.length }} ฝ่ายงาน
             </div>
         </div>
         <div>
@@ -37,30 +37,33 @@
     </div>
     <div class="rounded-4 p-3 bg-white shadow-sm border d-flex mb-4 aling-items-center">
         <div class="flex-fill me-2 position-relative">
-            <input class="form-control rounded-3 p-2" ng-model="firstname_th" my-enter="LoadData()" placeholder="Search..." />
+            <input class="form-control rounded-3 p-2" ng-model="firstname_th" my-enter="LoadData()" placeholder="ค้นหา..." />
             <span class="position-absolute top-50 end-0 translate-middle badge bg-gray" ng-show="firstname_th != ''">
                 enter
             </span>
         </div>
         <div class="dropdown me-2">
             <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi bi-buildings me-2"></i> {{ departmentName != '' ? departmentName : 'Department' }}
+                <i class="bi bi-buildings me-2"></i> {{ departmentName != '' ? departmentName : 'ฝ่ายงาน' }}
             </button>
-            <ul class="dropdown-menu">
+            <ul class="dropdown-menu overflow-auto" style="width:400px; max-height: 400px;">
                 <li ng-repeat="d in lDepartment"><a class="dropdown-item" href="#" ng-click="SelectDepartment(d)">{{ d.desc_th }}</a></li>
             </ul>
         </div>
         <div class="dropdown me-2">
             <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi bi-briefcase-fill me-2"></i> {{ positionName != '' ? positionName : 'Position' }}
+                <i class="bi bi-briefcase-fill me-2"></i> {{ positionName != '' ? positionName : 'ตำแหน่ง' }}
             </button>
-            <ul class="dropdown-menu">
-                <li ng-repeat="d in lPosition"><a class="dropdown-item" href="#" ng-click="SelectPosition(d)">{{ d.desc_th }}</a></li>
+            <ul class="dropdown-menu overflow-auto" style="width:450px; max-height: 400px;">
+                <li ng-repeat="d in lPosition"><a class="dropdown-item" href="#" ng-click="SelectPosition(d)">
+                    {{ d.desc_th }}
+                    <br />{{ d.desc_en }}
+                    </a></li>
             </ul>
         </div>
         <div class="dropdown">
             <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi bi-briefcase-fill me-2"></i> {{ typeName != '' ? typeName : 'Employee Type' }}
+                <i class="bi bi-briefcase-fill me-2"></i> {{ typeName != '' ? typeName : 'ประเภทพนักงาน' }}
             </button>
             <ul class="dropdown-menu">
                 <li ng-repeat="d in lType"><a class="dropdown-item" href="#" ng-click="SelectType(d)">{{ d.desc_th }}</a></li>
@@ -74,9 +77,9 @@
         <table class="table table-tip border shadow-sm">
             <thead>
                 <tr>
-                    <th>EMPLOYEE</th>
-                    <th>ROLE & DEPARTMENT</th>
-                    <th>CONTACT</th>
+                    <th>พนักงาน</th>
+                    <th>ตำแหน่ง/ฝ่ายงาน</th>
+                    <th>ช่องทางการติดต่อ</th>
                     <th width="50"></th>
                 </tr>
             </thead>
@@ -89,7 +92,7 @@
                             </div>
                             <div>
                                 <div class="text-dark fw-bolder">{{ x.employeeCode }}</div>
-                                <div class="text-dark">{{ x.firstname_th + ' ' + x.lastname_th }}</div>
+                                <div class="text-dark">{{ x.prefix_th + ' ' + x.firstname_th + ' ' + x.lastname_th }}</div>
                                @*  <div class="text-gray">{{ x.firstname_en + ' ' + x.lastname_en }}</div> *@
                             </div>
                         </div>

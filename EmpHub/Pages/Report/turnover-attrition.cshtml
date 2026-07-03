@@ -1,4 +1,195 @@
-﻿@page
+@page
 @model EmpHub.Pages.Report.turnover_attritionModel
 @{
+    var token = User.AccessToken(HttpContext);
 }
+<div ng-controller="ReportCtrl" class="p-2">
+    <div class="d-flex mb-3 align-items-center">
+        <div class="fs-5 fw-bolder text-dark flex-fill">
+            Turnover Rate / Attrition: อัตราการลาออกแยกตามแผนกหรือเหตุผลการลาออก
+        </div>
+        <div>
+            <div class="btn btn-light bg-white" ng-click="Download()">
+                <i class="bi bi-download me-2"></i> Download
+            </div>
+        </div>
+    </div>
+    <div class="rounded-2 p-3 bg-white shadow-sm border">
+        <div class="d-flex flex-wrap gap-2 mb-2 align-items-end">
+            <div>
+                <small>ปี</small>
+                <input type="number" class="form-control" ng-model="year" min="2020" max="2100" my-enter="LoadData()" style="width:120px;" />
+            </div>
+            <div>
+                <small>ฝ่ายงาน</small>
+                <select class="form-select" ng-model="department" my-enter="LoadData()" ng-change="LoadData()" ng-options="x.desc_th as x.desc_th for x in lDepartment" style="width:500px;" />
+            </div>
+            <button ng-click="LoadData()" class="btn btn-light">
+                <i class="fas fa-search"></i>
+            </button>
+            <div class="flex-fill"></div>
+            <div class="text-end d-flex flex-nowrap align-items-center">
+                <span class="d-none d-md-block">
+                    {{ (total > 0 ? ((page - 1) * row) + 1 : 0) | number }} - {{ (page * row < total ? page * row : total) | number }} of {{ total | number }}
+                </span>
+                <button class="btn btn-circle" ng-click="LoadData(page - 1)" ng-disabled="page <= 1">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="btn btn-circle" ng-click="LoadData(page + 1)" ng-disabled="page * row >= total">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+        <div class="overflow-auto d-none d-lg-block">
+            <div class="pt-3" style="height:calc(100vh - 265px);">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th class="text-nowrap" ng-click="SetSort('departmentName')">
+                                ฝ่ายงาน
+                                <i ng-show="sortBy.indexOf('departmentName') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                            </th>
+                            <th class="text-nowrap" ng-click="SetSort('resignReason')">
+                                เหตุผลการลาออก
+                                <i ng-show="sortBy.indexOf('resignReason') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                            </th>
+                            <th class="text-nowrap text-end" ng-click="SetSort('resignCount')">
+                                จำนวนลาออก
+                                <i ng-show="sortBy.indexOf('resignCount') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                            </th>
+                            <th class="text-nowrap text-end" ng-click="SetSort('averageHeadcount')">
+                                Headcount เฉลี่ย
+                                <i ng-show="sortBy.indexOf('averageHeadcount') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                            </th>
+                            <th class="text-nowrap text-end" ng-click="SetSort('turnoverRate')">
+                                Turnover Rate (%)
+                                <i ng-show="sortBy.indexOf('turnoverRate') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="x in lData">
+                            <td>{{ x.departmentName }}</td>
+                            <td>{{ x.resignReason }}</td>
+                            <td class="text-end text-danger">{{ x.resignCount | number }}</td>
+                            <td class="text-end">{{ x.averageHeadcount | number:2 }}</td>
+                            <td class="text-end fw-semibold">{{ x.turnoverRate | number:2 }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ReportCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.page = 1;
+        $scope.row = 10;
+        $scope.year = new Date().getFullYear();
+        $scope.sortBy = '-turnoverRate';
+
+        
+        $scope.LoadInit = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'departmentCode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lDepartment = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadInit();
+
+        $scope.LoadData = function (page = 1) {
+            $scope.page = page;
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Report/ReportTurnoverAttrition',
+                headers: { 'authorization': 'Bearer @token' },
+                type: 'post',
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    page: $scope.page,
+                    row: $scope.row,
+                    sortBy: $scope.sortBy,
+                    year: $scope.year,
+                    department: $scope.department
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.lData = JSON.parse(result.data);
+                        $scope.total = result.total;
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+        $scope.SetSort = function (sortBy) {
+            if ($scope.sortBy != null && $scope.sortBy.indexOf(sortBy) > -1) {
+                $scope.sortBy = $scope.sortBy.indexOf("-") > -1 ? sortBy : '-' + sortBy;
+            } else {
+                $scope.sortBy = sortBy;
+            }
+            $scope.LoadData();
+        }
+
+        $scope.Download = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Report/ReportTurnoverAttrition',
+                headers: { 'authorization': 'Bearer @token' },
+                type: 'post',
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    page: 1,
+                    row: $scope.total || 9999,
+                    sortBy: $scope.sortBy,
+                    year: $scope.year,
+                    department: $scope.department
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        var lData = JSON.parse(result.data);
+                        var JSData = [[
+                            { 'text': 'ฝ่ายงาน' },
+                            { 'text': 'เหตุผลการลาออก' },
+                            { 'text': 'จำนวนลาออก' },
+                            { 'text': 'Headcount เฉลี่ย' },
+                            { 'text': 'Turnover Rate (%)' }
+                        ]];
+
+                        for (var i = 0; i < lData.length; i++) {
+                            var iData = lData[i];
+                            JSData.splice(JSData.length, 0, [
+                                { 'text': iData.departmentName },
+                                { 'text': iData.resignReason },
+                                { 'text': iData.resignCount },
+                                { 'text': iData.averageHeadcount },
+                                { 'text': iData.turnoverRate }
+                            ]);
+                        }
+
+                        var dt = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+                        ExportFile(JSData, 'Turnover_Attrition_' + $scope.year + '_' + dt);
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+    });
+</script>

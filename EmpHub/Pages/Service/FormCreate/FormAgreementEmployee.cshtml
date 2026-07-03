@@ -32,7 +32,7 @@
             ข้าพเจ้า <input ng-model="iForm.fullname" class="form-text fullname" style="width:400px" maxlength="100" /> 
             ตำแหน่ง <input ng-model="iForm.position" class="form-text position" style="width:300px" maxlength="50" />
             สังกัดฝ่ายงาน <input ng-model="iForm.department" class="form-text department" style="width:300px" maxlength="50" />
-            เริ่มงานวันที่ <input class="form-text icon-calendar join_date date"
+            เริ่มงานวันที่ (ปี ค.ศ.) <input class="form-text icon-calendar join_date date"
                 ng-model="iForm.join_date_select"
                 ng-model-options="{ updateOn: 'blur' }"
                 moment-picker="iForm.join_date_select"
@@ -58,7 +58,7 @@
     </div>
     <div class="d-flex justify-content-end">
         <div class="btn btn-primary" ng-click="Save()">
-            <i class="far fa-paper-plane me-2"></i> Send Request
+            <i class="far fa-paper-plane me-2"></i> ส่งใบคำขอ
         </div>
     </div>
 </div>

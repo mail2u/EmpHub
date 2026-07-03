@@ -239,6 +239,12 @@ main {
     color: var(--bs-danger);
 }
 
+.badge-Reject {
+    border: 1px solid var(--bs-danger);
+    color: var(--bs-danger);
+}
+
+
 .badge-Approve1 {
     background-color: #fdf3cb;
     color: #bd692f;

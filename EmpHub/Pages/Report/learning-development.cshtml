@@ -20,9 +20,19 @@
                 <div class="d-flex align-items-end">
                     <div class="me-2">
                         <small>ชื่อ - สกุล</small>
-                        <div class="d-flex">
-                        <input class="form-control" ng-model="name" my-enter="LoadData()" />
-                        </div>
+                        <input class="form-control" ng-model="name" my-enter="LoadData()" maxlength="50" />
+                    </div>
+                    <div class="me-2">
+                        <small>เลขอ้างอิง</small>
+                        <input class="form-control" ng-model="serviceNo" my-enter="LoadData()" maxlength="50" />
+                    </div>
+                    <div class="me-2">
+                        <small>ชื่อหลักสูตร</small>
+                        <input class="form-control" ng-model="license" my-enter="LoadData()" maxlength="50" />
+                    </div>
+                    <div class="me-2">
+                        <small>จัดโดย</small>
+                        <input class="form-control" ng-model="organization" my-enter="LoadData()" maxlength="50" />
                     </div>
                     @* <div class="me-2">
                         <small>ตำแหน่ง</small>
@@ -113,10 +123,10 @@
                                 {{ x.organization }}
                             </td>
                             <td class="text-nowrap">
-                                {{ x.location }}
-                            </td>
-                            <td>
                                 {{ x.dt }}
+                            </td>
+                            <td class="text-nowrap">
+                                {{ x.location }}
                             </td>
                             <td>
                                 {{ x.price }}
@@ -162,8 +172,9 @@
                     , row: $scope.row
                     , sortBy: $scope.sortBy
                     , name: $scope.name
-                    , position: $scope.position
-                    , section:$scope.department
+                    , serviceNo: $scope.serviceNo
+                    , license: $scope.license
+                    , organization: $scope.organization
                 })
                 , success: function (result) {
                     $timeout(function () {
@@ -190,61 +201,63 @@
         }
 
 
-        // $scope.Download = function () {
-        //     $.ajax({
-        //         url: '@webAPI.CurrentValue.APIEmpHub/api/Report/ReportLearningDevelopment'
-        //         , headers: { 'authorization': 'Bearer @token' }
-        //         , type: 'post'
-        //         , contentType: 'application/json'
-        //         , dataType: 'json'
-        //         , cache: false
-        //         , data: JSON.stringify({
-        //             page: 1
-        //             , row: $scope.total
-        //             , sortBy: $scope.sortBy
-        //             , position: $scope.position
-        //             , section: $scope.department
-        //         }),
-        //         success: function (result) {
-        //             $timeout(function () {
-        //                 var lData = JSON.parse(result.data);
+        $scope.Download = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Report/ReportLearningDevelopment'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    page: $scope.page
+                    , row: $scope.row
+                    , sortBy: $scope.sortBy
+                    , name: $scope.name
+                    , serviceNo: $scope.serviceNo
+                    , license: $scope.license
+                    , organization: $scope.organization
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        var lData = JSON.parse(result.data);
 
-        //                 if (lData.length > 0) {
-        //                     var JSData = [[
-        //                         { 'text': 'เลขอ้างอิง' }
-        //                         , { 'text': 'ตำแหน่ง' }
-        //                         , { 'text': 'ฝ่ายงาน' }
-        //                         , { 'text': 'ประเภทของการจ้างงาน' }
-        //                         , { 'text': 'จำนวนที่ขอ' }
-        //                         , { 'text': 'วันที่ขอ' }
-        //                         , { 'text': 'วันที่ต้องการ' }
-        //                         , { 'text': 'ผู้ขอ' }
-        //                         , { 'text': 'สถานะ' }
-        //                     ]];
+                        if (lData.length > 0) {
+                            var JSData = [[
+                                { 'text': 'เลขอ้างอิง' }
+                                , { 'text': 'ชื่อหลักสูตร' }
+                                , { 'text': 'จัดโดย' }
+                                , { 'text': 'วัน-เวลา' }
+                                , { 'text': 'สถานที่' }
+                                , { 'text': 'ค่าใช้จ่ายต่อคน' }
+                                , { 'text': 'รวมทั้งสิ้น' }
+                                , { 'text': 'ผู้ขอ' }
+                                , { 'text': 'วันที่ขอ' }
+                            ]];
 
-        //                     for (var i = 0; i < lData.length; i++) {
-        //                         var iData = lData[i];
+                            for (var i = 0; i < lData.length; i++) {
+                                var iData = lData[i];
 
-        //                         JSData.splice(JSData.length, 0, [
-        //                             { 'text': iData.serviceNo }
-        //                             , { 'text': iData.position }
-        //                             , { 'text': iData.department }
-        //                             , { 'text': iData.type_employment }
-        //                             , { 'text': iData.num_employee }
-        //                             , { 'text': iData.createDate }
-        //                             , { 'text': iData.required_date }
-        //                             , { 'text': iData.createBy }
-        //                             , { 'text': iData.status }
-        //                         ]);
-        //                     }
+                                JSData.splice(JSData.length, 0, [
+                                    { 'text': iData.serviceNo }
+                                    , { 'text': iData.license }
+                                    , { 'text': iData.organization }
+                                    , { 'text': iData.dt }
+                                    , { 'text': iData.location }
+                                    , { 'text': iData.price }
+                                    , { 'text': iData.net }
+                                    , { 'text': iData.createBy }
+                                    , { 'text': iData.createDate }
+                                ]);
+                            }
 
-        //                     var dt = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-        //                     ExportFile(JSData, 'รายงานการสรรหา_' + dt);
-        //                 }
-        //             }, 0);
-        //         },
-        //         error: AjaxError
-        //     });
-        // }
+                            var dt = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+                            ExportFile(JSData, 'รายงานพัฒนาบุคลากร_' + dt);
+                        }
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
     });
 </script>

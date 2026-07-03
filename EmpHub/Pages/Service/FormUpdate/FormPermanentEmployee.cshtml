@@ -1,0 +1,227 @@
+@page
+@model EmpHub.Pages.Service.FormUpdate.FormPermanentEmployeeModel
+@{
+    var token = User.AccessToken(HttpContext);
+}
+<style>
+    .main-content {
+        min-height: calc(100vh - 150px) !important;
+    }
+</style>
+<div ng-controller="FormCtrl">
+    <partial name="_PartialFormUpdate" />
+    <div class="rounded-4 mb-3 bg-white shadow-sm p-4">
+        <div class="text-center fs-4 fw-bolder mb-4 text-dark">
+            แบบฟอร์ม ขออนุมัติบรรจุเข้าเป็นพนักงานประจำ
+        </div>
+        <div class="row">
+           @*  <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">วันที่เอกสาร</div>
+                <input class="form-control date letter_date" placeholder="__/__/____" ng-model="iForm.letter_date" maxlength="10" />
+            </div> *@
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">เรียนคุณ / ชื่อ-นามสกุล</div>
+                <input ng-model="iForm.fullname" class="form-control fullname" maxlength="200" />
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">ตำแหน่ง</div>
+                <select ng-model="iForm.position" class="form-select position" ng-options="x.desc_th as x.desc_th for x in lPosition"></select>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">สังกัด</div>
+                <select ng-model="iForm.department" class="form-select department" ng-options="x.desc_th as x.desc_th for x in lDepartment"></select>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">วันที่เริ่มปฏิบัติงาน</div>
+                <input class="form-control date start_date"
+                       placeholder="__/__/____"
+                       ng-model="iForm.start_date_select"
+                       ng-model-options="{ updateOn: 'blur' }"
+                       moment-picker="iForm.start_date_select"
+                       locale="th"
+                       format="DD/MM/YYYY"
+                       max-date="iForm.effective_date_select"
+                       min-view="month"
+                       max-view="month" required />
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">มีการปรับเงินเดือน</div>
+                <select ng-model="iForm.include_salary" class="form-select include_salary">
+                    <option ng-value="1">มี</option>
+                    <option ng-value="0">ไม่มี</option>
+                </select>
+            </div>
+            <div class="col-sm-4 mb-3" ng-show="iForm.include_salary == 1">
+                <div class="text-dark fw-bolder">อัตราเงินเดือนใหม่</div>
+                <input ng-model="iForm.salary" amount="iForm.salary" class="form-control salary" format-to-currency />
+            </div>
+           @*  <div class="col-sm-4 mb-3" ng-show="iForm.include_salary == 1">
+                <div class="text-dark fw-bolder">จำนวนเงินตัวอักษร</div>
+                <input ng-model="iForm.salary_text" class="form-control salary_text" maxlength="500" />
+            </div> *@
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">มีผลตั้งแต่วันที่</div>
+                <input class="form-control date effective_date"
+                       placeholder="__/__/____"
+                       ng-model="iForm.effective_date_select"
+                       ng-model-options="{ updateOn: 'blur' }"
+                       moment-picker="iForm.effective_date_select"
+                       locale="th"
+                       format="DD/MM/YYYY"
+                       min-date="iForm.start_date_select"
+                       min-view="month"
+                       max-view="month" required />
+            </div>
+            <div class="col-sm-12 mb-3">
+                <div class="text-dark fw-bolder">หมายเหตุ</div>
+                <textarea ng-model="iForm.description" class="form-control description" rows="4" maxlength="2000"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-end">
+        <div class="btn btn-primary" ng-click="Save()">
+            <i class="far fa-paper-plane me-2"></i> ส่งใบคำขอ
+        </div>
+    </div>
+</div>
+<script>
+    $(".date").mask("00/00/0000");
+    app.controller('FormCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.id = '@Model.refId';
+        $scope.iForm = {};
+
+        $scope.LoadForm = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormPermanentEmployeeDetail',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                cache: false,
+                data: JSON.stringify({ refId: $scope.id }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.iForm = result;
+
+                        if ($scope.iForm.start_date) {
+                            $scope.iForm.start_date_select = moment($scope.iForm.start_date, 'DD/MM/YYYY');
+                        }
+                        if ($scope.iForm.effective_date) {
+                            $scope.iForm.effective_date_select = moment($scope.iForm.effective_date, 'DD/MM/YYYY');
+                        }
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+
+        $scope.$on('FORM_LOAD', function () {
+            $scope.LoadForm();
+        });
+
+        $scope.LoadMaster = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList',
+                headers: { 'authorization': 'Bearer @token' },
+                type: 'post',
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({ groupName: 'departmentCode' }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.lDepartment = result.filter(item => item.condition_4 == 'Department');
+                    }, 0);
+                },
+                error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList',
+                headers: { 'authorization': 'Bearer @token' },
+                type: 'post',
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({ groupName: 'positionCode' }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.lPosition = result;
+                    }, 0);
+                },
+                error: AjaxError
+            });
+        }
+        $scope.LoadMaster();
+
+        $scope.Validate = function () {
+            var flag = true;
+            JS_Reset($(".fullname"));
+            JS_Reset($(".start_date"));
+            JS_Reset($(".position"));
+            JS_Reset($(".department"));
+            JS_Reset($(".salary"));
+            JS_Reset($(".effective_date"));
+
+            $scope.iForm.start_date = '';
+            $scope.iForm.effective_date = '';
+
+            if ($scope.iForm.start_date_select) {
+                $scope.iForm.start_date = $scope.iForm.start_date_select.format("DD/MM/YYYY");
+            }
+
+            if ($scope.iForm.effective_date_select) {
+                $scope.iForm.effective_date = $scope.iForm.effective_date_select.format("DD/MM/YYYY");
+            }
+
+            if ($scope.iForm.fullname == '') { flag = false; JS_Require($(".fullname")); }
+            if ($scope.iForm.start_date == '') { flag = false; JS_Require($(".start_date")); }
+            if ($scope.iForm.effective_date == '') { flag = false; JS_Require($(".effective_date")); }
+            if ($scope.iForm.include_salary == 1 && $scope.iForm.salary == '') { flag = false; JS_Require($(".salary")); }
+
+            return flag;
+        }
+
+        $scope.Save = async function () {
+            if ($scope.Validate()) {
+                alertConfirm("ยืนยันการทำรายการ", "ท่านต้องการส่งใบคำขอ", async function () {
+                    var flag = await $scope.CreateForm();
+                    if (flag) {
+                        var serviceNo = await $scope.ServiceRequest();
+                        if (serviceNo) {
+                            alertSuccess("ทำรายการสำเร็จ", "ระบบบันทึกใบคำขอของท่านเรียบร้อย", function () {
+                                location.href = '@Url.Page("/Service/Index")';
+                            });
+                        }
+                    }
+                });
+            } else {
+                alertWarning("แจ้งเตือน", "กรุณากรอกข้อมูลให้ครบ");
+            }
+        }
+
+        $scope.CreateForm = function () {
+            return new Promise((resolve) => {
+                $scope.iForm.refId = $scope.id;
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormPermanentEmployeeCreate',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify($scope.iForm),
+                    success: function () {
+                        $timeout(function () { resolve(true); }, 0);
+                    },
+                    error: function (jqXHR) {
+                        resolve(null);
+                        Swal.fire({
+                            title: "ระบบเกิดข้อผิดพลาด",
+                            text: jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
+        }
+    });
+</script>

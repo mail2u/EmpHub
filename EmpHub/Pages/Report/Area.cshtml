@@ -15,7 +15,7 @@
         </div>
     </div>
     <div class="rounded-2 p-3 bg-white shadow-sm border">
-        <div class="d-flex mb-2">
+        <div class="d-flex mb-2 align-items-end">
             <div class="me-2">
                 <div>ชื่อ - สกุล</div>
                 <input ng-model="name" class="form-control form-control-sm" my-enter="LoadData()" />
@@ -45,16 +45,8 @@
                 <input ng-model="postcode" class="form-control form-control-sm" my-enter="LoadData()" />
             </div>
             <div class="flex-fill">
-            </div>
-            <div class="text-end d-flex flex-nowrap align-items-center">
-                <span class="d-none d-md-block">
-                    {{ (total > 0 ? ((page - 1) * row) + 1 : 0) | number }} - {{ (page * row < total ? page * row : total) | number }} of {{ total | number }}
-                </span>
-                <button class="btn btn-circle" ng-click="LoadData(page - 1)" ng-disabled="page <= 1">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <button class="btn btn-circle" ng-click="LoadData(page + 1)" ng-disabled="page * row >= total">
-                    <i class="fas fa-chevron-right"></i>
+                <button ng-click="LoadData()" class="btn btn-light">
+                    <i class="fas fa-search"></i>
                 </button>
             </div>
         </div>
@@ -126,6 +118,17 @@
                         </tr>
                     </tbody>
                 </table>
+                <div class="text-end d-flex flex-nowrap align-items-center justify-content-end">
+                    <span class="d-none d-md-block">
+                        {{ (total > 0 ? ((page - 1) * row) + 1 : 0) | number }} - {{ (page * row < total ? page * row : total) | number }} of {{ total | number }}
+                    </span>
+                    <button class="btn btn-circle" ng-click="LoadData(page - 1)" ng-disabled="page <= 1">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="btn btn-circle" ng-click="LoadData(page + 1)" ng-disabled="page * row >= total">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </div>

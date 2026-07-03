@@ -9,12 +9,12 @@
     <div class="page-header">
         <div class="page-header-left d-flex align-items-center">
             <div class="page-header-title">
-                <h5 class="m-b-10">Onboarding</h5>
+                <h5 class="m-b-10">พนักงาน</h5>
             </div>
             <ul class="breadcrumb">
-                <li class="breadcrumb-item"><a href="@Url.Page("/Index")">Home</a></li>
-                <li class="breadcrumb-item"><a href="@Url.Page("Index")">Onboarding</a></li>
-                <li class="breadcrumb-item">Create</li>
+                <li class="breadcrumb-item"><a href="@Url.Page("/Index")">หน้าแรก</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Page("Index")">พนักงานเข้าใหม่</a></li>
+                <li class="breadcrumb-item">สร้าง</li>
             </ul>
         </div>
     </div>
@@ -411,6 +411,7 @@
 
         $scope.ShowAddress = function (type) {
             $scope.address_type = type;
+            $scope.filter_name = '';
             $("#addressModal").modal('show');
         }
 
@@ -449,6 +450,8 @@
         $scope.CalcAge = function () {
             $scope.iPersonal.age = '';
 
+            console.log($scope.iPersonal.birth_date_select);
+
             if ($scope.iPersonal.birth_date_select) {
                 const b = new Date($scope.iPersonal.birth_date_select);
                 const c = new Date();
@@ -483,6 +486,20 @@
                 }
             }
         }
+
+        function isFullDateTime(value) {
+    if (!value) return false;
+
+    // DD/MM/YYYY HH:mm = 16 ตัวอักษร เช่น 22/06/2026 14:30
+    if (value.length !== 16) return false;
+
+    // เช็คว่าครบหลักจริง
+    var regex = /^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}$/;
+    if (!regex.test(value)) return false;
+
+    // เช็ควันที่จริง เช่น 31/02/2026 ต้องไม่ผ่าน
+    return moment(value, 'DD/MM/YYYY HH:mm', true).isValid();
+}
 
         $scope.calcProbationDay = function () {
             $scope.iEmployee.probation_day = 0;
@@ -521,6 +538,7 @@
         }
 
         $scope.ShowSupervisor = function () {
+            $scope.filter_name = '';
             if (!$scope.lEmployee) {
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/User/DataList'
@@ -748,8 +766,10 @@
                 }
             }
 
-            if (flag) {
-                location.href = '@Url.Page("Update")?userId=' + iUser.userId;
+            if (flag) {                
+                alertSuccess("Save Onboarding", "Success", function () {
+                    location.href = '@Url.Page("Index")';
+                });
             } else {
                 await $scope.CancelOnboard(iUser.userId);
             }
@@ -873,10 +893,35 @@
             var flag = true;
 
             JS_Reset($(".phoneNo"));
+            JS_Reset($(".email"));
+            JS_Reset($(".mobile"));
+            JS_Reset($(".phone_office"));
+            JS_Reset($(".email_office"));
+
 
             if ($scope.iPersonal.phoneNo == '') {
                 flag = false;
                 JS_Require($(".phoneNo"));
+            }
+            if (JS_ValidateMobile($scope.iPersonal.phoneNo) == false) {
+                flag = false;
+                JS_Require($(".phoneNo"));
+            }
+            if (JS_ValidateEmail($scope.iPersonal.email) == false) {
+                flag = false;
+                JS_Require($(".email"));
+            }
+            if ($scope.iPersonal.mobile != '' && JS_ValidateMobile($scope.iPersonal.mobile) == false) {
+                flag = false;
+                JS_Require($(".mobile"));
+            }
+            if ($scope.iEmployee.phone_office != '' && JS_ValidateMobile($scope.iEmployee.phone_office) == false) {
+                flag = false;
+                JS_Require($(".phone_office"));
+            }
+            if ($scope.iEmployee.email != '' && JS_ValidateEmail($scope.iEmployee.email) == false) {
+                flag = false;
+                JS_Require($(".email_office"));
             }
 
             if (flag) {

@@ -10,11 +10,11 @@
     <div class="page-header">
         <div class="page-header-left d-flex align-items-center">
             <div class="page-header-title">
-                <h5 class="m-b-10">HR Service</h5>
+                <h5 class="m-b-10">บริการ HR</h5>
             </div>
             <ul class="breadcrumb">
-                <li class="breadcrumb-item"><a href="@Url.Page("/Index")">Home</a></li>
-                <li class="breadcrumb-item">Service Process</li>
+                <li class="breadcrumb-item"><a href="@Url.Page("/Index")">หน้าแรก</a></li>
+                <li class="breadcrumb-item">ตั้งค่าการอนุมัติใบคำขอ</li>
             </ul>
         </div>
     </div>
@@ -39,12 +39,12 @@
 </style>
 <div ng-controller="ManageCtrl">
     <div class="d-flex mb-2">
-        <div class="flex-fill fs-4">Service Process</div>
+        <div class="flex-fill fs-4">ตั้งค่าการอนุมัติ</div>
     </div>
     <div class="d-flex">
         <div class="rounded-4 border shadow-sm bg-white p-3 me-3">
             <div class="">
-                Category
+                ประเภทใบคำขอ
             </div>
             <div class="bg-white rounded-3 p-2">
                 <div class="overflow-auto" style="height: calc(100vh - 375px);">
@@ -69,7 +69,7 @@
         </div>
         <div class="rounded-4 border shadow-sm bg-white p-3 flex-fill">
             <div>
-                <div>Process Stage</div>
+                <div>ขั้นตอนการดำเนินการ</div>
                 <div class="position-relative overflow-auto" style="height:calc(100vh - 375px);">
                     <div class="" ng-show="iCategory != null">
                         @* Authen *@
@@ -78,9 +78,9 @@
                                 <thead>
                                     <tr>
                                         <th width="20"></th>
-                                        <th>Name</th>
-                                        <th>Description</th>
-                                        <th>Operator</th>
+                                        <th>ขั้นตอน</th>
+                                        <th>ข้อความสถานะ</th>
+                                        <th>ผู้ดำเนินการ</th>
                                         <th width="50"></th>
                                         <th width="50"></th>
                                     </tr>

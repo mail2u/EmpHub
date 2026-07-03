@@ -57,7 +57,7 @@
             </div>
             <div class="row">
                 <div class="col-sm-2 mb-3">
-                    วันเริ่มงาน
+                    วันเริ่มงาน (ปี ค.ศ.)
                 </div>
                 <div class="col-sm-4 mb-3">
                     <input class="form-control date join_date"
@@ -71,7 +71,7 @@
                         max-view="month" required />
                 </div>
                 <div class="col-sm-2 mb-3">
-                    ช่วงเวลาประเมิน
+                    ช่วงเวลาประเมิน (ปี ค.ศ.)
                 </div>
                 <div class="col-sm-4 mb-3">
                     <div class="input-group">
@@ -82,6 +82,7 @@
                             moment-picker="iForm.probation_start_date_select"
                             locale="th"
                             format="DD/MM/YYYY"
+                            max-date="iForm.probation_end_date_select"
                             min-view="month"
                             max-view="month" required />
                         <div class="input-group-text">
@@ -94,6 +95,7 @@
                             moment-picker="iForm.probation_end_date_select"
                             locale="th"
                             format="DD/MM/YYYY"
+                            min-date="iForm.probation_start_date_select"
                             min-view="month"
                             max-view="month" required />
                     </div>
@@ -378,7 +380,7 @@
     </div>
     <div class="d-flex justify-content-end">
         <div class="btn btn-primary" ng-click="Save()">
-            <i class="far fa-paper-plane me-2"></i> Send Request
+            <i class="far fa-paper-plane me-2"></i> ส่งใบคำขอ
         </div>
     </div>
 </div>
@@ -540,10 +542,10 @@
                 flag = false;
                 JS_Require($(".section"));
             }
-            if ($scope.iForm.department == '') {
-                flag = false;
-                JS_Require($(".department"));
-            }
+            // if ($scope.iForm.department == '') {
+            //     flag = false;
+            //     JS_Require($(".department"));
+            // }
             if ($scope.iForm.join_date == '') {
                 flag = false;
                 JS_Require($(".join_date"));

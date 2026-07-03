@@ -1,0 +1,158 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<div class="job-summary-grid">
+    <div class="job-summary-card">
+        <span class="job-summary-icon blue"><i class="bi bi-person-workspace"></i></span>
+        <div>
+            <div class="info-label">อายุงานทั้งหมด</div>
+            <div class="info-value fs-5 text-primary">{{ valueOrDash(iEmployee.work_day) }}</div>
+            <div class="small text-muted">เริ่มงาน {{ valueOrDash(iEmployee.join_date) }}</div>
+        </div>
+    </div>
+    <div class="job-summary-card">
+        <span class="job-summary-icon green"><i class="bi bi-arrow-up-right"></i></span>
+        <div>
+            <div class="info-label">เลื่อนตำแหน่ง</div>
+            <div class="info-value fs-5 text-success">{{ promotionCount() }} ครั้ง</div>
+            <div class="small text-muted">อ้างอิงจากประวัติตำแหน่ง</div>
+        </div>
+    </div>
+    <div class="job-summary-card">
+        <span class="job-summary-icon orange"><i class="bi bi-arrow-left-right"></i></span>
+        <div>
+            <div class="info-label">เปลี่ยนหน่วยงาน</div>
+            <div class="info-value fs-5 text-warning">{{ transferCount() }} ครั้ง</div>
+            <div class="small text-muted">อ้างอิงจากประวัติทำงาน</div>
+        </div>
+    </div>
+    <div class="job-summary-card">
+        <span class="job-summary-icon purple"><i class="bi bi-briefcase"></i></span>
+        <div>
+            <div class="info-label">ตำแหน่งทั้งหมด</div>
+            <div class="info-value fs-5 text-primary">{{ positionCount() }} ตำแหน่ง</div>
+            <div class="small text-muted">ใน {{ valueOrDash(iEmployee.work_day) }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="job-content-grid">
+    <div>
+        <div class="job-panel mb-3">
+            <div class="job-panel-header">
+                <span>ประวัติการทำงาน</span>
+                @* <a class="btn btn-sm btn-soft-primary text-primary" href="@Url.Page("/Service/FormCreate/FormUpdateDataJobs")?mode=EDIT_JOB&id={{userId}}" target="_blank">
+                    <i class="bi bi-pencil-fill me-1"></i>แก้ไข
+                </a> *@
+            </div>
+            <div class="job-panel-body">
+               @*  <div class="empty-state" ng-show="jobHistoryItems().length == 0">ยังไม่มีข้อมูลประวัติการทำงาน</div> *@
+                <div class="job-history-item" ng-repeat="x in jobHistoryItems()">
+                    <div class="job-history">
+                        <div class="job-history-year">
+                            <div>{{ jobYearRange(x) }}</div>
+                            <div class="small text-muted fw-normal">{{ jobDurationText(x) }}</div>
+                        </div>
+                        <div class="job-history-line"><span class="job-history-dot"></span></div>
+                        <div class="job-history-card">
+                            <div class="d-flex align-items-start justify-content-between gap-2">
+                                <div>
+                                    <div class="job-history-title">{{ valueOrDash(x.position) }}</div>
+                                    <div class="text-dark mb-2">{{ valueOrDash(x.company || iEmployee.sectionDesc || iEmployee.departmentDesc) }}</div>
+                                    <div class="job-history-meta">เกรด {{ valueOrDash(iEmployee.grade) }} <span class="mx-2">|</span> ประเภท {{ valueOrDash(iEmployee.employeeType || iEmployee.employeeDesc) }}</div>
+                                </div>
+                                <span class="badge bg-soft-success text-success" ng-show="$first">ปัจจุบัน</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+               @*  <div class="text-center mt-4" ng-show="jobHistoryItems().length > 3">
+                    <button type="button" class="btn btn-outline-primary px-5">
+                        ดูประวัติทั้งหมด <i class="bi bi-chevron-down ms-2"></i>
+                    </button>
+                </div> *@
+            </div>
+        </div>
+
+        @* <div class="job-panel">
+            <div class="job-panel-header">
+                <span>โครงสร้างองค์กรปัจจุบัน</span>
+                <a class="btn btn-sm btn-outline-primary" href="@Url.Page("/Organization/Team")">
+                    ดูแผนผังองค์กร
+                </a>
+            </div>
+            <div class="job-panel-body">
+                <div class="org-flow">
+                    <div class="org-flow-box" ng-repeat="x in orgFlowItems()" ng-class="{ 'is-current': $last }">
+                        <div class="fw-bold text-dark">{{ x.title }}</div>
+                        <div class="small text-muted">{{ x.subtitle }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="job-update-note">
+                <i class="bi bi-info-circle text-primary"></i>
+                <span>ข้อมูลประวัติการทำงานอัปเดตล่าสุด {{ jobLatestUpdateText() }}</span>
+            </div>
+        </div> *@
+    </div>
+
+    <aside class="job-side-stack">
+        <div class="job-panel">
+            <div class="job-panel-header">
+                <span><i class="bi bi-arrow-up-right text-success me-2"></i>ประวัติการเลื่อนตำแหน่ง</span>
+            </div>
+            <div class="job-panel-body">
+                <div class="job-mini-timeline">
+                    <div class="job-mini-item" ng-repeat="x in jobHistoryItems() | limitTo:3">
+                        <span class="job-mini-dot"></span>
+                        <div>
+                            <div class="small text-muted">{{ valueOrDash(x.fromDate) }}</div>
+                            <div class="fw-bold text-dark">{{ valueOrDash(x.position) }}</div>
+                            <div class="small text-muted">เกรด {{ valueOrDash(iEmployee.grade) }}</div>
+                        </div>
+                    </div>
+                </div>
+                @* <button type="button" class="btn btn-sm btn-outline-primary w-100 mt-3">ดูทั้งหมด</button> *@
+            </div>
+        </div>
+
+        <div class="job-panel">
+            <div class="job-panel-header">
+                <span><i class="bi bi-arrow-left-right text-warning me-2"></i>ประวัติการย้ายหน่วยงาน</span>
+            </div>
+            <div class="job-panel-body">
+                <div class="job-mini-timeline">
+                    <div class="job-mini-item" ng-repeat="x in jobHistoryItems() | limitTo:2">
+                        <span class="job-mini-dot"></span>
+                        <div>
+                            <div class="small text-muted">{{ valueOrDash(x.fromDate) }}</div>
+                            <div class="fw-bold text-dark">{{ valueOrDash(x.company || iEmployee.sectionDesc || iEmployee.departmentDesc) }}</div>
+                            <div class="small text-muted">{{ valueOrDash(x.description) }}</div>
+                        </div>
+                    </div>
+                </div>
+               @*  <button type="button" class="btn btn-sm btn-outline-primary w-100 mt-3">ดูทั้งหมด</button> *@
+            </div>
+        </div>
+
+        @* <div class="job-panel">
+            <div class="job-panel-header">
+                <span><i class="bi bi-clipboard-data text-primary me-2"></i>ประวัติระดับเงินเดือน</span>
+            </div>
+            <div class="job-panel-body">
+                <div class="job-mini-timeline">
+                    <div class="job-mini-item" ng-repeat="x in jobHistoryItems() | limitTo:3">
+                        <span class="job-mini-dot"></span>
+                        <div>
+                            <div class="small text-muted">{{ valueOrDash(x.fromDate) }}</div>
+                            <div class="fw-bold text-dark">ระดับ {{ valueOrDash(iEmployee.levelDesc || iEmployee.grade) }}</div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary w-100 mt-3">ดูทั้งหมด</button>
+            </div>
+        </div> *@
+    </aside>
+</div>

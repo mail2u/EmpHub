@@ -4,18 +4,19 @@
     ViewData["Title"] = "EmpHub";
     var token = User.AccessToken(HttpContext);
 }
+
 <div class="w-100" ng-controller="DataCtrl">
     @section PageHeader {
         <!-- [ page-header ] start -->
         <div class="page-header">
             <div class="page-header-left d-flex align-items-center">
                 <div class="page-header-title">
-                    <h5 class="m-b-10">Employees</h5>
+                    <h5 class="m-b-10">ข้อมูลพนักงาน</h5>
                 </div>
                 <ul class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="@Url.Page("/Index")">Home</a></li>
-                    <li class="breadcrumb-item"><a href="@Url.Page("/Employee/Index")">Employees</a></li>
-                    <li class="breadcrumb-item">Info {{ $parent.fullname }}</li>
+                    <li class="breadcrumb-item"><a href="@Url.Page("/Index")">หน้าแรก</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Page("/Employee/Index")">พนักงาน</a></li>
+                    <li class="breadcrumb-item">{{ iPersonal.prefix_en + ' ' + iPersonal.firstname_en + ' ' + iPersonal.lastname_en }}</li>
                 </ul>
             </div>
         </div>
@@ -34,7 +35,7 @@
                     </div>
                     <div class="text-center pb-3" style="padding-top: 50px;">
                         <div class="text-dark fs-4 fw-bolder" style="line-height:20px;">
-                            {{ iPersonal.firstname_en }} {{ iPersonal.lastname_en }}
+                            {{ iPersonal.perfix_en }} {{ iPersonal.firstname_en }} {{ iPersonal.lastname_en }}
                         </div>
                         <div class="text-blue fs-5">{{ iEmployee.positionDesc }}</div>
                     </div>
@@ -73,7 +74,7 @@
             @* Report To *@
             <div class="rounded-4 bg-white border p-4">
                 <div class="text-gray mb-2">
-                    REPORT TO
+                    ผู้บังคับบัญชา
                 </div>
                 <div class="d-flex">
                     <div class="overflow-hidden me-2">
@@ -122,10 +123,10 @@
                        data-bs-target="#nav-training">
                         การฝึกอบรม
                     </a>
-                    <a class="nav-link text-nowrap" href="?tab=nav-document"
+                  @*   <a class="nav-link text-nowrap" href="?tab=nav-document"
                        data-bs-target="#nav-document">
                         เอกสาร
-                    </a>
+                    </a> *@
                 </div>
             </nav>
             <div class="tab-content p-4" id="nav-tabContent">

@@ -142,7 +142,7 @@
                 </div>
                 <div>
                     <input type="radio" ng-model="iForm.type_reason" value="additional_hire" /> จ้างเพิ่ม / Additional Hire
-                    <input ng-model="iForm.type_reason_additional_hire_desc" class="form-control form-control-input type_reason_additional_hire_desc mb-2" ng-show="iForm.type_reason == 'additional_hire'" maxlength="200" />
+                  @*   <input ng-model="iForm.type_reason_additional_hire_desc" class="form-control form-control-input type_reason_additional_hire_desc mb-2" ng-show="iForm.type_reason == 'additional_hire'" maxlength="200" /> *@
                 </div>
                 <div>
                     <input type="radio" ng-model="iForm.type_reason" value="replacement" /> ทดแทน / Replacement (Whom ?)
@@ -258,7 +258,7 @@
     </div>
     <div class="d-flex justify-content-end">
         <div class="btn btn-primary" ng-click="Save()">
-            <i class="far fa-paper-plane me-2"></i> Send Request
+            <i class="far fa-paper-plane me-2"></i> ส่งใบคำขอ
         </div>
     </div>
 </div>

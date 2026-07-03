@@ -9,6 +9,11 @@ namespace EmpHub.Pages.Account
     {
         public async Task OnGetAsync()
         {
+            HttpContext.Session.Remove("access_token");
+            HttpContext.Session.Remove("expire_token");
+            HttpContext.Session.Remove("access_token_user_id");
+            HttpContext.Session.Clear();
+
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             //await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme);
         }

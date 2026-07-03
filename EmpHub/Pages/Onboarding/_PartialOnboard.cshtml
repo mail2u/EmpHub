@@ -111,14 +111,16 @@
     </div>
     <div class="row">
         <div class="col-sm-3 mb-3">
-            <div>วันเกิด <span class="text-danger">*</span></div>
+            <div>วันเกิด (ปี ค.ศ.) <span class="text-danger">*</span></div>
             <input class="form-control form-input date birth_date icon-calendar"
                    ng-model="iPersonal.birth_date_select"
+                   ng-model-options="{ updateOn: 'blur' }"
                    moment-picker="iPersonal.birth_date_select"
                    locale="th"
                    format="DD/MM/YYYY"
                    min-view="month"
-                   max-view="month" required change="CalcAge()" ng-disabled="is_readonly" />
+                   max-view="month" 
+                   required ng-change="CalcAge()" ng-disabled="is_readonly" />
         </div>
         <div class="col-sm-3 mb-3">
             <div>อายุ</div>
@@ -145,11 +147,11 @@
         <div class="flex-fill"></div>
         <div class="me-2">
             <button class="btn btn-light" ng-click="Save()">
-                Save Change
+                บันทึกการเปลี่ยนแปลง
             </button>
         </div>
         <div>
-            <button class="btn btn-primary" ng-click="CheckStep1()" ng-disabled="iPersonal.firstname_th == ''">Next</button>
+            <button class="btn btn-primary" ng-click="CheckStep1()" ng-disabled="iPersonal.firstname_th == ''">ต่อไป</button>
         </div>
     </div>
 </div>
@@ -246,16 +248,16 @@
     <div class="d-flex">
         <div class="flex-fill">
             <div>
-                <button class="btn btn-light" ng-click="step_index = 0">Back</button>
+                <button class="btn btn-light" ng-click="step_index = 0">กลับ</button>
             </div>
         </div>
         <div class="me-2">
             <button class="btn btn-light" ng-click="Save()">
-                Save Change
+                บันทึกการเปลี่ยนแปลง
             </button>
         </div>
         <div>
-            <button class="btn btn-primary" ng-click="CheckStep2()" ng-disabled="iAddress.registered_home == ''">Next</button>
+            <button class="btn btn-primary" ng-click="CheckStep2()" ng-disabled="iAddress.registered_home == ''">ต่อไป</button>
         </div>
     </div>
 </div>
@@ -290,16 +292,16 @@
     <div class="d-flex">
         <div class="flex-fill">
             <div>
-                <button class="btn btn-light" ng-click="step_index = 1">Back</button>
+                <button class="btn btn-light" ng-click="step_index = 1">กลับ</button>
             </div>
         </div>
         <div class="me-2">
             <button class="btn btn-light" ng-click="Save()">
-                Save Change
+                บันทึกการเปลี่ยนแปลง
             </button>
         </div>
         <div>
-            <button class="btn btn-primary" ng-click="CheckStep3()" ng-disabled="iPersonal.phoneNo == ''">Next</button>
+            <button class="btn btn-primary" ng-click="CheckStep3()" ng-disabled="iPersonal.phoneNo == ''">ต่อไป</button>
         </div>
     </div>
 </div>
@@ -309,7 +311,7 @@
     </div>
     <div class="row">
         <div class="col-sm-3 mb-3">
-            <div>วันเข้างาน <span class="text-danger">*</span></div>
+            <div>วันเข้างาน (ปี ค.ศ.) <span class="text-danger">*</span></div>
             <input class="form-control form-input date join_date icon-calendar"
                    ng-model="iEmployee.join_date_select"
                    ng-model-options="{ updateOn: 'blur' }"
@@ -321,7 +323,7 @@
                    max-view="month" ng-disabled="is_readonly" />
         </div>
         <div class="col-sm-3 mb-3">
-            <div>วันผ่านการทดลองงาน</div>
+            <div>วันผ่านการทดลองงาน (ปี ค.ศ.)</div>
             <input class="form-control form-input date probation_end_date icon-calendar"
                    ng-model="iEmployee.probation_end_date_select"
                    ng-model-options="{ updateOn: 'blur' }"
@@ -330,7 +332,9 @@
                    min-date="iEmployee.join_date_select"
                    format="DD/MM/YYYY"
                    min-view="month"
-                   max-view="month" change="calcProbationDay()" ng-disabled="is_readonly" />
+                   max-view="month" ng-disabled="is_readonly" />
+
+                   @* change="calcProbationDay()"  *@
         </div>
         <div class="col-sm-3 mb-3">
             <div>ระยะเวลาทดลองงาน (วัน)</div>
@@ -416,17 +420,17 @@
     <div class="d-flex">
         <div class="flex-fill">
             <div>
-                <button class="btn btn-light" ng-click="step_index = 2">Back</button>
+                <button class="btn btn-light" ng-click="step_index = 2">กลับ</button>
             </div>
         </div>
         <div class="me-2">
             <button class="btn btn-light" ng-click="Save()">
-                Save Change
+                บันทึกการเปลี่ยนแปลง
             </button>
         </div>
         <div class="">
             <button class="btn btn-success" ng-click="Send()">
-                <i class="far fa-paper-plane me-2"></i> Submit
+                <i class="far fa-paper-plane me-2"></i> สร้างข้อมูลพนักงาน
             </button>
         </div>
     </div>
@@ -441,7 +445,7 @@
                     <div class="mb-2">
                         <input ng-model="filter_name" class="form-control" placeholder="ค้นหาที่อยู่" />
                         <div class="list-group list-group-flush overflow-auto" style="max-height: 400px;">
-                            <div class="list-group-item list-group-item-action d-flex align-items-center justify-content-between" ng-repeat="x in lAddress | filter : filter_name | limitTo : 50">
+                            <div class="list-group-item list-group-item-action d-flex align-items-center justify-content-between" ng-repeat="x in lAddress | filter : filter_name | limitTo : 50" ng-click="SelectAddress(x)">
                                 <div class="p-2">
                                     <nav aria-label="breadcrumb">
                                         <ol class="breadcrumb mb-0">
@@ -453,7 +457,7 @@
                                     </nav>
                                 </div>
                                 <div>
-                                    <button ng-click="SelectAddress(x)" class="btn btn-circle">
+                                    <button class="btn btn-circle">
                                         <i class="fas fa-plus"></i>
                                     </button>
                                 </div>

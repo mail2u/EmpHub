@@ -1,0 +1,83 @@
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<div class="education-panel">
+    <div class="education-panel-header">
+        <span><i class="fas fa-graduation-cap text-primary me-2"></i>ประวัติการศึกษา</span>
+       @*  <a class="btn btn-sm btn-soft-primary text-primary" href="@Url.Page("/Service/FormCreate/FormUpdateDataEducation")?mode=EDIT_EDUCATION&id={{userId}}" target="_blank">
+            <i class="bi bi-plus-lg me-1"></i>เพิ่มข้อมูลการศึกษา
+        </a> *@
+    </div>
+    <div class="education-panel-body">
+       @*  <div class="empty-state" ng-show="!lEducation || lEducation.length == 0">ยังไม่มีข้อมูลประวัติการศึกษา</div> *@
+        <div ng-show="lEducation.length > 0">
+            <div class="education-history-item" ng-repeat="x in educationHistoryItems()">
+                <div class="education-year">
+                    <div>{{ educationYearRange(x) }}</div>
+                    <div class="small text-muted fw-normal">{{ educationDurationText(x) }}</div>
+                </div>
+                <div class="education-line"><span class="education-dot"></span></div>
+                <div class="education-card">
+                    <span class="education-icon"><i class="fas fa-graduation-cap"></i></span>
+                    <div class="min-w-0">
+                        <div class="fs-5 fw-bold text-dark mb-2">{{ valueOrDash(x.degreeName || x.levelName) }}</div>
+                        <div class="text-primary fw-semibold mb-2">{{ valueOrDash(x.programName || x.major) }}</div>
+                        <div class="text-muted mb-2">{{ valueOrDash(x.institutionDesc || x.institution) }}</div>
+                        <div class="text-muted">เกรดเฉลี่ย {{ educationGradeText(x.grade) }}</div>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-soft-success text-success">สำเร็จการศึกษา</span>
+                        <button type="button" class="btn btn-sm btn-light" title="เมนูเพิ่มเติม">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+          @*   <div class="text-center mt-2">
+                <a class="btn btn-outline-primary px-5" href="@Url.Page("/Service/FormCreate/FormUpdateDataEducation")?mode=EDIT_EDUCATION&id={{userId}}" target="_blank">
+                    <i class="bi bi-plus-lg me-2"></i>เพิ่มข้อมูลการศึกษา
+                </a>
+            </div> *@
+        </div>
+    </div>
+</div>
+@* 
+<div class="education-panel">
+    <div class="education-panel-header">
+        <span><i class="bi bi-card-checklist text-primary me-2"></i>ใบรับรอง / ประกาศนียบัตร</span>
+        <a class="btn btn-sm btn-outline-primary" href="@Url.Page("/Service/FormCreate/FormUpdateDataTraining")?mode=EDIT_TRAINING&id={{userId}}" target="_blank">
+            ดูทั้งหมด <i class="bi bi-chevron-right ms-1"></i>
+        </a>
+    </div>
+    <div class="education-panel-body">
+        <div class="empty-state" ng-show="!lTraining || lTraining.length == 0">ยังไม่มีข้อมูลใบรับรอง / ประกาศนียบัตร</div>
+        <div class="certificate-grid" ng-show="lTraining.length > 0">
+            <div class="certificate-card" ng-repeat="x in certificateItems() | limitTo:4">
+                <div class="d-flex align-items-center gap-3">
+                    <span class="certificate-logo">{{ certificateInitials(x.license) }}</span>
+                    <div class="min-w-0">
+                        <div class="fw-bold text-dark">{{ valueOrDash(x.license) }}</div>
+                        <div class="small text-muted">{{ valueOrDash(x.organization) }}</div>
+                    </div>
+                </div>
+                <div class="certificate-date-grid">
+                    <div>
+                        <div class="info-label">ออกให้เมื่อ</div>
+                        <div class="info-value">{{ valueOrDash(x.issueDate) }}</div>
+                    </div>
+                    <div>
+                        <div class="info-label">หมดอายุ</div>
+                        <div class="info-value">{{ valueOrDash(x.expireDate) }}</div>
+                    </div>
+                </div>
+                <div>
+                    <span class="badge" ng-class="certificateStatusClass(x)">{{ certificateStatusText(x) }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+ *@

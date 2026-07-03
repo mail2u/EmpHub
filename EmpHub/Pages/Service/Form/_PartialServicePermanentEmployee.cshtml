@@ -1,0 +1,83 @@
+@{
+    var token = User.AccessToken(Context);
+}
+<div ng-controller="ServicePermanentEmployeeCtrl">
+    <div class="bg-white rounded-4 border mb-4 overflow-hidden p-4">
+        <div class="px-4 py-3 border-bottom d-flex align-items-center">
+            <div class="fs-5 fw-bolder text-dark flex-fill">แบบฟอร์ม ขออนุมัติบรรจุเข้าเป็นพนักงานประจำ</div>
+        </div>
+        <div class="p-4 fs-6">
+            <div class="row">
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">เรียนคุณ / ชื่อ-นามสกุล</div>
+                    <div class="text-blue">{{ iForm.fullname }}</div>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">ตำแหน่ง</div>
+                    <div class="text-blue">{{ iForm.position }}</div>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">สังกัด</div>
+                    <div class="text-blue">{{ iForm.department }}</div>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">วันที่เริ่มปฏิบัติงาน</div>
+                    <div class="text-blue">{{ iForm.start_date }}</div>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">การปรับเงินเดือน</div>
+                    <div class="text-blue">{{ iForm.include_salary == 1 ? 'มี' : 'ไม่มี' }}</div>
+                </div>
+                <div class="col-sm-4 mb-3" ng-show="iForm.include_salary == 1">
+                    <div class="text-dark fw-bolder">อัตราเงินเดือนใหม่</div>
+                    <div class="text-blue">{{ iForm.salary | number:2 }}</div>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="text-dark fw-bolder">มีผลตั้งแต่วันที่</div>
+                    <div class="text-blue">{{ iForm.effective_date }}</div>
+                </div>
+               @*  <div class="col-sm-12 mb-3">
+                    <div class="text-dark fw-bolder">หมายเหตุ</div>
+                    <div class="text-blue">{{ iForm.description || '-' }}</div>
+                </div> *@
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ServicePermanentEmployeeCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.LoadDetail = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormPermanentEmployeeDetail',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({ refId: $scope.refId }),
+                    success: function (result) {
+                        $timeout(function () {
+                            $scope.iForm = result;
+                            resolve(true);
+                        }, 0);
+                    },
+                    error: function () {
+                        resolve(false);
+                    }
+                });
+            });
+        }
+
+        $scope.init = async function (x) {
+            $scope.refId = x.id;
+            $scope.userId = x.userId;
+            $scope.status = x.status;
+            await $scope.LoadDetail();
+        }
+
+        $scope.$on('FORM_PERMANENT_EMPLOYEE_LOAD', function (e, data) {
+            $scope.init(data);
+        });
+    });
+</script>

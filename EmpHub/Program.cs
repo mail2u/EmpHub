@@ -23,32 +23,38 @@ builder.Services.AddTransient<IClaimsTransformation, CustomClaimsTransformation>
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 builder.Services.AddRazorPages(options =>
 {
-    options.Conventions.AddAreaPageRoute("Identity", "/Login", "");
-
-    options.Conventions.AllowAnonymousToPage("/Account/Login");
-
     options.Conventions.AuthorizeFolder("/");
     options.Conventions.AuthorizeFolder("/Account");
+    options.Conventions.AuthorizeFolder("/Profile");
     options.Conventions.AuthorizeFolder("/Admin");
-    options.Conventions.AuthorizeFolder("/Calendar");
-    options.Conventions.AuthorizeFolder("/Dashboard");
-    options.Conventions.AuthorizeFolder("/Document");
-    options.Conventions.AuthorizeFolder("/Employee");
     options.Conventions.AuthorizeFolder("/Report");
     options.Conventions.AuthorizeFolder("/Service");
     options.Conventions.AuthorizeFolder("/Structure");
 
-    options.Conventions.AuthorizeFolder("/Admin", "Admin");
-    options.Conventions.AuthorizeFolder("/Dashboard", "Admin");
-    options.Conventions.AuthorizePage("/Employee/Index", "Admin");
-    options.Conventions.AuthorizePage("/Service/Approve", "Admin");
+    options.Conventions.AuthorizeFolder("/Dashboard", "Dashboard");
+    options.Conventions.AuthorizeFolder("/Employee", "Employee");
+    options.Conventions.AuthorizeFolder("/Onboarding", "Employee");
+    options.Conventions.AuthorizeFolder("/Report", "Report");
+    options.Conventions.AuthorizeFolder("/Authorization", "Authorization");
+    options.Conventions.AuthorizeFolder("/Setting", "Setting");
 
-    options.Conventions.AuthorizeFolder("/Calendar", "DEV");
-    options.Conventions.AuthorizeFolder("/Structure", "DEV");
+    options.Conventions.AuthorizePage("/Service/Inquire", "HRService");
+    options.Conventions.AuthorizePage("/Service/Category", "HRService");
+    options.Conventions.AuthorizePage("/Service/Process", "HRService");
+    options.Conventions.AuthorizePage("/Service/Role", "HRService");
+    options.Conventions.AuthorizePage("/Service/UserAuthen", "HRService");
+
+    options.Conventions.AuthorizePage("/Survey/Inquire", "Survey");
+    options.Conventions.AuthorizeFolder("/SurveySetting", "Survey");
 
     options.Conventions.AddPageRoute("/Employee/Detail", "/Employee/{id?}");
     options.Conventions.AddPageRoute("/Service/Detail", "/Service/{id?}");
     options.Conventions.AddPageRoute("/Structure/Detail", "/Structure/{id?}");
+
+    options.Conventions.AddAreaPageRoute("Identity", "/Login", "");
+
+    options.Conventions.AllowAnonymousToPage("/Account/Login");
+
 });
 
 //Policy
@@ -60,43 +66,43 @@ builder.Services.AddAuthorization(options =>
         policy.RequireAuthenticatedUser();
         policy.RequireAssertion(context => (context.User.FindFirst(ClaimTypes.Authentication) != null ? context.User.FindFirst(ClaimTypes.Authentication).Value : "").ToLower().Contains("[admin]"));
     });
+    //Dashboard
+    options.AddPolicy("Dashboard", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireAssertion(context => (context.User.FindFirst(ClaimTypes.Authentication) != null ? context.User.FindFirst(ClaimTypes.Authentication).Value : "").ToLower().Contains("[dashboard]"));
+    });
+    //Employee
+    options.AddPolicy("Employee", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireAssertion(context => (context.User.FindFirst(ClaimTypes.Authentication) != null ? context.User.FindFirst(ClaimTypes.Authentication).Value : "").ToLower().Contains("[employee]"));
+    });
+    //HRService
+    options.AddPolicy("HRService", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireAssertion(context => (context.User.FindFirst(ClaimTypes.Authentication) != null ? context.User.FindFirst(ClaimTypes.Authentication).Value : "").ToLower().Contains("[hrservice]"));
+    });
+    //Survey
+    options.AddPolicy("Survey", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireAssertion(context => (context.User.FindFirst(ClaimTypes.Authentication) != null ? context.User.FindFirst(ClaimTypes.Authentication).Value : "").ToLower().Contains("[survey]"));
+    });
+    //Report
+    options.AddPolicy("Report", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireAssertion(context => (context.User.FindFirst(ClaimTypes.Authentication) != null ? context.User.FindFirst(ClaimTypes.Authentication).Value : "").ToLower().Contains("[report]"));
+    });
     //Authorization
     options.AddPolicy("Authorization", policy =>
     {
         policy.RequireAuthenticatedUser();
         policy.RequireAssertion(context => (context.User.FindFirst(ClaimTypes.Authentication) != null ? context.User.FindFirst(ClaimTypes.Authentication).Value : "").ToLower().Contains("[authorization]"));
     });
-    //Admin
-    options.AddPolicy("Dashboard", policy =>
-    {
-        policy.RequireAuthenticatedUser();
-        policy.RequireAssertion(context => (context.User.FindFirst(ClaimTypes.Authentication) != null ? context.User.FindFirst(ClaimTypes.Authentication).Value : "").ToLower().Contains("[dashboard]"));
-    });
-    //Admin
-    options.AddPolicy("Employee", policy =>
-    {
-        policy.RequireAuthenticatedUser();
-        policy.RequireAssertion(context => (context.User.FindFirst(ClaimTypes.Authentication) != null ? context.User.FindFirst(ClaimTypes.Authentication).Value : "").ToLower().Contains("[employee]"));
-    });
-    //Admin
-    options.AddPolicy("HRService", policy =>
-    {
-        policy.RequireAuthenticatedUser();
-        policy.RequireAssertion(context => (context.User.FindFirst(ClaimTypes.Authentication) != null ? context.User.FindFirst(ClaimTypes.Authentication).Value : "").ToLower().Contains("[hrservice]"));
-    });
-    //Admin
-    options.AddPolicy("Organization", policy =>
-    {
-        policy.RequireAuthenticatedUser();
-        policy.RequireAssertion(context => (context.User.FindFirst(ClaimTypes.Authentication) != null ? context.User.FindFirst(ClaimTypes.Authentication).Value : "").ToLower().Contains("[organization]"));
-    });
-    //Admin
-    options.AddPolicy("Report", policy =>
-    {
-        policy.RequireAuthenticatedUser();
-        policy.RequireAssertion(context => (context.User.FindFirst(ClaimTypes.Authentication) != null ? context.User.FindFirst(ClaimTypes.Authentication).Value : "").ToLower().Contains("[report]"));
-    });
-    //Admin
+    //Setting
     options.AddPolicy("Setting", policy =>
     {
         policy.RequireAuthenticatedUser();

@@ -1,0 +1,75 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<div class="personal-section">
+    <div class="personal-section-header">
+        <div class="personal-section-title"><i class="bi bi-person-badge-fill"></i> ข้อมูลทั่วไป</div>
+        @* <a class="btn btn-sm btn-soft-primary text-primary" href="@Url.Page("/Service/FormCreate/FormUpdateDataPersonal")?mode=EDIT_PERSONAL&id={{userId}}" target="_blank">
+            <i class="bi bi-pencil-fill me-1"></i>แก้ไข
+        </a> *@
+    </div>
+    <div class="personal-section-body">
+        <div class="personal-detail-grid">
+            <div><div class="info-label">ชื่อ - นามสกุล</div><div class="info-value">{{ fullNameTh() }}</div></div>
+            <div><div class="info-label">ชื่อเล่น</div><div class="info-value">{{ valueOrDash(iPersonal.nickname) }}</div></div>
+            <div><div class="info-label">วันเกิด</div><div class="info-value">{{ valueOrDash(iPersonal.birth_date) }}</div></div>
+            <div><div class="info-label">อายุ</div><div class="info-value">{{ valueOrDash(iPersonal.age) }}</div></div>
+            <div><div class="info-label">เพศ</div><div class="info-value">{{ sexText(iPersonal.sex) }}</div></div>
+            <div><div class="info-label">สัญชาติ</div><div class="info-value">{{ valueOrDash(iPersonal.nationalityDesc || iPersonal.nationality) }}</div></div>
+            <div><div class="info-label">ศาสนา</div><div class="info-value">{{ valueOrDash(iPersonal.religionDesc || iPersonal.religion) }}</div></div>
+            <div><div class="info-label">สถานภาพ</div><div class="info-value">{{ valueOrDash(iPersonal.maritalStatusDesc || iPersonal.maritalStatus) }}</div></div>
+            <div><div class="info-label">หมายเลขบัตรประชาชน</div><div class="info-value">{{ valueOrDash(iPersonal.idcard) }}</div></div>
+            <div><div class="info-label">เลขที่หนังสือเดินทาง</div><div class="info-value">{{ valueOrDash(iPersonal.passport) }}</div></div>
+            <div><div class="info-label">วันออกบัตร</div><div class="info-value">-</div></div>
+            <div><div class="info-label">วันหมดอายุ</div><div class="info-value">-</div></div>
+        </div>
+    </div>
+</div>
+
+<div class="personal-section">
+    <div class="personal-section-header">
+        <div class="personal-section-title"><i class="bi bi-people-fill"></i> ข้อมูลติดต่อ</div>
+      @*   <a class="btn btn-sm btn-soft-primary text-primary" href="@Url.Page("/Service/FormCreate/FormUpdateContact")?mode=EDIT_CONTACT&id={{userId}}" target="_blank">
+            <i class="bi bi-pencil-fill me-1"></i>แก้ไข
+        </a> *@
+    </div>
+    <div class="personal-section-body">
+        <div class="personal-detail-grid contact-grid">
+            <div><div class="info-label">อีเมล</div><div class="info-value">{{ valueOrDash(iPersonal.email || iEmployee.email) }}</div></div>
+            <div><div class="info-label">เบอร์มือถือ</div><div class="info-value">{{ valueOrDash(iPersonal.mobile || iPersonal.phoneNo) }}</div></div>
+            <div><div class="info-label">เบอร์โทรศัพท์บ้าน</div><div class="info-value">{{ valueOrDash(iPersonal.phoneNo) }}</div></div>
+            <div><div class="info-label">Line ID</div><div class="info-value">-</div></div>
+            <div><div class="info-label">ที่อยู่ปัจจุบัน</div><div class="info-value">{{ currentAddressText() }}</div></div>
+            <div><div class="info-label">ที่อยู่ตามทะเบียนบ้าน</div><div class="info-value">{{ registeredAddressText() }}</div></div>
+        </div>
+    </div>
+</div>
+
+<div class="personal-section">
+    <div class="personal-section-header">
+        <div class="personal-section-title"><i class="bi bi-person-heart"></i> บุคคลติดต่อฉุกเฉิน</div>
+        <a class="btn btn-sm btn-soft-primary text-primary" href="@Url.Page("UpdateEmergencyContact")" target="_blank">
+            <i class="bi bi-pencil-fill me-1"></i>แก้ไข
+        </a>
+    </div>
+    <div class="personal-section-body">
+        <div class="emergency-contact-card" ng-repeat="x in lEmergency">
+            <div class="emergency-person">
+                <span class="emergency-avatar"><i class="bi bi-person"></i></span>
+                <div class="min-w-0">
+                    <div class="fw-bold text-dark text-truncate">{{ valueOrDash(x.fullname) }}</div>
+                </div>
+            </div>
+            <div><div class="info-label">ความสัมพันธ์</div><div class="info-value">{{ valueOrDash(x.relation) }}</div></div>
+            <div><div class="info-label">เบอร์โทรศัพท์</div><div class="info-value">{{ valueOrDash(x.phoneNo) }}</div></div>
+            <div><div class="info-label">ที่อยู่</div><div class="info-value">{{ valueOrDash(x.address) }}</div></div>
+        </div>
+    </div>
+</div>
+
+<div class="privacy-note">
+    <i class="bi bi-info-circle text-primary"></i>
+    <span>ข้อมูลส่วนบุคคลของคุณจะถูกเก็บรักษาเป็นความลับตามนโยบายความเป็นส่วนตัวของบริษัท</span>
+</div>

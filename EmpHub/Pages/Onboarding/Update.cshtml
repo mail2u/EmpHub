@@ -331,6 +331,7 @@
                 , cache: false
                 , data: JSON.stringify({
                     userId: $scope.userId
+                    , create_by: '@User.UserId()'
                 })
                 , success: function (result) {
                     $timeout(function () {
@@ -353,6 +354,7 @@
                 , cache: false
                 , data: JSON.stringify({
                     userId: $scope.userId
+                    , create_by: '@User.UserId()'
                 })
                 , success: function (result) {
                     $timeout(function () {
@@ -371,6 +373,7 @@
                 , cache: false
                 , data: JSON.stringify({
                     userId: $scope.userId
+                    , create_by: '@User.UserId()'
                 })
                 , success: function (result) {
                     $timeout(function () {
@@ -391,12 +394,12 @@
 
         $scope.ShowAddress = function (type) {
             $scope.address_type = type;
+            $scope.filter_name = '';
             $("#addressModal").modal('show');
         }
 
         $scope.SelectAddress = function (x) {
             $timeout(function () {
-                console.log($scope.address_type);
                 if ($scope.address_type == 'registered') {
                     $scope.iAddress.registered_subDistrictCode = x.subDistrictCode;
                     $scope.iAddress.registered_subDistrictName = x.subDistrictName;
@@ -489,7 +492,8 @@
             }
         }
 
-        $scope.ShowSupervisor = function(){
+        $scope.ShowSupervisor = function () {
+            $scope.filter_name = '';
             if (!$scope.lEmployee) {
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/User/DataList'
@@ -675,8 +679,6 @@
                 $scope.iPersonal.birth_date = $scope.iPersonal.birth_date_select.format("DD/MM/YYYY");
             }
 
-            console.log($scope.iPersonal.birth_date);
-
             if ($scope.iEmployee.processType == '') {
                 flag = false;
                 JS_Require($(".processType"));
@@ -772,12 +774,40 @@
         $scope.CheckStep3 = function () {
             var flag = true;
 
+            
             JS_Reset($(".phoneNo"));
+            JS_Reset($(".email"));
+            JS_Reset($(".mobile"));
+            JS_Reset($(".phone_office"));
+            JS_Reset($(".email_office"));
+
+            console.log($scope.iPersonal.mobile);
 
             if ($scope.iPersonal.phoneNo == '') {
                 flag = false;
                 JS_Require($(".phoneNo"));
             }
+            if (JS_ValidateMobile($scope.iPersonal.phoneNo) == false) {
+                flag = false;
+                JS_Require($(".phoneNo"));
+            }
+            if (JS_ValidateEmail($scope.iPersonal.email) == false) {
+                flag = false;
+                JS_Require($(".email"));
+            }
+            if ($scope.iPersonal.mobile != '' && JS_ValidateMobile($scope.iPersonal.mobile) == false) {
+                flag = false;
+                JS_Require($(".mobile"));
+            }
+            if ($scope.iEmployee.phone_office != '' && JS_ValidateMobile($scope.iEmployee.phone_office) == false) {
+                flag = false;
+                JS_Require($(".phone_office"));
+            }
+            if ($scope.iEmployee.email != '' && JS_ValidateEmail($scope.iEmployee.email) == false) {
+                flag = false;
+                JS_Require($(".email_office"));
+            }
+
 
             if (flag) {
                 $scope.step_index = 3;

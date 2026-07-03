@@ -6,7 +6,7 @@
 <div ng-controller="ReportCtrl" class="p-2">
     <div class="d-flex mb-3 align-items-center">
         <div class="fs-5 fw-bolder text-dark flex-fill">
-            รายงานข้อมูพนักงาน
+            รายงานข้อมูลพนักงาน
         </div>
         <div class="">
             <div class="btn btn-light bg-white" ng-click="Download()">
@@ -19,6 +19,12 @@
             <div class="flex-fill">
                 <div class="d-flex align-items-end">
                     <div class="me-2">
+                        <small>รหัสพนักงาน</small>
+                        <div class="d-flex">
+                            <input class="form-control" ng-model="employeeCode" my-enter="LoadData()" />
+                        </div>
+                    </div>
+                    <div class="me-2">
                         <small>ชื่อ - สกุล</small>
                         <div class="d-flex">
                             <input class="form-control" ng-model="firstname_th" my-enter="LoadData()" />
@@ -27,13 +33,13 @@
                     <div class="me-2">
                         <small>ตำแหน่ง</small>
                         <div class="d-flex">
-                            <input class="form-control" ng-model="positionCode" my-enter="LoadData()" />
+                            <select ng-model="positionCode" class="form-select" ng-options="x.desc_th as x.desc_th for x in lPosition" ng-change="LoadData"></select>
                         </div>
                     </div>
                     <div class="me-2">
                         <small>ฝ่ายงาน</small>
                         <div class="d-flex">
-                            <input class="form-control" ng-model="departmentCode" my-enter="LoadData()" />
+                            <select ng-model="departmentCode" class="form-select" ng-options="x.desc_th as x.desc_th for x in lDepartment" ng-change="LoadData"></select>
                         </div>
                     </div>
                     <div>
@@ -86,10 +92,10 @@
                                 อีเมล์
                                 <i ng-show="sortBy.indexOf('email') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
                             </th>
-                            <th class="text-nowrap" ng-click="SetSort('phoneNo')">
+                           @*  <th class="text-nowrap" ng-click="SetSort('phoneNo')">
                                 เบอร์ติดต่อ
                                 <i ng-show="sortBy.indexOf('phoneNo') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
-                            </th>
+                            </th> *@
                         </tr>
                     </thead>
                     <tbody>
@@ -112,9 +118,9 @@
                             <td>
                                 {{ x.email }}
                             </td>
-                            <td>
+                           @*  <td>
                                 {{ x.phone_office }}
-                            </td>
+                            </td> *@
                         </tr>
                     </tbody>
                 </table>
@@ -126,6 +132,44 @@
     app.controller('ReportCtrl', function ($scope, $http, $timeout, $filter) {
         $scope.page = 1
         $scope.row = 10;
+
+        $scope.Init = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'departmentCode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lDepartment = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'positionCode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lPosition = result;
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.Init();
 
         $scope.LoadData = function (page = 1) {
             $scope.page = page;
@@ -141,6 +185,10 @@
                     page: $scope.page
                     , row: $scope.row
                     , sortBy: $scope.sortBy
+                    , employeeCode: $scope.employeeCode
+                    , name: $scope.firstname_th
+                    , position: $scope.positionCode
+                    , section: $scope.departmentCode
                 })
                 , success: function (result) {
                     $timeout(function () {
@@ -179,6 +227,10 @@
                     page: 1
                     , row: $scope.total
                     , sortBy: $scope.sortBy
+                    , employeeCode: $scope.employeeCode
+                    , name: $scope.firstname_th
+                    , position: $scope.positionCode
+                    , section: $scope.departmentCode
                 }),
                 success: function (result) {
                     $timeout(function () {

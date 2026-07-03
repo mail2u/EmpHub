@@ -16,18 +16,18 @@
         <div class="page-header-left d-flex align-items-center w-100">
             <div class="px-4 py-2 flex-fill">
                 <ul class="breadcrumb mb-2">
-                    <li class="breadcrumb-item"><a href="@Url.Page("Index")">Requests</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Page("Index")">ใบคำขอ</a></li>
                     <li class="breadcrumb-item">{{ iData.serviceNo }}</li>
                 </ul>
                 <div class="fs-5 fw-bolder text-dark">{{ iData.categoryDesc }} #{{ iData.serviceNo }}</div>
                 <div class="d-flex">
-                    <div class="badge badge-{{iData.status}}">{{ iData.statusDesc }}</div><i class="bi bi-dot"></i><div class="small">Submitted {{ iData.createDate }}</div>
+                    <div class="badge badge-{{iData.status}}">{{ iData.statusDesc }}</div><i class="bi bi-dot"></i><div class="small">วันที่ส่ง {{ iData.createDate }}</div>
                 </div>
             </div>
-            <div class="btn btn-light me-2">
-                <i class="bi bi-clock-history me-2"></i> View History
-            </div>
-            <div class="btn btn-light" ng-click="formAction.DownloadPDF()">
+            @* <div class="btn btn-light me-2">
+                <i class="bi bi-clock-history me-2"></i> ดูประวัติ
+            </div> *@
+            <div class="btn btn-light" ng-click="formAction.DownloadPDF()" ng-show="iData.status == 'Complete' && formAction.can_download == 1">
                 <i class="bi bi-printer-fill"></i>
             </div>
         </div>
@@ -80,6 +80,12 @@
                 <div ng-if="iData.subCategoryCode == 'FORM_HIRING_EMPLOYEE'">
                     <partial name="Form/_PartialServiceHiringEmployee" />
                 </div>
+                <div ng-if="iData.subCategoryCode == 'FORM_PERMANENT_EMPLOYEE'">
+                    <partial name="Form/_PartialServicePermanentEmployee" />
+                </div>
+                <div ng-if="iData.subCategoryCode == 'FORM_JOB_DESCRIPTION'">
+                    <partial name="Form/_PartialServiceJobDescription" />
+                </div>
                 <div ng-if="iData.subCategoryCode == 'FORM_PDPA_EMPLOYEE'">
                     <partial name="Form/_PartialServicePdpaEmployee" />
                 </div>
@@ -128,10 +134,13 @@
                 <div ng-if="iData.subCategoryCode == 'EDIT_DOCUMENT'">
                     <partial name="Form/_PartialServiceUpdateDocument" />
                 </div>
+                <div ng-if="iData.subCategoryCode == 'FORM_EMPLOYEE_DATA'">
+                    <partial name="Form/_PartialServiceRequestEmployeeData" />
+                </div>
                 @* Feedback *@
                 <div class="bg-white rounded-4 border mb-4">
                     <div class="px-4 py-3 border-bottom">
-                        <div class="fs-5 fw-bolder text-dark">Comment</div>
+                        <div class="fs-5 fw-bolder text-dark">ความคิดเห็น</div>
                     </div>
                     <div class="p-4">
                         <partial name="Shared/_PartialComment" />
@@ -141,27 +150,27 @@
             <div class="" style="width:300px; min-width:300px;">
                 @* Review Action *@
                 <div class="bg-white rounded-4 border mb-4 p-4" ng-if="iData.can_cancel == 1 || iData.can_approve == 1 || iData.can_work == 1 || iData.can_edit == 1 || iData.can_previous == 1">
-                    <div class="fw-bolder text-gray mb-4">REVIEW ACTIONS</div>
+                    <div class="fw-bolder text-gray mb-4">การดำเนินการ</div>
                     <div class="d-grid gap-2">
                         <button ng-if="iData.can_approve == 1" class="btn btn-primary d-flex" ng-click="Approve()">
                             <i class="bi bi-check-circle-fill me-2"></i> 
-                            <span class="flex-fill">Approve</span>
+                            <span class="flex-fill">อนุมัติ</span>
                         </button>
                         <button ng-if="iData.can_work == 1" class="btn btn-success d-flex" ng-click="Work()">
                             <i class="bi bi-arrow-right-circle me-2"></i>
-                            <span class="flex-fill">Process</span>
+                            <span class="flex-fill">ดำเนินการ</span>
                         </button>
                         <button ng-if="iData.can_approve == 1 || iData.can_work == 1" class="btn btn-danger-invert d-flex" ng-click="Reject()">
                             <i class="bi bi-x-circle-fill me-2"></i>
-                            <span class="flex-fill">Reject</span>
+                            <span class="flex-fill">ปฏิเสธ</span>
                         </button>
                         <button ng-if="iData.can_cancel == 1" class="btn btn-warning-invert d-flex bg-light-orange" ng-click="Cancel()">
                             <i class="bi bi-x-square me-2"></i>
-                            <span class="flex-fill">Cancel</span>
+                            <span class="flex-fill">ยกเลิก</span>
                         </button>
                         <button ng-if="iData.can_edit == 1" class="btn btn-light d-flex" ng-click="Edit()">
                             <i class="bi bi-pen me-2"></i>
-                            <span class="flex-fill">Edit</span>
+                            <span class="flex-fill">ปรับปรุงแก้ไข</span>
                         </button>
                         <button ng-if="iData.can_previous == 1" class="btn btn-light d-flex" ng-click="Previous()">
                             <i class="bi bi-backspace me-2"></i>
@@ -171,7 +180,7 @@
                 </div>
                 @* Request Info *@
                 <div class="bg-white rounded-4 border mb-4 p-4">
-                    <div class="fw-bolder text-gray mb-4">REQUEST INFO</div>
+                    <div class="fw-bolder text-gray mb-4">รายละเอียดผู้ขอ</div>
                     <div class="d-flex mb-3">
                         <div class="overflow-hidden me-2" style="width:40px; min-width:40px;">
                             <img src="~/Images/icon-user.png" class="rounded-pill" width="40px" />
@@ -182,7 +191,7 @@
                         </div>
                     </div>
                     <div class="d-flex">
-                        <div class="flex-fill">Submitted</div>
+                        <div class="flex-fill">ส่งวันที่</div>
                         <div class="text-dark">{{ iData.createDate }}</div>
                     </div>
                   @*   <div class="d-flex">
@@ -313,6 +322,16 @@
                         $scope.$broadcast('FORM_HIRING_EMPLOYEE_LOAD', $scope.iData);
                     });
                     break;
+                case 'FORM_PERMANENT_EMPLOYEE':
+                    $timeout(function () {
+                        $scope.$broadcast('FORM_PERMANENT_EMPLOYEE_LOAD', $scope.iData);
+                    });
+                    break;
+                case 'FORM_JOB_DESCRIPTION':
+                    $timeout(function () {
+                        $scope.$broadcast('FORM_JOB_DESCRIPTION_LOAD', $scope.iData);
+                    });
+                    break;
                 case 'FORM_PDPA_EMPLOYEE':
                     $timeout(function () {
                         $scope.$broadcast('FORM_PDPA_EMPLOYEE_LOAD', $scope.iData);
@@ -393,12 +412,17 @@
                         $scope.$broadcast('EDIT_DOCUMENT_LOAD', $scope.iData);
                     });
                     break;
+                case 'FORM_EMPLOYEE_DATA':
+                    $timeout(function () {
+                        $scope.$broadcast('FORM_EMPLOYEE_DATA', $scope.iData);
+                    });
+                    break;
                 default:
             }
         })
 
         $scope.Approve = function () {
-            alertConfirm("Approval Confirmed", "Do you want to approve this request?", function () {
+            alertConfirm("ยืนยันการอนุมัติรายการ", "คุณต้องการอนุมัติรายการนี้", function () {
                 showPreloader();
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/Service/Approve',
@@ -414,7 +438,7 @@
                         $timeout(function () {
                             hidePreloader();
 
-                            alertSuccess("Approval Successful", "The request has been approved successfully.", () => {
+                            alertSuccess("อนุมัติสำเร็จ", "ทำการอนุมัติรายการนี้เรียบร้อย", () => {
                                 if (window.opener && typeof window.opener.ReloadApprove === 'function') {
                                     if (!window.opener.ReloadApprove()) { window.opener.ReloadApprove(); }
                                 }
@@ -430,7 +454,7 @@
 
         $scope.Reject = async function () {
             await Swal.fire({
-                title: "Rejection Confirmed",
+                title: "ยืนยันการปฏิเสธรายการ",
                 input: "textarea",
                 inputPlaceholder: "กรุณาระบุเหตุผล",
                 confirmButtonText: "ยืนยัน",
@@ -457,7 +481,7 @@
                                 hidePreloader();
                                 $scope.LoadData();
 
-                                alertSuccess("Rejection Completed", "The request has been rejected.", () => {
+                                alertSuccess("ปฏิเสธรายการสำเร็จ", "ทำการปฏิเสธรายการนี้เรียบร้อย", () => {
                                     if (window.opener && typeof window.opener.ReloadApprove === 'function') {
                                         if (!window.opener.ReloadApprove()) { window.opener.ReloadApprove(); }
                                     }
@@ -471,7 +495,7 @@
         }
 
         $scope.Cancel = function () {
-            alertConfirm("Cancellation Confirmed", "Do you want to cancel this request?", function () {
+            alertConfirm("ยืนยันการยกเลิกรายการ", "คุณต้องการยกเลิกรายการนี้", function () {
                 showPreloader();
 
                 $.ajax({
@@ -488,7 +512,7 @@
                         $timeout(function () {
                             hidePreloader();
 
-                            alertSuccess("Cancellation Successful", "The request has been cancelled successfully.", () => {
+                            alertSuccess("ยกเลิกรายการสำเร็จ", "ทำการยกเลิกรายการเรียบร้อย", () => {
                                 if (window.opener && typeof window.opener.ReloadRequest === 'function') {
                                     if (!window.opener.ReloadRequest()) { window.opener.ReloadRequest(); }
                                 }
@@ -503,7 +527,7 @@
         }
 
         $scope.Work = function () {
-            alertConfirm("Process Confirmed", "Do you want to process this request?", function () {
+            alertConfirm("ยืนยันดำเนินการปิดใบงาน", "คุณต้องการทำการปิดใบงานนี้", function () {
                 showPreloader();
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/Service/Work',
@@ -520,7 +544,7 @@
                             hidePreloader();
                             $scope.LoadData();
 
-                            alertSuccess("Processed Successful", "The request has been processed successfully.", () => {
+                            alertSuccess("ปิดใบงานสำเร็จ", "ทำการปิดใบงานนี้เรียบร้อย", () => {
                                 if (window.opener && typeof window.opener.ReloadApprove === 'function') {
                                     if (!window.opener.ReloadWork()) { window.opener.ReloadWork(); }
                                 }
@@ -562,6 +586,10 @@
                 location.href = '@Url.Page("/Service/FormUpdate/FormMoveEmployee")?refId=' + $scope.id;
             } else if ($scope.iData.subCategoryCode == "FORM_HIRING_EMPLOYEE") {
                 location.href = '@Url.Page("/Service/FormUpdate/FormHiringEmployee")?refId=' + $scope.id;
+            } else if ($scope.iData.subCategoryCode == "FORM_PERMANENT_EMPLOYEE") {
+                location.href = '@Url.Page("/Service/FormUpdate/FormPermanentEmployee")?refId=' + $scope.id;
+            } else if ($scope.iData.subCategoryCode == "FORM_JOB_DESCRIPTION") {
+                location.href = '@Url.Page("/Service/FormUpdate/FormJobDescription")?refId=' + $scope.id;
             } else if ($scope.iData.subCategoryCode == "FORM_PDPA_EMPLOYEE") {
                 location.href = '@Url.Page("/Service/FormUpdate/FormPdpaEmployee")?refId=' + $scope.id;
             } else if ($scope.iData.subCategoryCode == "FORM_WFH_EMPLOYEE") {
@@ -578,6 +606,8 @@
                 location.href = '@Url.Page("/Service/FormUpdate/FormPromoteEmployee")?refId=' + $scope.id;
             } else if ($scope.iData.subCategoryCode == "FORM_IDP") {
                 location.href = '@Url.Page("/Service/FormUpdate/FormIDP")?refId=' + $scope.id;
+            } else if ($scope.iData.subCategoryCode == "FORM_EMPLOYEE_DATA") {
+                location.href = '@Url.Page("/Service/FormUpdate/FormEmployeeData")?refId=' + $scope.id;
             }
         }
 
@@ -597,13 +627,14 @@
                     success: function (result) {
                         $timeout(function () {
                             hidePreloader();
-                            $scope.LoadData();
 
                             alertSuccess("Processed Successful", "The request has been processed successfully.", () => {
                                 if (window.opener && typeof window.opener.ReloadApprove === 'function') {
                                     if (!window.opener.ReloadWork()) { window.opener.ReloadWork(); }
                                 }
                             });
+
+                            location.href = '@Url.Page("Index")';
                         }, 0);
                     },
                     error: AjaxError

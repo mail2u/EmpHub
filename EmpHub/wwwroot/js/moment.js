@@ -5668,3 +5668,26 @@
     return hooks;
 
 })));
+
+(function (moment) {
+    if (!moment || moment.__beFormatPatched) return;
+
+    var oldFormat = moment.fn.format;
+
+    moment.fn.format = function (format) {
+        if (format) {
+            var beYear = this.year() + 543;
+            var beYearShort = String(beYear).slice(-2);
+
+            format = format
+                .replace(/BBBB/g, "[" + beYear + "]")
+                .replace(/BB/g, "[" + beYearShort + "]");
+        }
+
+        return oldFormat.call(this, format);
+    };
+
+    moment.__beFormatPatched = true;
+})(moment);
+
+moment.locale("th");

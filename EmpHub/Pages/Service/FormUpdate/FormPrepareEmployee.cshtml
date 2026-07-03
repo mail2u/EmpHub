@@ -103,52 +103,52 @@
                 <div class=" fw-bolder">โปรดระบุระบบที่ต้องการใช้งาน</div>
                 <div class="row">
                     <div class="col-sm-6 mb-1">
-                        <div class="d-flex">
-                            <input type="checkbox" id="gls_system" ng-model="iForm.gls_system" ng-true-value="'Yes'" ng-false-value="" /> 
+                        <div class="d-flex gls_system box-group">
+                            <input type="checkbox" id="gls_system" ng-model="iForm.gls_system" ng-true-value="'Yes'" ng-false-value="" />
                             <label for="gls_system" class="text-nowrap mx-2">GLS ให้สิทธิการเข้าใช้ระบบเหมือนกับ</label>
-                            <input ng-model="iForm.gls_desc" class="form-text" />
+                            <input ng-model="iForm.gls_desc" class="form-text gls_desc" />
                         </div>
                     </div>
                     <div class="col-sm-6 mb-1">
-                        <div class="d-flex">
+                        <div class="d-flex ls_system box-group">
                             <input type="checkbox" id="ls_system" ng-model="iForm.ls_system" ng-true-value="'Yes'" ng-false-value="" />
                             <label for="ls_system" class="text-nowrap mx-2">LS ให้สิทธิการเข้าใช้ระบบเหมือนกับ</label>
-                            <input ng-model="iForm.ls_desc" class="form-text" />
+                            <input ng-model="iForm.ls_desc" class="form-text ls_desc" />
                         </div>
                     </div>
                     <div class="col-sm-6 mb-1">
-                        <div class="d-flex">
+                        <div class="d-flex linet_system box-group">
                             <input type="checkbox" id="linet_system" ng-model="iForm.linet_system" ng-true-value="'Yes'" ng-false-value="" />
                             <label for="linet_system" class="text-nowrap mx-2">Linet ให้สิทธิการเข้าใช้ระบบเหมือนกับ</label>
-                            <input ng-model="iForm.linet_desc" class="form-text" />
+                            <input ng-model="iForm.linet_desc" class="form-text linet_desc" />
                         </div>
                     </div>
                     <div class="col-sm-6 mb-1">
-                        <div class="d-flex">
+                        <div class="d-flex sun_system box-group">
                             <input type="checkbox" id="sun_system" ng-model="iForm.sun_system" ng-true-value="'Yes'" ng-false-value="" />
                             <label for="sun_system" class="text-nowrap mx-2">SUN ให้สิทธิการเข้าใช้ระบบเหมือนกับ</label>
-                            <input ng-model="iForm.sun_desc" class="form-text" />
+                            <input ng-model="iForm.sun_desc" class="form-text sun_desc" />
                         </div>
                     </div>
                     <div class="col-sm-6 mb-1">
-                        <div class="d-flex">
+                        <div class="d-flex prophet_system box-group">
                             <input type="checkbox" id="prophet_system" ng-model="iForm.prophet_system" ng-true-value="'Yes'" ng-false-value="" />
                             <label for="prophet_system" class="text-nowrap mx-2">Prophet ให้สิทธิการเข้าใช้ระบบเหมือนกับ</label>
-                            <input ng-model="iForm.prophet_desc" class="form-text" />
+                            <input ng-model="iForm.prophet_desc" class="form-text prophet_desc" />
                         </div>
                     </div>
                     <div class="col-sm-6 mb-1">
-                        <div class="d-flex">
+                        <div class="d-flex bonunza_system box-group">
                             <input type="checkbox" id="bonunza_system" ng-model="iForm.bonunza_system" ng-true-value="'Yes'" ng-false-value="" />
                             <label for="bonunza_system" class="text-nowrap mx-2">Bonunza ให้สิทธิการเข้าใช้ระบบเหมือนกับ</label>
-                            <input ng-model="iForm.bonunza_desc" class="form-text" />
+                            <input ng-model="iForm.bonunza_desc" class="form-text bonunza_desc" />
                         </div>
                     </div>
                     <div class="col-sm-12 mb-1">
-                        <div class="d-flex">
+                        <div class="d-flex other_system box-group">
                             <input type="checkbox" id="other_system" ng-model="iForm.other_system" ng-true-value="'Yes'" ng-false-value="" />
                             <label for="other_system" class="text-nowrap mx-2">ระบบอื่น ๆ โปรดระบุเพิ่มเติม</label>
-                            <input ng-model="iForm.other_desc" class="form-text" />
+                            <input ng-model="iForm.other_desc" class="form-text other_desc" />
                         </div>
                     </div>
                 </div>
@@ -273,7 +273,7 @@
     </div>
     <div class="d-flex justify-content-end">
         <div class="btn btn-primary" ng-click="Save()">
-            <i class="far fa-paper-plane me-2"></i> Send Request
+            <i class="far fa-paper-plane me-2"></i> ส่งใบคำขอ
         </div>
     </div>
 </div>
@@ -310,6 +310,7 @@
             $scope.LoadForm();
         });
 
+        
         $scope.Validate = function () {
             var flag = true;
             JS_Reset($(".prefix"));
@@ -322,7 +323,7 @@
             JS_Reset($(".answer1"));
             JS_Reset($(".answer2"));
             JS_Reset($(".answer3"));
-            JS_Reset($(".answer3_desc"));
+            JS_Reset($(".software_desc"));
             JS_Reset($(".answer4"));
             JS_Reset($(".answer4_desc"));
             JS_Reset($(".answer5"));
@@ -335,16 +336,24 @@
             JS_Reset($(".answer8_desc"));
             JS_Reset($(".answer9"));
             JS_Reset($(".answer9_desc"));
-            JS_Reset($(".aaa"));
-            JS_Reset($(".aaa"));
-            JS_Reset($(".aaa"));
-            JS_Reset($(".aaa"));
-            JS_Reset($(".aaa"));
-
+            JS_Reset($(".gls_system"));
+            JS_Reset($(".gls_desc"));
+            JS_Reset($(".ls_system"));
+            JS_Reset($(".ls_desc"));
+            JS_Reset($(".linet_system"));
+            JS_Reset($(".linet_desc"));
+            JS_Reset($(".sun_system"));
+            JS_Reset($(".sun_desc"));
+            JS_Reset($(".prophet_system"));
+            JS_Reset($(".prophet_desc"));
+            JS_Reset($(".bonunza_system"));
+            JS_Reset($(".bonunza_desc"));
+            JS_Reset($(".other_system"));
+            JS_Reset($(".other_desc"));
 
             if ($scope.iForm.join_date_select) {
                 $scope.iForm.join_date = $scope.iForm.join_date_select.format("DD/MM/YYYY");
-            }else{
+            } else {
                 $scope.iForm.join_date = '';
             }
 
@@ -372,7 +381,7 @@
                 flag = false;
                 JS_Require($(".username"));
             }
-            if ($scope.iForm.email == '') {
+            if (JS_ValidateEmail($scope.iForm.email) == false) {
                 flag = false;
                 JS_Require($(".email"));
             }
@@ -388,10 +397,68 @@
                 flag = false;
                 JS_Require($(".answer3"));
             }
-            if ($scope.iForm.answer3 == 'Yes' && $scope.iForm.answer3_desc == '') {
+            if ($scope.iForm.answer3 == 'Yes' && $scope.iForm.software_desc == '') {
                 flag = false;
-                JS_Require($(".answer3_desc"));
+                JS_Require($(".software_desc"));
             }
+
+            if ($scope.iForm.gls_system == '') {
+                flag = false;
+                JS_Require($(".gls_system"));
+            }
+            if ($scope.iForm.gls_system == 'Yes' && $scope.iForm.gls_desc == '') {
+                flag = false;
+                JS_Require($(".gls_desc"));
+            }
+            if ($scope.iForm.ls_system == '') {
+                flag = false;
+                JS_Require($(".ls_system"));
+            }
+            if ($scope.iForm.ls_system == 'Yes' && $scope.iForm.ls_desc == '') {
+                flag = false;
+                JS_Require($(".ls_desc"));
+            }
+            if ($scope.iForm.linet_system == '') {
+                flag = false;
+                JS_Require($(".linet_system"));
+            }
+            if ($scope.iForm.linet_system == 'Yes' && $scope.iForm.linet_desc == '') {
+                flag = false;
+                JS_Require($(".linet_desc"));
+            }
+            if ($scope.iForm.sun_system == '') {
+                flag = false;
+                JS_Require($(".sun_system"));
+            }
+            if ($scope.iForm.sun_system == 'Yes' && $scope.iForm.sun_desc == '') {
+                flag = false;
+                JS_Require($(".sun_desc"));
+            }
+            if ($scope.iForm.prophet_system == '') {
+                flag = false;
+                JS_Require($(".prophet_system"));
+            }
+            if ($scope.iForm.prophet_system == 'Yes' && $scope.iForm.prophet_desc == '') {
+                flag = false;
+                JS_Require($(".prophet_desc"));
+            }
+            if ($scope.iForm.bonunza_system == '') {
+                flag = false;
+                JS_Require($(".bonunza_system"));
+            }
+            if ($scope.iForm.bonunza_system == 'Yes' && $scope.iForm.bonunza_desc == '') {
+                flag = false;
+                JS_Require($(".bonunza_desc"));
+            }
+            if ($scope.iForm.other_system == '') {
+                flag = false;
+                JS_Require($(".other_system"));
+            }
+            if ($scope.iForm.other_system == 'Yes' && $scope.iForm.other_desc == '') {
+                flag = false;
+                JS_Require($(".other_desc"));
+            }
+
             if ($scope.iForm.answer4 == '') {
                 flag = false;
                 JS_Require($(".answer4"));

@@ -10,11 +10,11 @@
     <div class="page-header">
         <div class="page-header-left d-flex align-items-center">
             <div class="page-header-title">
-                <h5 class="m-b-10">HR Service</h5>
+                <h5 class="m-b-10">บริการ HR</h5>
             </div>
             <ul class="breadcrumb">
-                <li class="breadcrumb-item"><a href="@Url.Page("/Index")">Home</a></li>
-                <li class="breadcrumb-item">Service Category</li>
+                <li class="breadcrumb-item"><a href="@Url.Page("/Index")">หน้าแรก</a></li>
+                <li class="breadcrumb-item">ตั้งค่าประเภทใบคำขอ</li>
             </ul>
         </div>
     </div>
@@ -22,12 +22,12 @@
 
 <div ng-controller="ManageCtrl">
     <div class="d-flex mb-2">
-        <div class="flex-fill fs-4">Service Category</div>
+        <div class="flex-fill fs-4">ประเภทใบคำขอ</div>
     </div>
     <div class="d-flex">
         <div class="rounded-4 border shadow-sm bg-white p-3 me-3">
-            <div class="d-flex  align-items-center mb-2">
-                <div class="flex-fill fw-bolder">Main Category</div>
+            <div class="d-flex align-items-center mb-2">
+                <div class="flex-fill fw-bolder">หมวดหลัก</div>
                 <button class="btn btn-circle" ng-click="CreateCategory()">
                     <i class="fas fa-plus"></i>
                 </button>
@@ -62,7 +62,7 @@
         </div>
         <div class="rounded-4 border shadow-sm bg-white p-3 flex-fill">
             <div class="d-flex justify-content-between mb-2 ps-2">
-                <div class="d-flex align-items-center fw-bolder"> Sub Category</div>
+                <div class="d-flex align-items-center fw-bolder"> ประเภทใบคำขอ</div>
                 <div>
                     <button class="btn btn-circle" ng-click="CreateSubCategory()" ng-disabled="iCategory == null">
                         <i class="fas fa-plus"></i>

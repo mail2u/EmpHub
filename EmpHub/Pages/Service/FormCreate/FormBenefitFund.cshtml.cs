@@ -6,9 +6,11 @@ namespace EmpHub.Pages.Service.FormCreate
     public class FormBenefitFundModel : PageModel
     {
         public string mode { get; set; }
-        public void OnGet(string mode)
+        public string id { get; set; }
+        public void OnGet(string mode, string id)
         {
             this.mode = mode;
+            this.id = id;
         }
     }
 }

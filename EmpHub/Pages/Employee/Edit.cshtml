@@ -243,7 +243,8 @@
                                 FROM
                             </div>
                             <input class="form-control"
-                               ng-model="x.from_date"
+                                ng-model="x.from_date"
+                                ng-model-options="{ updateOn: 'blur' }"
                                moment-picker="x.from_date"
                                locale="th"
                                format="MMM YYYY"
@@ -256,7 +257,8 @@
                                 TO 
                             </div>
                             <input class="form-control"
-                               ng-model="x.end_date"
+                                ng-model="x.end_date"
+                                ng-model-options="{ updateOn: 'blur' }"
                                moment-picker="x.end_date"
                                locale="th"
                                format="MMM YYYY"
@@ -309,7 +311,8 @@
                                 ISSUE
                             </div>
                             <input class="form-control"
-                               ng-model="x.issue_date"
+                                   ng-model="x.issue_date"
+                                   ng-model-options="{ updateOn: 'blur' }"
                                moment-picker="x.issue_date"
                                locale="th"
                                format="DD/MM/YYYY"
@@ -332,7 +335,7 @@
             <div class="d-grid">
                 <button class="btn btn-primary" ng-click="SendRequest()"
                         ng-disabled="iPersonal.is_change != 1 && iAddress.is_change != 1 && iEmployee.is_change != 1 && iEducation.is_change != 1 && iJobExperience.is_change != 1 && iTraining.is_change != 1">
-                    Send Request
+                    ส่งใบคำขอ
                 </button>
             </div>
         </div>
@@ -945,7 +948,7 @@
                     data: JSON.stringify($scope.iData),
                     success: function (result) {
                         $timeout(async function () {
-                            alertSuccess("Send Request", "Successful", function () {
+                            alertSuccess("ส่งใบคำขอ", "Successful", function () {
                                 location.href = '@Url.Page("/Service/Detail")/' + id;
                             });
 
@@ -980,7 +983,7 @@
                     data: JSON.stringify($scope.iData),
                     success: function (result) {
                         $timeout(async function () {
-                            alertSuccess("Send Request Error", "The transaction failed to save. Please check.", function () {
+                            alertSuccess("ส่งใบคำขอ Error", "The transaction failed to save. Please check.", function () {
                                 location.href = '@Url.Page("/Service/Detail")/' + id;
                             });
                             resolve(result.serviceNo)

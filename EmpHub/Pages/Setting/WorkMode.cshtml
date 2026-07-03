@@ -244,8 +244,9 @@
 
             var JSData = [[
                 { 'text': 'Code' }
-                , { 'text': 'Name (TH)' }
-                , { 'text': 'Name (EN)' }
+                , { 'text': 'Name' }
+                , { 'text': 'Start Time' }
+                , { 'text': 'End Time' }
             ]];
 
             if (lData.length > 0) {
@@ -254,9 +255,9 @@
 
                     JSData.splice(JSData.length, 0, [
                         { 'text': iData.code }
-                        , { 'text': iData.parentName }
                         , { 'text': iData.desc_th }
-                        , { 'text': iData.desc_en }
+                        , { 'text': iData.condition_1 }
+                        , { 'text': iData.condition_2 }
                     ]);
                 }
 

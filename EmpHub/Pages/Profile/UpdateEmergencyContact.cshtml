@@ -1,0 +1,125 @@
+﻿@page
+@model EmpHub.Pages.Profile.UpdateEmergencyContactModel
+@{
+    var token = User.AccessToken(HttpContext);
+}
+<style>
+    .form-input {
+        padding: 5px;
+        border: 0px;
+        border-radius: 0;
+        border-bottom: 2px solid var(--bs-gray-400);
+        background-color: #fcfcfc;
+    }
+
+    .form-input:focus {
+        border-bottom: 2px solid var(--tip-blue);
+    }
+
+    input.form-input:read-only {
+        background-color: var(--bs-gray-200);
+    }
+</style>
+<div ng-controller="FormCtrl" id="tab_education">
+    @* View *@
+    <div class="rounded-4 mb-3 bg-white shadow-sm p-4">
+        <div class="text-center fs-4 fw-bolder mb-4 text-dark">
+            ปรับปรุงข้อมูลผู้ติดต่อฉุกเฉิน
+        </div>
+        <div class="text-dark fs-6">
+            <div class="fw-bolder fs-6 mt-3">บุคคลติดต่อฉุกเฉิน</div>
+            <div class="row" ng-repeat="x in lData">
+                <div class="col-sm-4 mb-3">
+                    <div>ชื่อ - นามสกุล</div>
+                    <input ng-model="x.fullname" class="form-control form-input fullname" maxlength="200" />
+                </div>
+                <div class="col-sm-2 mb-3">
+                    <div>ความสัมพันธ์</div>
+                    <input ng-model="x.relation" class="form-control form-input relation" maxlength="100" />
+                </div>
+                <div class="col-sm-2 mb-3">
+                    <div>เบอร์โทรศัพท์</div>
+                    <input ng-model="x.phoneNo" class="form-control form-input phoneNo" maxlength="50" />
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div>ที่อยู่</div>
+                    <input ng-model="x.address" class="form-control form-input address" maxlength="500" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-end">
+        <div class="btn btn-primary" ng-click="Save()">
+            <i class="far fa-paper-plane me-2"></i> ส่งใบคำขอ
+        </div>
+    </div>
+</div>
+<script>
+    $(".day").mask("00");
+    $(".score").mask("00");
+    $(".date").mask("00/00/0000");
+    app.controller('FormCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.AddRow = function(){
+            var iData = {
+                refId: '@User.UserId()'
+                , fullname: ''
+                , relation : ''
+                , phoneNo: ''
+                , address : ''
+            };
+
+            $scope.lData.splice($scope.lData.length, 0, iData);
+
+            console.log($scope.lData);
+        }
+
+        $scope.LoadData = function(){
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/EmergencyContact/DataList',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    refId: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(async function () {
+                        $scope.lData = result
+
+                        for (var i = $scope.lData.length; i < 3; i++) {
+                            $scope.AddRow();
+                        }
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+        $scope.LoadData();
+
+        $scope.Save = async function () {
+            var lData = $scope.lData.filter(item => item.fullname != '');
+
+            if (lData.length > 0) {
+                for (var i = 0; i < lData.length; i++) {
+                    var iData = lData[i];
+
+                    $.ajax({
+                        url: '@webAPI.CurrentValue.APIEmpHub/api/EmergencyContact/Create',
+                        headers: { 'authorization': 'Bearer @token' },
+                        type: "POST",
+                        contentType: 'application/json',
+                        cache: false,
+                        data: JSON.stringify(iData),
+                        success: function () {
+                        }, error: AjaxError
+                    });
+                }
+                alertSuccess("บันทึกรายการสำเร็จ", "", function(){
+                    window.close();
+                });
+            }
+        }
+        
+    });
+</script>

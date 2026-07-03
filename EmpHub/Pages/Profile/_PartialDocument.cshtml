@@ -1,0 +1,109 @@
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@*
+<div class="document-toolbar">
+    <div class="document-status-tabs">
+        <button type="button" class="btn btn-outline-primary active">ทั้งหมด <span class="badge bg-soft-primary text-primary ms-2">{{ documentAllCards().length }}</span></button>
+        <button type="button" class="btn btn-outline-primary">รอลงนาม <span class="badge bg-soft-primary text-primary ms-2">{{ documentPendingCards().length }}</span></button>
+        <button type="button" class="btn btn-outline-primary">ลงนามแล้ว <span class="badge bg-soft-primary text-primary ms-2">{{ documentSignedCards().length }}</span></button>
+        <button type="button" class="btn btn-outline-primary">ใกล้หมดอายุ <span class="badge bg-soft-primary text-primary ms-2">{{ documentExpiringCards().length }}</span></button>
+        <button type="button" class="btn btn-outline-primary">หมดอายุแล้ว <span class="badge bg-soft-primary text-primary ms-2">0</span></button>
+    </div>
+    <div class="document-actions">
+        <div class="input-group document-search">
+            <input type="text" class="form-control" placeholder="ค้นหาเอกสาร" ng-model="documentSearch" />
+            <span class="input-group-text bg-white"><i class="bi bi-search text-primary"></i></span>
+        </div>
+        <button type="button" class="btn btn-outline-primary"><i class="bi bi-funnel me-2"></i>ตัวกรอง</button>
+        <button type="button" class="btn btn-outline-primary">ล่าสุด - เก่าสุด <i class="bi bi-chevron-down ms-2"></i></button>
+    </div>
+</div> *@
+
+<div class="document-section" ng-show="documentPendingCards().length > 0">
+    <div class="document-section-header">
+        <div><i class="bi bi-clock text-warning me-2"></i>รอลงนาม ({{ documentPendingCards().length }})</div>
+        @*  <a href="javascript:void(0)" class="text-primary">ดูทั้งหมด</a> *@
+    </div>
+    <div class="document-card-grid">
+        <div class="document-card pending" ng-repeat="x in documentPendingCards() | filter:documentSearch | limitTo:3">
+            <div class="document-card-top">
+                <span class="document-card-icon pending"><i class="bi bi-file-earmark-text"></i></span>
+                <div>
+                    <div class="fw-bold text-dark mb-2">{{ x.title }}</div>
+                    <span class="badge bg-soft-warning text-warning">รอลงนาม</span>
+                </div>
+            </div>
+            <div class="small text-muted">อัปโหลดเมื่อ <span class="text-primary">{{ x.uploadDate }}</span></div>
+            <div class="small text-muted">ครบกำหนด <span class="text-danger">{{ x.dueDate }}</span></div>
+            <div class="d-flex">
+                <div class="flex-fill me-2">
+                    <a class="btn btn-sm btn-outline-primary" ng-href="{{ x.createUrl }}" target="_blank">ลงนาม</a>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary"><i class="bi bi-download"></i></button>
+                @*  <button type="button" class="btn btn-sm btn-outline-primary"><i class="bi bi-three-dots-vertical"></i></button> *@
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="document-section" ng-show="documentSignedCards().length > 0">
+    <div class="document-section-header">
+        <div><i class="bi bi-check-circle-fill text-success me-2"></i>ลงนามแล้ว ({{ documentSignedCards().length }})</div>
+        @*  <a href="javascript:void(0)" class="text-primary">ดูทั้งหมด</a> *@
+    </div>
+    <div class="document-card-grid">
+        <div class="document-card" ng-repeat="x in documentSignedCards() | filter:documentSearch | limitTo:4">
+            <div class="document-card-top">
+                <span class="document-card-icon signed"><i class="bi bi-file-earmark-check"></i></span>
+                <div>
+                    <div class="fw-bold text-dark mb-2">{{ x.title }}</div>
+                    <span class="badge bg-soft-success text-success">ลงนามแล้ว</span>
+                </div>
+            </div>
+            <div class="small text-muted">ลงนามเมื่อ <span class="text-primary">{{ x.signedDate }}</span></div>
+            <div class="d-flex">
+                <div class="flex-fill me-2">
+                    <a class="btn btn-sm btn-outline-primary" ng-href="{{ x.detailUrl }}" target="_blank">ดูเอกสาร</a>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary"><i class="bi bi-download"></i></button>
+                @*  <button type="button" class="btn btn-sm btn-outline-primary"><i class="bi bi-three-dots-vertical"></i></button> *@
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="document-section" ng-show="documentExpiringCards().length > 0">
+    <div class="document-section-header">
+        <div><i class="bi bi-exclamation-triangle text-warning me-2"></i>ใกล้หมดอายุ ({{ documentExpiringCards().length }})</div>
+        @*  <a href="javascript:void(0)" class="text-primary">ดูทั้งหมด</a> *@
+    </div>
+    <div class="document-card-grid">
+        <div class="document-card warning" ng-repeat="x in documentExpiringCards() | filter:documentSearch | limitTo:2">
+            <div class="document-card-top">
+                <span class="document-card-icon warning"><i class="bi bi-file-earmark-text"></i></span>
+                <div>
+                    <div class="fw-bold text-dark mb-2">{{ x.title }}</div>
+                    <span class="badge bg-soft-warning text-warning">ใกล้หมดอายุ</span>
+                </div>
+            </div>
+            <div class="small text-muted">วันหมดอายุ <span class="text-primary">{{ x.expireDate }}</span> <span class="text-muted">({{ x.expireText }})</span></div>
+            <div class="d-flex">
+                <div class="flex-fill me-2">
+                    <a class="btn btn-sm btn-outline-primary" ng-href="{{ x.detailUrl || x.createUrl }}" target="_blank">ดูเอกสาร</a>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary"><i class="bi bi-download"></i></button>
+                @*  <button type="button" class="btn btn-sm btn-outline-primary"><i class="bi bi-three-dots-vertical"></i></button> *@
+            </div>
+        </div>
+    </div>
+</div>
+
+@* <div class="empty-state" ng-show="documentAllCards().length == 0">ยังไม่มีข้อมูลเอกสารที่เกี่ยวข้อง</div> *@
+
+<div class="document-note">
+    <i class="bi bi-info-circle text-primary"></i>
+    <span>เอกสารทั้งหมดถูกจัดเก็บอย่างปลอดภัย คุณสามารถอัปโหลด หรือดาวน์โหลดเอกสารได้ตามสิทธิ์ที่ได้รับ</span>
+</div>

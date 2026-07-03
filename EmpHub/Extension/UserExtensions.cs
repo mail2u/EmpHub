@@ -56,14 +56,18 @@ namespace EmpHub.Extension
 
         public static string AccessToken(this IPrincipal principal, HttpContext context)
         {
-            var identity = (ClaimsIdentity)principal.Identity;
             var accessTokenClaim = context.Session.GetString("access_token");
             var expireTokenClaim = context.Session.GetString("expire_token");
+            var accessTokenUserId = context.Session.GetString("access_token_user_id");
+            var userId = principal.UserId();
+            var isExpired = !DateTime.TryParse(expireTokenClaim, out var expireToken)
+                || DateTime.UtcNow >= expireToken;
 
             if (accessTokenClaim == null || expireTokenClaim == null
                 || String.IsNullOrEmpty(accessTokenClaim)
                 || String.IsNullOrEmpty(expireTokenClaim)
-                || DateTime.Now >= DateTime.Parse(expireTokenClaim))
+                || isExpired
+                || accessTokenUserId != userId)
             {
                 return RefreshToken((ClaimsPrincipal)principal, context);
             }
@@ -98,6 +102,7 @@ namespace EmpHub.Extension
                 // เก็บลง Session
                 context.Session.SetString("access_token", accessToken);
                 context.Session.SetString("expire_token", DateTime.UtcNow.AddMinutes(58).ToString("o"));
+                context.Session.SetString("access_token_user_id", userId);
 
                 return accessToken;
             }

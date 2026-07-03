@@ -100,6 +100,9 @@ namespace EmpHub.Pages.Account
                     {
                         UserPrincipal result = UserPrincipal.FindByIdentity(context, iUser.username);
 
+                        HttpContext.Session.Remove("access_token");
+                        HttpContext.Session.Remove("expire_token");
+                        HttpContext.Session.Remove("access_token_user_id");
                         await Login(iUser);
 
                         var claims = new List<Claim>
@@ -125,6 +128,9 @@ namespace EmpHub.Pages.Account
 
                         var accessToken = new JwtSecurityTokenHandler().WriteToken(Sectoken);
 
+                        HttpContext.Session.SetString("access_token", accessToken);
+                        HttpContext.Session.SetString("expire_token", DateTime.UtcNow.AddMinutes(5758).ToString("o"));
+                        HttpContext.Session.SetString("access_token_user_id", iUser.userId);
                         claims.Add(new Claim("access_token", accessToken));
 
                         var claimsIdentity = new ClaimsIdentity(

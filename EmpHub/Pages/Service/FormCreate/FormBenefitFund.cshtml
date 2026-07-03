@@ -54,7 +54,7 @@
                 </div>
             </div>
             <div class="mb-3 d-flex align-items-center">
-                เมื่อข้าพเจ้าถึงแก่ความตาย  ข้าพเจ้าประสงค์ให้จ่ายเงินกองทุนแก่บุคคลจำนวน <input ng-model="iForm.total" type="number" class="form-control total mx-3" style="width:80px;" ng-change="ChangeTotal()" /> คนดังมีรายชื่อดังต่อไปนี้
+                เมื่อข้าพเจ้าถึงแก่ความตาย  ข้าพเจ้าประสงค์ให้จ่ายเงินกองทุนแก่บุคคลจำนวน <input ng-model="iForm.total" type="number" class="form-control total mx-3" min="1" max="3" style="width:80px;" ng-change="ChangeTotal()" /> คนดังมีรายชื่อดังต่อไปนี้
             </div>
             <table class="table table-borderless">
                 <tbody>
@@ -75,7 +75,7 @@
                             จำนวน
                         </td>
                         <td width="100">
-                            <input ng-model="iForm.benefitpercent1" class="form-control benefitpercent1" type="number" />
+                            <input ng-model="iForm.benefitpercent1" class="form-control benefitpercent1" type="number" min="0" max="100" />
                         </td>
                         <td class="align-middle">
                             %
@@ -98,7 +98,7 @@
                             จำนวน
                         </td>
                         <td width="100">
-                            <input ng-model="iForm.benefitpercent2" class="form-control benefitpercent2" type="number" />
+                            <input ng-model="iForm.benefitpercent2" class="form-control benefitpercent2" type="number" min="0" max="100" />
                         </td>
                         <td class="align-middle">
                             %
@@ -121,7 +121,7 @@
                             จำนวน
                         </td>
                         <td width="100">
-                            <input ng-model="iForm.benefitpercent3" class="form-control benefitpercent3" type="number" />
+                            <input ng-model="iForm.benefitpercent3" class="form-control benefitpercent3" type="number" min="0" max="100" />
                         </td>
                         <td class="align-middle">
                             %
@@ -133,7 +133,7 @@
     </div>
     <div class="d-flex justify-content-end">
         <div class="btn btn-primary" ng-click="Save()">
-            <i class="far fa-paper-plane me-2"></i> Send Request
+            <i class="far fa-paper-plane me-2"></i> ส่งใบคำขอ
         </div>
     </div>
 </div>
@@ -141,6 +141,7 @@
     $(".idcard").mask("0000000000000");
     app.controller('FormCtrl', function ($scope, $http, $timeout, $filter) {
         $scope.mode = '@Model.mode';
+        $scope.userId = '@Model.id' || '@User.UserId()';
         $scope.iData = {};
         $scope.iForm = {
             fullname:''
@@ -168,7 +169,7 @@
                 dataType: 'json',
                 cache: false,
                 data: JSON.stringify({
-                    userId: '@User.UserId()'
+                    userId: $scope.userId
                 }),
                 success: function (result) {
                     $timeout(async function () {
@@ -234,19 +235,17 @@
 
             console.log(totalPercent);
 
-            if ($scope.iForm.total >= 1) {
-                if ($scope.iForm.benefitname1 == '') {
-                    flag = false;
-                    JS_Require($(".benefitname1"));
-                }
-                if ($scope.iForm.benefitrelation1 == '') {
-                    flag = false;
-                    JS_Require($(".benefitrelation1"));
-                }
-                if ($scope.iForm.benefitpercent1 <= 0 || totalPercent != 100) {
-                    flag = false;
-                    JS_Require($(".benefitpercent1"));
-                }
+            if ($scope.iForm.benefitname1 == '') {
+                flag = false;
+                JS_Require($(".benefitname1"));
+            }
+            if ($scope.iForm.benefitrelation1 == '') {
+                flag = false;
+                JS_Require($(".benefitrelation1"));
+            }
+            if ($scope.iForm.benefitpercent1 <= 0 || totalPercent != 100) {
+                flag = false;
+                JS_Require($(".benefitpercent1"));
             }
             if ($scope.iForm.total >= 2) {
                 if ($scope.iForm.benefitname2 == '') {

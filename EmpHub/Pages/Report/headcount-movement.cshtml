@@ -1,4 +1,4 @@
-﻿@page
+@page
 @model EmpHub.Pages.Report.headcount_movementModel
 @{
     var token = User.AccessToken(HttpContext);
@@ -6,18 +6,24 @@
 <div ng-controller="ReportCtrl" class="p-2">
     <div class="d-flex mb-3 align-items-center">
         <div class="fs-5 fw-bolder text-dark flex-fill">
-            รายงานจำนวนพนักงานแยกตามแผนก
+            Headcount Movement: รายงานสรุปการเข้า-ออก (Headcount vs. Budget)
         </div>
-        <div class="">
+        <div>
             <div class="btn btn-light bg-white" ng-click="Download()">
                 <i class="bi bi-download me-2"></i> Download
             </div>
         </div>
     </div>
     <div class="rounded-2 p-3 bg-white shadow-sm border">
-        <div class="d-flex mb-2">
-            <div class="flex-fill">
+        <div class="d-flex flex-wrap gap-2 mb-2 align-items-end">
+            <div>
+                <small>ปี</small>
+                <input type="number" class="form-control" ng-model="year" min="2020" max="2100" my-enter="LoadData()" style="width:120px;" />
             </div>
+            <button ng-click="LoadData()" class="btn btn-light">
+                <i class="fas fa-search"></i>
+            </button>
+            <div class="flex-fill"></div>
             <div class="text-end d-flex flex-nowrap align-items-center">
                 <span class="d-none d-md-block">
                     {{ (total > 0 ? ((page - 1) * row) + 1 : 0) | number }} - {{ (page * row < total ? page * row : total) | number }} of {{ total | number }}
@@ -35,31 +41,24 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th class="text-nowrap" ng-click="SetSort('desc_th')">
-                                ชื่อฝ่ายงาน (ภาษาไทย)
-                                <i ng-show="sortBy.indexOf('desc_th') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
-                            </th>
-                            <th class="text-nowrap" ng-click="SetSort('desc_en')">
-                                ชื่อฝ่ายงาน (ภาษาอังกฤษ)
-                                <i ng-show="sortBy.indexOf('desc_en') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
-                            </th>
-                            <th class="text-nowrap" ng-click="SetSort('total')">
-                                รวม
-                                <i ng-show="sortBy.indexOf('total') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
-                            </th>
+                            <th class="text-nowrap" ng-click="SetSort('month_no')">เดือน</th>
+                            <th class="text-nowrap text-end" ng-click="SetSort('beginningHeadcount')">Headcount ต้นงวด</th>
+                            <th class="text-nowrap text-end" ng-click="SetSort('newHire')">เข้าใหม่</th>
+                            <th class="text-nowrap text-end" ng-click="SetSort('resignCount')">ออก</th>
+                            <th class="text-nowrap text-end" ng-click="SetSort('endingHeadcount')">Headcount ปลายงวด</th>
+                            <th class="text-nowrap text-end" ng-click="SetSort('budgetHeadcount')">Budget</th>
+                            <th class="text-nowrap text-end" ng-click="SetSort('variance')">Actual vs Budget</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr ng-repeat="x in lData">
-                            <td>
-                                {{ x.desc_th }}
-                            </td>
-                            <td>
-                                {{ x.desc_en }}
-                            </td>
-                            <td>
-                                {{ x.total | number }}
-                            </td>
+                            <td>{{ x.monthName }} {{ x.reportYear }}</td>
+                            <td class="text-end">{{ x.beginningHeadcount | number }}</td>
+                            <td class="text-end text-success">{{ x.newHire | number }}</td>
+                            <td class="text-end text-danger">{{ x.resignCount | number }}</td>
+                            <td class="text-end fw-semibold">{{ x.endingHeadcount | number }}</td>
+                            <td class="text-end">{{ x.budgetHeadcount | number }}</td>
+                            <td class="text-end" ng-class="{ 'text-success': x.variance >= 0, 'text-danger': x.variance < 0 }">{{ x.variance | number }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -69,86 +68,89 @@
 </div>
 <script>
     app.controller('ReportCtrl', function ($scope, $http, $timeout, $filter) {
-        $scope.page = 1
-        $scope.row = 10;
+        $scope.page = 1;
+        $scope.row = 12;
+        $scope.year = new Date().getFullYear();
+        $scope.sortBy = 'month_no';
 
         $scope.LoadData = function (page = 1) {
             $scope.page = page;
 
             $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/Report/ReportHeadcountSection'
-                , headers: { 'authorization': 'Bearer @token' }
-                , type: 'post'
-                , contentType: 'application/json'
-                , dataType: 'json'
-                , cache: false
-                , data: JSON.stringify({
-                    page: $scope.page
-                    , row: $scope.row
-                    , sortBy: $scope.sortBy
-                })
-                , success: function (result) {
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Report/ReportHeadcountMovement',
+                headers: { 'authorization': 'Bearer @token' },
+                type: 'post',
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    page: $scope.page,
+                    row: $scope.row,
+                    sortBy: $scope.sortBy,
+                    year: $scope.year
+                }),
+                success: function (result) {
                     $timeout(function () {
                         $scope.lData = JSON.parse(result.data);
                         $scope.total = result.total;
                     }, 0);
-                }
-                , error: AjaxError
+                },
+                error: AjaxError
             });
         }
         $scope.LoadData();
 
         $scope.SetSort = function (sortBy) {
             if ($scope.sortBy != null && $scope.sortBy.indexOf(sortBy) > -1) {
-                if ($scope.sortBy.indexOf("-") > -1) {
-                    $scope.sortBy = sortBy;
-                } else {
-                    $scope.sortBy = '-' + sortBy;
-                }
+                $scope.sortBy = $scope.sortBy.indexOf("-") > -1 ? sortBy : '-' + sortBy;
             } else {
                 $scope.sortBy = sortBy;
             }
             $scope.LoadData();
         }
 
-
         $scope.Download = function () {
             $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/Report/ReportHeadcountSection'
-                , headers: { 'authorization': 'Bearer @token' }
-                , type: 'post'
-                , contentType: 'application/json'
-                , dataType: 'json'
-                , cache: false
-                , data: JSON.stringify({
-                    page: 1
-                    , row: $scope.total
-                    , sortBy: $scope.sortBy
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Report/ReportHeadcountMovement',
+                headers: { 'authorization': 'Bearer @token' },
+                type: 'post',
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    page: 1,
+                    row: 12,
+                    sortBy: $scope.sortBy,
+                    year: $scope.year
                 }),
                 success: function (result) {
                     $timeout(function () {
                         var lData = JSON.parse(result.data);
+                        var JSData = [[
+                            { 'text': 'เดือน' },
+                            { 'text': 'Headcount ต้นงวด' },
+                            { 'text': 'เข้าใหม่' },
+                            { 'text': 'ออก' },
+                            { 'text': 'Headcount ปลายงวด' },
+                            { 'text': 'Budget' },
+                            { 'text': 'Actual vs Budget' }
+                        ]];
 
-                        if (lData.length > 0) {
-                            var JSData = [[
-                                { 'text': 'ชื่อฝ่ายงาน (ภาษาไทย)' }
-                                , { 'text': 'ชื่อฝ่ายงาน (ภาษาอังกฤษ)' }
-                                , { 'text': 'รวม' }
-                            ]];
-
-                            for (var i = 0; i < lData.length; i++) {
-                                var iData = lData[i];
-
-                                JSData.splice(JSData.length, 0, [
-                                    { 'text': iData.desc_th }
-                                    , { 'text': iData.desc_en }
-                                    , { 'text': iData.total }
-                                ]);
-                            }
-
-                            var dt = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-                            ExportFile(JSData, 'รายงานจำนวนพนักงานแยกตามแผนก_' + dt);
+                        for (var i = 0; i < lData.length; i++) {
+                            var iData = lData[i];
+                            JSData.splice(JSData.length, 0, [
+                                { 'text': iData.monthName + ' ' + iData.reportYear },
+                                { 'text': iData.beginningHeadcount },
+                                { 'text': iData.newHire },
+                                { 'text': iData.resignCount },
+                                { 'text': iData.endingHeadcount },
+                                { 'text': iData.budgetHeadcount },
+                                { 'text': iData.variance }
+                            ]);
                         }
+
+                        var dt = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+                        ExportFile(JSData, 'Headcount_Movement_' + $scope.year + '_' + dt);
                     }, 0);
                 },
                 error: AjaxError

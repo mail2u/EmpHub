@@ -36,14 +36,16 @@
             </div>
             <div class="col-sm-4 mb-3 d-flex">
                 <div class="text-nowrap me-2">Date</div>
-                <input class="form-text icon-calendar join_date date mx-2"
+                <input class="form-text join_date date mx-2" ng-model="iForm.join_date" />
+              @*   <input class="form-text icon-calendar join_date date mx-2"
                        ng-model="iForm.join_date_select"
                        ng-model-options="{ updateOn: 'blur' }"
                        moment-picker="iForm.join_date_select"
                        locale="th"
                        format="DD/MM/YYYY"
                        min-view="month"
-                       max-view="month" required />
+                       max-view="month"
+                       max-date="now" required /> *@
             </div>
         </div>
         <table class="table table-bolder border">
@@ -213,7 +215,7 @@
     </div>
     <div class="d-flex justify-content-end">
         <div class="btn btn-primary" ng-click="Save()">
-            <i class="far fa-paper-plane me-2"></i> Send Request
+            <i class="far fa-paper-plane me-2"></i> ส่งใบคำขอ
         </div>
     </div>
 </div>
@@ -223,6 +225,7 @@
     $(".date").mask("00/00/0000");
     app.controller('FormCtrl', function ($scope, $http, $timeout, $filter) {
         $scope.id = '@Model.refId';
+        $scope.now = new Date();
 
         $scope.LoadForm = function(){
             $.ajax({
@@ -311,11 +314,11 @@
             JS_Reset($(".answer10_b_desc"));
             JS_Reset($(".answer11_desc"));
 
-            if ($scope.iForm.join_date_select) {
-                $scope.iForm.join_date = $scope.iForm.join_date_select.format('DD/MM/YYYY');
-            }else{
-                $scope.iForm.join_date = '';
-            }
+            // if ($scope.iForm.join_date_select) {
+            //     $scope.iForm.join_date = $scope.iForm.join_date_select.format('DD/MM/YYYY');
+            // }else{
+            //     $scope.iForm.join_date = '';
+            // }
             if ($scope.iForm.answer2_date_select) {
                 $scope.iForm.answer2_date = $scope.iForm.answer2_date_select.format('DD/MM/YYYY');
             }else{
@@ -350,7 +353,7 @@
                 flag = false;
                 JS_Require($(".department"));
             }
-            if ($scope.iForm.join_date == '') {
+            if (JS_ValidateDate($scope.iForm.join_date) == false) {
                 flag = false;
                 JS_Require($(".join_date"));
             }
@@ -366,7 +369,7 @@
                 flag = false;
                 JS_Require($(".answer2_desc"));
             }
-            if ($scope.iForm.answer2_date == '') {
+            if (JS_ValidateDate($scope.iForm.answer2_date) == false) {
                 flag = false;
                 JS_Require($(".answer2_date"));
             }
@@ -374,7 +377,7 @@
                 flag = false;
                 JS_Require($(".answer3_desc"));
             }
-            if ($scope.iForm.answer3_date == '') {
+            if (JS_ValidateDate($scope.iForm.answer3_date) == false) {
                 flag = false;
                 JS_Require($(".answer3_date"));
             }
@@ -382,7 +385,7 @@
                 flag = false;
                 JS_Require($(".answer4_desc"));
             }
-            if ($scope.iForm.answer4_date == '') {
+            if (JS_ValidateDate($scope.iForm.answer4_date) == false) {
                 flag = false;
                 JS_Require($(".answer4_date"));
             }
@@ -394,7 +397,7 @@
                 flag = false;
                 JS_Require($(".answer6_desc"));
             }
-            if ($scope.iForm.answer6_date == '') {
+            if (JS_ValidateDate($scope.iForm.answer6_date) == false) {
                 flag = false;
                 JS_Require($(".answer6_date"));
             }
@@ -414,7 +417,7 @@
                 flag = false;
                 JS_Require($(".answer9_desc"));
             }
-            if ($scope.iForm.answer9_date == '') {
+            if (JS_ValidateDate($scope.iForm.answer9_date) == false) {
                 flag = false;
                 JS_Require($(".answer9_date"));
             }

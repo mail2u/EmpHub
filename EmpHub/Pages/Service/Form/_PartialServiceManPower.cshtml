@@ -205,10 +205,10 @@
                 </div>
                 <div>
                     <div class="text-dark fw-bolder">คำบรรยายลักษณะงาน (JOB DESCRIPTION)</div>
-                    <a href="@Url.Page("/Service/FormJobDescription")?id={{ iForm.refId }}" class="btn btn-light-dash bg-white" ng-show="iJD.refId == null && iJD.can_edit == 1" target="_blank">
+                    <a href="@Url.Page("/Service/FormCreate/FormJobDescription")?id={{ iForm.refId }}" class="btn btn-light-dash bg-white" ng-show="iJD.refId == null && iJD.can_edit == 1" target="_blank">
                         <i class="fas fa-plus me-2"></i> เพิ่มรายละเอียด
                     </a>
-                    <a href="@Url.Page("/Service/FormJobDescription")?id={{ iForm.refId }}" class="btn btn-primary" ng-show="iJD.refId != null" target="_blank">
+                    <a href="@Url.Page("/Service/FormCreate/FormJobDescription")?id={{ iForm.refId }}" class="btn btn-primary" ng-show="iJD.refId != null" target="_blank">
                         ดูรายละเอียด
                     </a>
                 </div>
@@ -248,6 +248,7 @@
             $scope.status = x.status;
 
             await $scope.LoadDetail();
+            $scope.LoadJD();
         }
 
         $scope.$on('FORM_REQUEST_MANPOWER_LOAD', function (e, data) {

@@ -16,11 +16,6 @@
         padding: 5px !important;
     }
 
-/* 
-    .simditor {
-        max-width: 825px !important; /* old 825 */
-    }
- */
     .simditor.is-invalid {
         border: 1px solid red;
     }
@@ -44,21 +39,6 @@
         color: var(--gray);
     }
 </style>
-@* @section PageHeader {
-    <!-- [ page-header ] start -->
-    <div class="page-header">
-        <div class="page-header-left d-flex align-items-center">
-            <div class="page-header-title">
-                <h5 class="m-b-10">HR Service</h5>
-            </div>
-            <ul class="breadcrumb">
-                <li class="breadcrumb-item"><a href="@Url.Page("/Index")">Home</a></li>
-                <li class="breadcrumb-item"><a href="@Url.Page("/SurveySetting/Index")">Survey Setting</a></li>
-                <li class="breadcrumb-item">Question</li>
-            </ul>
-        </div>
-    </div>
-} *@
 <div ng-controller="SurveyCtrl" class="position-relative p-0">
     <div class="d-flex align-items-center mb-2">
         <div class="flex-fill">
@@ -69,7 +49,7 @@
         <div class="btn btn-primary me-2" ng-click="NewSection()">
             New Section
         </div>
-        <a class="btn btn-light bg-white me-2" href="@Url.Page("/SurveySetting/Preview")?id={{ surveyId }}" target="_blank">
+        <a class="btn btn-light bg-white me-2" href="@Url.Page("/SurveySetting/Preview")?id={{ surveyId }}">
             <i class="bi bi-view-list me-2"></i> Preview
         </a>
         <div class="vr me-2"></div>
@@ -131,7 +111,7 @@
                             <div class="flex-fill me-2">
                                 <input ng-model="c.value" class="form-control" placeholder="data value" ng-blur="UpdateChoice(c)" maxlength="50" />
                             </div>
-                        <div class="btn btn-circle shadow-sm" ng-click="DeleteQuestion(q, c)">
+                            <div class="btn btn-circle shadow-sm" ng-click="DeleteChoice(q, c)">
                             <i class="bi bi-trash"></i>
                         </div>
                         </div>
@@ -207,7 +187,7 @@
              data-bs-title="พบการเปลี่ยนแปลงกำลังบันทึก">
             <i class="bi bi-cloud-arrow-up fs-5 text-blue"></i>
         </div>
-        <div ng-show="is_save == 0" class="p-2 text-dark"
+        <div ng-show="is_save == 0" class="p-2 text-success"
              data-bs-toggle="tooltip"
              data-bs-placement="top"
              data-bs-custom-class="custom-tooltip"
@@ -231,7 +211,7 @@
         $scope.section_index = 0;
         $scope.iSection = {};
         $scope.lSection = [];
-        $scope.lType = ['radio', 'checkbox', 'text', 'textarea', 'number'];
+        $scope.lType = ['radio', 'checkbox', 'text', 'textarea'];
         Simditor.locale = 'en-US';
         var editor = new Simditor({
             textarea: $('#editor')
@@ -582,7 +562,7 @@
         $scope.DeleteChoice = function (question, x) {
             alertConfirm("Delete Choice", "ยืนยันการทำรายการ", () => {
                 $.ajax({
-                    url: '@webAPI.CurrentValue.APIEmpHub/api/SurveyQuestion/Delete'
+    url: '@webAPI.CurrentValue.APIEmpHub/api/SurveyChoice/Delete'
                     , headers: { 'authorization': 'Bearer @token' }
                     , type: 'post'
                     , contentType: 'application/json'

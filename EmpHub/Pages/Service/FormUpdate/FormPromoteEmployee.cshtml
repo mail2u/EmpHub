@@ -43,19 +43,20 @@
                 <div class="text-nowrap me-2">ตำแหน่ง</div><input ng-model="iForm.position" class="form-text position" maxlength="50" />
             </div>
             <div class="col-sm-6 mb-3 d-flex">
-                <div class="text-nowrap me-2">ส่วน</div><input ng-model="iForm.section" class="form-text section" maxlength="50" />
+                <div class="text-nowrap me-2">ฝ่าย</div><input ng-model="iForm.section" class="form-text section" maxlength="50" />
             </div>
             <div class="col-sm-6 mb-3 d-flex">
-                <div class="text-nowrap me-2">ฝ่าย</div><input ng-model="iForm.department" class="form-text department" maxlength="50" />
+                <div class="text-nowrap me-2">สายงาน</div><input ng-model="iForm.department" class="form-text department" maxlength="50" />
             </div>
             <div class="col-sm-6 mb-3 d-flex">
-                <div class="text-nowrap me-2">วันที่เริ่มงาน</div>
+                <div class="text-nowrap me-2">วันที่เริ่มงาน (ปี ค.ศ.)</div>
                 <input class="form-text icon-calendar join_date date mx-2"
                        ng-model="iForm.join_date_select"
                        ng-model-options="{ updateOn: 'blur' }"
                        moment-picker="iForm.join_date_select"
                        locale="th"
                        format="DD/MM/YYYY"
+                       max-date="now"
                        min-view="month"
                        max-view="month" required change="CalcAge()" />
             </div>
@@ -109,7 +110,7 @@
     </div>
     <div class="d-flex justify-content-end">
         <div class="btn btn-primary" ng-click="Save()">
-            <i class="far fa-paper-plane me-2"></i> Send Request
+            <i class="far fa-paper-plane me-2"></i> ส่งใบคำขอ
         </div>
     </div>
     @* modal *@
@@ -138,6 +139,7 @@
     $(".date").mask("00/00/0000");
     app.controller('FormCtrl', function ($scope, $http, $timeout, $filter) {
         $scope.id = '@Model.refId';
+        $scope.now = new Date();
 
         $scope.LoadForm = function(){
             $.ajax({

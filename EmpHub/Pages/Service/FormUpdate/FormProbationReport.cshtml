@@ -28,11 +28,20 @@
         </div>
         <div class="fs-5 mb-4">
             <span style="padding-left:100px"></span>
-            ข้าพเจ้า (นาย/นาง/นางสาว) <input ng-model="iForm.fullname" class="form-text fullname" style="width:400px" maxlength="100" /> ได้รับอนุมัติจากบริษัทฯ ให้ดำเนินการ
-            ปฏิบัติงานเป็นเวลา <input ng-model="iForm.period" class="form-text period" style="width:100px" maxlength="50" /> เดือน/ วัน 
-            โดยเริ่มเข้าปฏิบัติงานตั้งแต่วันที่ <input ng-model="iForm.join_date" class="form-text join_date date" style="width:140px" maxlength="50" />
+            ข้าพเจ้า
+            <select ng-model="iForm.prefix" class="form-text prefix" style="width:100px" ng-options="x for x in lPrefix"></select>
+            <input ng-model="iForm.fullname" class="form-text fullname" style="width:400px" maxlength="100" /> ได้รับอนุมัติจากบริษัทฯ ให้ดำเนินการ
+            ปฏิบัติงานเป็นเวลา <input ng-model="iForm.period" class="form-text period day" style="width:100px" maxlength="3" /> เดือน/ วัน
+            โดยเริ่มเข้าปฏิบัติงานตั้งแต่วันที่ <input class="form-text icon-calendar join_date date mx-2"
+                                                       ng-model="iForm.join_date_select"
+                                                       ng-model-options="{ updateOn: 'blur' }"
+                                                       moment-picker="iForm.join_date_select"
+                                                       locale="th"
+                                                       format="DD/MM/YYYY"
+                                                       min-view="month"
+                                                       max-view="month" required style="width:150px;" />
             ในตำแหน่ง <input ng-model="iForm.position" class="form-text position" style="width:300px" maxlength="50" />
-            สังกัดสายงาน/ฝ่าย <input ng-model="iForm.department" class="form-text department" style="width:400px" maxlength="50" />
+            สังกัดสายงาน/ฝ่าย <select ng-model="iForm.department" class="form-text department" style="width:400px" ng-options="x.desc_th as x.desc_th for x in lDepartment"></select>
         </div>
         <div class="fs-5 my-3 bg-light p-3">
             โปรดบันทึกรายงานการปฏิบัติงานของท่านในช่วงระหว่างทดลองงานโดยละเอียดตามข้อเท็จจริง เพื่อนำไปประกอบการประเมินผลการปฏิบัติงานในช่วงระยะเวลาทดลองงาน เพื่อพิจารณาบรรจุเป็นพนักงานประจำต่อไป
@@ -76,7 +85,7 @@
     </div>
     <div class="d-flex justify-content-end">
         <div class="btn btn-primary" ng-click="Save()">
-            <i class="far fa-paper-plane me-2"></i> Send Request
+            <i class="far fa-paper-plane me-2"></i> ส่งใบคำขอ
         </div>
     </div>
 </div>
@@ -85,7 +94,29 @@
     $(".score").mask("00");
     $(".date").mask("00/00/0000");
     app.controller('FormCtrl', function ($scope, $http, $timeout, $filter) {
-       $scope.id = '@Model.refId';
+        $scope.id = '@Model.refId';
+        $scope.lPrefix = ['นาย', 'นาง', 'นางสาว'];
+
+        $scope.LoadMaster = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'departmentCode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lDepartment = result.filter(item => item.condition_4 == 'Department');
+                    }, 0);
+                }
+                , error: AjaxError
+            });
+        }
+        $scope.LoadMaster();
 
         $scope.LoadForm = function(){
             $.ajax({
@@ -124,6 +155,12 @@
             JS_Reset($(".answer6"));
             JS_Reset($(".answer7"));
 
+            if ($scope.iForm.join_date_select) {
+                $scope.iForm.join_date = $scope.iForm.join_date_select.format("DD/MM/YYYY");
+            } else {
+                $scope.iForm.join_date = '';
+            }
+
             if ($scope.iForm.fullname == '') {
                 flag = false;
                 JS_Require($(".fullname"));
@@ -140,7 +177,7 @@
                 flag = false;
                 JS_Require($(".period"));
             }
-            if ($scope.iForm.join_date == '') {
+            if (JS_ValidateDate($scope.iForm.join_date) == false) {
                 flag = false;
                 JS_Require($(".join_date"));
             }

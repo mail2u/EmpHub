@@ -1,0 +1,128 @@
+@{
+    var token = User.AccessToken(Context);
+}
+<div ng-controller="ServiceJobDescriptionCtrl">
+    <div class="bg-white rounded-4 border mb-4 overflow-hidden p-4">
+        <div class="px-4 py-3 border-bottom d-flex align-items-center">
+            <div class="fs-5 fw-bolder text-dark flex-fill">คำบรรยายลักษณะงาน (JOB DESCRIPTION)</div>
+        </div>
+        <div class="p-4 fs-6">
+            <div class="fs-5 text-warning mb-3">1. ข้อมูลตำแหน่งงาน (Position Identification)</div>
+            <div class="row">
+                <div class="col-sm-3 mb-3 text-dark fw-bolder">ชื่อตำแหน่งงาน</div>
+                <div class="col-sm-3 mb-3 text-blue">{{ iForm.positionName }}</div>
+                <div class="col-sm-3 mb-3 text-dark fw-bolder">สายงาน</div>
+                <div class="col-sm-3 mb-3 text-blue">{{ iForm.jobFunction }}</div>
+                <div class="col-sm-3 mb-3 text-dark fw-bolder">ฝ่ายงาน</div>
+                <div class="col-sm-3 mb-3 text-blue">{{ iForm.departmentName }}</div>
+                <div class="col-sm-3 mb-3 text-dark fw-bolder">ส่วนงาน</div>
+                <div class="col-sm-3 mb-3 text-blue">{{ iForm.sectionName }}</div>
+                <div class="col-sm-12 mb-3">
+                    <div class="text-dark fw-bolder">ความรับผิดชอบโดยสังเขป (Position Summary)</div>
+                    <div class="text-blue white-space-pre-line">{{ iForm.position_description }}</div>
+                </div>
+            </div>
+
+            <div class="fs-5 text-warning mb-3">2. บทบาทหน้าที่ความรับผิดชอบหลัก (Major Role Responsibilities)</div>
+            <div class="mb-3 text-blue white-space-pre-line">{{ iForm.major_description }}</div>
+
+            <div class="fs-5 text-warning mb-3">3. ทักษะและประสบการณ์ (Experience and Skills)</div>
+            <div class="row">
+                <div class="col-sm-6 mb-3">
+                    <div class="text-dark fw-bolder">การศึกษา (Education)</div>
+                    <div class="text-blue white-space-pre-line">{{ iForm.education }}</div>
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <div class="text-dark fw-bolder">ประสบการณ์ (Experience)</div>
+                    <div class="text-blue white-space-pre-line">{{ iForm.experience }}</div>
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <div class="text-dark fw-bolder">สมรรถนะเชิงสายงาน (Functional Competencies)</div>
+                    <div class="text-blue white-space-pre-line">{{ iForm.functional_competencies }}</div>
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <div class="text-dark fw-bolder">สมรรถนะผู้นำ (Leadership Competencies)</div>
+                    <div class="text-blue white-space-pre-line">{{ iForm.leadership_competencies }}</div>
+                </div>
+            </div>
+
+            <div class="fs-5 text-warning mb-3">4. ผลงานที่คาดหวัง (Key Result Areas)</div>
+            <div class="row">
+                <div class="col-sm-6 mb-3">
+                    <div class="text-dark fw-bolder">ด้านการเงิน (Financial)</div>
+                    <div class="text-blue white-space-pre-line">{{ iForm.financial }}</div>
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <div class="text-dark fw-bolder">ด้านลูกค้าและตลาด (Customer and Market)</div>
+                    <div class="text-blue white-space-pre-line">{{ iForm.customer_and_market }}</div>
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <div class="text-dark fw-bolder">ด้านกระบวนการ (Process)</div>
+                    <div class="text-blue white-space-pre-line">{{ iForm.process }}</div>
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <div class="text-dark fw-bolder">ด้านการพัฒนาศักยภาพบุคลากร (People Development)</div>
+                    <div class="text-blue white-space-pre-line">{{ iForm.people_development }}</div>
+                </div>
+            </div>
+
+            <div class="fs-5 text-warning mb-3">5. การติดต่อสื่อสาร (Contacts and Purpose of Contact)</div>
+            <div class="row">
+                <div class="col-sm-6 mb-3">
+                    <div class="text-dark fw-bolder">หน่วยงานภายใน</div>
+                    <div class="text-blue white-space-pre-line">{{ iForm.internal_description }}</div>
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <div class="text-dark fw-bolder">วัตถุประสงค์ในการติดต่อสื่อสาร</div>
+                    <div class="text-blue white-space-pre-line">{{ iForm.internal_contact_description }}</div>
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <div class="text-dark fw-bolder">หน่วยงานภายนอก</div>
+                    <div class="text-blue white-space-pre-line">{{ iForm.external_description }}</div>
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <div class="text-dark fw-bolder">วัตถุประสงค์ในการติดต่อสื่อสาร</div>
+                    <div class="text-blue white-space-pre-line">{{ iForm.external_contact_description }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    app.controller('ServiceJobDescriptionCtrl', function ($scope, $http, $timeout, $filter) {
+        $scope.LoadDetail = function () {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormJobDescriptionDetail',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        refId: $scope.refId,
+                        userId: '@User.UserId()'
+                    }),
+                    success: function (result) {
+                        $timeout(function () {
+                            $scope.iForm = result;
+                            resolve(true);
+                        }, 0);
+                    },
+                    error: function () {
+                        resolve(false);
+                    }
+                });
+            });
+        }
+
+        $scope.init = async function (x) {
+            $scope.refId = x.id;
+            await $scope.LoadDetail();
+        }
+
+        $scope.$on('FORM_JOB_DESCRIPTION_LOAD', function (e, data) {
+            $scope.init(data);
+        });
+    });
+</script>

@@ -27,7 +27,7 @@
         </div>
         <div class="col-sm-4 mb-3">
             <div class="text-dark fw-bolder">เพศ</div>
-            <div>{{ iPersonal.sex == '' ? '-' : iPersonal.sex }}</div>
+            <div>{{ iPersonal.sex == 'M' ? 'ชาย' : iPersonal.sex == 'F' ? 'หญิง' : '-' }}</div>
         </div>
         <div class="col-sm-4 mb-3">
             <div class="text-dark fw-bolder">น้ำหนัก</div>
@@ -43,27 +43,27 @@
         </div>
         <div class="col-sm-4 mb-3">
             <div class="text-dark fw-bolder">สัญชาติ</div>
-            <div>{{ iPersonal.nationality == '' ? '-' : iPersonal.nationality }}</div>
+            <div>{{ iPersonal.nationalityDesc == '' ? '-' : iPersonal.nationalityDesc }}</div>
         </div>
         <div class="col-sm-4 mb-3">
             <div class="text-dark fw-bolder">เชื้อชาติ</div>
-            <div>{{ iPersonal.ethnicity == '' ? '-' : iPersonal.ethnicity }}</div>
+            <div>{{ iPersonal.ethnicityDesc == '' ? '-' : iPersonal.ethnicityDesc }}</div>
         </div>
         <div class="col-sm-4 mb-3">
             <div class="text-dark fw-bolder">ศาสนา</div>
-            <div>{{ iPersonal.religion == '' ? '-' : iPersonal.religion }}</div>
+            <div>{{ iPersonal.religionDesc == '' ? '-' : iPersonal.religionDesc }}</div>
         </div>
         <div class="col-sm-4 mb-3">
             <div class="text-dark fw-bolder">สถานภาพการสมรส</div>
-            <div>{{ iPersonal.maritalStatus == '' ? '-' : iPersonal.maritalStatus }}</div>
+            <div>{{ iPersonal.maritalStatusDesc == '' ? '-' : iPersonal.maritalStatusDesc }}</div>
         </div>
         <div class="col-sm-4 mb-3">
             <div class="text-dark fw-bolder">สถานะทางการทหาร</div>
-            <div>{{ iPersonal.militaryStatus == '' ? '-' : iPersonal.militaryStatus }}</div>
+            <div>{{ iPersonal.militaryStatusDesc == '' ? '-' : iPersonal.militaryStatusDesc }}</div>
         </div>
         <div class="col-sm-4 mb-3">
             <div class="text-dark fw-bolder">สถานะความพิการ</div>
-            <div>{{ iPersonal.disabilityStatus == '' ? '-' : iPersonal.disabilityStatus }}</div>
+            <div>{{ iPersonal.disabilityStatusDesc == '' ? '-' : iPersonal.disabilityStatusDesc }}</div>
         </div>
     </div>
     <hr class="my-3" />
@@ -74,7 +74,7 @@
             </div>
         </div>
         <div>
-            <a class="btn btn-sm btn-warning-invert" href="@Url.Page("/Service/FormUpdateDataPersonal")?mode=EDIT_PERSONAL&id={{userId}}" target="_blank">
+            <a class="btn btn-sm btn-warning-invert" href="@Url.Page("/Service/FormCreate/FormUpdateDataPersonal")?mode=EDIT_PERSONAL&id={{userId}}" target="_blank">
                 <i class="bi bi-pen me-2"></i> แก้ไข
             </a>
         </div>

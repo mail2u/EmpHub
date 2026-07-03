@@ -38,12 +38,11 @@
     <div class="page-header">
         <div class="page-header-left d-flex align-items-center">
             <div class="page-header-title">
-                <h5 class="m-b-10">Organization</h5>
+                <h5 class="m-b-10">แผนผัง</h5>
             </div>
             <ul class="breadcrumb">
-                <li class="breadcrumb-item"><a href="@Url.Page("/Index")">Home</a></li>
-                <li class="breadcrumb-item">Organization</li>
-                <li class="breadcrumb-item">Company</li>
+                <li class="breadcrumb-item"><a href="@Url.Page("/Index")">หน้าแรก</a></li>
+                <li class="breadcrumb-item">องค์กร</li>
             </ul>
         </div>
     </div>
@@ -153,7 +152,7 @@
             evt.preventDefault();
 
             const factor = delta > 0 ? 1.1 : 0.9;
-            zoom(factor, { x, y });
+            zoom(factor, evt, { x, y });
         }
 
         //zoom in out
@@ -203,9 +202,30 @@
             paper.translate(dx, dy);
         });
 
-        function zoom(factor, center) {
-            scale = Math.min(maxScale, Math.max(minScale, scale * factor));
-            paper.scale(scale, scale, center);
+        function zoom(factor, evt, fallbackPoint) {
+            const nextScale = Math.min(maxScale, Math.max(minScale, scale * factor));
+
+            if (nextScale === scale) {
+                return;
+            }
+
+            const paperRect = paper.el.getBoundingClientRect();
+            const mouse = {
+                x: evt.clientX - paperRect.left,
+                y: evt.clientY - paperRect.top
+            };
+
+            const localPoint = paper.clientToLocalPoint
+                ? paper.clientToLocalPoint(evt.clientX, evt.clientY)
+                : fallbackPoint;
+
+            scale = nextScale;
+
+            paper.scale(scale, scale);
+            paper.translate(
+                mouse.x - (localPoint.x * scale),
+                mouse.y - (localPoint.y * scale)
+            );
         }
 
         //Click เพื่อดูทีม

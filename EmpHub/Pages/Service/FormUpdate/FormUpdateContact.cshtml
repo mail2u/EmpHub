@@ -26,7 +26,7 @@
     @* View *@
     <div class="rounded-4 mb-3 bg-white shadow-sm p-4">
         <div class="text-center fs-4 fw-bolder mb-4 text-dark">
-            ปรับปรุงข้อมูลบัตร
+            ปรับปรุงข้อมูลติดต่อ
         </div>
         <div class="text-dark fs-6">
             <div class="fw-bolder fs-6">ที่อยู่ทะเบียนบ้าน</div>
@@ -142,7 +142,7 @@
     </div>
     <div class="d-flex justify-content-end">
         <div class="btn btn-primary" ng-click="Save()">
-            <i class="far fa-paper-plane me-2"></i> Send Request
+            <i class="far fa-paper-plane me-2"></i> ส่งใบคำขอ
         </div>
     </div>
     @* modal *@
@@ -266,6 +266,11 @@
                         $scope.iForm.mobile = iData.mobile;
                         $scope.iForm.phone = iData.phone;
                         $scope.iForm.email = iData.email;
+                        $scope.iForm.emergency_fullname = iData.emergency_fullname;
+                        $scope.iForm.emergency_relation = iData.emergency_relation;
+                        $scope.iForm.emergency_phone = iData.emergency_phone;
+                        $scope.iForm.emergency_email = iData.emergency_email;
+                        $scope.iForm.emergency_address = iData.emergency_address;
                     }, 0);
                 }, error: AjaxError
             });

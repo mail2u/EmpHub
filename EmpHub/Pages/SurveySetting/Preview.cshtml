@@ -9,6 +9,13 @@
     }
 </style>
 <div ng-controller="SurveyCtrl" class="position-relative p-0">
+    <div class="d-flex align-items-center mb-2">
+        <div class="flex-fill">
+            <a class="btn btn-circle" href="@Url.Page("/SurveySetting/Detail")?id={{ surveyId }}">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+        </div>
+    </div>
     <div class="container">
         <div class="fs-5 text-blue mb-2">
             STEP {{ section_index + 1 }} OF {{ lSection.length }}

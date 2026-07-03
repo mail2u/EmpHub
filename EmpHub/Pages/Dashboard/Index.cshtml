@@ -4,31 +4,31 @@
     var token = User.AccessToken(HttpContext);
 }
 <div ng-controller="DashboardCtrl">
-    <div class="fs-4 fw-bolder mb-3">
-        Dashboard Employee
+    <div class="fs-4 fw-bolder mb-3 text-dark">
+        แดชบอร์ดข้อมูลพนักงาน
     </div>
     <div class="row">
-        <div class="col-sm-3 mb-3">
+        <div class="col-sm-6 mb-3">
             <div class="rounded-4 bg-white shadow-sm p-4 h-100">
-                <div class="fs-4">Gender</div>
+                <div class="fs-4">เพศ</div>
                 <canvas id="chart_sex"></canvas>
             </div>
         </div>
-        <div class="col-sm-3 mb-3">
+        <div class="col-sm-6 mb-3">
             <div class="rounded-4 bg-white shadow-sm p-4 h-100">
-                <div class="fs-4">Generation</div>
+                <div class="fs-4">ช่วงอายุพนักงาน</div>
                 <canvas id="chart_gen"></canvas>
             </div>
         </div>
-        <div class="col-sm-3 mb-3">
+        <div class="col-sm-6 mb-3">
             <div class="rounded-4 bg-white shadow-sm p-4 h-100">
-                <div class="fs-4">Employee Type </div>
+                <div class="fs-4">ประเภทพนักงาน</div>
                 <canvas id="chart_employee_type"></canvas>
             </div>
         </div>
-        <div class="col-sm-3 mb-3">
+        <div class="col-sm-6 mb-3">
             <div class="rounded-4 bg-white shadow-sm p-4 h-100">
-                <div class="fs-4">Education </div>
+                <div class="fs-4">ระดับการศึกษา</div>
                 <canvas id="chart_education"></canvas>
             </div>
         </div>
@@ -42,15 +42,15 @@
         </div>
     </div> *@
     <div class="row">
-        <div class="col-sm-6">
+        <div class="col-sm-12 mb-3">
              <div class="rounded-4 bg-white shadow-sm p-4 h-100">
-                <div class="fs-4">Position </div>
+                <div class="fs-4">ตำแหน่งงาน</div>
                 <canvas id="chart_position"></canvas>
             </div>
         </div>
-        <div class="col-sm-6">
+        <div class="col-sm-12 mb-3">
             <div class="rounded-4 bg-white shadow-sm p-4 h-100">
-                <div class="fs-4">Department </div>
+                <div class="fs-4">หน่วยงาน</div>
                 <canvas id="chart_department"></canvas>
             </div>
         </div>

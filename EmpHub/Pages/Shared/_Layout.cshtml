@@ -1,11 +1,14 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var token = User.AccessToken(Context);
+}
+<!DOCTYPE html>
 <html lang="en" translate="no" class="">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="google" content="notranslate">
     <title>Core HR</title>
-    <link rel="shortcut icon" href="~/partners.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="~/icon_core_hr.ico type="image/x-icon" />
     @* <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
     <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
@@ -86,9 +89,9 @@
                 <a href="@Url.Page("/Index")" class="b-brand">
                     <!-- ========   change your logo hear   ============ -->
                     <span class="logo logo-lg fs-4">
-                        <img src="~/Images/icon-TIP.png" height="43" /> Core HR
+                        <img src="~/Images/logo_core_hr.png" height="50" />
                     </span>
-                    <img src="~/Images/icon-TIP.png" alt="" class="logo logo-sm" />
+                    <img src="~/Images/icon_core_hr.png" alt="" class="logo logo-sm" />
                 </a>
             </div>
             <div class="navbar-content">
@@ -96,25 +99,28 @@
                     <li class="nxl-item nxl-caption">
                         <label>Navigation</label>
                     </li>
+                    @if (User.Authen().Contains("Dashboard"))
+                    {
+                        <li class="nxl-item nxl-hasmenu">
+                            <a href="javascript:void(0);" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-airplay"></i></span>
+                                <span class="nxl-mtext">แดชบอร์ด</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                            </a>
+                            <ul class="nxl-submenu">
+                                <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Dashboard/Index")">ข้อมูลพนักงาน</a></li>
+                                <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/Dashboard")">ข้อมูลบริการ</a></li>
+                            </ul>
+                        </li>
+                    }
                     <li class="nxl-item nxl-hasmenu">
                         <a href="javascript:void(0);" class="nxl-link">
-                            <span class="nxl-micon"><i class="feather-airplay"></i></span>
-                            <span class="nxl-mtext">Dashboards</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
-                        </a>
-                        <ul class="nxl-submenu">
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Dashboard/Index")">Employee</a></li>
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/Dashboard")">HR Service</a></li>
-                        </ul>
-                    </li>
-                    <li class="nxl-item nxl-hasmenu">
-                        <a href="javascript:void(0);" class="nxl-link">
-                            <span class="nxl-micon"><i class="fas fa-sitemap"></i></span>
-                            <span class="nxl-mtext">Organization</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                            <span class="nxl-micon"><i class="bi bi-diagram-3"></i></span>
+                            <span class="nxl-mtext">แผนผัง</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                         </a>
                         <ul class="nxl-submenu">
                             @* <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Organization/Index")">Company</a></li> *@
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/organization/Company")">Company</a></li>
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/organization/team")">My Team</a></li>
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/organization/Company")">องค์กร</a></li>
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/organization/team")">ฝ่ายงาน</a></li>
                             @* <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Organization/Inquire")?id=CEO&chartId=TIPOrgChart1"><i class="bi bi-gear me-1"></i> Manage</a></li> *@
                         </ul>
                     </li>
@@ -144,52 +150,94 @@
                     </li> *@
                     <li class="nxl-item nxl-hasmenu">
                         <a href="javascript:void(0);" class="nxl-link">
-                            <span class="nxl-micon"><i class="fas fa-at"></i></span>
-                            <span class="nxl-mtext">HR Service</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                            <span class="nxl-micon position-relative">
+                                <i class="bi bi-headset"></i>
+                                <span ng-show="alert_request > 0 || alert_approve > 0 || alert_work > 0" class="position-absolute top-0 start-0 translate-middle badge border border-light rounded-circle bg-danger p-1">
+                                    <span class="visually-hidden">unread messages</span>
+                                </span>
+                            </span>
+                            <span class="nxl-mtext">
+                                บริการ HR
+                            <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                         </a>
                         <ul class="nxl-submenu">
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/Index")">My Request</a></li>
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/Approve")">Approve</a></li>
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/Work")">Work</a></li>
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/Inquire")"><i class="bi bi-search me-1"></i> Inquire</a></li>
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/Category")"><i class="bi bi-gear me-1"></i> Category</a></li>
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/Process")"><i class="bi bi-gear me-1"></i> Process</a></li>
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/Role")"><i class="bi bi-gear me-1"></i> Role</a></li>
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/UserAuthen")"><i class="bi bi-gear me-1"></i> Authen</a></li>
+                            <li class="nxl-item"><a class="nxl-link position-relative" href="@Url.Page("/Service/Index")">
+                                บริการของฉัน
+                                <span ng-show="alert_request > 0" class="position-absolute top-50 end-0 translate-middle badge border border-light rounded-circle bg-danger p-1 me-1"><span class="visually-hidden">unread messages</span>
+                            </a></li>
+                            <li class="nxl-item"><a class="nxl-link position-relative" href="@Url.Page("/Service/Approve")">
+                                รออนุมัติ
+                                <span ng-show="alert_approve > 0" class="position-absolute top-50 end-0 translate-middle badge border border-light rounded-circle bg-danger p-1 me-1"><span class="visually-hidden">unread messages</span>
+                            </a></li>
+                            <li class="nxl-item">
+                                <a class="nxl-link position-relative" href="@Url.Page("/Service/Work")">
+                                รอดำเนินการ
+                                <span ng-show="alert_work > 0" class="position-absolute top-50 end-0 translate-middle badge border border-light rounded-circle bg-danger p-1 me-1"><span class="visually-hidden">unread messages</span>
+                            </a>
+                            </li>
+                            @if (User.Authen().Contains("HRService"))
+                            {
+                                <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/Inquire")"><i class="bi bi-search me-1"></i> สอบถามข้อมูล</a></li>
+                                <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/Category")"><i class="bi bi-gear me-1"></i> ตั้งค่าประเภทใบคำขอ</a></li>
+                                <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/Process")"><i class="bi bi-gear me-1"></i> ตั้งค่าการอนุมัติใบคำขอ</a></li>
+                                <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/Role")"><i class="bi bi-gear me-1"></i> ตั้งค่ากลุ่มสิทธิ</a></li>
+                                <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Service/UserAuthen")"><i class="bi bi-gear me-1"></i> มอบหมายสิทธิ</a></li>
+                            }
                         </ul>
                     </li>
+                    @if (User.Authen().Contains("Employee"))
+                    {
+                        <li class="nxl-item nxl-hasmenu">
+                            <a href="javascript:void(0);" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-users"></i></span>
+                                <span class="nxl-mtext">พนักงาน</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                            </a>
+                            <ul class="nxl-submenu">
+                                @*  <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Candidate/Index")">Candidate</a></li> *@
+                                <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Employee/Index")">รายชื่อพนักงาน</a></li>
+                                <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Onboarding/Index")">พนักงานเข้าใหม่</a></li>
+                                @*   <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Offboarding/Index")">พนักงานลาออก</a></li> *@
+                            </ul>
+                        </li>
+                    }
                     <li class="nxl-item nxl-hasmenu">
                         <a href="javascript:void(0);" class="nxl-link">
-                            <span class="nxl-micon"><i class="feather-users"></i></span>
-                            <span class="nxl-mtext">Employees</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                            <span class="nxl-micon position-relative">
+                                <i class="bi bi-clipboard-check"></i>
+                                <span ng-show="alert_survey > 0" class="position-absolute top-0 start-0 translate-middle badge border border-light rounded-circle bg-danger p-1">
+                                    <span class="visually-hidden">unread messages</span>
+                                </span>
+                            </span>
+                            <span class="nxl-mtext">แบบสำรวจ<span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                         </a>
                         <ul class="nxl-submenu">
-                           @*  <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Candidate/Index")">Candidate</a></li> *@
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Employee/Index")">Employee Directory</a></li>
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Onboarding/Index")">Onboarding</a></li>
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Offboarding/Index")">Offboarding</a></li>
+                            <li class="nxl-item">
+                                <a class="nxl-link position-relative" href="@Url.Page("/Survey/Index")">
+                                    แบบสำรวจของฉัน
+                                    <span ng-show="alert_survey > 0" class="position-absolute top-50 end-0 translate-middle badge border border-light rounded-circle bg-danger p-1 me-1">
+                                        <span class="visually-hidden">unread messages</span>
+                                    </span>
+                                </a>
+                            </li>
+                            @if (User.Authen().Contains("Survey"))
+                            {
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Survey/Inquire")"><i class="bi bi-search me-1"></i> สอบถามข้อมูล</a></li>
+                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/SurveySetting/Index")"><i class="bi bi-gear me-1"></i> ตั้งค่าแบบสำรวจ</a></li>
+                            }
                         </ul>
                     </li>
-                    <li class="nxl-item nxl-hasmenu">
-                        <a href="javascript:void(0);" class="nxl-link">
-                            <span class="nxl-micon"><i class="feather-cast"></i></span>
-                            <span class="nxl-mtext">Reports</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
-                        </a>
-                        <ul class="nxl-submenu">
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Report/Index")">All Report</a></li>
-                        </ul>
-                    </li>
-                    <li class="nxl-item nxl-hasmenu">
-                        <a href="javascript:void(0);" class="nxl-link">
-                            <span class="nxl-micon"><i class="bi bi-clipboard-check"></i></span>
-                            <span class="nxl-mtext">Survey</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
-                        </a>
-                        <ul class="nxl-submenu">
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Survey/Index")">My Survey</a></li>
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Survey/Inquire")"><i class="bi bi-search me-1"></i> Inquire</a></li>
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/SurveySetting/Index")"><i class="bi bi-gear me-1"></i>Survey Manage</a></li>
-                        </ul>
-                    </li>
+                    @if (User.Authen().Contains("Report"))
+                    {
+                        <li class="nxl-item nxl-hasmenu">
+                            <a href="javascript:void(0);" class="nxl-link">
+                                <span class="nxl-micon"><i class="bi bi-file-earmark-text"></i></span>
+                                <span class="nxl-mtext">รายงาน</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                            </a>
+                            <ul class="nxl-submenu">
+                                <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Report/Index")">รายงานทั้งหมด</a></li>
+                            </ul>
+                        </li>
+                    }
                     @*  <li class="nxl-item nxl-hasmenu">
                     <a href="javascript:void(0);" class="nxl-link">
                     <span class="nxl-micon"><i class="feather-alert-circle"></i></span>
@@ -212,27 +260,31 @@
                     <li class="nxl-item"><a class="nxl-link" href="projects-create.html">Projects Create</a></li>
                     </ul>
                     </li> *@
-                    <li class="nxl-item nxl-hasmenu">
-                        <a href="javascript:void(0);" class="nxl-link">
-                            <span class="nxl-micon"><i class="fas fa-shield-alt"></i></span>
-                            <span class="nxl-mtext">Authorization</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
-                        </a>
-                        <ul class="nxl-submenu">
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Authorization/Role")">Role Function</a></li>
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Authorization/UserAuthen")">User Authen</a></li>
-                        </ul>
-                    </li>
-                    <li class="nxl-item nxl-hasmenu">
-                        <a href="javascript:void(0);" class="nxl-link">
-                            <span class="nxl-micon"><i class="feather-settings"></i></span>
-                            <span class="nxl-mtext">Settings</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
-                        </a>
-                        <ul class="nxl-submenu">
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Setting/Index")">Data Master</a></li>
-                     @*        <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Setting/Department")">Department</a></li>
-                            <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Setting/Position")">Position</a></li> *@
-                        </ul>
-                    </li>
+                    @if (User.Authen().Contains("Authorization"))
+                    {
+                        <li class="nxl-item nxl-hasmenu">
+                            <a href="javascript:void(0);" class="nxl-link">
+                                <span class="nxl-micon"><i class="fas fa-shield-alt"></i></span>
+                                <span class="nxl-mtext">สิทธิ์การใช้งานระบบ</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                            </a>
+                            <ul class="nxl-submenu">
+                                <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Authorization/Role")"> ตั้งค่ากลุ่มสิทธิ</a></li>
+                                <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Authorization/UserAuthen")"> มอบหมายสิทธิ</a></li>
+                            </ul>
+                        </li>
+                    }
+                    @if (User.Authen().Contains("Setting"))
+                    {
+                        <li class="nxl-item nxl-hasmenu">
+                            <a href="javascript:void(0);" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-settings"></i></span>
+                                <span class="nxl-mtext">ตั้งค่าระบบ</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                            </a>
+                            <ul class="nxl-submenu">
+                                <li class="nxl-item"><a class="nxl-link" href="@Url.Page("/Setting/Index")">ข้อมูลในระบบ</a></li>
+                            </ul>
+                        </li>
+                    }
                     @*  <li class="nxl-item nxl-hasmenu">
                     <a href="javascript:void(0);" class="nxl-link">
                     <span class="nxl-micon"><i class="feather-power"></i></span>
@@ -313,13 +365,13 @@
                     </ul>
                     </li> *@
                 </ul>
-                <div class="card text-center">
+                @* <div class="card text-center">
                     <div class="card-body">
                         <i class="feather-sunrise fs-4 text-dark"></i>
                         <h6 class="mt-4 text-dark fw-bolder">Core HR</h6>
                         <p class="fs-11 my-3 text-dark">A centralized system for managing employee data across the organization, covering the entire lifecycle from onboarding to offboarding, ensuring accurate, up-to-date information that can be efficiently integrated with other systems</p>
                     </div>
-                </div>
+                </div> *@
             </div>
         </div>
     </nav>
@@ -471,8 +523,8 @@
                                 <div class="d-flex align-items-center">
                                     <img src="~/assets/images/avatar/1.png" alt="user-image" class="img-fluid user-avtar" />
                                     <div>
-                                        <h6 class="text-dark mb-0">Alexandra Della <span class="badge bg-soft-success text-success ms-1">PRO</span></h6>
-                                        <span class="fs-12 fw-medium text-muted">alex@example.com</span>
+                                        <h6 class="text-dark mb-0">@User.UserName()</h6>
+                                        <span class="fs-12 fw-medium text-muted"></span>
                                     </div>
                                 </div>
                             </div>
@@ -576,7 +628,7 @@
                          @*    <div class="dropdown-divider"></div> *@
                             <a href="@Url.Page("/Profile/Index")" class="dropdown-item">
                                 <i class="feather-user"></i>
-                                <span>Profile Details</span>
+                                <span>ข้อมูลของฉัน</span>
                             </a>
                             @* <a href="javascript:void(0);" class="dropdown-item">
                                 <i class="feather-activity"></i>
@@ -597,7 +649,7 @@
                             <div class="dropdown-divider"></div>
                             <a href="@Url.Page("/Account/logout")" class="dropdown-item">
                                 <i class="feather-log-out"></i>
-                                <span>Logout</span>
+                                <span>ออกจากระบบ</span>
                             </a>
                         </div>
                     </div>
@@ -795,35 +847,95 @@
 
             $scope.LoadAlert = function () {
                 $.ajax({
-                    url: '@webAPI.CurrentValue.APIEmpHub/api/Service/Alert'
-                    , type: 'post'
-                    , contentType: 'application/json'
-                    , dataType: 'json'
-                    , cache: false
-                    , data: JSON.stringify({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Service/RequestSummary',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
                         userBy: '@User.UserId()'
-                    })
-                    , success: function (result) {
+                    }),
+                    success: function (result) {
                         $timeout(function () {
-                            $scope.PR_PO_Request = result.find(x => x.status == 'PR-PO-Request');
-                            $scope.PR_NON_PO_ADV_Request = result.find(x => x.status == 'PR-NON-PO-ADV-Request');
-                            $scope.PR_Review = result.find(x => x.status == 'PR-Review');
-                            $scope.PR_Approve = result.find(x => x.status == 'PR-Approve');
-                            $scope.PO_New = result.find(x => x.status == 'PO-New');
-                            $scope.PO_Review = result.find(x => x.status == 'PO-Review');
-                            $scope.PO_Approve = result.find(x => x.status == 'PO-Approve');
-                            $scope.GR_New = result.find(x => x.status == 'GR-New');
-                            $scope.GR_Request = result.find(x => x.status == 'GR-Request');
-                            $scope.PI_Request = result.find(x => x.status == 'PI-Request');
-                            $scope.PV_New = result.find(x => x.status == 'PV-New');
-                            $scope.PV_Approve = result.find(x => x.status == 'PV-Approve');
-                            $scope.PV_Review = result.find(x => x.status == 'PV-Review');
+                            $scope.alert_request = 0;
+
+                            var find = result.find(x => x.status == 'Request');
+                            if (find) {
+                                $scope.alert_request = find.total;
+                            }
                         }, 0);
-                    }
-                    , error: AjaxError
+                    },
+                    error: AjaxError
+                });
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Service/ApproveSummary',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        userBy: '@User.UserId()'
+                    }),
+                    success: function (result) {
+                        $timeout(function () {
+                            $scope.alert_approve = 0;
+
+                            var find = result.find(x => x.status == 'Approve');
+                            if (find) {
+                                $scope.alert_approve = find.total;
+                            }
+                        }, 0);
+                    },
+                    error: AjaxError
+                });
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Service/WorkSummary',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        userBy: '@User.UserId()'
+                    }),
+                    success: function (result) {
+                        $timeout(function () {
+                            $scope.alert_work = 0;
+
+                            var find = result.find(x => x.status == 'Work');
+                            if (find) {
+                                $scope.alert_work = find.total;
+                            }
+                        }, 0);
+                    },
+                    error: AjaxError
+                });
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/Survey/MySummary',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify({
+                        userId: '@User.UserId()'
+                    }),
+                    success: function (result) {
+                        $timeout(function () {
+                            $scope.alert_survey = 0;
+
+                            var find = result.find(x => x.status == 'Waiting');
+                            if (find) {
+                                $scope.alert_survey = find.total;
+                            }
+                        }, 0);
+                    },
+                    error: AjaxError
                 });
             }
-            //$scope.LoadAlert();
+            $scope.LoadAlert();
         }).directive('formatToCurrency', function ($filter) {
             return {
                 scope: {

@@ -13028,7 +13028,7 @@ function $HttpProvider() {
           config.withCredentials = defaults.withCredentials;
         }
 
-        // send request
+        // ส่งใบคำขอ
         return sendReq(config, reqData).then(transformResponse, transformResponse);
       }
 

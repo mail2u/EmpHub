@@ -34,21 +34,21 @@
                 </div>
                 <div class="col-sm-8 mb-3 d-flex align-items-center">
                     <div class="me-3">
-                        <div class="text-dark text-nowrap fw-bolder">ชื่อ – นามสกุล ผู้สมัครเอาประกัน (นาย / นาง / นางสาว )</div>
-                        <div class="text-dark text-nowrap">(Name of Employee Mr. , Mrs, , Ms.)</div>
+                        <div class="text-dark text-nowrap fw-bolder">ชื่อ – นามสกุล ผู้สมัครเอาประกัน </div>
+                        <div class="text-dark text-nowrap">(Name of Employee)</div>
                     </div>
-                    <div class="text-blue">{{ iForm.fullname }}</div>
+                    <div class="text-blue">{{ iForm.prefix }} {{ iForm.fullname }}</div>
                 </div>
                 <div class="col-sm-4 mb-3 d-flex align-items-center">
                     <div class="me-3">
-                        <div class="text-dark text-nowrap fw-bolder">เกิดวันที่</div>
+                        <div class="text-dark text-nowrap fw-bolder">เกิดวันที่ (ปี ค.ศ.)</div>
                         <div class="text-dark text-nowrap">(Date of Birth)</div>
                     </div>
                     <div class="text-blue">{{ iForm.birth_date }}</div>
                 </div>
                 <div class="col-sm-4 mb-3 d-flex align-items-center">
                     <div class="me-3">
-                        <div class="text-dark text-nowrap fw-bolder">วันเริ่มทางาน</div>
+                        <div class="text-dark text-nowrap fw-bolder">วันเริ่มทางาน (ปี ค.ศ.)</div>
                         <div class="text-dark text-nowrap">(Date of employment)</div>
                     </div>
                     <div class="text-blue">{{ iForm.join_date }}</div>
@@ -292,6 +292,7 @@
             
             // register ไป parent
             $scope.formAction.DownloadPDF = $scope.DownloadPDF;
+            $scope.formAction.can_download = 1;
         }
 
         $scope.$on('FORM_BENEFIT_INSURANCE_LOAD', function (e, data) {

@@ -53,17 +53,21 @@
             <table class="table table-hover mb-0">
                 <thead>
                     <tr>
-                        <th>
-                            Username
+                        <th ng-click="SetSort('username')">
+                            ชื่อผู้ใช้งาน
+                            <i ng-show="sortBy.indexOf('username') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
                         </th>
-                        <th>
-                            Fullname (TH)
+                        <th ng-click="SetSort('firstname_th')">
+                            ชื่อ-สกุล (ไทย)
+                            <i ng-show="sortBy.indexOf('firstname_th') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
                         </th>
-                        <th>
-                            Fullname (EN)
+                        <th ng-click="SetSort('firstname_en')">
+                            ชื่อ-สกุล (ENG)
+                            <i ng-show="sortBy.indexOf('firstname_en') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
                         </th>
-                        <th class="text-center">
-                            Status
+                        <th class="text-center" ng-click="SetSort('have_signature')">
+                            ลายเซ็น
+                            <i ng-show="sortBy.indexOf('have_signature') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
                         </th>
                         <th width="50"></th>
                     </tr>
@@ -134,6 +138,7 @@
         $scope.row = 10;
         $scope.search = '';
         $scope.groupName = 'Ethnicity';
+        $scope.sortBy = 'username';
 
         $scope.LoadData = function (page = 1) {
             $scope.page = page;
@@ -219,15 +224,13 @@
         $scope.Delete = function (x) {
             alertConfirm("Delete ", "ต้องการยืนยันการทำรายการ", () => {
                 $.ajax({
-                    url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DeleteSignature'
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/User/DeleteSignature'
                     , headers: { 'authorization': 'Bearer @token' }
                     , type: 'post'
                     , contentType: 'application/json'
                     , cache: false
                     , data: JSON.stringify({
-                        id: x.id
-                        , groupName: $scope.groupName
-                        , update_by: '@User.UserId()'
+                        username: x.username
                     })
                     , success: function () {
                         $timeout(function () {
@@ -239,14 +242,27 @@
             });
         }
 
+        $scope.SetSort = function (sortBy) {
+            if ($scope.sortBy != null && $scope.sortBy.indexOf(sortBy) > -1) {
+                if ($scope.sortBy.indexOf("-") > -1) {
+                    $scope.sortBy = sortBy;
+                } else {
+                    $scope.sortBy = '-' + sortBy;
+                }
+            } else {
+                $scope.sortBy = sortBy;
+            }
+        }
+
         $scope.Download = function () {
             var lData = $filter('filter')($scope.lData, $scope.search);
             lData = $filter('orderBy')($scope.lData, $scope.sortBy);
 
             var JSData = [[
-                { 'text': 'Code' }
-                , { 'text': 'Name (TH)' }
-                , { 'text': 'Name (EN)' }
+                { 'text': 'ชื่อผู้ใช้งาน' }
+                , { 'text': 'ชื่อ-สกุล (ไทย)' }
+                , { 'text': 'ชื่อ-สกุล (ENG)' }
+                , { 'text': 'ลายเซ็น' }
             ]];
 
             if (lData.length > 0) {
@@ -254,10 +270,10 @@
                     var iData = lData[i];
 
                     JSData.splice(JSData.length, 0, [
-                        { 'text': iData.code }
-                        , { 'text': iData.parentName }
-                        , { 'text': iData.desc_th }
-                        , { 'text': iData.desc_en }
+                        { 'text': iData.username }
+                        , { 'text': iData.firstname_th + ' ' + iData.lastname_th }
+                        , { 'text': iData.firstname_en + ' ' + iData.lastname_en }
+                        , { 'text': iData.have_signature == 1 ? 'Yes' : 'No' }
                     ]);
                 }
 

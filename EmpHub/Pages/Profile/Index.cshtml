@@ -16,8 +16,9 @@
     .profile-card,
     .profile-panel {
         background: #fff;
-        border: 1px solid #e5e7eb;
+        border: 1px solid #e3e9f5;
         border-radius: 8px;
+        box-shadow: 0 10px 28px rgba(15, 23, 42, .06);
     }
 
     .profile-card-cover {
@@ -31,6 +32,30 @@
         margin: -52px auto 16px;
         border: 4px solid #fff;
         background: #f8fafc;
+        position: relative;
+    }
+
+    .profile-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .profile-avatar-upload {
+        position: absolute;
+        right: 2px;
+        bottom: 2px;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 2px solid #fff;
+        background: #0d6efd;
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 8px 16px rgba(13, 110, 253, .25);
     }
 
     .profile-meta {
@@ -52,10 +77,10 @@
     }
 
     .profile-kpi-item {
-        border: 1px solid #e5e7eb;
+        border: 1px solid #e3e9f5;
         border-radius: 8px;
         padding: 12px;
-        background: #f9fafb;
+        background: #fff;
         min-height: 78px;
     }
 
@@ -74,6 +99,17 @@
         font-size: 18px;
     }
 
+    .profile-section-title .section-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #edf4ff;
+        color: #1f66ff;
+    }
+
     .info-grid {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -88,6 +124,36 @@
         background: #fcfcfc;
     }
 
+    .employee-info-grid .info-field {
+        min-height: 104px;
+        padding: 18px;
+        border-color: #dde7f4;
+        background: #fff;
+        display: grid;
+        grid-template-columns: 44px minmax(0, 1fr);
+        gap: 14px;
+        align-items: center;
+        transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+    }
+
+    .employee-info-grid .info-field:hover {
+        border-color: #b9cff3;
+        box-shadow: 0 10px 24px rgba(31, 102, 255, .08);
+        transform: translateY(-1px);
+    }
+
+    .info-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #1f66ff;
+        background: #edf4ff;
+        font-size: 20px;
+    }
+
     .info-label {
         color: #64748b;
         font-size: 12px;
@@ -98,6 +164,766 @@
         color: #283c50;
         font-weight: 600;
         word-break: break-word;
+    }
+
+    .profile-person-card {
+        border: 1px solid #dde7f4;
+        border-radius: 8px;
+        background: #fff;
+        overflow: hidden;
+    }
+
+    .profile-person-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr);
+    }
+
+    .profile-person-block {
+        padding: 22px;
+    }
+
+    .profile-person-block + .profile-person-block {
+        border-left: 1px solid #e5eaf3;
+    }
+
+    .profile-action-btn {
+        width: 86px;
+        height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .org-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #1f66ff;
+        background: #edf4ff;
+        font-size: 34px;
+        flex: 0 0 auto;
+    }
+
+    .personal-section {
+        border: 1px solid #dde7f4;
+        border-radius: 8px;
+        background: #fff;
+        margin-bottom: 22px;
+        overflow: hidden;
+    }
+
+    .personal-section-header {
+        min-height: 56px;
+        padding: 14px 18px;
+        border-bottom: 1px solid #eef2f7;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+    }
+
+    .personal-section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #283c50;
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+    .personal-section-title i {
+        color: #1f66ff;
+        font-size: 20px;
+    }
+
+    .personal-section-body {
+        padding: 18px;
+    }
+
+    .personal-detail-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 22px 32px;
+    }
+
+    .personal-detail-grid.contact-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .personal-detail-grid .info-label {
+        margin-bottom: 8px;
+    }
+
+    .personal-detail-grid .info-value {
+        color: #183567;
+    }
+
+    .emergency-contact-card {
+        border: 1px solid #e5eaf3;
+        border-radius: 8px;
+        padding: 20px;
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) repeat(3, minmax(0, 1fr));
+        gap: 24px;
+        align-items: center;
+    }
+
+    .emergency-person {
+        display: grid;
+        grid-template-columns: 58px minmax(0, 1fr);
+        gap: 14px;
+        align-items: center;
+    }
+
+    .emergency-avatar {
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #1f66ff;
+        background: #edf4ff;
+        font-size: 28px;
+    }
+
+    .privacy-note {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #64748b;
+        font-size: 12px;
+        margin-top: 4px;
+    }
+
+    .job-summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+        margin-bottom: 18px;
+    }
+
+    .job-summary-card {
+        border: 1px solid #dde7f4;
+        border-radius: 8px;
+        padding: 18px;
+        background: #fff;
+        display: grid;
+        grid-template-columns: 46px minmax(0, 1fr);
+        gap: 14px;
+        align-items: center;
+        min-height: 108px;
+    }
+
+    .job-summary-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+    }
+
+    .job-summary-icon.blue {
+        color: #1f66ff;
+        background: #edf4ff;
+    }
+
+    .job-summary-icon.green {
+        color: #11a66a;
+        background: #e8f8f0;
+    }
+
+    .job-summary-icon.orange {
+        color: #f59e0b;
+        background: #fff4df;
+    }
+
+    .job-summary-icon.purple {
+        color: #8b5cf6;
+        background: #f1eaff;
+    }
+
+    .job-content-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 320px;
+        gap: 18px;
+        align-items: start;
+    }
+
+    .job-panel {
+        border: 1px solid #dde7f4;
+        border-radius: 8px;
+        background: #fff;
+        overflow: hidden;
+    }
+
+    .job-panel-header {
+        padding: 16px 18px;
+        border-bottom: 1px solid #eef2f7;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        color: #283c50;
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+    .job-panel-body {
+        padding: 18px;
+    }
+
+    .job-history {
+        display: grid;
+        grid-template-columns: 140px 26px minmax(0, 1fr);
+        gap: 14px;
+    }
+
+    .job-history-year {
+        color: #183567;
+        font-weight: 700;
+        padding-top: 14px;
+    }
+
+    .job-history-line {
+        position: relative;
+        display: flex;
+        justify-content: center;
+    }
+
+    .job-history-line:before {
+        content: "";
+        position: absolute;
+        top: 24px;
+        bottom: -20px;
+        width: 2px;
+        background: #dbe8ff;
+    }
+
+    .job-history-item:last-child .job-history-line:before {
+        bottom: 24px;
+    }
+
+    .job-history-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #1f66ff;
+        margin-top: 22px;
+        z-index: 1;
+    }
+
+    .job-history-card {
+        border: 1px solid #e5eaf3;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 14px;
+        min-height: 94px;
+    }
+
+    .job-history-title {
+        color: #0b63f6;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .job-history-meta {
+        color: #64748b;
+        font-size: 12px;
+    }
+
+    .job-side-stack {
+        display: grid;
+        gap: 14px;
+    }
+
+    .job-mini-timeline {
+        display: grid;
+        gap: 14px;
+    }
+
+    .job-mini-item {
+        display: grid;
+        grid-template-columns: 14px minmax(0, 1fr);
+        gap: 12px;
+    }
+
+    .job-mini-dot {
+        width: 10px;
+        height: 10px;
+        border: 2px solid #1f66ff;
+        background: #fff;
+        border-radius: 50%;
+        margin-top: 4px;
+        position: relative;
+    }
+
+    .job-mini-item:not(:last-child) .job-mini-dot:after {
+        content: "";
+        position: absolute;
+        top: 10px;
+        left: 3px;
+        width: 2px;
+        height: 34px;
+        background: #dbe8ff;
+    }
+
+    .org-flow {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 28px;
+        align-items: center;
+    }
+
+    .org-flow-box {
+        border: 1px solid #d9e3f2;
+        border-radius: 8px;
+        padding: 16px;
+        min-height: 74px;
+        background: #f9fbff;
+        text-align: center;
+        position: relative;
+    }
+
+    .org-flow-box:not(:last-child):after {
+        content: "\F138";
+        font-family: "bootstrap-icons";
+        position: absolute;
+        right: -22px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #183567;
+    }
+
+    .org-flow-box.is-current {
+        border-color: #1f66ff;
+        background: #fff;
+    }
+
+    .job-update-note {
+        border-top: 1px solid #eef2f7;
+        padding: 12px 18px;
+        color: #64748b;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #fbfdff;
+    }
+
+    .education-panel {
+        border: 1px solid #dde7f4;
+        border-radius: 8px;
+        background: #fff;
+        overflow: hidden;
+        margin-bottom: 18px;
+    }
+
+    .education-panel-header {
+        padding: 16px 18px;
+        border-bottom: 1px solid #eef2f7;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        color: #283c50;
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+    .education-panel-body {
+        padding: 18px;
+    }
+
+    .education-history-item {
+        display: grid;
+        grid-template-columns: 120px 28px minmax(0, 1fr);
+        gap: 14px;
+    }
+
+    .education-year {
+        color: #183567;
+        font-weight: 700;
+        padding-top: 18px;
+    }
+
+    .education-line {
+        position: relative;
+        display: flex;
+        justify-content: center;
+    }
+
+    .education-line:before {
+        content: "";
+        position: absolute;
+        top: 28px;
+        bottom: -22px;
+        width: 2px;
+        background: #dbe8ff;
+    }
+
+    .education-history-item:last-child .education-line:before {
+        bottom: 28px;
+    }
+
+    .education-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #1f66ff;
+        margin-top: 24px;
+        z-index: 1;
+    }
+
+    .education-card {
+        border: 1px solid #e5eaf3;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 14px;
+        display: grid;
+        grid-template-columns: 54px minmax(0, 1fr) auto;
+        gap: 18px;
+        align-items: center;
+    }
+
+    .education-icon {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #1f66ff;
+        background: #edf4ff;
+        font-size: 26px;
+    }
+
+    .certificate-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .certificate-card {
+        border: 1px solid #e5eaf3;
+        border-radius: 8px;
+        padding: 16px;
+        min-height: 154px;
+        display: grid;
+        gap: 12px;
+        background: #fff;
+    }
+
+    .certificate-logo {
+        width: 42px;
+        height: 42px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #1f66ff;
+        background: #edf4ff;
+        font-weight: 800;
+        font-size: 14px;
+    }
+
+    .certificate-date-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .training-summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+        margin-bottom: 18px;
+    }
+
+    .training-summary-card {
+        border: 1px solid #dde7f4;
+        border-radius: 8px;
+        padding: 18px;
+        display: grid;
+        grid-template-columns: 54px minmax(0, 1fr);
+        gap: 14px;
+        align-items: center;
+        min-height: 112px;
+    }
+
+    .training-summary-card.blue {
+        background: #f4f8ff;
+    }
+
+    .training-summary-card.green {
+        background: #f1fcf7;
+    }
+
+    .training-summary-card.orange {
+        background: #fff8ed;
+    }
+
+    .training-summary-card.purple {
+        background: #f8f2ff;
+    }
+
+    .training-icon {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+    }
+
+    .training-icon.blue {
+        color: #1f66ff;
+        background: #e6f0ff;
+    }
+
+    .training-icon.green {
+        color: #10a66a;
+        background: #def8ec;
+    }
+
+    .training-icon.orange {
+        color: #f59e0b;
+        background: #ffefd0;
+    }
+
+    .training-icon.purple {
+        color: #8b5cf6;
+        background: #efe3ff;
+    }
+
+    .training-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(360px, .85fr);
+        gap: 18px;
+        align-items: start;
+    }
+
+    .training-panel {
+        border: 1px solid #dde7f4;
+        border-radius: 8px;
+        background: #fff;
+        overflow: hidden;
+    }
+
+    .training-panel-header {
+        padding: 16px 18px;
+        border-bottom: 1px solid #eef2f7;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        color: #283c50;
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+    .training-panel-body {
+        padding: 18px;
+    }
+
+    .training-filter {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 14px;
+    }
+
+    .training-filter .btn {
+        border-radius: 999px;
+        padding: 5px 14px;
+    }
+
+    .training-year-row {
+        display: grid;
+        grid-template-columns: 86px 24px minmax(0, 1fr);
+        gap: 14px;
+    }
+
+    .training-year {
+        color: #0b63f6;
+        font-weight: 800;
+        font-size: 20px;
+    }
+
+    .training-year small {
+        color: #64748b;
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .training-year-line {
+        display: flex;
+        justify-content: center;
+        position: relative;
+    }
+
+    .training-year-line:before {
+        content: "";
+        position: absolute;
+        top: 24px;
+        bottom: -20px;
+        width: 2px;
+        background: #dbe8ff;
+    }
+
+    .training-year-row:last-child .training-year-line:before {
+        bottom: 24px;
+    }
+
+    .training-year-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #1f66ff;
+        margin-top: 20px;
+        z-index: 1;
+    }
+
+    .training-course-list {
+        border: 1px solid #e5eaf3;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-bottom: 18px;
+    }
+
+    .training-course-item {
+        min-height: 72px;
+        padding: 12px 14px;
+        display: grid;
+        grid-template-columns: 44px minmax(0, 1fr) auto;
+        gap: 12px;
+        align-items: center;
+        border-bottom: 1px solid #eef2f7;
+    }
+
+    .training-course-item:last-child {
+        border-bottom: 0;
+    }
+
+    .training-course-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #edf4ff;
+        color: #1f66ff;
+        font-size: 20px;
+    }
+
+    .skill-list {
+        display: grid;
+        gap: 16px;
+    }
+
+    .skill-row {
+        display: grid;
+        grid-template-columns: 170px minmax(0, 1fr) 46px;
+        gap: 14px;
+        align-items: center;
+    }
+
+    .skill-label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #183567;
+        font-weight: 600;
+        font-size: 13px;
+    }
+
+    .skill-bar {
+        height: 10px;
+        border-radius: 999px;
+        background: #e8eef8;
+        overflow: hidden;
+    }
+
+    .skill-bar span {
+        display: block;
+        height: 100%;
+        border-radius: inherit;
+        background: #1f66ff;
+    }
+
+    .training-insight-grid {
+        display: grid;
+        grid-template-columns: .9fr 1.1fr;
+        gap: 18px;
+        margin-top: 18px;
+    }
+
+    .training-donut-wrap {
+        display: grid;
+        grid-template-columns: 150px minmax(0, 1fr);
+        gap: 18px;
+        align-items: center;
+    }
+
+    .training-donut {
+        width: 128px;
+        height: 128px;
+        border-radius: 50%;
+        background: conic-gradient(#1f66ff 0 56%, #22c7c7 56% 84%, #f59e0b 84% 95%, #8b5cf6 95% 100%);
+        position: relative;
+    }
+
+    .training-donut:after {
+        content: "";
+        position: absolute;
+        inset: 32px;
+        border-radius: 50%;
+        background: #fff;
+    }
+
+    .training-legend {
+        display: grid;
+        gap: 8px;
+        font-size: 12px;
+    }
+
+    .legend-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 8px;
+    }
+
+    .training-bars {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 14px;
+        align-items: end;
+        min-height: 170px;
+    }
+
+    .training-bar-item {
+        display: grid;
+        gap: 8px;
+        justify-items: center;
+        color: #183567;
+        font-size: 12px;
+    }
+
+    .training-bar {
+        width: 34px;
+        min-height: 16px;
+        border-radius: 8px 8px 3px 3px;
+        background: linear-gradient(180deg, #1f66ff, #8fc0ff);
     }
 
     .timeline {
@@ -144,6 +970,157 @@
         flex-direction: column;
     }
 
+    .required-document-table {
+        min-width: 980px;
+    }
+
+    .required-document-table th {
+        color: #64748b;
+        font-size: 12px;
+        font-weight: 700;
+        white-space: nowrap;
+        background: #f8fafc;
+    }
+
+    .required-document-cell {
+        min-width: 210px;
+        vertical-align: top;
+    }
+
+    .required-document-box {
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 12px;
+        background: #fff;
+        min-height: 112px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .required-document-box.is-missing {
+        border-style: dashed;
+        background: #f8fafc;
+    }
+
+    .document-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 22px;
+    }
+
+    .document-status-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .document-status-tabs .btn {
+        min-width: 108px;
+        justify-content: center;
+    }
+
+    .document-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .document-search {
+        width: 220px;
+    }
+
+    .document-section {
+        margin-bottom: 28px;
+    }
+
+    .document-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 14px;
+        color: #183567;
+        font-weight: 800;
+    }
+
+    .document-card-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .document-card-grid.signed {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .document-card {
+        border: 1px solid #e5eaf3;
+        border-radius: 8px;
+        padding: 18px;
+        background: #fff;
+        min-height: 168px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .document-card.pending,
+    .document-card.warning {
+        border-color: #f8d9ad;
+    }
+
+    .document-card-top {
+        display: grid;
+        grid-template-columns: 48px minmax(0, 1fr);
+        gap: 14px;
+        align-items: start;
+    }
+
+    .document-card-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #0b63f6;
+        background: #edf4ff;
+        font-size: 24px;
+    }
+
+    .document-card-icon.pending,
+    .document-card-icon.warning {
+        color: #f59e0b;
+        background: #fff4df;
+    }
+
+    .document-card-icon.signed {
+        color: #10a66a;
+        background: #e8f8f0;
+    }
+
+    .document-card-footer {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 40px 40px;
+        gap: 8px;
+        margin-top: auto;
+    }
+
+    .document-note {
+        border-top: 1px solid #eef2f7;
+        padding-top: 14px;
+        color: #64748b;
+        font-size: 12px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
     .empty-state {
         border: 1px dashed #cbd5e1;
         border-radius: 8px;
@@ -159,7 +1136,9 @@
         }
 
         .info-grid,
-        .document-grid {
+        .document-grid,
+        .document-card-grid,
+        .document-card-grid.signed {
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
     }
@@ -167,8 +1146,70 @@
     @@media (max-width: 767.98px) {
         .info-grid,
         .document-grid,
-        .profile-kpi {
+        .profile-kpi,
+        .document-card-grid,
+        .document-card-grid.signed {
             grid-template-columns: 1fr;
+        }
+
+        .document-search,
+        .document-actions {
+            width: 100%;
+        }
+
+        .profile-person-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .profile-person-block + .profile-person-block {
+            border-left: 0;
+            border-top: 1px solid #e5eaf3;
+        }
+
+        .personal-detail-grid,
+        .personal-detail-grid.contact-grid,
+        .emergency-contact-card,
+        .job-summary-grid,
+        .job-content-grid,
+        .org-flow,
+        .certificate-grid,
+        .training-summary-grid,
+        .training-layout,
+        .training-insight-grid,
+        .training-donut-wrap {
+            grid-template-columns: 1fr;
+        }
+
+        .job-history {
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+
+        .job-history-line {
+            display: none;
+        }
+
+        .org-flow-box:not(:last-child):after {
+            display: none;
+        }
+
+        .education-history-item,
+        .education-card {
+            grid-template-columns: 1fr;
+        }
+
+        .education-line {
+            display: none;
+        }
+
+        .training-year-row,
+        .training-course-item,
+        .skill-row {
+            grid-template-columns: 1fr;
+        }
+
+        .training-year-line {
+            display: none;
         }
     }
 </style>
@@ -195,7 +1236,11 @@
                 <div class="profile-card-cover"></div>
                 <div class="p-4">
                     <div class="profile-avatar rounded-circle overflow-hidden d-flex align-items-center justify-content-center">
-                        <img src="~/Images/icon-user.png" width="78" alt="รูปพนักงาน" />
+                        <img ng-src="{{ displayImageSrc() }}" alt="รูปพนักงาน" />
+                        <label for="profileDisplayFile" class="profile-avatar-upload" title="อัปโหลดรูปภาพ">
+                            <i class="bi bi-camera-fill"></i>
+                        </label>
+                        <input ng-show="1 == 2" id="profileDisplayFile" type="file" accept="image/*" ng-model="iDisplayFile" base-sixty-four-input ng-change="SaveDisplayImage()" />
                     </div>
                     <div class="text-center mb-4">
                         <div class="fs-4 fw-bold text-dark">{{ displayName() }}</div>
@@ -213,12 +1258,12 @@
                             <div class="info-value">{{ valueOrDash(iEmployee.work_day) }}</div>
                         </div>
                         <div class="profile-kpi-item">
-                            <div class="info-label">สถานะ</div>
-                            <div class="info-value">{{ valueOrDash(iEmployee.employeeStatus) }}</div>
-                        </div>
-                        <div class="profile-kpi-item">
                             <div class="info-label">ประเภท</div>
                             <div class="info-value">{{ valueOrDash(iEmployee.employeeType || iEmployee.employeeDesc) }}</div>
+                        </div>
+                        <div class="profile-kpi-item">
+                            <div class="info-label">สถานะ</div>
+                            <div class="info-value">{{ valueOrDash(iEmployee.employeeStatus) }}</div>
                         </div>
                     </div>
 
@@ -238,18 +1283,6 @@
                     </div>
                 </div>
             </div>
-
-            <div class="profile-card p-4 mb-3">
-                <div class="info-label mb-2">หัวหน้างาน</div>
-                <div class="d-flex align-items-center">
-                    <img src="~/Images/icon-user.png" class="rounded-circle me-3" width="42" alt="หัวหน้างาน" />
-                    <div class="min-w-0">
-                        <div class="fw-bold text-dark text-truncate">{{ valueOrDash(iEmployee.supervisorName) }}</div>
-                        <div class="text-muted text-truncate">{{ valueOrDash(iEmployee.supervisorPosition) }}</div>
-                    </div>
-                </div>
-            </div>
-
             <div class="profile-card p-4">
                 <div class="d-flex align-items-center justify-content-between mb-3">
                     <div class="fw-bold text-dark">ความครบถ้วนของข้อมูล</div>
@@ -276,105 +1309,22 @@
 
             <div class="tab-content p-4">
                 <div class="tab-pane fade show active" id="nav-employee" role="tabpanel" tabindex="0">
-                    <div class="profile-section-title"><i class="bi bi-building-fill text-primary"></i> ข้อมูลพนักงาน</div>
-                    <div class="info-grid">
-                        <div class="info-field"><div class="info-label">รหัสพนักงาน</div><div class="info-value">{{ valueOrDash(iEmployee.employeeCode) }}</div></div>
-                        <div class="info-field"><div class="info-label">วันเข้างาน</div><div class="info-value">{{ valueOrDash(iEmployee.join_date) }}</div></div>
-                        <div class="info-field"><div class="info-label">วันบรรจุงาน</div><div class="info-value">{{ valueOrDash(iEmployee.probation_end_date) }}</div></div>
-                        <div class="info-field"><div class="info-label">ด้าน</div><div class="info-value">{{ valueOrDash(iEmployee.divisionDesc) }}</div></div>
-                        <div class="info-field"><div class="info-label">สายงาน</div><div class="info-value">{{ valueOrDash(iEmployee.departmentDesc) }}</div></div>
-                        <div class="info-field"><div class="info-label">ฝ่าย</div><div class="info-value">{{ valueOrDash(iEmployee.sectionDesc) }}</div></div>
-                        <div class="info-field"><div class="info-label">ตำแหน่งงาน</div><div class="info-value">{{ valueOrDash(iEmployee.positionDesc) }}</div></div>
-                        <div class="info-field"><div class="info-label">ระดับพนักงาน</div><div class="info-value">{{ valueOrDash(iEmployee.levelDesc) }}</div></div>
-                        <div class="info-field"><div class="info-label">เกรด</div><div class="info-value">{{ valueOrDash(iEmployee.grade) }}</div></div>
-                    </div>
+                    <partial name="_PartialEmployee" />
                 </div>
-
                 <div class="tab-pane fade" id="nav-personal" role="tabpanel" tabindex="0">
-                    <div class="profile-section-title"><i class="bi bi-person-vcard-fill text-primary"></i> ข้อมูลส่วนบุคคล</div>
-                    <div class="info-grid">
-                        <div class="info-field"><div class="info-label">ชื่อ-นามสกุล</div><div class="info-value">{{ valueOrDash(iPersonal.prefix_th) }} {{ valueOrDash(iPersonal.firstname_th) }} {{ valueOrDash(iPersonal.lastname_th) }}</div></div>
-                        <div class="info-field"><div class="info-label">ชื่อ-นามสกุลภาษาอังกฤษ</div><div class="info-value">{{ valueOrDash(iPersonal.prefix_en) }} {{ valueOrDash(iPersonal.firstname_en) }} {{ valueOrDash(iPersonal.lastname_en) }}</div></div>
-                        <div class="info-field"><div class="info-label">ชื่อเล่น</div><div class="info-value">{{ valueOrDash(iPersonal.nickname) }}</div></div>
-                        <div class="info-field"><div class="info-label">วันเกิด</div><div class="info-value">{{ valueOrDash(iPersonal.birth_date) }}</div></div>
-                        <div class="info-field"><div class="info-label">อายุ</div><div class="info-value">{{ valueOrDash(iPersonal.age) }}</div></div>
-                        <div class="info-field"><div class="info-label">เพศ</div><div class="info-value">{{ valueOrDash(iPersonal.sex) }}</div></div>
-                        <div class="info-field"><div class="info-label">สัญชาติ</div><div class="info-value">{{ valueOrDash(iPersonal.nationality) }}</div></div>
-                        <div class="info-field"><div class="info-label">ศาสนา</div><div class="info-value">{{ valueOrDash(iPersonal.religion) }}</div></div>
-                        <div class="info-field"><div class="info-label">สถานภาพ</div><div class="info-value">{{ valueOrDash(iPersonal.maritalStatus) }}</div></div>
-                    </div>
+                    <partial name="_PartialPersonal" />
                 </div>
-
                 <div class="tab-pane fade" id="nav-job" role="tabpanel" tabindex="0">
-                    <div class="profile-section-title"><i class="bi bi-briefcase-fill text-primary"></i> ประวัติการทำงาน</div>
-                    <div class="empty-state" ng-show="!lJobExperience || lJobExperience.length == 0">ยังไม่มีข้อมูลประวัติการทำงาน</div>
-                    <div class="timeline" ng-show="lJobExperience.length > 0">
-                        <div class="timeline-item" ng-repeat="x in lJobExperience">
-                            <div class="timeline-dot"></div>
-                            <div class="timeline-content">
-                                <div class="d-flex flex-wrap justify-content-between gap-2 mb-1">
-                                    <div class="fw-bold text-dark">{{ valueOrDash(x.position) }}</div>
-                                    <div class="text-muted">{{ dateRangeText(x.from_date, x.end_date) }}</div>
-                                </div>
-                                <div class="text-primary fw-semibold mb-2">{{ valueOrDash(x.company) }}</div>
-                                <div class="text-muted">{{ valueOrDash(x.description) }}</div>
-                            </div>
-                        </div>
-                    </div>
+                    <partial name="_PartialJob" />
                 </div>
-
                 <div class="tab-pane fade" id="nav-education" role="tabpanel" tabindex="0">
-                    <div class="profile-section-title"><i class="fas fa-graduation-cap text-primary"></i> ประวัติการศึกษา</div>
-                    <div class="empty-state" ng-show="!lEducation || lEducation.length == 0">ยังไม่มีข้อมูลประวัติการศึกษา</div>
-                    <div class="info-grid" ng-show="lEducation.length > 0">
-                        <div class="info-field" ng-repeat="x in lEducation">
-                            <div class="info-label">{{ valueOrDash(x.year) }}</div>
-                            <div class="info-value mb-1">{{ valueOrDash(x.degreeName || x.levelName) }}</div>
-                            <div class="text-muted">{{ valueOrDash(x.institution) }}</div>
-                            <div class="text-muted" ng-show="x.programName || x.major">{{ valueOrDash(x.programName) }} {{ valueOrDash(x.major) }}</div>
-                        </div>
-                    </div>
+                    <partial name="_PartialEducation" />
                 </div>
-
                 <div class="tab-pane fade" id="nav-training" role="tabpanel" tabindex="0">
-                    <div class="profile-section-title"><i class="bi bi-patch-check-fill text-primary"></i> ประวัติการฝึกอบรม</div>
-                    <div class="empty-state" ng-show="!lTraining || lTraining.length == 0">ยังไม่มีข้อมูลประวัติการฝึกอบรม</div>
-                    <div class="timeline" ng-show="lTraining.length > 0">
-                        <div class="timeline-item" ng-repeat="x in lTraining">
-                            <div class="timeline-dot"></div>
-                            <div class="timeline-content">
-                                <div class="d-flex flex-wrap justify-content-between gap-2 mb-1">
-                                    <div class="fw-bold text-dark">{{ valueOrDash(x.license) }}</div>
-                                    <div class="text-muted">{{ valueOrDash(x.issueDate) }}</div>
-                                </div>
-                                <div class="text-primary fw-semibold mb-2">{{ valueOrDash(x.organization) }}</div>
-                                <div class="text-muted">{{ valueOrDash(x.description) }}</div>
-                            </div>
-                        </div>
-                    </div>
+                    <partial name="_PartialTraining" />
                 </div>
-
                 <div class="tab-pane fade" id="nav-document" role="tabpanel" tabindex="0">
-                    <div class="profile-section-title"><i class="bi bi-folder-check text-primary"></i> เอกสารที่เกี่ยวข้อง</div>
-                    <div class="document-grid">
-                        <div class="document-item" ng-repeat="x in lRelatedDocument">
-                            <div class="d-flex align-items-start mb-3">
-                                <div class="avatar-text avatar-md bg-soft-primary text-primary me-3">
-                                    <i class="{{ x.icon }}"></i>
-                                </div>
-                                <div class="min-w-0">
-                                    <div class="fw-bold text-dark">{{ x.title }}</div>
-                                    <div class="small text-muted">{{ x.desc }}</div>
-                                </div>
-                            </div>
-                            <div class="mt-auto d-flex align-items-center justify-content-between">
-                                <span class="badge {{ x.statusClass }}">{{ x.status }}</span>
-                                <a class="btn btn-sm btn-light" href="{{ x.url }}" target="_blank">
-                                    <i class="bi bi-box-arrow-up-right me-1"></i> เปิด
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+                    <partial name="_PartialDocument" />
                 </div>
             </div>
         </section>
@@ -388,33 +1338,58 @@
         $scope.iPersonal = {};
         $scope.iEmployee = {};
         $scope.iAddress = {};
+        $scope.iDisplay = {};
+        $scope.iDisplayFile = {};
         $scope.lJobExperience = [];
         $scope.lEducation = [];
         $scope.lTraining = [];
-        $scope.lRelatedDocument = [
+        $scope.selectedTrainingYear = null;
+        $scope.trainingSummary = {
+            totalHours: 0,
+            averageHoursText: '0.0',
+            completedCount: 0,
+            currentYearHours: 0,
+            currentYearCount: 0,
+            certificateCount: 0,
+            activeCertificateCount: 0
+        };
+        $scope.trainingYearsData = [];
+        $scope.trainingYearGroupsData = [];
+        $scope.trainingYearGroupsAllData = [];
+        $scope.skillMatrixData = [];
+        $scope.certificateItemsData = [];
+        $scope.lRequiredDocument = [];
+        $scope.lRequiredDocumentYears = [];
+        $scope.requiredDocumentIndex = {};
+        $scope.currentYear = new Date().getFullYear();
+        $scope.lRequiredDocumentTemplate = [
             {
-                title: 'PDPA',
-                desc: 'เอกสารยินยอมและข้อมูลส่วนบุคคล',
-                icon: 'bi bi-shield-check',
-                status: 'เอกสารสำคัญ',
-                statusClass: 'bg-soft-primary text-primary',
-                url: '@Url.Page("/Service/FormCreate/FormPdpaEmployee")?mode=FORM_PDPA_EMPLOYEE'
+                code: 'FORM_BENEFIT_FUND',
+                title: 'ใบผู้รับประโยชน์ กองทุน',
+                shortTitle: 'กองทุน',
+                desc: 'แบบแสดงเจตนาระบุผู้รับประโยชน์',
+                createUrl: '@Url.Page("/Service/FormCreate/FormBenefitFund")?mode=FORM_BENEFIT_FUND&id=' + $scope.userId
             },
             {
-                title: 'WFH',
-                desc: 'เอกสารหรือคำขอปฏิบัติงานจากที่บ้าน',
-                icon: 'bi bi-house-check',
-                status: 'เกี่ยวกับการทำงาน',
-                statusClass: 'bg-soft-success text-success',
-                url: '@Url.Page("/Service/FormCreate/FormWfhEmployee")?mode=FORM_WFH_EMPLOYEE'
+                code: 'FORM_BENEFIT_INSURANCE',
+                title: 'ใบผู้รับประโยชน์ ประกันชีวิตกลุ่ม',
+                shortTitle: 'ประกันชีวิตกลุ่ม',
+                desc: 'Beneficiary Form',
+                createUrl: '@Url.Page("/Service/FormCreate/FormBenefitInsurance")?mode=FORM_BENEFIT_INSURANCE&id=' + $scope.userId
             },
             {
-                title: 'Job Description',
-                desc: 'หน้าที่ ความรับผิดชอบ และขอบเขตงาน',
-                icon: 'bi bi-file-earmark-text',
-                status: 'ข้อมูลตำแหน่ง',
-                statusClass: 'bg-soft-warning text-warning',
-                url: '@Url.Page("/Service/FormCreate/FormUpdateDataEmployee")?mode=EDIT_EMPLOYEE&id=' + $scope.userId
+                code: 'FORM_PDPA_EMPLOYEE',
+                title: 'หนังสือให้ความยินยอม PDPA พนักงาน',
+                shortTitle: 'PDPA',
+                desc: 'ความยินยอมข้อมูลส่วนบุคคล',
+                createUrl: '@Url.Page("/Service/FormCreate/FormPdpaEmployee")?mode=FORM_PDPA_EMPLOYEE&id=' + $scope.userId
+            },
+            {
+                code: 'FORM_WFH_EMPLOYEE',
+                title: 'หนังสือให้ความยินยอม WFH พนักงาน',
+                shortTitle: 'WFH',
+                desc: 'ข้อตกลงทำงานนอกสถานประกอบกิจการ',
+                createUrl: '@Url.Page("/Service/FormCreate/FormWfhEmployee")?mode=FORM_WFH_EMPLOYEE&id=' + $scope.userId
             }
         ];
 
@@ -430,10 +1405,81 @@
             return value === null || value === undefined || value === '' ? '-' : value;
         }
 
+        $scope.displayImageSrc = function () {
+            if ($scope.iDisplay.display_base64) {
+                return 'data:image/png;base64,' + $scope.iDisplay.display_base64;
+            }
+
+            return '@Url.Content("~/Images/icon-user.png")';
+        }
+
+        $scope.SaveDisplayImage = function () {
+            if (!$scope.iDisplayFile || !$scope.iDisplayFile.base64) {
+                return;
+            }
+
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserDisplaySave',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.userId,
+                    display_base64: $scope.iDisplayFile.base64,
+                    create_by: '@User.UserId()'
+                }),
+                success: function () {
+                    $timeout(function () {
+                        $scope.iDisplay.display_base64 = $scope.iDisplayFile.base64;
+                        alertSuccess("ทำรายการสำเร็จ", "ระบบอัปโหลดรูปภาพเรียบร้อย");
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+
         $scope.displayName = function () {
             var fullnameTh = [$scope.iPersonal.firstname_th, $scope.iPersonal.lastname_th].filter(Boolean).join(' ');
             var fullnameEn = [$scope.iPersonal.firstname_en, $scope.iPersonal.lastname_en].filter(Boolean).join(' ');
             return fullnameTh || fullnameEn || $scope.iEmployee.fullname || 'โปรไฟล์พนักงาน';
+        }
+
+        $scope.fullNameTh = function () {
+            var fullname = [$scope.iPersonal.prefix_th_desc || $scope.iPersonal.prefix_th, $scope.iPersonal.firstname_th, $scope.iPersonal.lastname_th].filter(Boolean).join(' ');
+            return fullname || '-';
+        }
+
+        $scope.sexText = function (value) {
+            if (value == 'Male') {
+                return 'ชาย';
+            }
+
+            if (value == 'Female') {
+                return 'หญิง';
+            }
+
+            return $scope.valueOrDash($scope.iPersonal.sex_desc || value);
+        }
+
+        $scope.joinAddress = function (prefix) {
+            var address = [
+                $scope.iAddress[prefix + '_home'],
+                $scope.iAddress[prefix + '_road'],
+                $scope.iAddress[prefix + '_subDistrictName'],
+                $scope.iAddress[prefix + '_districtName'],
+                $scope.iAddress[prefix + '_provinceName'],
+                $scope.iAddress[prefix + '_postcode']
+            ].filter(Boolean).join(' ');
+
+            return address || '-';
+        }
+
+        $scope.currentAddressText = function () {
+            return $scope.joinAddress('live');
+        }
+
+        $scope.registeredAddressText = function () {
+            return $scope.joinAddress('registered');
         }
 
         $scope.addressText = function () {
@@ -455,6 +1501,426 @@
             return fromText + ' - ' + endText;
         }
 
+        $scope.jobHistoryItemsData = [];
+
+        $scope.buildJobHistoryItems = function () {
+            var items = ($scope.lJobExperience || []).slice();
+
+            items.sort(function (a, b) {
+                var dateA = a.from_date ? a.from_date.getTime() : 0;
+                var dateB = b.from_date ? b.from_date.getTime() : 0;
+                return dateB - dateA;
+            });
+
+            if (items.length == 0 && ($scope.iEmployee.positionDesc || $scope.iEmployee.join_date)) {
+                items.push({
+                    position: $scope.iEmployee.positionDesc,
+                    company: $scope.iEmployee.sectionDesc || $scope.iEmployee.departmentDesc,
+                    fromDate: $scope.iEmployee.join_date,
+                    from_date: $scope.iEmployee.join_date ? ConvertToDate($scope.iEmployee.join_date) : '',
+                    endDate: '',
+                    end_date: '',
+                    description: $scope.iEmployee.divisionDesc
+                });
+            }
+
+            $scope.jobHistoryItemsData = items;
+        }
+
+        $scope.jobHistoryItems = function () {
+            return $scope.jobHistoryItemsData;
+        }
+
+        $scope.jobYearRange = function (item) {
+            var fromYear = item && item.from_date ? item.from_date.getFullYear() : '';
+            var endYear = item && item.end_date ? item.end_date.getFullYear() : '';
+
+            if (fromYear && endYear) {
+                return fromYear + ' - ' + endYear;
+            }
+
+            if (fromYear) {
+                return fromYear + ' - ปัจจุบัน';
+            }
+
+            return '-';
+        }
+
+        $scope.jobDurationText = function (item) {
+            var fromDate = item && item.from_date ? item.from_date : null;
+            var endDate = item && item.end_date ? item.end_date : new Date();
+
+            if (!fromDate) {
+                return '-';
+            }
+
+            var years = endDate.getFullYear() - fromDate.getFullYear();
+            var months = endDate.getMonth() - fromDate.getMonth();
+
+            if (endDate.getDate() < fromDate.getDate()) {
+                months--;
+            }
+
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+
+            var text = [];
+            if (years > 0) {
+                text.push(years + ' ปี');
+            }
+            if (months > 0) {
+                text.push(months + ' เดือน');
+            }
+
+            return text.length > 0 ? '(' + text.join(' ') + ')' : '(น้อยกว่า 1 เดือน)';
+        }
+
+        $scope.positionCount = function () {
+            var positions = {};
+            $scope.jobHistoryItems().forEach(function (x) {
+                var key = x.position || '';
+                if (key) {
+                    positions[key] = true;
+                }
+            });
+            return Object.keys(positions).length || 0;
+        }
+
+        $scope.promotionCount = function () {
+            return Math.max($scope.positionCount() - 1, 0);
+        }
+
+        $scope.transferCount = function () {
+            var units = {};
+            $scope.jobHistoryItems().forEach(function (x) {
+                var key = x.company || '';
+                if (key) {
+                    units[key] = true;
+                }
+            });
+            return Math.max(Object.keys(units).length - 1, 0);
+        }
+
+        $scope.orgFlowItems = function () {
+            return [
+                { title: 'CEO', subtitle: 'ประธานเจ้าหน้าที่บริหาร' },
+                { title: $scope.valueOrDash($scope.iEmployee.divisionDesc), subtitle: 'ด้าน' },
+                { title: $scope.valueOrDash($scope.iEmployee.departmentDesc), subtitle: 'สายงาน' },
+                { title: 'คุณ', subtitle: $scope.valueOrDash($scope.iEmployee.positionDesc) }
+            ];
+        }
+
+        $scope.jobLatestUpdateText = function () {
+            var dates = $scope.jobHistoryItems().map(function (x) { return x.update_date || x.fromDate || ''; }).filter(Boolean);
+            return dates.length > 0 ? dates[0] : '-';
+        }
+
+        $scope.educationHistoryItems = function () {
+            var items = ($scope.lEducation || []).slice();
+            items.sort(function (a, b) {
+                return (parseInt(b.year) || 0) - (parseInt(a.year) || 0);
+            });
+            return items;
+        }
+
+        $scope.educationYearRange = function (item) {
+            var endYear = parseInt(item && item.year) || 0;
+            if (!endYear) {
+                return '-';
+            }
+
+            var startYear = endYear - educationDurationYears(item);
+            return startYear + ' - ' + endYear;
+        }
+
+        function educationDurationYears(item) {
+            var degree = ((item && item.degreeName) || '').toLowerCase();
+            if (degree.indexOf('โท') > -1 || degree.indexOf('master') > -1) {
+                return 2;
+            }
+            if (degree.indexOf('ตรี') > -1 || degree.indexOf('bachelor') > -1) {
+                return 4;
+            }
+            if (degree.indexOf('ปวส') > -1 || degree.indexOf('diploma') > -1) {
+                return 3;
+            }
+            return 4;
+        }
+
+        $scope.educationDurationText = function (item) {
+            return '(' + educationDurationYears(item) + ' ปี)';
+        }
+
+        $scope.educationGradeText = function (grade) {
+            if (grade === null || grade === undefined || grade === '' || grade === 0) {
+                return '-';
+            }
+            return grade;
+        }
+
+        $scope.certificateItems = function () {
+            return $scope.certificateItemsData || [];
+        }
+
+        $scope.certificateInitials = function (value) {
+            value = value || '';
+            var words = value.split(/\s+/).filter(Boolean);
+            if (words.length == 0) {
+                return 'CERT';
+            }
+            if (words.length == 1) {
+                return words[0].substring(0, 4).toUpperCase();
+            }
+            return words.slice(0, 2).map(function (x) { return x.substring(0, 1); }).join('').toUpperCase();
+        }
+
+        $scope.certificateStatusText = function (item) {
+            if (!item || !item.expireDate) {
+                return 'ใช้งานอยู่';
+            }
+
+            var expireDate = ConvertToDate(item.expireDate);
+            if (expireDate && expireDate < new Date()) {
+                return 'หมดอายุ';
+            }
+
+            return 'ใช้งานอยู่';
+        }
+
+        $scope.certificateStatusClass = function (item) {
+            return $scope.certificateStatusText(item) == 'หมดอายุ' ? 'bg-soft-danger text-danger' : 'bg-soft-success text-success';
+        }
+
+        $scope.trainingHours = function (item) {
+            var text = [item && item.license, item && item.description].filter(Boolean).join(' ');
+            var found = text.match(/(\d+)\s*(ชั่วโมง|hrs|hour|hours|ชม\.)/i);
+            if (found) {
+                return parseInt(found[1]) || 0;
+            }
+
+            return 6;
+        }
+
+        $scope.trainingTotalHours = function () {
+            return $scope.trainingSummary.totalHours || 0;
+        }
+
+        $scope.trainingAverageHoursText = function () {
+            return $scope.trainingSummary.averageHoursText || '0.0';
+        }
+
+        $scope.trainingCompletedCount = function () {
+            return $scope.trainingSummary.completedCount || 0;
+        }
+
+        $scope.activeCertificateCount = function () {
+            return $scope.trainingSummary.activeCertificateCount || 0;
+        }
+
+        $scope.trainingYear = function (item) {
+            if (item && item.issueDate) {
+                var parts = item.issueDate.split('/');
+                if (parts.length == 3) {
+                    return parseInt(parts[2]) || $scope.currentYear;
+                }
+            }
+
+            return $scope.currentYear;
+        }
+
+        $scope.trainingYears = function () {
+            return $scope.trainingYearsData || [];
+        }
+
+        $scope.trainingYearGroups = function () {
+            return $scope.trainingYearGroupsData || [];
+        }
+
+        $scope.trainingCountByYear = function (year) {
+            return ($scope.lTraining || []).filter(function (item) {
+                return $scope.trainingYear(item) == year;
+            }).length;
+        }
+
+        $scope.trainingHoursByYear = function (year) {
+            return ($scope.lTraining || []).filter(function (item) {
+                return $scope.trainingYear(item) == year;
+            }).reduce(function (sum, item) {
+                return sum + $scope.trainingHours(item);
+            }, 0);
+        }
+
+        $scope.trainingStatusText = function (item) {
+            return $scope.certificateStatusText(item) == 'หมดอายุ' ? 'หมดอายุ' : 'ผ่านแล้ว';
+        }
+
+        $scope.trainingIconClass = function (item) {
+            var text = ((item && item.license) || '').toLowerCase();
+            if (text.indexOf('lead') > -1 || text.indexOf('manage') > -1) {
+                return 'bi bi-people';
+            }
+            if (text.indexOf('data') > -1) {
+                return 'bi bi-database';
+            }
+            if (text.indexOf('azure') > -1 || text.indexOf('program') > -1 || text.indexOf('developer') > -1) {
+                return 'bi bi-code-slash';
+            }
+            if (text.indexOf('pdpa') > -1 || text.indexOf('compliance') > -1) {
+                return 'bi bi-shield-check';
+            }
+            return 'bi bi-book';
+        }
+
+        $scope.trainingCategory = function (item) {
+            var text = [item && item.license, item && item.organization, item && item.description].filter(Boolean).join(' ').toLowerCase();
+            if (text.indexOf('lead') > -1 || text.indexOf('manage') > -1 || text.indexOf('agile') > -1) {
+                return 'Management';
+            }
+            if (text.indexOf('pdpa') > -1 || text.indexOf('compliance') > -1 || text.indexOf('security') > -1) {
+                return 'Compliance';
+            }
+            if (text.indexOf('communication') > -1 || text.indexOf('workshop') > -1) {
+                return 'Soft Skill';
+            }
+            return 'Technical';
+        }
+
+        $scope.trainingCategoryPercent = function (category) {
+            var total = Math.max(($scope.lTraining || []).length, 1);
+            var count = ($scope.lTraining || []).filter(function (item) {
+                return $scope.trainingCategory(item) == category;
+            }).length;
+            return Math.round((count / total) * 100);
+        }
+
+        $scope.skillMatrix = function () {
+            return $scope.skillMatrixData || [];
+        }
+
+        $scope.applyTrainingYearFilter = function () {
+            var groups = $scope.trainingYearGroupsAllData || [];
+
+            if ($scope.selectedTrainingYear == null) {
+                $scope.trainingYearGroupsData = groups;
+                return;
+            }
+
+            $scope.trainingYearGroupsData = groups.filter(function (group) {
+                return group.year == $scope.selectedTrainingYear;
+            });
+        }
+
+        $scope.selectTrainingYear = function (year) {
+            $scope.selectedTrainingYear = year == null ? null : year;
+            $scope.applyTrainingYearFilter();
+        }
+
+        $scope.buildTrainingViewModel = function () {
+            var trainings = Array.isArray($scope.lTraining) ? $scope.lTraining : [];
+            var totalHours = trainings.reduce(function (sum, item) {
+                return sum + $scope.trainingHours(item);
+            }, 0);
+            var monthCount = Math.max(new Date().getMonth() + 1, 1);
+            var years = {};
+            var currentYearHours = 0;
+            var currentYearCount = 0;
+
+            trainings.forEach(function (item) {
+                var year = $scope.trainingYear(item);
+                years[year] = true;
+
+                if (year == $scope.currentYear) {
+                    currentYearCount++;
+                    currentYearHours += $scope.trainingHours(item);
+                }
+            });
+
+            var yearList = Object.keys(years).map(function (x) { return parseInt(x); });
+            if (yearList.length == 0) {
+                yearList.push($scope.currentYear);
+            }
+            yearList.sort(function (a, b) { return b - a; });
+
+            if ($scope.selectedTrainingYear != null && yearList.indexOf(parseInt($scope.selectedTrainingYear)) < 0) {
+                $scope.selectedTrainingYear = null;
+            }
+
+            var yearGroups = yearList.map(function (year) {
+                return {
+                    year: year,
+                    items: trainings.filter(function (item) {
+                        return $scope.trainingYear(item) == year;
+                    })
+                };
+            }).filter(function (group) {
+                return group.items.length > 0;
+            });
+
+            var total = Math.max(trainings.length, 1);
+            var management = 0;
+            var technical = 0;
+            var soft = 0;
+            var compliance = 0;
+
+            trainings.forEach(function (item) {
+                var category = $scope.trainingCategory(item);
+                if (category == 'Management') {
+                    management++;
+                } else if (category == 'Technical') {
+                    technical++;
+                } else if (category == 'Soft Skill') {
+                    soft++;
+                } else if (category == 'Compliance') {
+                    compliance++;
+                }
+            });
+
+            $scope.certificateItemsData = trainings.slice();
+            $scope.trainingYearsData = yearList;
+            $scope.trainingYearGroupsAllData = yearGroups;
+            $scope.skillMatrixData = [
+                { name: 'Leadership', icon: 'bi bi-people', percent: Math.max(60, Math.round((management / total) * 100)) },
+                { name: 'Management', icon: 'bi bi-person-gear', percent: Math.max(55, Math.round((management / total) * 100)) },
+                { name: 'Enterprise Architecture', icon: 'bi bi-building', percent: Math.max(60, Math.round((technical / total) * 100)) },
+                { name: 'Programming', icon: 'bi bi-code-slash', percent: Math.max(50, Math.round((technical / total) * 100)) },
+                { name: 'Communication', icon: 'bi bi-chat-dots', percent: Math.max(55, Math.round((soft / total) * 100)) },
+                { name: 'Problem Solving', icon: 'bi bi-shield-check', percent: Math.max(60, Math.round(((technical + management) / total) * 100)) },
+                { name: 'Digital & Cloud', icon: 'bi bi-cloud', percent: Math.max(55, Math.round(((technical + compliance) / total) * 100)) }
+            ].map(function (x) {
+                x.percent = Math.min(x.percent, 95);
+                return x;
+            });
+            $scope.trainingSummary = {
+                totalHours: totalHours,
+                averageHoursText: (totalHours / monthCount).toFixed(1),
+                completedCount: trainings.length,
+                currentYearHours: currentYearHours,
+                currentYearCount: currentYearCount,
+                certificateCount: $scope.certificateItemsData.length,
+                activeCertificateCount: $scope.certificateItemsData.filter(function (x) {
+                    return $scope.certificateStatusText(x) != 'หมดอายุ';
+                }).length
+            };
+
+            $scope.applyTrainingYearFilter();
+        }
+
+        $scope.$watchCollection('lTraining', function () {
+            $scope.buildTrainingViewModel();
+        });
+
+        $scope.trendYears = function () {
+            var year = $scope.currentYear;
+            return [year - 4, year - 3, year - 2, year - 1, year];
+        }
+
+        $scope.trainingTrendHeight = function (year) {
+            var max = Math.max.apply(null, $scope.trendYears().map(function (y) { return $scope.trainingHoursByYear(y); }).concat([1]));
+            return Math.max(16, Math.round(($scope.trainingHoursByYear(year) / max) * 118));
+        }
+
         $scope.profileScore = function () {
             var checks = [
                 $scope.iPersonal.firstname_th,
@@ -469,6 +1935,183 @@
             ];
             var completed = checks.filter(function (x) { return !!x; }).length;
             return Math.round((completed / checks.length) * 100);
+        }
+
+        $scope.documentYear = function (item) {
+            if (item.orderDate1 && item.orderDate1.length >= 4) {
+                return parseInt(item.orderDate1.substring(0, 4));
+            }
+
+            if (item.createDate) {
+                var parts = item.createDate.split('/');
+                if (parts.length == 3) {
+                    return parseInt(parts[2]);
+                }
+            }
+
+            return new Date().getFullYear();
+        }
+
+        $scope.rebuildRequiredDocumentIndex = function () {
+            var startYear = 2026;
+            var currentYear = Math.max(new Date().getFullYear(), startYear);
+            var years = [];
+            var index = {};
+
+            for (var y = currentYear; y >= startYear; y--) {
+                years.push(y);
+            }
+
+            ($scope.lRequiredDocument || []).forEach(function (item) {
+                var year = $scope.documentYear(item);
+                if (year < startYear) {
+                    return;
+                }
+
+                if (years.indexOf(year) < 0) {
+                    years.push(year);
+                }
+
+                var key = year + '_' + item.subCategoryCode;
+                if (!index[key]) {
+                    item.detailUrl = '@Url.Page("/Service/Detail")/' + item.id;
+                    index[key] = item;
+                }
+            });
+
+            years.sort(function (a, b) { return b - a; });
+            $scope.lRequiredDocumentYears = years;
+            $scope.requiredDocumentIndex = index;
+            $scope.buildDocumentCards();
+        }
+
+        $scope.requiredDocumentCell = function (year, code) {
+            var item = $scope.requiredDocumentIndex[year + '_' + code] || null;
+            var template = ($scope.lRequiredDocumentTemplate || []).filter(function (x) { return x.code == code; })[0] || {};
+
+            return {
+                item: item,
+                detailUrl: item ? item.detailUrl : '',
+                createUrl: template.createUrl || '#'
+            };
+        }
+
+        $scope.requiredDocumentCompletedCount = function () {
+            return Object.keys($scope.requiredDocumentIndex || {}).length;
+        }
+
+        $scope.requiredDocumentTotalCount = function () {
+            return ($scope.lRequiredDocumentYears.length || 0) * ($scope.lRequiredDocumentTemplate.length || 0);
+        }
+
+        $scope.formatDocumentDate = function (date) {
+            if (!date) {
+                return '-';
+            }
+
+            var d = date instanceof Date ? date : ConvertToDate(date);
+            if (!d || isNaN(d.getTime())) {
+                return date;
+            }
+
+            return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2) + '/' + d.getFullYear();
+        }
+
+        $scope.addDocumentDays = function (date, days) {
+            var d = date instanceof Date ? new Date(date.getTime()) : ConvertToDate(date);
+            if (!d || isNaN(d.getTime())) {
+                d = new Date();
+            }
+            d.setDate(d.getDate() + days);
+            return d;
+        }
+
+        $scope.documentDueDate = function (year, index) {
+            var baseDate = new Date(year, 4, 15 + (index * 5));
+            return $scope.formatDocumentDate(baseDate);
+        }
+
+        $scope.documentCardsData = [];
+
+        $scope.buildDocumentCards = function () {
+            var cards = [];
+            ($scope.lRequiredDocumentYears || []).forEach(function (year) {
+                ($scope.lRequiredDocumentTemplate || []).forEach(function (template, index) {
+                    var cell = $scope.requiredDocumentCell(year, template.code);
+                    var item = cell.item;
+                    var signedDate = item ? (item.createDate || item.orderDate1 || '') : '';
+                    var expireDate = item ? $scope.addDocumentDays(signedDate || new Date(year, 4, 15), 30 + (index * 5)) : null;
+
+                    cards.push({
+                        year: year,
+                        code: template.code,
+                        title: template.title,
+                        shortTitle: template.shortTitle,
+                        desc: template.desc,
+                        item: item,
+                        detailUrl: cell.detailUrl,
+                        createUrl: cell.createUrl,
+                        uploadDate: signedDate || $scope.formatDocumentDate(new Date(year, 4, 1 + index)),
+                        signedDate: signedDate || '-',
+                        dueDate: $scope.documentDueDate(year, index),
+                        expireDate: expireDate ? $scope.formatDocumentDate(expireDate) : '-',
+                        expireText: expireDate ? documentExpireText(expireDate) : ''
+                    });
+                });
+            });
+            $scope.documentCardsData = cards;
+        }
+
+        $scope.documentAllCards = function () {
+            return $scope.documentCardsData;
+        }
+
+        function documentExpireText(expireDate) {
+            var today = new Date();
+            var diff = Math.ceil((expireDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+            if (diff < 0) {
+                return 'หมดอายุแล้ว';
+            }
+            return 'เหลือ ' + diff + ' วัน';
+        }
+
+        $scope.documentPendingCards = function () {
+            return $scope.documentAllCards().filter(function (x) {
+                return !x.item;
+            });
+        }
+
+        $scope.documentSignedCards = function () {
+            return $scope.documentAllCards().filter(function (x) {
+                return !!x.item;
+            });
+        }
+
+        $scope.documentExpiringCards = function () {
+            return $scope.documentSignedCards().filter(function (x) {
+                var d = ConvertToDate(x.expireDate);
+                if (!d || isNaN(d.getTime())) {
+                    return false;
+                }
+                var diff = Math.ceil((d.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+                return diff >= 0 && diff <= 45;
+            });
+        }
+
+        $scope.statusBadgeClass = function (status) {
+            if (status == 'Complete') {
+                return 'bg-soft-success text-success';
+            }
+
+            if (status == 'Cancel' || status == 'Reject') {
+                return 'bg-soft-danger text-danger';
+            }
+
+            if (status == 'Request') {
+                return 'bg-soft-warning text-warning';
+            }
+
+            return 'bg-soft-primary text-primary';
         }
 
         $scope.CalcAge = function () {
@@ -499,9 +2142,9 @@
                 if (months > 0) {
                     $scope.iPersonal.age += months + ' เดือน ';
                 }
-                if (days > 0) {
-                    $scope.iPersonal.age += days + ' วัน';
-                }
+                // if (days > 0) {
+                //     $scope.iPersonal.age += days + ' วัน';
+                // }
             }
         }
 
@@ -533,9 +2176,9 @@
                 if (months > 0) {
                     $scope.iEmployee.work_day += months + ' เดือน ';
                 }
-                if (days > 0) {
-                    $scope.iEmployee.work_day += days + ' วัน';
-                }
+                // if (days > 0) {
+                //     $scope.iEmployee.work_day += days + ' วัน';
+                // }
             }
         }
 
@@ -576,8 +2219,45 @@
                 }),
                 success: function (result) {
                     $timeout(function () {
-                        $scope.iEmployee = result.data || {};
-                        $scope.CalcWorkDay();
+                        if(result.can_view == 1){
+                            $scope.iEmployee = result.data || {};
+                            $scope.LoadDisplay();
+                            // $scope.LoadPersonal();
+                            // $scope.LoadAddress();
+                            $scope.LoadJobExperience();
+                            $scope.LoadEducation();
+                            $scope.LoadTraining();
+                            $scope.rebuildRequiredDocumentIndex();
+                            $scope.LoadRequiredDocuments();
+                            $scope.LoadEmergencyContact();
+                            $scope.LoadUserSub();
+                            $scope.CalcWorkDay();
+                            $scope.buildJobHistoryItems();
+                        }else{
+                            alertWarning("แจ้งเตือน", "ไม่พบข้อมูลผู้ใช้งาน", function(){
+                                location.href = '@Url.Page("/Index")';
+                            });
+                        }
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+
+        $scope.LoadDisplay = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserDisplay',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.userId,
+                    create_by: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.iDisplay = result || {};
                     }, 0);
                 }, error: AjaxError
             });
@@ -623,6 +2303,7 @@
                             x.end_date = x.endDate ? ConvertToDate(x.endDate) : '';
                             return x;
                         });
+                        $scope.buildJobHistoryItems();
                     }, 0);
                 }, error: AjaxError
             });
@@ -668,11 +2349,67 @@
             });
         }
 
-        $scope.LoadPersonal();
+        $scope.LoadEmergencyContact = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/EmergencyContact/DataList',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    refId: $scope.userId
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.lEmergency = result || [];
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+
+        $scope.LoadRequiredDocuments = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/Service/RequiredDocumentList',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.userId,
+                    userBy: '@User.UserId()'
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.lRequiredDocument = result.data || [];
+                        $scope.rebuildRequiredDocumentIndex();
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+
+        $scope.LoadUserSub = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserSub',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    userId: $scope.userId
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        $scope.lUserSub = result.filter(item => item.userId != '@User.UserId()');
+
+                        console.log($scope.lUserSub);
+                    }, 0);
+                }, error: AjaxError
+            });
+        }
+
         $scope.LoadEmployee();
-        $scope.LoadAddress();
-        $scope.LoadJobExperience();
-        $scope.LoadEducation();
-        $scope.LoadTraining();
     });
 </script>

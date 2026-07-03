@@ -23,12 +23,30 @@
     }
 
     .home-welcome {
+        position: relative;
         background: #ffffff;
         border: 1px solid #e5e7eb;
         border-left: 5px solid var(--tip-blue);
         border-radius: 8px;
         padding: 22px;
     }
+
+    .welcome-bg {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+    }
+
+    .welcome-bg svg {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+        opacity: .22;
+    }
+
 
     .home-title {
         font-size: 26px;
@@ -224,9 +242,9 @@
 
 <div class="home-page" ng-controller="HomeCtrl">
     <div class="home-welcome mb-4">
-        <div class="row g-3 align-items-center">
-            <div class="col-lg-7">
-                <div class="home-muted mb-1">EmpHub</div>
+        <div class="d-sm-flex g-3 align-items-center">
+            <div class="flex-fill mb-2">
+                <div class="home-muted mb-1">Core HR</div>
                 <div class="home-title">สวัสดี, @displayName</div>
                 <div class="home-subtitle mt-2">
                     รวมงานบริการ HR ข้อมูลพนักงาน แบบสอบถาม และการแจ้งเตือนที่เกี่ยวข้องกับคุณไว้ในหน้าเดียว
@@ -234,17 +252,35 @@
             </div>
             <div class="col-lg-5">
                 <div class="d-flex flex-wrap gap-2 justify-content-lg-end">
-                    <a class="btn btn-primary" href="@Url.Page("/Service/New")">
+                    <a class="btn btn-primary" href="@Url.Page("/Service/New")" style="z-index:2;">
                         <i class="bi bi-plus-lg me-2"></i>สร้างคำขอ HR
                     </a>
-                    <a class="btn btn-light border" href="@Url.Page("/Profile/Index")">
+                    <a class="btn btn-light border" href="@Url.Page("/Profile/Index")" style="z-index:2;">
                         <i class="bi bi-person-badge me-2"></i>ดูโปรไฟล์
                     </a>
-                    <a class="btn btn-light border" href="@Url.Page("/Survey/Index")">
+                 @*    <a class="btn btn-light border" href="@Url.Page("/Survey/Index")" style="z-index:2;">
                         <i class="bi bi-clipboard-check me-2"></i>แบบสอบถามของฉัน
-                    </a>
+                    </a> *@
                 </div>
             </div>
+        </div>
+        <div class="welcome-bg">
+            <svg viewBox="0 0 1440 390" preserveAspectRatio="none">
+                <defs>
+                    <linearGradient id="welcomeGradient" x1="21%" y1="10%" x2="79%" y2="90%">
+                        <stop offset="5%" stop-color="#8ed1fc"></stop>
+                        <stop offset="95%" stop-color="#0693e3"></stop>
+                    </linearGradient>
+                </defs>
+
+                <path d="M0,390 L0,100 C110,85 220,70 355,82 C490,94 651,132 776,137 C901,143 991,116 1096,104 C1201,92 1320,96 1440,100 L1440,390 L0,390 Z"
+                      fill="url(#welcomeGradient)"
+                      fill-opacity="0.35"></path>
+
+                <path d="M0,390 L0,233 C127,222 253,211 391,217 C529,223 678,246 777,238 C877,230 927,190 1029,184 C1131,178 1286,205 1440,233 L1440,390 L0,390 Z"
+                      fill="url(#welcomeGradient)"
+                      fill-opacity="0.75"></path>
+            </svg>
         </div>
     </div>
 
@@ -300,7 +336,7 @@
             <a class="quick-link" href="@Url.Page("/Service/New")">
                 <div class="quick-link-icon bg-soft-blue"><i class="bi bi-headset"></i></div>
                 <div>
-                    <div class="quick-link-title">HR Service</div>
+                    <div class="quick-link-title">บริการ HR</div>
                     <div class="quick-link-desc">สร้างคำขอ ติดตามสถานะ และดูประวัติการขอใช้บริการ</div>
                 </div>
             </a>
@@ -309,7 +345,7 @@
             <a class="quick-link" href="@Url.Page("/Profile/Index")">
                 <div class="quick-link-icon bg-soft-purple"><i class="bi bi-person-lines-fill"></i></div>
                 <div>
-                    <div class="quick-link-title">Employee Profile</div>
+                    <div class="quick-link-title">ข้อมูลพนักงาน</div>
                     <div class="quick-link-desc">ตรวจสอบข้อมูลพนักงาน ประวัติส่วนตัว และเอกสารที่เกี่ยวข้อง</div>
                 </div>
             </a>
@@ -318,7 +354,7 @@
             <a class="quick-link" href="@Url.Page("/Survey/Index")">
                 <div class="quick-link-icon bg-soft-green"><i class="bi bi-clipboard-data"></i></div>
                 <div>
-                    <div class="quick-link-title">Survey</div>
+                    <div class="quick-link-title">แบบสำรวจ</div>
                     <div class="quick-link-desc">ตอบแบบสอบถาม และติดตามแบบสอบถามที่ได้รับมอบหมาย</div>
                 </div>
             </a>
@@ -326,7 +362,7 @@
     </div>
 
     <div class="row g-3">
-        <div class="col-xl-7">
+        <div class="col-xl-7 mb-3">
             <div class="home-panel">
                 <div class="home-panel-header">
                     <div>
@@ -339,15 +375,13 @@
                 </div>
                 <div class="home-list" ng-show="tasks.length > 0">
                     <div class="home-list-item" ng-repeat="x in tasks | limitTo:8" ng-click="openItem(x)">
-                        <div class="d-flex align-items-start gap-3">
+                        <div class="d-flex align-items-center gap-3">
                             <div class="summary-icon {{ x.iconClass }}"><i class="{{ x.icon }}"></i></div>
-                            <div class="flex-fill min-width-0">
-                                <div class="d-flex align-items-start justify-content-between gap-2">
-                                    <div class="home-list-title text-truncate">{{ x.title }}</div>
-                                    <span class="status-pill {{ x.statusClass }}">{{ x.statusText }}</span>
-                                </div>
+                            <div class="flex-fill">
+                                <div class="home-list-title text-truncate">{{ x.title }}</div>
                                 <div class="home-muted mt-1 text-truncate">{{ x.detail }}</div>
                             </div>
+                            <span class="status-pill {{ x.statusClass }}">{{ x.statusText }}</span>
                         </div>
                     </div>
                 </div>
@@ -357,7 +391,7 @@
             </div>
         </div>
 
-        <div class="col-xl-5">
+        <div class="col-xl-5 mb-3">
             <div class="home-panel mb-3">
                 <div class="home-panel-header">
                     <div>
@@ -370,7 +404,7 @@
                 </div>
                 <div class="home-list" ng-show="notifications.length > 0">
                     <div class="home-list-item" ng-repeat="x in notifications | limitTo:5" ng-click="openNotification(x)">
-                        <div class="d-flex gap-3">
+                        <div class="d-flex align-items-center gap-3">
                             <div class="quick-link-icon {{ x.is_read == 1 ? 'bg-soft-blue' : 'bg-soft-slate' }}">
                                 <i class="bi bi-bell"></i>
                             </div>
@@ -386,7 +420,7 @@
                 </div>
             </div>
 
-            <div class="home-panel">
+            @* <div class="home-panel">
                 <div class="home-panel-header">
                     <div>
                         <div class="home-panel-title">ข้อมูลพนักงาน</div>
@@ -422,7 +456,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> *@
         </div>
     </div>
 </div>

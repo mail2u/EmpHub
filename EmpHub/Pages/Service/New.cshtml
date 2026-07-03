@@ -9,11 +9,11 @@
     <div class="page-header">
         <div class="page-header-left d-flex align-items-center">
             <div class="page-header-title">
-                <h5 class="m-b-10">HR Service</h5>
+                <h5 class="m-b-10">บริการ HR</h5>
             </div>
             <ul class="breadcrumb">
-                <li class="breadcrumb-item"><a href="@Url.Page("/Index")">Home</a></li>
-                <li class="breadcrumb-item">New Request</li>
+                <li class="breadcrumb-item"><a href="@Url.Page("/Index")">หน้าแรก</a></li>
+                <li class="breadcrumb-item">สร้างใบคำขอ</li>
             </ul>
         </div>
     </div>
@@ -21,7 +21,7 @@
 
 <div ng-controller="ServiceCtrl">
     <div class="rounded-4 p-3 bg-white shadow-sm border mb-4">
-        <input ng-model="search" class="form-control" placeholder="Find..." />
+        <input ng-model="search" class="form-control" placeholder="ค้นหา..." />
     </div>
     <div class="row">
         <div class="col-sm-4 mb-3" ng-repeat="c in lCategory" ng-show="(c.lSub | filter : search).length > 0">
@@ -90,6 +90,10 @@
                 location.href = '@Url.Page("/Service/FormCreate/FormMoveEmployee")?mode=FORM_MOVE_EMPLOYEE';
             } else if (x.cateCode == "FORM_HIRING_EMPLOYEE") {
                 location.href = '@Url.Page("/Service/FormCreate/FormHiringEmployee")?mode=FORM_HIRING_EMPLOYEE';
+            } else if (x.cateCode == "FORM_PERMANENT_EMPLOYEE") {
+                location.href = '@Url.Page("/Service/FormCreate/FormPermanentEmployee")?mode=FORM_PERMANENT_EMPLOYEE';
+            } else if (x.cateCode == "FORM_JOB_DESCRIPTION") {
+                location.href = '@Url.Page("/Service/FormCreate/FormJobDescription")?mode=FORM_JOB_DESCRIPTION';
             } else if (x.cateCode == "FORM_PDPA_EMPLOYEE") {
                 location.href = '@Url.Page("/Service/FormCreate/FormPdpaEmployee")?mode=FORM_PDPA_EMPLOYEE';
             } else if (x.cateCode == "FORM_WFH_EMPLOYEE") {
@@ -106,6 +110,12 @@
                 location.href = '@Url.Page("/Service/FormCreate/FormPromoteEmployee")?mode=FORM_PROMOTE_EMPLOYEE';
             } else if (x.cateCode == "FORM_IDP") {
                 location.href = '@Url.Page("/Service/FormCreate/FormIDP")?mode=FORM_IDP';
+            } else if (x.cateCode == "FORM_PERMANENT_EMPLOYEE") {
+                location.href = '@Url.Page("/Service/FormCreate/FormPermanentEmployee")?mode=FORM_PERMANENT_EMPLOYTT';
+            } else if (x.cateCode == "FORM_NEW_EMPLOYEE") {
+                location.href = '@Url.Page("/Service/FormCreate/FormNewEmployee")?mode=FORM_NEW_EMPLOYEE';
+            } else if (x.cateCode == "FORM_EMPLOYEE_DATA") {
+                location.href = '@Url.Page("/Service/FormCreate/FormEmployeeData")?mode=FORM_EMPLOYEE_DATA';
             } else {
                 location.href = '@Url.Page("/Service/FormCreate/Create")';
             }

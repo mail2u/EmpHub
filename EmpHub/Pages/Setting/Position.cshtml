@@ -29,7 +29,7 @@
         <div class="d-flex align-items-center">
             <div class="me-2">
                 <button class="btn btn-light" ng-click="ShowCreate()" ng-disabled="roleId == ''">
-                    <i class="fas fa-plus me-2"></i> Create
+                    <i class="fas fa-plus me-2"></i> ADD
                 </button>
             </div>
             <div>
@@ -129,11 +129,11 @@
                     </div>
                     <div class="mb-3">
                         Name (TH)
-                        <input ng-model="iData.desc_th" class="form-control" maxlength="50" />
+                        <input ng-model="iData.desc_th" class="form-control" maxlength="200" />
                     </div>
                     <div class="mb-3">
                         Name (EN)
-                        <input ng-model="iData.desc_en" class="form-control" maxlength="50" />
+                        <input ng-model="iData.desc_en" class="form-control" maxlength="200" />
                     </div>
                     <div class="mb-3">
                         Level
@@ -154,6 +154,7 @@
         $scope.page = 1
         $scope.row = 10;
         $scope.search = '';
+        $scope.groupName = 'positionCode';
 
         $scope.lLevel = [
             { shortCode: 'Director', levelCode: '00', levelName: 'Director' }
@@ -172,17 +173,14 @@
             $scope.page = page;
 
             $.ajax({
-                url: '@webAPI.CurrentValue.APIEmpHub/api/Position/DataList'
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
                 , headers: { 'authorization': 'Bearer @token' }
                 , type: 'post'
                 , contentType: 'application/json'
                 , dataType: 'json'
                 , cache: false
                 , data: JSON.stringify({
-                    page: $scope.page
-                    , row: $scope.row
-                    , sortBy: $scope.sortBy
-                    , search: $scope.search_Position
+                    groupName: $scope.groupName
                 })
                 , success: function (result) {
                     $timeout(function () {
@@ -207,7 +205,11 @@
         $scope.LoadData();
 
         $scope.ShowCreate = function () {
-            $scope.iData = { rn: 0, create_by: '@User.UserId()' };
+            $scope.iData = {
+                id: 0
+                , groupName: $scope.groupName
+                , create_by: '@User.UserId()'
+            };
             $("#CreateModal").modal('show');
         }
 
@@ -218,10 +220,10 @@
         }
 
         $scope.SaveChange = function () {
-            var url = '@webAPI.CurrentValue.APIEmpHub/api/Position/Create';
+            var url = '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/Create';
 
-            if ($scope.iData.rn > 0) {
-                url = '@webAPI.CurrentValue.APIEmpHub/api/Position/Update';
+            if ($scope.iData.id > 0) {
+                url = '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/Update';
             }
 
             $("#CreateModal").modal('hide');
@@ -254,13 +256,14 @@
         $scope.Delete = function (x) {
             alertConfirm("Delete Position", "ต้องการยืนยันการทำรายการ", () => {
                 $.ajax({
-                    url: '@webAPI.CurrentValue.APIEmpHub/api/Position/Delete'
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/Delete'
                     , headers: { 'authorization': 'Bearer @token' }
                     , type: 'post'
                     , contentType: 'application/json'
                     , cache: false
                     , data: JSON.stringify({
-                        rn: x.rn
+                        id: x.id
+                        , groupName: $scope.groupName
                         , update_by: '@User.UserId()'
                     })
                     , success: function () {
