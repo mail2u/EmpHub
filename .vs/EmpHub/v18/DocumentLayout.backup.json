@@ -3,6 +3,38 @@
   "WorkspaceRootPath": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|d:\\tip\\all project\\projectcorehr\\emphub\\emphub\\pages\\profile\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|solutionrelative:emphub\\pages\\profile\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|d:\\tip\\all project\\projectcorehr\\emphub\\emphub\\pages\\profile\\_partialdocument.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|solutionrelative:emphub\\pages\\profile\\_partialdocument.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|d:\\tip\\all project\\projectcorehr\\emphub\\emphub\\pages\\profile\\_partialtraining.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|solutionrelative:emphub\\pages\\profile\\_partialtraining.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|d:\\tip\\all project\\projectcorehr\\emphub\\emphub\\pages\\profile\\_partialeducation.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|solutionrelative:emphub\\pages\\profile\\_partialeducation.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|d:\\tip\\all project\\projectcorehr\\emphub\\emphub\\pages\\profile\\_partialjob.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|solutionrelative:emphub\\pages\\profile\\_partialjob.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|d:\\tip\\all project\\projectcorehr\\emphub\\emphub\\pages\\profile\\_partialpersonal.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|solutionrelative:emphub\\pages\\profile\\_partialpersonal.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|d:\\tip\\all project\\projectcorehr\\emphub\\emphub\\pages\\service\\dashboard.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|solutionrelative:emphub\\pages\\service\\dashboard.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|d:\\tip\\all project\\projectcorehr\\emphub\\emphub\\pages\\account\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|solutionrelative:emphub\\pages\\account\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|d:\\tip\\all project\\projectcorehr\\emphub\\emphub\\pages\\service\\formupdate\\_partialformupdate.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|solutionrelative:emphub\\pages\\service\\formupdate\\_partialformupdate.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
@@ -11,24 +43,12 @@
       "RelativeMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|solutionrelative:emphub\\pages\\service\\formupdate\\formpermanentemployee.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|d:\\tip\\all project\\projectcorehr\\emphub\\emphub\\pages\\profile\\_partialtraining.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|solutionrelative:emphub\\pages\\profile\\_partialtraining.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|d:\\tip\\all project\\projectcorehr\\emphub\\emphub\\pages\\profile\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|solutionrelative:emphub\\pages\\profile\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|d:\\tip\\all project\\projectcorehr\\emphub\\emphub\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|solutionrelative:emphub\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|d:\\tip\\all project\\projectcorehr\\emphub\\emphub\\pages\\profile\\_partialemployee.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|solutionrelative:emphub\\pages\\profile\\_partialemployee.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|d:\\tip\\all project\\projectcorehr\\emphub\\emphub\\pages\\profile\\_partialpersonal.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|solutionrelative:emphub\\pages\\profile\\_partialpersonal.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|d:\\tip\\all project\\projectcorehr\\emphub\\emphub\\pages\\service\\formcreate\\formpromoteemployee.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
@@ -85,10 +105,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|d:\\tip\\all project\\projectcorehr\\emphub\\emphub\\pages\\surveysetting\\detail.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|solutionrelative:emphub\\pages\\surveysetting\\detail.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|d:\\tip\\all project\\projectcorehr\\emphub\\emphub\\pages\\service\\dashboard.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|solutionrelative:emphub\\pages\\service\\dashboard.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{9C86F9D9-CFD2-4F71-AB4E-704FF48B101D}|EmpHub\\EmpHub.csproj|d:\\tip\\all project\\projectcorehr\\emphub\\emphub\\pages\\service\\form\\_partialservicepromoteemployee.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
@@ -198,7 +214,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 6,
           "Children": [
             {
               "$type": "Bookmark",
@@ -210,15 +226,28 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "_PartialFormUpdate.cshtml",
-              "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Service\\FormUpdate\\_PartialFormUpdate.cshtml",
-              "RelativeDocumentMoniker": "EmpHub\\Pages\\Service\\FormUpdate\\_PartialFormUpdate.cshtml",
-              "ToolTip": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Service\\FormUpdate\\_PartialFormUpdate.cshtml",
-              "RelativeToolTip": "EmpHub\\Pages\\Service\\FormUpdate\\_PartialFormUpdate.cshtml",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAACcAAAA1AAAAAAAAAA==",
+              "DocumentIndex": 3,
+              "Title": "_PartialEducation.cshtml",
+              "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Profile\\_PartialEducation.cshtml",
+              "RelativeDocumentMoniker": "EmpHub\\Pages\\Profile\\_PartialEducation.cshtml",
+              "ToolTip": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Profile\\_PartialEducation.cshtml",
+              "RelativeToolTip": "EmpHub\\Pages\\Profile\\_PartialEducation.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAA3AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-07-03T07:23:56.144Z",
+              "WhenOpened": "2026-07-17T02:06:27.181Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "_PartialJob.cshtml",
+              "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Profile\\_PartialJob.cshtml",
+              "RelativeDocumentMoniker": "EmpHub\\Pages\\Profile\\_PartialJob.cshtml",
+              "ToolTip": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Profile\\_PartialJob.cshtml",
+              "RelativeToolTip": "EmpHub\\Pages\\Profile\\_PartialJob.cshtml",
+              "ViewState": "AgIAABUAAAAAAAAAAAAAAC4AAAA6AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-07-17T02:05:22.276Z",
               "EditorCaption": ""
             },
             {
@@ -229,14 +258,14 @@
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Profile\\_PartialTraining.cshtml",
               "ToolTip": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Profile\\_PartialTraining.cshtml",
               "RelativeToolTip": "EmpHub\\Pages\\Profile\\_PartialTraining.cshtml",
-              "ViewState": "AgIAABsAAAAAAAAAAAAAAA0AAAAOAAAAAAAAAA==",
+              "ViewState": "AgIAABsAAAAAAAAAAAAAAC4AAAA7AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2026-07-03T07:05:05.095Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 11,
               "Title": "_PartialEmployee.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Profile\\_PartialEmployee.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Profile\\_PartialEmployee.cshtml",
@@ -244,25 +273,87 @@
               "RelativeToolTip": "EmpHub\\Pages\\Profile\\_PartialEmployee.cshtml",
               "ViewState": "AgIAACcAAAAAAAAAAAAAAC4AAABeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-07-01T09:58:08.216Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-07-01T09:58:08.216Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 0,
               "Title": "Index.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Profile\\Index.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Profile\\Index.cshtml",
               "ToolTip": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Profile\\Index.cshtml",
               "RelativeToolTip": "EmpHub\\Pages\\Profile\\Index.cshtml",
-              "ViewState": "AgIAAAoJAAAAAAAAAAAAACkJAAAoAAAAAAAAAA==",
+              "ViewState": "AgIAABUAAAAAAAAAAAAAAC4AAAATAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2026-07-01T02:34:17.888Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 1,
+              "Title": "_PartialDocument.cshtml",
+              "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Profile\\_PartialDocument.cshtml",
+              "RelativeDocumentMoniker": "EmpHub\\Pages\\Profile\\_PartialDocument.cshtml",
+              "ToolTip": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Profile\\_PartialDocument.cshtml",
+              "RelativeToolTip": "EmpHub\\Pages\\Profile\\_PartialDocument.cshtml",
+              "ViewState": "AgIAACcAAAAAAAAAAADwv0YAAAB6AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-07-17T02:07:50.409Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Dashboard.cshtml",
+              "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Service\\Dashboard.cshtml",
+              "RelativeDocumentMoniker": "EmpHub\\Pages\\Service\\Dashboard.cshtml",
+              "ToolTip": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Service\\Dashboard.cshtml",
+              "RelativeToolTip": "EmpHub\\Pages\\Service\\Dashboard.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAFMAAAAfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-06-23T03:39:24.287Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "_PartialFormUpdate.cshtml",
+              "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Service\\FormUpdate\\_PartialFormUpdate.cshtml",
+              "RelativeDocumentMoniker": "EmpHub\\Pages\\Service\\FormUpdate\\_PartialFormUpdate.cshtml",
+              "ToolTip": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Service\\FormUpdate\\_PartialFormUpdate.cshtml",
+              "RelativeToolTip": "EmpHub\\Pages\\Service\\FormUpdate\\_PartialFormUpdate.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACcAAAA1AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-07-03T07:23:56.144Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "_PartialPersonal.cshtml",
+              "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Profile\\_PartialPersonal.cshtml",
+              "RelativeDocumentMoniker": "EmpHub\\Pages\\Profile\\_PartialPersonal.cshtml",
+              "ToolTip": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Profile\\_PartialPersonal.cshtml",
+              "RelativeToolTip": "EmpHub\\Pages\\Profile\\_PartialPersonal.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-07-01T09:57:58.35Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Login.cshtml",
+              "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Account\\Login.cshtml",
+              "RelativeDocumentMoniker": "EmpHub\\Pages\\Account\\Login.cshtml",
+              "ToolTip": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Account\\Login.cshtml",
+              "RelativeToolTip": "EmpHub\\Pages\\Account\\Login.cshtml",
+              "ViewState": "AgIAACQBAAAAAAAAAAAAAOwAAAAcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-07-07T06:45:41.581Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
               "Title": "appsettings.json",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\appsettings.json",
               "RelativeDocumentMoniker": "EmpHub\\appsettings.json",
@@ -270,12 +361,11 @@
               "RelativeToolTip": "EmpHub\\appsettings.json",
               "ViewState": "AgIAAAYAAAAAAAAAAADwvxgAAAAGAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-06-26T08:33:54.08Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-06-26T08:33:54.08Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 13,
               "Title": "New.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Service\\New.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Service\\New.cshtml",
@@ -287,7 +377,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 9,
               "Title": "FormPermanentEmployee.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Service\\FormUpdate\\FormPermanentEmployee.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Service\\FormUpdate\\FormPermanentEmployee.cshtml",
@@ -295,12 +385,11 @@
               "RelativeToolTip": "EmpHub\\Pages\\Service\\FormUpdate\\FormPermanentEmployee.cshtml",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAF4AAABZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-06-26T08:25:25.821Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-06-26T08:25:25.821Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 12,
               "Title": "FormPromoteEmployee.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Service\\FormCreate\\FormPromoteEmployee.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Service\\FormCreate\\FormPromoteEmployee.cshtml",
@@ -312,19 +401,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "_PartialPersonal.cshtml",
-              "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Profile\\_PartialPersonal.cshtml",
-              "RelativeDocumentMoniker": "EmpHub\\Pages\\Profile\\_PartialPersonal.cshtml",
-              "ToolTip": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Profile\\_PartialPersonal.cshtml",
-              "RelativeToolTip": "EmpHub\\Pages\\Profile\\_PartialPersonal.cshtml",
-              "ViewState": "AgIAACQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-07-01T09:57:58.35Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 15,
               "Title": "FormRequestTraining.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Service\\FormCreate\\FormRequestTraining.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Service\\FormCreate\\FormRequestTraining.cshtml",
@@ -336,7 +413,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 14,
               "Title": "_PartialServiceRequestTraining.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Service\\Form\\_PartialServiceRequestTraining.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Service\\Form\\_PartialServiceRequestTraining.cshtml",
@@ -348,7 +425,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 16,
               "Title": "Update.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Onboarding\\Update.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Onboarding\\Update.cshtml",
@@ -360,7 +437,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 17,
               "Title": "Create.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Onboarding\\Create.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Onboarding\\Create.cshtml",
@@ -372,7 +449,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 18,
               "Title": "workforce-overview.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Report\\workforce-overview.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Report\\workforce-overview.cshtml",
@@ -384,7 +461,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 19,
               "Title": "Summary.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Survey\\Summary.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Survey\\Summary.cshtml",
@@ -396,7 +473,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 20,
               "Title": "Index.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Onboarding\\Index.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Onboarding\\Index.cshtml",
@@ -408,7 +485,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 21,
               "Title": "_PartialUserPersonal.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Employee\\_PartialUserPersonal.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Employee\\_PartialUserPersonal.cshtml",
@@ -420,7 +497,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 23,
               "Title": "FormJobDescription.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Service\\FormCreate\\FormJobDescription.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Service\\FormCreate\\FormJobDescription.cshtml",
@@ -432,7 +509,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 22,
               "Title": "FormJobDescription.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Service\\FormUpdate\\FormJobDescription.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Service\\FormUpdate\\FormJobDescription.cshtml",
@@ -444,7 +521,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 25,
               "Title": "Detail.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\SurveySetting\\Detail.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\SurveySetting\\Detail.cshtml",
@@ -456,7 +533,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 24,
               "Title": "FormPermanentEmployee.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Service\\FormCreate\\FormPermanentEmployee.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Service\\FormCreate\\FormPermanentEmployee.cshtml",
@@ -468,19 +545,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
-              "Title": "Dashboard.cshtml",
-              "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Service\\Dashboard.cshtml",
-              "RelativeDocumentMoniker": "EmpHub\\Pages\\Service\\Dashboard.cshtml",
-              "ToolTip": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Service\\Dashboard.cshtml",
-              "RelativeToolTip": "EmpHub\\Pages\\Service\\Dashboard.cshtml",
-              "ViewState": "AgIAAEUAAAAAAAAAAAAiwFMAAAAfAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-06-23T03:39:24.287Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 22,
+              "DocumentIndex": 26,
               "Title": "_PartialServicePromoteEmployee.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Service\\Form\\_PartialServicePromoteEmployee.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Service\\Form\\_PartialServicePromoteEmployee.cshtml",
@@ -492,7 +557,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
+              "DocumentIndex": 27,
               "Title": "FormPromoteEmployee.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Service\\FormUpdate\\FormPromoteEmployee.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Service\\FormUpdate\\FormPromoteEmployee.cshtml",
@@ -504,7 +569,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 24,
+              "DocumentIndex": 28,
               "Title": "Degree.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Setting\\Degree.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Setting\\Degree.cshtml",
@@ -516,7 +581,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 25,
+              "DocumentIndex": 29,
               "Title": "Ethnicity.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Setting\\Ethnicity.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Setting\\Ethnicity.cshtml",
@@ -528,7 +593,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 26,
+              "DocumentIndex": 30,
               "Title": "Detail.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Employee\\Detail.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Employee\\Detail.cshtml",
@@ -540,7 +605,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
+              "DocumentIndex": 31,
               "Title": "_PartialOnboardDetail.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Onboarding\\_PartialOnboardDetail.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Onboarding\\_PartialOnboardDetail.cshtml",
@@ -552,7 +617,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 28,
+              "DocumentIndex": 32,
               "Title": "Detail.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Onboarding\\Detail.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Onboarding\\Detail.cshtml",
@@ -564,7 +629,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 31,
+              "DocumentIndex": 35,
               "Title": "WorkMode.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Setting\\WorkMode.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Setting\\WorkMode.cshtml",
@@ -576,7 +641,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 32,
+              "DocumentIndex": 36,
               "Title": "Index.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\SurveySetting\\Index.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\SurveySetting\\Index.cshtml",
@@ -588,7 +653,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 33,
+              "DocumentIndex": 37,
               "Title": "_PartialOnboard.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Onboarding\\_PartialOnboard.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Onboarding\\_PartialOnboard.cshtml",
@@ -600,7 +665,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 30,
+              "DocumentIndex": 34,
               "Title": "FormIDP.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Service\\FormCreate\\FormIDP.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Service\\FormCreate\\FormIDP.cshtml",
@@ -612,7 +677,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 29,
+              "DocumentIndex": 33,
               "Title": "FormIDP.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Service\\FormUpdate\\FormIDP.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Service\\FormUpdate\\FormIDP.cshtml",
@@ -624,7 +689,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 34,
+              "DocumentIndex": 38,
               "Title": "Index.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Employee\\Index.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Employee\\Index.cshtml",
@@ -636,7 +701,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 36,
+              "DocumentIndex": 40,
               "Title": "Index.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Setting\\Index.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Setting\\Index.cshtml",
@@ -648,7 +713,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 35,
+              "DocumentIndex": 39,
               "Title": "ProgramCode.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Setting\\ProgramCode.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Setting\\ProgramCode.cshtml",
@@ -660,7 +725,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 37,
+              "DocumentIndex": 41,
               "Title": "Index.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Dashboard\\Index.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Dashboard\\Index.cshtml",
@@ -672,7 +737,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 38,
+              "DocumentIndex": 42,
               "Title": "_Layout.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Shared\\_Layout.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Shared\\_Layout.cshtml",
@@ -684,7 +749,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 39,
+              "DocumentIndex": 43,
               "Title": "FormProbationReport.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Service\\FormCreate\\FormProbationReport.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Service\\FormCreate\\FormProbationReport.cshtml",
@@ -696,7 +761,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 40,
+              "DocumentIndex": 44,
               "Title": "FormProbationReport.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Service\\FormUpdate\\FormProbationReport.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Service\\FormUpdate\\FormProbationReport.cshtml",
@@ -708,7 +773,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 41,
+              "DocumentIndex": 45,
               "Title": "Detail.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Service\\Detail.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Service\\Detail.cshtml",
@@ -720,7 +785,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 42,
+              "DocumentIndex": 46,
               "Title": "FormKPIProbation.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Service\\FormCreate\\FormKPIProbation.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Service\\FormCreate\\FormKPIProbation.cshtml",
@@ -732,7 +797,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 43,
+              "DocumentIndex": 47,
               "Title": "FormPerformanceLv2.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Service\\FormUpdate\\FormPerformanceLv2.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Service\\FormUpdate\\FormPerformanceLv2.cshtml",
@@ -744,7 +809,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 44,
+              "DocumentIndex": 48,
               "Title": "FormPerformanceLv2.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Service\\FormCreate\\FormPerformanceLv2.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Service\\FormCreate\\FormPerformanceLv2.cshtml",
@@ -756,7 +821,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 45,
+              "DocumentIndex": 49,
               "Title": "FormPrepareEmployee.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Service\\FormUpdate\\FormPrepareEmployee.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Service\\FormUpdate\\FormPrepareEmployee.cshtml",
@@ -768,7 +833,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 46,
+              "DocumentIndex": 50,
               "Title": "FormPrepareEmployee.cshtml",
               "DocumentMoniker": "D:\\TIP\\All Project\\ProjectCoreHR\\EmpHub\\EmpHub\\Pages\\Service\\FormCreate\\FormPrepareEmployee.cshtml",
               "RelativeDocumentMoniker": "EmpHub\\Pages\\Service\\FormCreate\\FormPrepareEmployee.cshtml",

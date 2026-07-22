@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EmpHub")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+31405a202b3f025e7da276ed83b418de8dd16f22")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bd4d629a4e4d1693a333c30a5c3409e457736969")]
 [assembly: System.Reflection.AssemblyProductAttribute("EmpHub")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EmpHub")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

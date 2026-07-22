@@ -43,8 +43,8 @@
 
     .profile-avatar-upload {
         position: absolute;
-        right: 2px;
-        bottom: 2px;
+        left:15px;
+        bottom: -15px;
         width: 32px;
         height: 32px;
         border-radius: 50%;
@@ -1235,12 +1235,16 @@
             <div class="profile-card overflow-hidden mb-3">
                 <div class="profile-card-cover"></div>
                 <div class="p-4">
-                    <div class="profile-avatar rounded-circle overflow-hidden d-flex align-items-center justify-content-center">
-                        <img ng-src="{{ displayImageSrc() }}" alt="รูปพนักงาน" />
-                        <label for="profileDisplayFile" class="profile-avatar-upload" title="อัปโหลดรูปภาพ">
-                            <i class="bi bi-camera-fill"></i>
-                        </label>
-                        <input ng-show="1 == 2" id="profileDisplayFile" type="file" accept="image/*" ng-model="iDisplayFile" base-sixty-four-input ng-change="SaveDisplayImage()" />
+                    <div class="position-relative d-flex align-items-center justify-content-center">
+                        <div class="profile-avatar rounded-circle overflow-hidden">
+                            <img ng-src="{{ displayImageSrc() }}" alt="รูปพนักงาน" />
+                            <input ng-show="1 == 2" id="profileDisplayFile" type="file" accept="image/*" ng-model="iDisplayFile" base-sixty-four-input ng-change="SaveDisplayImage()" />
+                        </div>
+                        <div class="position-absolute">
+                            <label for="profileDisplayFile" class="profile-avatar-upload" title="อัปโหลดรูปภาพ">
+                                <i class="bi bi-camera-fill"></i>
+                            </label>
+                        </div>
                     </div>
                     <div class="text-center mb-4">
                         <div class="fs-4 fw-bold text-dark">{{ displayName() }}</div>
@@ -2222,8 +2226,8 @@
                         if(result.can_view == 1){
                             $scope.iEmployee = result.data || {};
                             $scope.LoadDisplay();
-                            // $scope.LoadPersonal();
-                            // $scope.LoadAddress();
+                            $scope.LoadPersonal();
+                            $scope.LoadAddress();
                             $scope.LoadJobExperience();
                             $scope.LoadEducation();
                             $scope.LoadTraining();
