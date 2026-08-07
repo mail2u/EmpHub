@@ -80,6 +80,10 @@
                 <div class="text-dark fw-bolder">สถานะความพิการ</div>
                 <div class="text-blue">{{ iForm.disabilityStatus == '' ? '-' : iForm.disabilityStatus }}</div>
             </div>
+            <div class="col-sm-4 mb-3" ng-show="iForm.disabilityCardNo">
+                <div class="text-dark fw-bolder">เลขบัตรผู้พิการ</div>
+                <div class="text-blue">{{ iForm.disabilityCardNo }}</div>
+            </div>
         </div>
     </div>
 </div>

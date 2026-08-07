@@ -29,15 +29,11 @@
         $scope.step_index = 0;
         $scope.userId = '@Model.userId';
 
-        $scope.lProcessType = [
-            { key: 'เข้าใหม่', value: 'new' }
-            , { key: 'กลับเข้าใหม่', value: 'comeback' }
-            , { key: 'reinstatement', value: 'reinstatement' }
-        ];
         $scope.lSex = [
             { key: 'ชาย', value: 'M' }
             , { key: 'หญิง', value: 'F' }
         ];
+        $scope.lProbationDay = [90, 120, 180];
 
         $scope.iPersonal = {};
         $scope.iEmployee = {};
@@ -56,7 +52,11 @@
                 })
                 , success: function (result) {
                     $timeout(function () {
-                        $scope.lDepartment = result;
+                        $scope.lSectionAll = result.filter(item => item.condition_4 == 'Section');
+                        $scope.lDepartmentAll = result.filter(item => item.condition_4 == 'Department');
+                        $scope.lGroupAll = result.filter(item => item.condition_4 == 'Group');
+                        $scope.lBusinessUnitAll = result.filter(item => item.condition_4 == 'Business Unit');
+                        $scope.BuildOrgOption();
                     }, 0);
                 }
                 , error: AjaxError
@@ -175,7 +175,9 @@
                 })
                 , success: function (result) {
                     $timeout(function () {
-                        $scope.lNationality = result;
+                        $scope.lNationality = MasterOptionListWithOther(result);
+                        $scope.SyncNationality();
+                        $scope.SyncPrefix();
                     }, 0);
                 }
                 , error: AjaxError
@@ -209,7 +211,8 @@
                 })
                 , success: function (result) {
                     $timeout(function () {
-                        $scope.lPrefix = result;
+                        $scope.lPrefix = MasterOptionListWithOther(result);
+                        $scope.SyncPrefix();
                     }, 0);
                 }
                 , error: AjaxError
@@ -281,6 +284,49 @@
         }
         $scope.LoadInit();
 
+        $scope.MASTER_OTHER = MASTER_OTHER;
+
+        // ถ้าค่าที่โหลดมาเป็นชื่อที่พิมพ์เอง ให้ตั้ง dropdown เป็น "อื่น ๆ" แล้วย้ายชื่อไปช่องกรอก
+        $scope.SyncNationality = function () {
+            if (!$scope.lNationality || !$scope.iPersonal) {
+                return;
+            }
+
+            if (MasterIsOther($scope.lNationality, $scope.iPersonal.nationality, 'code')) {
+                $scope.nationality_other = $scope.iPersonal.nationality;
+                $scope.iPersonal.nationality = MASTER_OTHER;
+            }
+        }
+
+        // เลขบัตรผู้พิการ: บังคับกรอกเฉพาะสถานะที่ตั้ง flag ไว้ที่หน้า Setting > Disability
+
+
+        $scope.NeedDisabilityCard = function () {
+
+
+            return IsDisabilityCardRequired($scope.lDisability, $scope.iPersonal.disabilityStatus);
+
+
+        }
+
+
+        // คำนำหน้าใน Onboarding เก็บเป็น code ทั้ง TH/EN
+        $scope.SyncPrefix = function () {
+            if (!$scope.lPrefix || !$scope.iPersonal) {
+                return;
+            }
+
+            if (MasterIsOther($scope.lPrefix, $scope.iPersonal.prefix_th, 'code')) {
+                $scope.prefix_th_other = $scope.iPersonal.prefix_th;
+                $scope.iPersonal.prefix_th = MASTER_OTHER;
+            }
+
+            if (MasterIsOther($scope.lPrefix, $scope.iPersonal.prefix_en, 'code')) {
+                $scope.prefix_en_other = $scope.iPersonal.prefix_en;
+                $scope.iPersonal.prefix_en = MASTER_OTHER;
+            }
+        }
+
         $scope.SelectPrefixTH = function () {
             $scope.iPersonal.prefix_en = $scope.iPersonal.prefix_th;
         }
@@ -293,8 +339,142 @@
             var find = $scope.lPosition.find(item => item.code == $scope.iEmployee.positionCode);
 
             if (find) {
-                $scope.iEmployee.grade = find.condition_1;
+                $scope.iEmployee.grade = find.condition_2;
             }
+        }
+
+        // โครงสร้างหน่วยงาน: condition_4 = ระดับ, condition_3 = รหัสหน่วยงานแม่
+        // Business Unit = ด้าน, Group = สาย, Department = ฝ่าย, Section = ส่วน
+        $scope.lFunction = [];
+        $scope.lDivision = [];
+        $scope.lDepartment = [];
+        $scope.lSection = [];
+
+        function OrgChildren(lTier, parentCode) {
+            if (!parentCode) {
+                return [];
+            }
+
+            return (lTier || []).filter(function (x) { return x.condition_3 == parentCode; });
+        }
+
+        function FindOrgItem(lTier, code) {
+            return (lTier || []).find(function (x) { return x.code == code; });
+        }
+
+        function IsOrgMasterReady() {
+            return $scope.lBusinessUnitAll && $scope.lGroupAll && $scope.lDepartmentAll && $scope.lSectionAll;
+        }
+
+        function ResolveLegacyOrgCode() {
+            if (!$scope.iEmployee || !IsOrgMasterReady() || !$scope.iEmployee.departmentCode || $scope.iEmployee.sectionCode) {
+                return;
+            }
+
+            if (FindOrgItem($scope.lBusinessUnitAll, $scope.iEmployee.departmentCode)) {
+                $scope.iEmployee.functionCode = $scope.iEmployee.functionCode || $scope.iEmployee.departmentCode;
+                $scope.iEmployee.departmentCode = '';
+                return;
+            }
+
+            if (FindOrgItem($scope.lGroupAll, $scope.iEmployee.departmentCode)) {
+                $scope.iEmployee.divisionCode = $scope.iEmployee.divisionCode || $scope.iEmployee.departmentCode;
+                $scope.iEmployee.departmentCode = '';
+                return;
+            }
+
+            if (FindOrgItem($scope.lSectionAll, $scope.iEmployee.departmentCode)) {
+                $scope.iEmployee.sectionCode = $scope.iEmployee.departmentCode;
+                $scope.iEmployee.departmentCode = '';
+            }
+        }
+
+        function ResolveOrgParentChain() {
+            if (!$scope.iEmployee) {
+                return;
+            }
+
+            if ($scope.iEmployee.sectionCode && !$scope.iEmployee.departmentCode) {
+                var section = FindOrgItem($scope.lSectionAll, $scope.iEmployee.sectionCode);
+                $scope.iEmployee.departmentCode = section ? section.condition_3 : '';
+            }
+            if ($scope.iEmployee.departmentCode && !$scope.iEmployee.divisionCode) {
+                var department = FindOrgItem($scope.lDepartmentAll, $scope.iEmployee.departmentCode);
+                $scope.iEmployee.divisionCode = department ? department.condition_3 : '';
+            }
+            if ($scope.iEmployee.divisionCode && !$scope.iEmployee.functionCode) {
+                var division = FindOrgItem($scope.lGroupAll, $scope.iEmployee.divisionCode);
+                $scope.iEmployee.functionCode = division ? division.condition_3 : '';
+            }
+        }
+
+        function NormalizeOrgSelection() {
+            if (!$scope.iEmployee) {
+                return;
+            }
+            if (!IsOrgMasterReady()) {
+                return;
+            }
+
+            if ($scope.iEmployee.functionCode && !FindOrgItem($scope.lBusinessUnitAll, $scope.iEmployee.functionCode)) {
+                $scope.iEmployee.functionCode = '';
+                $scope.iEmployee.divisionCode = '';
+                $scope.iEmployee.departmentCode = '';
+                $scope.iEmployee.sectionCode = '';
+                return;
+            }
+
+            if ($scope.iEmployee.divisionCode) {
+                var division = FindOrgItem($scope.lGroupAll, $scope.iEmployee.divisionCode);
+                if (!division || division.condition_3 != $scope.iEmployee.functionCode) {
+                    $scope.iEmployee.divisionCode = '';
+                    $scope.iEmployee.departmentCode = '';
+                    $scope.iEmployee.sectionCode = '';
+                }
+            }
+
+            if ($scope.iEmployee.departmentCode) {
+                var department = FindOrgItem($scope.lDepartmentAll, $scope.iEmployee.departmentCode);
+                if (!department || department.condition_3 != $scope.iEmployee.divisionCode) {
+                    $scope.iEmployee.departmentCode = '';
+                    $scope.iEmployee.sectionCode = '';
+                }
+            }
+
+            if ($scope.iEmployee.sectionCode) {
+                var section = FindOrgItem($scope.lSectionAll, $scope.iEmployee.sectionCode);
+                if (!section || section.condition_3 != $scope.iEmployee.departmentCode) {
+                    $scope.iEmployee.sectionCode = '';
+                }
+            }
+        }
+
+        $scope.BuildOrgOption = function () {
+            ResolveLegacyOrgCode();
+            ResolveOrgParentChain();
+            NormalizeOrgSelection();
+            $scope.lFunction = $scope.lBusinessUnitAll || [];
+            $scope.lDivision = OrgChildren($scope.lGroupAll, $scope.iEmployee.functionCode);
+            $scope.lDepartment = OrgChildren($scope.lDepartmentAll, $scope.iEmployee.divisionCode);
+            $scope.lSection = OrgChildren($scope.lSectionAll, $scope.iEmployee.departmentCode);
+        }
+
+        $scope.SelectFunction = function () {
+            $scope.iEmployee.divisionCode = '';
+            $scope.iEmployee.departmentCode = '';
+            $scope.iEmployee.sectionCode = '';
+            $scope.BuildOrgOption();
+        }
+
+        $scope.SelectDivision = function () {
+            $scope.iEmployee.departmentCode = '';
+            $scope.iEmployee.sectionCode = '';
+            $scope.BuildOrgOption();
+        }
+
+        $scope.SelectDepartment = function () {
+            $scope.iEmployee.sectionCode = '';
+            $scope.BuildOrgOption();
         }
 
         $scope.LoadData = function () {
@@ -335,11 +515,15 @@
                 })
                 , success: function (result) {
                     $timeout(function () {
-                        $scope.iPersonal = result.data;
+                        $scope.iPersonal = result.data || {};
 
                         if ($scope.iPersonal.birth_date) {
                             $scope.iPersonal.birth_date_select = moment($scope.iPersonal.birth_date, "DD/MM/YYYY");
                         }
+
+                        $scope.SyncNationality();
+                        $scope.SyncPrefix();
+                        $scope.CalcAge();
                     }, 0);
                 }
                 , error: AjaxError
@@ -358,7 +542,8 @@
                 })
                 , success: function (result) {
                     $timeout(function () {
-                        $scope.iAddress = result.data;
+                        $scope.iAddress = result.data || {};
+                        $scope.SyncAddressSameFlags();
                     }, 0);
                 }
                 , error: AjaxError
@@ -377,7 +562,7 @@
                 })
                 , success: function (result) {
                     $timeout(function () {
-                        $scope.iEmployee = result.data;
+                        $scope.iEmployee = result.data || {};
 
                         if ($scope.iEmployee.join_date) {
                             $scope.iEmployee.join_date_select = moment($scope.iEmployee.join_date, "DD/MM/YYYY");
@@ -385,6 +570,15 @@
                         if ($scope.iEmployee.probation_end_date) {
                             $scope.iEmployee.probation_end_date_select = moment($scope.iEmployee.probation_end_date, "DD/MM/YYYY");
                         }
+                        if (!$scope.iEmployee.probation_day && $scope.iEmployee.join_date_select && $scope.iEmployee.probation_end_date_select) {
+                            $scope.calcProbationDay();
+                        } else if ($scope.iEmployee.probation_day && $scope.iEmployee.join_date_select && !$scope.iEmployee.probation_end_date_select) {
+                            $scope.calcProbationDate();
+                        }
+                        if ($scope.iEmployee.workMode && !$scope.iEmployee.workTime && $scope.lWorkMode) {
+                            $scope.SelectWorkMode();
+                        }
+                        $scope.BuildOrgOption();
                     }, 0);
                 }
                 , error: AjaxError
@@ -429,12 +623,78 @@
             }, 0);
         }
 
+        function AddressValue(name) {
+            return ($scope.iAddress && $scope.iAddress[name]) || '';
+        }
+
+        function IsSameAsRegistered(prefix) {
+            var fields = ['home', 'road', 'subDistrictCode', 'subDistrictName', 'districtCode', 'districtName', 'provinceCode', 'provinceName', 'postcode'];
+            var hasRegisteredAddress = fields.some(function (field) {
+                return !IsBlank(AddressValue('registered_' + field));
+            });
+
+            return hasRegisteredAddress && fields.every(function (field) {
+                return AddressValue(prefix + '_' + field) == AddressValue('registered_' + field);
+            });
+        }
+
+        $scope.SyncAddressSameFlags = function () {
+            $scope.is_card_same_register = IsSameAsRegistered('card');
+            $scope.is_live_same_register = IsSameAsRegistered('live');
+        }
+
+        function GetPickerDateValue(value) {
+            if (!value) {
+                return null;
+            }
+            if (moment.isMoment(value)) {
+                return value.isValid() ? value.toDate() : null;
+            }
+            if (value instanceof Date) {
+                return isNaN(value.getTime()) ? null : value;
+            }
+            if (typeof value === 'string') {
+                var text = value.trim();
+
+                if (!text) {
+                    return null;
+                }
+
+                var parsed = moment(text, "DD/MM/YYYY", true);
+                if (parsed.isValid()) {
+                    return parsed.toDate();
+                }
+
+                var fallback = new Date(text);
+                return isNaN(fallback.getTime()) ? null : fallback;
+            }
+
+            var parsedValue = moment(value);
+            return parsedValue.isValid() ? parsedValue.toDate() : null;
+        }
+
+        function FormatPickerDate(value) {
+            var date = GetPickerDateValue(value);
+            return date ? moment(date).format("DD/MM/YYYY") : '';
+        }
+
+        function GetBirthDateValue() {
+            return GetPickerDateValue($scope.iPersonal.birth_date_select);
+        }
+
         $scope.CalcAge = function(){
             $scope.iPersonal.age = '';
 
-            if ($scope.iPersonal.birth_date_select) {
-                const b = new Date($scope.iPersonal.birth_date_select);
+            var b = GetBirthDateValue();
+
+            if (b) {
                 const c = new Date();
+                b.setHours(0, 0, 0, 0);
+                c.setHours(0, 0, 0, 0);
+
+                if (b > c) {
+                    return;
+                }
 
                 let years = c.getFullYear() - b.getFullYear();
                 let months = c.getMonth() - b.getMonth();
@@ -464,21 +724,47 @@
                 if (days > 0) {
                     $scope.iPersonal.age += days + ' วัน';
                 }
+                if ($scope.iPersonal.age == '') {
+                    $scope.iPersonal.age = '0 วัน';
+                }
             }
         }
+
+        $scope.$watch('iPersonal.birth_date_select', function (newValue, oldValue) {
+            if (newValue !== oldValue) {
+                $scope.CalcAge();
+            }
+        });
 
         $scope.calcProbationDay = function(){
             $scope.iEmployee.probation_day = 0;
 
-            if ($scope.iEmployee.join_date_select && $scope.iEmployee.probation_end_date_select) {
-                const startStr = $scope.iEmployee.join_date_select.format("DD/MM/YYYY");
-                const endStr = $scope.iEmployee.probation_end_date_select.format("DD/MM/YYYY");
+            var startStr = FormatPickerDate($scope.iEmployee.join_date_select);
+            var endStr = FormatPickerDate($scope.iEmployee.probation_end_date_select);
+
+            if (startStr && endStr) {
                 const start = ConvertToDate(startStr);
                 const end = ConvertToDate(endStr);
                 const diffTime = end - start;
 
                 $scope.iEmployee.probation_day = parseInt(diffTime / (1000 * 60 * 60 * 24)) + 1;
             }
+        }
+
+        // เลือก/พิมพ์จำนวนวัน (หรือเปลี่ยนวันเข้างาน) แล้วคำนวณวันผ่านทดลองงานให้
+        // บวก day - 1 เพราะ calcProbationDay นับวันเข้างานเป็นวันที่ 1 ค่าจึงกลับไปกลับมาได้ตรงกัน
+        $scope.calcProbationDate = function () {
+            var day = parseInt($scope.iEmployee.probation_day);
+
+            var startStr = FormatPickerDate($scope.iEmployee.join_date_select);
+
+            if (!startStr || !day || day < 1) {
+                return;
+            }
+
+            var start = ConvertToDate(startStr);
+
+            $scope.iEmployee.probation_end_date_select = new moment(start.addDays(day - 1));
         }
 
         $scope.SelectWorkMode = function(){
@@ -491,6 +777,12 @@
                 }
             }
         }
+
+        $scope.$watchGroup(['iEmployee.workMode', 'lWorkMode'], function () {
+            if ($scope.iEmployee && $scope.iEmployee.workMode && !$scope.iEmployee.workTime && $scope.lWorkMode) {
+                $scope.SelectWorkMode();
+            }
+        });
 
         $scope.ShowSupervisor = function () {
             $scope.filter_name = '';
@@ -550,11 +842,28 @@
         }
 
         $scope.SavePersonal = function () {
-            if ($scope.iPersonal.birth_date_select) {
-                $scope.iPersonal.birth_date = $scope.iPersonal.birth_date_select.format("DD/MM/YYYY");
-            }
+            $scope.iPersonal.birth_date = FormatPickerDate($scope.iPersonal.birth_date_select);
 
             $scope.iPersonal.create_by = '@User.UserId()';
+            $scope.iPersonal.userId = $scope.userId;
+
+            // แทนรหัส OTHER ด้วยชื่อที่พิมพ์เอง โดยไม่แก้ $scope.iPersonal เพื่อไม่ให้ dropdown เพี้ยนหลังบันทึก
+            var iSave = angular.extend({}, $scope.iPersonal);
+
+            if (iSave.nationality == MASTER_OTHER) {
+                iSave.nationality = ($scope.nationality_other || '').trim();
+            }
+            if (iSave.prefix_th == MASTER_OTHER) {
+                iSave.prefix_th = ($scope.prefix_th_other || '').trim();
+            }
+            if (iSave.prefix_en == MASTER_OTHER) {
+                iSave.prefix_en = ($scope.prefix_en_other || '').trim();
+            }
+
+            // เก็บเลขบัตรได้แม้ master ไม่ได้ตั้งเป็น required; ล้างเฉพาะกรณียังไม่เลือกสถานะความพิการ
+            if (!iSave.disabilityStatus) {
+                iSave.disabilityCardNo = '';
+            }
 
             return new Promise((resolve) => {
                 $.ajax({
@@ -563,7 +872,7 @@
                     , type: 'post'
                     , contentType: 'application/json'
                     , cache: false
-                    , data: JSON.stringify($scope.iPersonal)
+                    , data: JSON.stringify(iSave)
                     , success: function () {
                         $timeout(function () {
                             resolve(true);
@@ -578,14 +887,13 @@
         }
 
         $scope.SaveEmployee = function () {
-            if ($scope.iEmployee.join_date_select){
-                $scope.iEmployee.join_date = $scope.iEmployee.join_date_select.format("DD/MM/YYYY");
-            }
-            if ($scope.iEmployee.probation_end_date_select) {
-                $scope.iEmployee.probation_end_date = $scope.iEmployee.probation_end_date_select.format("DD/MM/YYYY");
-            }
+            $scope.BuildOrgOption();
+
+            $scope.iEmployee.join_date = FormatPickerDate($scope.iEmployee.join_date_select);
+            $scope.iEmployee.probation_end_date = FormatPickerDate($scope.iEmployee.probation_end_date_select);
 
             $scope.iEmployee.create_by = '@User.UserId()';
+            $scope.iEmployee.userId = $scope.userId;
 
             return new Promise((resolve) => {
                 $.ajax({
@@ -600,8 +908,8 @@
                             resolve(true);
                         }, 0);
                     }
-                    , error: function () {
-                        alertWarning("Save Data Employee", "Error");
+                    , error: function (jqXHR) {
+                        alertWarning("Save Data Employee", jqXHR.responseText || "Error");
                         resolve(false);
                     }
                 });
@@ -611,6 +919,7 @@
         $scope.SaveAddress = function () {
 
             $scope.iAddress.create_by = '@User.UserId()';
+            $scope.iAddress.userId = $scope.userId;
 
             return new Promise((resolve) => {
                 $.ajax({
@@ -659,76 +968,93 @@
         }
 
 
-        $scope.CheckStep1 = function () {
-            var flag = true;
+        function IsBlank(value) {
+            return value == undefined || value == null || (typeof value === 'string' && value.trim() == '') || value == '';
+        }
 
-            JS_Reset($(".processType"));
-            JS_Reset($(".employeeCode"));
+        function RequireField(messages, selector, label) {
+            messages.push(label);
+            JS_Require($(selector));
+        }
+
+        function ShowValidateMessages(stepIndex, messages) {
+            if (messages.length == 0) {
+                return true;
+            }
+
+            $scope.step_index = stepIndex;
+            alertWarning("Form Validate", "กรุณาตรวจสอบ: " + messages.join(", "));
+            return false;
+        }
+
+        $scope.CheckStep1 = function (options) {
+            options = options || {};
+            var messages = [];
+
             JS_Reset($(".nationality"));
+            JS_Reset($(".nationality_other"));
             JS_Reset($(".idcard"));
             JS_Reset($(".prefix_th"));
+            JS_Reset($(".prefix_th_other"));
+
+            JS_Reset($(".disabilityCardNo"));
             JS_Reset($(".firstname_th"));
             JS_Reset($(".lastname_th"));
             JS_Reset($(".birth_date"));
             JS_Reset($(".sex"));
             JS_Reset($(".maritalStatus"));
 
-            $scope.iPersonal.birth_date = '';
+            var birthDateValue = GetBirthDateValue();
+            $scope.iPersonal.birth_date = birthDateValue ? moment(birthDateValue).format("DD/MM/YYYY") : '';
 
-            if ($scope.iPersonal.birth_date_select) {
-                $scope.iPersonal.birth_date = $scope.iPersonal.birth_date_select.format("DD/MM/YYYY");
+            if (IsBlank($scope.iPersonal.idcard)) {
+                RequireField(messages, ".idcard", "ข้อมูลส่วนบุคคล > ข้อมูลยืนยันตัวตน > เลขประจำตัวประชาชน");
             }
-
-            if ($scope.iEmployee.processType == '') {
-                flag = false;
-                JS_Require($(".processType"));
+            if (IsBlank($scope.iPersonal.nationality)) {
+                RequireField(messages, ".nationality", "ข้อมูลส่วนบุคคล > ข้อมูลยืนยันตัวตน > สัญชาติ");
             }
-            if ($scope.iEmployee.employeeCode == '') {
-                flag = false;
-                JS_Require($(".employeeCode"));
+            if ($scope.iPersonal.nationality == MASTER_OTHER && IsBlank($scope.nationality_other)) {
+                RequireField(messages, ".nationality_other", "ข้อมูลส่วนบุคคล > ข้อมูลยืนยันตัวตน > ระบุสัญชาติ");
             }
-            if ($scope.iPersonal.idcard == '') {
-                flag = false;
-                JS_Require($(".idcard"));
+            if (IsBlank($scope.iPersonal.prefix_th)) {
+                RequireField(messages, ".prefix_th", "ข้อมูลส่วนบุคคล > ชื่อภาษาไทย > คำนำหน้าชื่อ");
             }
-            if ($scope.iPersonal.nationality == '') {
-                flag = false;
-                JS_Require($(".nationality"));
+            if ($scope.iPersonal.prefix_th == MASTER_OTHER && IsBlank($scope.prefix_th_other)) {
+                RequireField(messages, ".prefix_th_other", "ข้อมูลส่วนบุคคล > ชื่อภาษาไทย > ระบุคำนำหน้าชื่อ");
             }
-            if ($scope.iPersonal.prefix_th == '') {
-                flag = false;
-                JS_Require($(".prefix_th"));
+            if ($scope.NeedDisabilityCard() && IsBlank($scope.iPersonal.disabilityCardNo)) {
+                RequireField(messages, ".disabilityCardNo", "ข้อมูลส่วนบุคคล > ข้อมูลทั่วไป > เลขบัตรผู้พิการ");
             }
-            if ($scope.iPersonal.firstname_th == '') {
-                flag = false;
-                JS_Require($(".firstname_th"));
+            if (IsBlank($scope.iPersonal.firstname_th)) {
+                RequireField(messages, ".firstname_th", "ข้อมูลส่วนบุคคล > ชื่อภาษาไทย > ชื่อ");
             }
-            if ($scope.iPersonal.lastname_th == '') {
-                flag = false;
-                JS_Require($(".lastname_th"));
+            if (IsBlank($scope.iPersonal.lastname_th)) {
+                RequireField(messages, ".lastname_th", "ข้อมูลส่วนบุคคล > ชื่อภาษาไทย > นามสกุล");
             }
-            if ($scope.iPersonal.birth_date == '') {
-                flag = false;
-                JS_Require($(".birth_date"));
+            if (IsBlank($scope.iPersonal.birth_date)) {
+                RequireField(messages, ".birth_date", "ข้อมูลส่วนบุคคล > ข้อมูลทั่วไป > วันเกิด");
             }
-            if ($scope.iPersonal.sex == '') {
-                flag = false;
-                JS_Require($(".sex"));
+            if (IsBlank($scope.iPersonal.sex)) {
+                RequireField(messages, ".sex", "ข้อมูลส่วนบุคคล > ข้อมูลทั่วไป > เพศ");
             }
-            if ($scope.iPersonal.maritalStatus == '') {
-                flag = false;
-                JS_Require($(".maritalStatus"));
+            if (IsBlank($scope.iPersonal.maritalStatus)) {
+                RequireField(messages, ".maritalStatus", "ข้อมูลส่วนบุคคล > ข้อมูลทั่วไป > สถานภาพการสมรส");
             }
 
-            if (flag) {
+            if (messages.length == 0) {
+                if (!options.skipMove) {
                 $scope.step_index = 1;
+                }
+                return true;
             } else {
-                alertWarning("Form Validate", "Please fill in all the required fields.");
+                return ShowValidateMessages(0, messages);
             }
         }
 
-        $scope.CheckStep2 = function () {
-            var flag = true;
+        $scope.CheckStep2 = function (options) {
+            options = options || {};
+            var messages = [];
+
             JS_Reset($(".registered_home"));
             JS_Reset($(".registered_provinceName"));
             JS_Reset($(".card_home"));
@@ -737,122 +1063,98 @@
             JS_Reset($(".live_provinceName"));
 
 
-            if ($scope.iAddress.registered_home == '') {
-                flag = false;
-                JS_Require($(".registered_home"));
+            if (IsBlank($scope.iAddress.registered_home)) {
+                RequireField(messages, ".registered_home", "ข้อมูลที่อยู่ > ที่อยู่ทะเบียนบ้าน > บ้านเลขที่");
             }
-            if ($scope.iAddress.registered_provinceName == '') {
-                flag = false;
-                JS_Require($(".registered_provinceName"));
+            if (IsBlank($scope.iAddress.registered_provinceName)) {
+                RequireField(messages, ".registered_provinceName", "ข้อมูลที่อยู่ > ที่อยู่ทะเบียนบ้าน > จังหวัด");
             }
-            if ($scope.iAddress.card_home == '') {
-                flag = false;
-                JS_Require($(".card_home"));
+            if (IsBlank($scope.iAddress.card_home)) {
+                RequireField(messages, ".card_home", "ข้อมูลที่อยู่ > ที่อยู่ตามบัตรประชาชน > บ้านเลขที่");
             }
-            if ($scope.iAddress.card_provinceName == '') {
-                flag = false;
-                JS_Require($(".card_provinceName"));
+            if (IsBlank($scope.iAddress.card_provinceName)) {
+                RequireField(messages, ".card_provinceName", "ข้อมูลที่อยู่ > ที่อยู่ตามบัตรประชาชน > จังหวัด");
             }
-            if ($scope.iAddress.live_home == '') {
-                flag = false;
-                JS_Require($(".live_home"));
+            if (IsBlank($scope.iAddress.live_home)) {
+                RequireField(messages, ".live_home", "ข้อมูลที่อยู่ > ที่อยู่พักอาศัย > บ้านเลขที่");
             }
-            if ($scope.iAddress.live_provinceName == '') {
-                flag = false;
-                JS_Require($(".live_provinceName"));
+            if (IsBlank($scope.iAddress.live_provinceName)) {
+                RequireField(messages, ".live_provinceName", "ข้อมูลที่อยู่ > ที่อยู่พักอาศัย > จังหวัด");
             }
 
-            if (flag) {
+            if (messages.length == 0) {
+                if (!options.skipMove) {
                 $scope.step_index = 2;
+                }
+                return true;
             } else {
-                alertWarning("Form Validate", "Please fill in all the required fields.");
+                return ShowValidateMessages(1, messages);
             }
-
-            return flag;
         }
 
-        $scope.CheckStep3 = function () {
-            var flag = true;
+        $scope.CheckStep3 = function (options) {
+            options = options || {};
+            var messages = [];
 
             
-            JS_Reset($(".phoneNo"));
-            JS_Reset($(".email"));
             JS_Reset($(".mobile"));
-            JS_Reset($(".phone_office"));
             JS_Reset($(".email_office"));
 
-            console.log($scope.iPersonal.mobile);
-
-            if ($scope.iPersonal.phoneNo == '') {
-                flag = false;
-                JS_Require($(".phoneNo"));
+            if (IsBlank($scope.iPersonal.mobile)) {
+                RequireField(messages, ".mobile", "ข้อมูลการติดต่อ > มือถือ");
+            } else if (JS_ValidateMobile($scope.iPersonal.mobile) == false) {
+                RequireField(messages, ".mobile", "ข้อมูลการติดต่อ > รูปแบบมือถือไม่ถูกต้อง");
             }
-            if (JS_ValidateMobile($scope.iPersonal.phoneNo) == false) {
-                flag = false;
-                JS_Require($(".phoneNo"));
-            }
-            if (JS_ValidateEmail($scope.iPersonal.email) == false) {
-                flag = false;
-                JS_Require($(".email"));
-            }
-            if ($scope.iPersonal.mobile != '' && JS_ValidateMobile($scope.iPersonal.mobile) == false) {
-                flag = false;
-                JS_Require($(".mobile"));
-            }
-            if ($scope.iEmployee.phone_office != '' && JS_ValidateMobile($scope.iEmployee.phone_office) == false) {
-                flag = false;
-                JS_Require($(".phone_office"));
-            }
-            if ($scope.iEmployee.email != '' && JS_ValidateEmail($scope.iEmployee.email) == false) {
-                flag = false;
-                JS_Require($(".email_office"));
+            if (!IsBlank($scope.iEmployee.email) && JS_ValidateEmail($scope.iEmployee.email) == false) {
+                RequireField(messages, ".email_office", "ข้อมูลการติดต่อ > รูปแบบอีเมล์ที่ใช้ในบริษัทไม่ถูกต้อง");
             }
 
 
-            if (flag) {
+            if (messages.length == 0) {
+                if (!options.skipMove) {
                 $scope.step_index = 3;
+                }
+                return true;
             } else {
-                alertWarning("Form Validate", "Please fill in all the required fields.");
+                return ShowValidateMessages(2, messages);
             }
-
-            return flag;
         }
 
         $scope.CheckStep4 = function () {
-            var flag = true;
+            var messages = [];
 
+            JS_Reset($(".employeeCode"));
             JS_Reset($(".join_date"));
+            JS_Reset($(".functionCode"));
+            JS_Reset($(".divisionCode"));
+            JS_Reset($(".departmentCode"));
             JS_Reset($(".sectionCode"));
             JS_Reset($(".positionCode"));
             JS_Reset($(".levelCode"));
             JS_Reset($(".employeeType"));
             JS_Reset($(".employeeMode"));
 
-            $scope.join_date = '';
+            $scope.iEmployee.join_date = '';
 
-            if ($scope.join_date_select) {
-                $scope.join_date = $scope.join_date_select.format("DD/MM/YYYY");
-            }
+            $scope.iEmployee.join_date = FormatPickerDate($scope.iEmployee.join_date_select);
 
-            if ($scope.iEmployee.join_date == '') {
-                flag = false;
-                JS_Require($(".join_date"));
+            if (IsBlank($scope.iEmployee.employeeCode)) {
+                RequireField(messages, ".employeeCode", "ข้อมูลพนักงาน > รหัสพนักงาน");
             }
-            if ($scope.iEmployee.sectionCode == '') {
-                flag = false;
-                JS_Require($(".sectionCode"));
+            if (IsBlank($scope.iEmployee.join_date)) {
+                RequireField(messages, ".join_date", "ข้อมูลพนักงาน > วันเข้างาน");
             }
-            if ($scope.iEmployee.positionCode == '') {
-                flag = false;
-                JS_Require($(".positionCode"));
+            if (IsBlank($scope.iEmployee.functionCode)) {
+                RequireField(messages, ".functionCode", "ข้อมูลพนักงาน > ด้าน");
             }
-            if ($scope.iEmployee.levelCode == '') {
-                flag = false;
-                JS_Require($(".levelCode"));
+            if (IsBlank($scope.iEmployee.positionCode)) {
+                RequireField(messages, ".positionCode", "ข้อมูลพนักงาน > ตำแหน่งงาน");
             }
-            if ($scope.iEmployee.employeeType == '') {
-                flag = false;
-                JS_Require($(".employeeType"));
+            if (IsBlank($scope.iEmployee.employeeType)) {
+                RequireField(messages, ".employeeType", "ข้อมูลพนักงาน > ประเภทพนักงาน");
+            }
+            if (IsBlank($scope.iEmployee.levelCode)) {
+                RequireField(messages, ".levelCode", "ข้อมูลพนักงาน > ระดับพนักงาน");
             }
             // if ($scope.iEmployee.employeeMode == '') {
             //     flag = false;
@@ -860,7 +1162,7 @@
             //     JS_Require($(".employeeMode"));
             // }
 
-            return flag;
+            return ShowValidateMessages(3, messages);
         }
 
         
@@ -877,11 +1179,10 @@
         }
 
         $scope.Send = async function () {
-            var flag = await $scope.SavePersonal();
-            flag = await $scope.SaveEmployee();
-            flag = await $scope.SaveAddress();
-
-            if ($scope.CheckStep4()) {
+            if ($scope.CheckStep1({ skipMove: true }) && $scope.CheckStep2({ skipMove: true }) && $scope.CheckStep3({ skipMove: true }) && $scope.CheckStep4()) {
+                var flag = await $scope.SavePersonal();
+                flag = await $scope.SaveEmployee();
+                flag = await $scope.SaveAddress();
                 flag = await $scope.SendOnboard();
 
                 if (flag) {
@@ -889,8 +1190,6 @@
                         location.href = '@Url.Page("Index")';
                     });
                 }
-            }else{
-                alertWarning("Form Validate","Please fill in all the required fields.");
             }
         }
 

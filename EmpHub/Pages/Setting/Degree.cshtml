@@ -62,6 +62,9 @@
                         <th>
                             Name (EN)
                         </th>
+                        <th>
+                            Order
+                        </th>
                         <th width="50"></th>
                         <th width="50"></th>
                     </tr>
@@ -76,6 +79,9 @@
                         </td>
                         <td>
                             {{ x.desc_en }}
+                        </td>
+                        <td>
+                            {{ x.condition_1 }}
                         </td>
                         <td class="p-0">
                             <button class="btn btn-circle" ng-click="ShowEdit(x)">
@@ -117,6 +123,10 @@
                     <div class="mb-3">
                         Name (EN)
                         <input ng-model="iData.desc_en" class="form-control" maxlength="50" />
+                    </div>
+                    <div class="mb-3">
+                        Order
+                        <input ng-model="iData.condition_1" class="form-control" maxlength="50" />
                     </div>
                     <div class="text-end">
                         <button class="btn btn-primary" ng-click="SaveChange()">
@@ -164,6 +174,7 @@
                 , code: ''
                 , desc_th: ''
                 , desc_en: ''
+                , condition_1: ''
                 , groupName: $scope.groupName
                 , create_by: '@User.UserId()'
             };

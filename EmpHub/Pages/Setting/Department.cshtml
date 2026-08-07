@@ -32,6 +32,9 @@
                     <i class="fas fa-plus me-2"></i> ADD
                 </button>
             </div>
+            <div class="me-2">
+                <select ng-model="iType" class="form-select" ng-options="x.value as x.key for x in lType" style="width: 100px;"></select>
+            </div>
             <div>
                 <div class="position-relative me-2">
                     <input class="form-control form-control-sm me-2" ng-model="search" />
@@ -40,15 +43,14 @@
                     </span>
                 </div>
             </div>
-            <div >
+            <div>
                 <button class="btn btn-circle me-2" ng-click="Download()" ng-disabled="total == 0">
                     <i class="fas fa-arrow-down"></i>
                 </button>
             </div>
             <div class="flex-fill">
-
             </div>
-           @*  <div class="d-flex align-items-center">
+            @*  <div class="d-flex align-items-center">
                 <div class='me-2'>
                     {{ (total > 0 ? ((page - 1) * row) + 1 : 0) | number }} - {{ (page * row < total ? page * row : total) | number }} of {{ total | number }}
                 </div>
@@ -65,14 +67,6 @@
             <table class="table table-hover mb-0">
                 <thead>
                     <tr>
-                        <th ng-click="SetSort('code')">
-                            Code
-                            <i ng-show="sortBy.indexOf('code') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
-                        </th>
-                        <th ng-click="SetSort('parentName')">
-                            Parent
-                            <i ng-show="sortBy.indexOf('parentName') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
-                        </th>
                         <th ng-click="SetSort('desc_th')">
                             Name (TH)
                             <i ng-show="sortBy.indexOf('desc_th') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
@@ -81,23 +75,38 @@
                             Name (EN)
                             <i ng-show="sortBy.indexOf('desc_en') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
                         </th>
+                        <th>
+                            Type
+                            <i ng-show="sortBy.indexOf('type') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                        </th>
+                        <th ng-click="SetSort('code')">
+                            Code
+                            <i ng-show="sortBy.indexOf('code') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                        </th>
+                        <th ng-click="SetSort('parentName')">
+                            Parent
+                            <i ng-show="sortBy.indexOf('parentName') > -1" ng-class="sortBy.indexOf('-') > - 1 ? 'bi bi-arrow-up-short' : 'bi bi-arrow-down-short'"></i>
+                        </th>
                         <th width="50"></th>
                         <th width="50"></th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="x in lData | filter : search | orderBy : sortBy">
-                        <td>
-                            {{ x.code }}
-                        </td>
-                        <td>
-                            {{ x.condition_3 }}
-                        </td>
+                    <tr ng-repeat="x in lData | filter : {'condition_4': iType, 'desc_th':search} | orderBy : sortBy">
                         <td>
                             {{ x.desc_th }}
                         </td>
                         <td>
                             {{ x.desc_en }}
+                        </td>
+                        <td>
+                            {{ x.condition_4 }}
+                        </td>
+                        <td>
+                            {{ x.code }}
+                        </td>
+                        <td>
+                            {{ x.parentName }}
                         </td>
                         <td>
                             <button class="btn btn-circle" ng-click="ShowEdit(x)">
@@ -129,20 +138,24 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        Code
-                        <input ng-model="iData.code" class="form-control" maxlength="50" />
-                    </div>
-                    <div class="mb-3">
-                        Parent
-                        <select ng-model="iData.condition_3" class="form-select" ng-options="x.code as x.desc_th for x in lParent"></select>
-                    </div>
-                    <div class="mb-3">
                         Name (TH)
                         <input ng-model="iData.desc_th" class="form-control" maxlength="50" />
                     </div>
                     <div class="mb-3">
                         Name (EN)
                         <input ng-model="iData.desc_en" class="form-control" maxlength="50" />
+                    </div>
+                    <div class="mb-3">
+                        Type
+                        <select ng-model="iData.condition_4" class="form-select" ng-options="x.value as x.key for x in lType" ng-change="LoadParent()"></select>
+                    </div>
+                    <div class="mb-3">
+                        Code
+                        <input ng-model="iData.code" class="form-control" maxlength="50" />
+                    </div>
+                    <div class="mb-3">
+                        Parent
+                        <select ng-model="iData.condition_3" class="form-select" ng-options="x.code as x.desc_th for x in lParent"></select>
                     </div>
                     <div class="text-end">
                         <button class="btn btn-primary" ng-click="SaveChange()">
@@ -160,6 +173,14 @@
         $scope.row = 10;
         $scope.search = '';
         $scope.groupName = 'departmentCode';
+
+        $scope.lType = [
+            { key: "ด้าน", value: "Business Unit" }
+            , { key: "สาย", value: "Group" }
+            , { key: "ฝ่าย", value: "Department" }
+            , { key: "ส่วน", value: "Section" }
+        ];
+        $scope.iType = $scope.lType[0].value;
 
         $scope.SetSort = function (sortBy) {
             if ($scope.sortBy != null && $scope.sortBy.indexOf(sortBy) > -1) {
@@ -192,14 +213,11 @@
                         $scope.total = result.length
                         $scope.lData = result;
 
-                        $scope.lParent = $scope.lData.filter(item => !item.desc_th.startsWith('ฝ่าย'));
-                        $scope.lParent.splice(0, 0, { code: '', desc_th: '<ไม่ระบุ>' });
-
                         $scope.lData = $scope.lData.map(item => {
 
-                            var find = $scope.lData.find(d => d.code == item.parentCode);
+                            var find = $scope.lData.find(d => d.code == item.condition_3);
 
-                            if(find){
+                            if (find) {
                                 item.parentName = find.desc_th;
                             }
 
@@ -225,6 +243,23 @@
             $scope.iData = angular.copy(x);
             $scope.iData.create_by = '@User.UserId()';
             $("#CreateModal").modal('show');
+
+            $scope.LoadParent();
+        }
+
+        $scope.LoadParent = function () {
+            var typeCode = $scope.iData.condition_4;
+            $scope.lParent = $scope.lData;
+
+            if (typeCode == 'Business Unit') {
+                $scope.lParent = $scope.lData.filter(data => data.condition_4 == 'Organization');
+            }
+            else if (typeCode == 'Group') {
+                $scope.lParent = $scope.lData.filter(data => data.condition_4 == 'Organization' || data.condition_4 == 'Business Unit');
+            }
+            else if (typeCode == 'Department') {
+                $scope.lParent = $scope.lData.filter(data => data.condition_4 == 'Organization' || data.condition_4 == 'Business Unit' || data.condition_4 == 'Group');
+            }
         }
 
         $scope.SaveChange = function () {
@@ -276,7 +311,7 @@
             });
         }
 
-        $scope.SelectDepartment = function(x){
+        $scope.SelectDepartment = function (x) {
             $scope.iDepartment = x;
             $scope.LoadUserInDepartment();
         }

@@ -36,13 +36,12 @@
         </a>
     </div>
     <div class="personal-section-body">
-        <div class="personal-detail-grid contact-grid">
-            <div><div class="info-label">อีเมล</div><div class="info-value">{{ valueOrDash(iPersonal.email || iEmployee.email) }}</div></div>
-            <div><div class="info-label">เบอร์มือถือ</div><div class="info-value">{{ valueOrDash(iPersonal.mobile || iPersonal.phoneNo) }}</div></div>
-            <div><div class="info-label">เบอร์โทรศัพท์บ้าน</div><div class="info-value">{{ valueOrDash(iPersonal.phoneNo) }}</div></div>
-            <div>@* <div class="info-label">Line ID</div><div class="info-value">-</div> *@</div>
-            <div><div class="info-label">ที่อยู่ปัจจุบัน</div><div class="info-value">{{ currentAddressText() }}</div></div>
-            <div><div class="info-label">ที่อยู่ตามทะเบียนบ้าน</div><div class="info-value">{{ registeredAddressText() }}</div></div>
+        <div class="row">
+            <div class="col-sm-3"><div class="info-label">เบอร์มือถือ</div><div class="info-value">{{ valueOrDash(iPersonal.mobile || iPersonal.phoneNo) }}</div></div>
+            <div class="col-sm-3"><div class="info-label">เบอร์โทรศัพท์บ้าน</div><div class="info-value">{{ valueOrDash(iPersonal.phoneNo) }}</div></div>
+            <div class="col-sm-6"><div class="info-label">อีเมลส่วนตัว</div><div class="info-value">{{ valueOrDash(iPersonal.email || iEmployee.email) }}</div></div>
+            <div class="col-sm-3"><div class="info-label">ที่อยู่ปัจจุบัน</div><div class="info-value">{{ currentAddressText() }}</div></div>
+            <div class="col-sm-9"><div class="info-label">ที่อยู่ตามทะเบียนบ้าน</div><div class="info-value">{{ registeredAddressText() }}</div></div>
         </div>
     </div>
 </div>

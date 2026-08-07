@@ -34,6 +34,7 @@
                 <div class="col-sm-4 mb-3">
                     <div>คำนำหน้า (ภาษาไทย) <span class="text-danger">*</span></div>
                     <select ng-model="iData.prefix_th" class="form-select form-input prefix_th" ng-options="x.desc_th as x.desc_th for x in lPrefix" ng-change="SelectPrefixTH()"></select>
+                    <input ng-show="iData.prefix_th == MASTER_OTHER_TH" ng-model="prefix_th_other" class="form-control form-input mt-2 prefix_th_other" maxlength="50" placeholder="ระบุคำนำหน้าชื่อ" />
                 </div>
                 <div class="col-sm-4 mb-3">
                     <div>ชื่อ (ภาษาไทย) <span class="text-danger">*</span></div>
@@ -46,6 +47,7 @@
                 <div class="col-sm-4 mb-3">
                     <div>คำนำหน้า (ภาษาอังกฤษ) </div>
                     <select ng-model="iData.prefix_en" class="form-select form-input prefix_en" ng-options="x.desc_en as x.desc_en for x in lPrefix" ng-change="SelectPrefixEN()"></select>
+                    <input ng-show="iData.prefix_en == MASTER_OTHER_EN" ng-model="prefix_en_other" class="form-control form-input mt-2 prefix_en_other" maxlength="50" placeholder="Specify title" />
                 </div>
                 <div class="col-sm-4 mb-3">
                     <div>ชื่อ (ภาษาอังกฤษ) </div>
@@ -90,6 +92,7 @@
                 <div class="col-sm-4 mb-3">
                     <div class="text-dark fw-bolder">สัญชาติ</div>
                     <select ng-model="iData.nationality" class="form-select form-input nationality" ng-options="x.code as x.desc_th for x in lNationality"></select>
+                    <input ng-show="iData.nationality == MASTER_OTHER" ng-model="nationality_other" class="form-control form-input mt-2 nationality_other" maxlength="50" placeholder="ระบุสัญชาติ" />
                 </div>
                 <div class="col-sm-4 mb-3">
                     <div class="text-dark fw-bolder">เชื้อชาติ</div>
@@ -110,6 +113,10 @@
                 <div class="col-sm-4 mb-3">
                     <div class="text-dark fw-bolder">สถานะความพิการ</div>
                     <select ng-model="iData.disabilityStatus" class="form-select form-input disabilityStatus" ng-options="x.code as x.desc_th for x in lDisability"></select>
+                </div>
+                <div class="col-sm-4 mb-3" ng-show="NeedDisabilityCard()">
+                    <div class="text-dark fw-bolder">เลขบัตรผู้พิการ <span class="text-danger">*</span></div>
+                    <input ng-model="iData.disabilityCardNo" class="form-control form-input disabilityCardNo" maxlength="20" placeholder="ระบุเลขบัตรผู้พิการ" />
                 </div>
             </div>
         </div>
@@ -216,7 +223,9 @@
                 })
                 , success: function (result) {
                     $timeout(function () {
-                        $scope.lNationality = result;
+                        $scope.lNationality = MasterOptionListWithOther(result);
+                        $scope.SyncNationality();
+                    $scope.SyncPrefix();
                     }, 0);
                 }
                 , error: AjaxError
@@ -250,7 +259,8 @@
                 })
                 , success: function (result) {
                     $timeout(function () {
-                        $scope.lPrefix = result;
+                        $scope.lPrefix = MasterOptionListWithOther(result);
+                        $scope.SyncPrefix();
                     }, 0);
                 }
                 , error: AjaxError
@@ -284,6 +294,8 @@
                             var date = ConvertToDate($scope.iData.birth_date);
                             $scope.iData.birth_date_select = new moment(date);
                         }
+
+                        $scope.SyncNationality();
                     }, 0);
                 }, error: AjaxError
             });
@@ -306,9 +318,77 @@
             }
         }
 
+        $scope.MASTER_OTHER = MASTER_OTHER;
+        $scope.MASTER_OTHER_TH = MASTER_OTHER_TH;
+        $scope.MASTER_OTHER_EN = MASTER_OTHER_EN;
+
+        // เลขบัตรผู้พิการ: บังคับกรอกเฉพาะสถานะที่ตั้ง flag ไว้ที่หน้า Setting > Disability
+
+
+        $scope.NeedDisabilityCard = function () {
+
+
+            return IsDisabilityCardRequired($scope.lDisability, $scope.iData.disabilityStatus);
+
+
+        }
+
+
+        // คำนำหน้าในฟอร์มนี้เก็บเป็น "ชื่อ" (desc) ไม่ใช่ code จึงเทียบด้วย desc_th / desc_en
+        $scope.SyncPrefix = function () {
+            if (!$scope.lPrefix || !$scope.iData) {
+                return;
+            }
+
+            if (MasterIsOther($scope.lPrefix, $scope.iData.prefix_th, 'desc_th')) {
+                $scope.prefix_th_other = $scope.iData.prefix_th;
+                $scope.iData.prefix_th = MASTER_OTHER_TH;
+            }
+
+            if (MasterIsOther($scope.lPrefix, $scope.iData.prefix_en, 'desc_en')) {
+                $scope.prefix_en_other = $scope.iData.prefix_en;
+                $scope.iData.prefix_en = MASTER_OTHER_EN;
+            }
+        }
+
+        // ถ้าค่าที่โหลดมาเป็นชื่อที่พิมพ์เอง ให้ตั้ง dropdown เป็น "อื่น ๆ" แล้วย้ายชื่อไปช่องกรอก
+        // ถ้าไม่ทำ dropdown จะว่างและค่าเดิมจะถูกล้างตอนบันทึก
+        $scope.SyncNationality = function () {
+            if (!$scope.lNationality || !$scope.iData) {
+                return;
+            }
+
+            if (MasterIsOther($scope.lNationality, $scope.iData.nationality, 'code')) {
+                $scope.nationality_other = $scope.iData.nationality;
+                $scope.iData.nationality = MASTER_OTHER;
+            }
+        }
+
         $scope.Validate = function(){
             var flag = true;
             JS_Reset($(".prefix_th"));
+            JS_Reset($(".nationality_other"));
+            JS_Reset($(".prefix_th_other"));
+
+            JS_Reset($(".disabilityCardNo"));
+
+            if ($scope.iData.nationality == MASTER_OTHER && ($scope.nationality_other || '').trim() == '') {
+                flag = false;
+                JS_Require($(".nationality_other"));
+            }
+            if ($scope.iData.prefix_th == MASTER_OTHER_TH && ($scope.prefix_th_other || '').trim() == '') {
+                flag = false;
+                JS_Require($(".prefix_th_other"));
+            }
+
+            if ($scope.NeedDisabilityCard() && ($scope.iData.disabilityCardNo || '').trim() == '') {
+
+                flag = false;
+
+                JS_Require($(".disabilityCardNo"));
+
+            }
+
             JS_Reset($(".firstname_th"));
             JS_Reset($(".lastname_th"));
 
@@ -368,13 +448,34 @@
                 $scope.iData.weight = parseInt($scope.iData.weight);
                 $scope.iData.height = parseInt($scope.iData.height);
 
+                // แทนรหัส OTHER ด้วยชื่อที่พิมพ์เอง โดยไม่แก้ $scope.iData เพื่อไม่ให้ dropdown เพี้ยน
+                var iSave = angular.extend({}, $scope.iData);
+
+                if (iSave.nationality == MASTER_OTHER) {
+                    iSave.nationality = ($scope.nationality_other || '').trim();
+                }
+                if (iSave.prefix_th == MASTER_OTHER_TH) {
+                    iSave.prefix_th = ($scope.prefix_th_other || '').trim();
+                }
+                if (iSave.prefix_en == MASTER_OTHER_EN) {
+                    iSave.prefix_en = ($scope.prefix_en_other || '').trim();
+                }
+
+                // เปลี่ยนไปสถานะที่ไม่ใช่ผู้พิการแล้ว ต้องไม่ค้างเลขบัตรเดิมไว้
+
+                if (!$scope.NeedDisabilityCard()) {
+
+                    iSave.disabilityCardNo = '';
+
+                }
+
                 $.ajax({
                     url: '@webAPI.CurrentValue.APIEmpHub/api/Form/FormUpdatePersonalCreate',
                     headers: { 'authorization': 'Bearer @token' },
                     type: "POST",
                     contentType: 'application/json',
                     cache: false,
-                    data: JSON.stringify($scope.iData),
+                    data: JSON.stringify(iSave),
                     success: function () {
                         $timeout(async function () {
                            resolve(true);

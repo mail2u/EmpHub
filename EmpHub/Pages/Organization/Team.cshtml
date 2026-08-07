@@ -32,6 +32,38 @@
         user-select: none;
         pointer-events: none;
     }
+
+    #orgChain {
+        position: absolute;
+        top: 15px;
+        left: 30px;
+        z-index: 999;
+        padding: 12px 14px;
+        max-width: calc(100% - 340px);
+        user-select: none;
+        pointer-events: none;
+    }
+
+    .org-chain-box {
+        border: 1px solid #d9e3f2;
+        background: #f9fbff;
+        border-radius: 8px;
+        padding: 6px 12px;
+        min-width: 110px;
+        max-width: 220px;
+    }
+
+    .org-chain-label {
+        font-size: 11px;
+        color: #64748b;
+    }
+
+    .org-chain-name {
+        font-size: 13px;
+        color: #183567;
+        font-weight: 600;
+        word-break: break-word;
+    }
 </style>
 @section PageHeader {
     <!-- [ page-header ] start -->
@@ -56,6 +88,19 @@
         </div>
         <div>
             🔍 กด Ctrl + Scroll เพื่อ Zoom
+        </div>
+    </div>
+    @* ชี้เม้าส์ที่กล่องพนักงาน เพื่อดูว่าสังกัด ด้าน > สาย > ฝ่าย > ส่วน ใด *@
+    <div id="orgChain" class="bg-white border rounded-3 shadow-sm" ng-show="orgChain.length > 0">
+        <div class="fw-bolder text-dark mb-2">{{ orgChainName }}</div>
+        <div class="d-flex align-items-center flex-wrap">
+            <div class="d-flex align-items-center mb-1" ng-repeat="x in orgChain">
+                <div class="org-chain-box">
+                    <div class="org-chain-label">{{ x.label }}</div>
+                    <div class="org-chain-name">{{ x.name }}</div>
+                </div>
+                <i class="bi bi-chevron-right mx-2 text-gray" ng-show="!$last"></i>
+            </div>
         </div>
     </div>
     <div class="position-fixed bottom-0 end-0 m-3">
@@ -345,6 +390,72 @@
                 });
             });
         }
+
+        // ---- สายลำดับชั้นของพนักงาน (ด้าน > สาย > ฝ่าย > ส่วน) ----
+        // endpoint ของ Team ส่งมาแค่ชื่อกับตำแหน่ง จึงต้องดึงข้อมูลหน่วยงานจาก UserEmployee
+        // โหลดตอนชี้เม้าส์และ cache ไว้ เพื่อไม่ให้ยิง API ทุกครั้งที่ชี้ซ้ำ
+        $scope.orgChain = [];
+        $scope.orgChainName = '';
+
+        var orgChainCache = {};
+
+        $scope.DataEmployeeOrg = function (userId) {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/User/UserEmployee'
+                    , headers: { 'authorization': 'Bearer @token' }
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , dataType: 'json'
+                    , cache: false
+                    , data: JSON.stringify({
+                        userId: userId
+                    })
+                    , success: function (result) {
+                        resolve((result && result.data) || {});
+                    }
+                    , error: function () {
+                        resolve({});
+                    }
+                });
+            });
+        }
+
+        $scope.ShowOrgChain = async function (userId, name) {
+            if (!userId) {
+                return;
+            }
+
+            if (!orgChainCache[userId]) {
+                orgChainCache[userId] = await $scope.DataEmployeeOrg(userId);
+            }
+
+            $timeout(function () {
+                $scope.orgChainName = name || '';
+                $scope.orgChain = OrgChainItems(orgChainCache[userId]);
+            }, 0);
+        }
+
+        $scope.HideOrgChain = function () {
+            $timeout(function () {
+                $scope.orgChain = [];
+                $scope.orgChainName = '';
+            }, 0);
+        }
+
+        paper.on('element:mouseenter', function (elementView) {
+            var model = elementView.model;
+
+            if (model.get('nodeType') != 'employee') {
+                return;
+            }
+
+            $scope.ShowOrgChain(model.get('nodeId'), model.get('nodeName'));
+        });
+
+        paper.on('element:mouseleave', function () {
+            $scope.HideOrgChain();
+        });
 
         $scope.FullScreen = function () {
             paper.scaleContentToFit({
@@ -812,6 +923,8 @@
             node.position(x, y);
 
             node.set('nodeType', type);
+
+            node.set('nodeName', label);
 
             node.set('expanded', false);
 

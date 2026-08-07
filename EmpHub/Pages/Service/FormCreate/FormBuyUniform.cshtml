@@ -30,7 +30,31 @@
                             <div class="text-dark text-nowrap">Style</div>
                         </td>
                         <td>
-                            <input ng-model="iForm.style" class="form-control style" maxlength="50" />
+                            <select ng-model="iForm.style" class="form-select style" ng-options="x for x in lStyle">
+                                <option value="">-</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="text-dark text-nowrap fw-bolder">สี</div>
+                            <div class="text-dark text-nowrap">Color</div>
+                        </td>
+                        <td>
+                            <select ng-model="iForm.color" class="form-select color" ng-options="x for x in lColor">
+                                <option value="">-</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="text-dark text-nowrap fw-bolder">ไซซ์</div>
+                            <div class="text-dark text-nowrap">Size</div>
+                        </td>
+                        <td>
+                            <select ng-model="iForm.size" class="form-select size" ng-options="x for x in lSize">
+                                <option value="">-</option>
+                            </select>
                         </td>
                     </tr>
                     <tr>
@@ -66,7 +90,11 @@
     app.controller('FormCtrl', function ($scope, $http, $timeout, $filter) {
         $scope.mode = '@Model.mode';
         $scope.iData = {};
-        $scope.iForm = { style: '', quantity: 0, description: '' };
+        $scope.iForm = { style: '', color: '', size: '', quantity: 0, description: '' };
+
+        $scope.lStyle = ['เสื้อโปโล', 'เสื้อแจ็คเก็ต'];
+        $scope.lColor = ['ดำ', 'เหลือง'];
+        $scope.lSize = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', 'Other'];
 
         $scope.Validate = function () {
             var flag = true;

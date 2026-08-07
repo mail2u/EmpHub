@@ -12,7 +12,7 @@
         </a>
     </div>
     <div class="education-panel-body">
-       @*  <div class="empty-state" ng-show="!lEducation || lEducation.length == 0">ยังไม่มีข้อมูลประวัติการศึกษา</div> *@
+        <div class="empty-state" ng-show="!lEducation || lEducation.length == 0">ยังไม่มีข้อมูลประวัติการศึกษา</div>
         <div ng-show="lEducation.length > 0">
             <div class="education-history-item" ng-repeat="x in educationHistoryItems()">
                 <div class="education-year">

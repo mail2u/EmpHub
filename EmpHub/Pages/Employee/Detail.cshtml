@@ -43,15 +43,23 @@
                         <table class="">
                             <tbody>
                                 <tr>
-                                    <td width="30px" class="p-2 align-top"><i class="bi bi-envelope-fill"></i></td>
+                                    <td width="30px" class="p-2 align-top"><i class="bi bi-envelope-fill text-primary"></i></td>
                                     <td class="p-2">{{ iEmployee.email }}</td>
                                 </tr>
                                 <tr>
-                                    <td class="p-2 align-top"><i class="bi bi-phone-fill"></i></td>
+                                    <td class="p-2 align-top">
+                                        <i class="bi bi-telephone-fill text-primary"></i>
+                                    </td>
+                                    <td class="p-2">
+                                        {{ iEmployee.ext }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 align-top"><i class="bi bi-phone-fill text-primary"></i></td>
                                     <td class="p-2">{{ iPersonal.phoneNo }}</td>
                                 </tr>
                                 <tr>
-                                    <td class="p-2 align-top"><i class="bi bi-geo-alt-fill"></i></td>
+                                    <td class="p-2 align-top"><i class="bi bi-geo-alt-fill text-primary"></i></td>
                                     <td class="p-2">
                                         {{ iAddress.live_home }}
                                         {{ iAddress.live_road }}

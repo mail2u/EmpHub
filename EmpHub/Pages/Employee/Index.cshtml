@@ -77,33 +77,38 @@
         <table class="table table-tip border shadow-sm">
             <thead>
                 <tr>
-                    <th>พนักงาน</th>
-                    <th>ตำแหน่ง/ฝ่ายงาน</th>
-                    <th>ช่องทางการติดต่อ</th>
+                    <th>ชื่อ-สกุล</th>
+                    <th>ชื่อเล่น</th>
+                    <th>สังกัด</th>
+                    <th>สาย</th>
+                    <th>ฝ่าย</th>
+                    <th>เมล</th>
+                    <th>เบอร์โทรที่ทำงาน</th>
                     <th width="50"></th>
                 </tr>
             </thead>
             <tbody>
                 <tr ng-repeat="x in lData">
-                    <td>
-                        <div class="d-flex align-items-center">
-                           <div class="me-3 ms-2" style="width:35px;">
-                                <img src="~/Images/icon-user.png" class="rounded-circle" width="100%" />
-                            </div>
-                            <div>
-                                <div class="text-dark fw-bolder">{{ x.employeeCode }}</div>
-                                <div class="text-dark">{{ x.prefix_th + ' ' + x.firstname_th + ' ' + x.lastname_th }}</div>
-                               @*  <div class="text-gray">{{ x.firstname_en + ' ' + x.lastname_en }}</div> *@
-                            </div>
-                        </div>
+                    <td class="text-dark align-middle">
+                        {{ x.prefix_th + ' ' + x.firstname_th + ' ' + x.lastname_th }}
                     </td>
-                    <td>
-                        <div class="text-dark">{{ x.positionDesc }}</div>
-                        <div class="text-dark">{{ x.departmentDesc }}</div>
+                    <td class="text-dark align-middle">
+                        {{ x.nickname }}
                     </td>
-                    <td>
-                        <div class="text-gray">{{ x.email }}</div>
-                        <div class="text-light-gray">{{ x.phoneNo }}</div>
+                    <td class="text-dark align-middle">
+                        {{ x.functionDesc }}
+                    </td>
+                    <td class="text-dark align-middle">
+                        {{ x.divisionDesc }}
+                    </td>
+                    <td class="text-dark align-middle">
+                        {{ x.departmentDesc }}
+                    </td>
+                    <td class="text-dark align-middle">
+                        {{ x.email }}
+                    </td>
+                    <td class="text-dark align-middle">
+                        {{ x.ext }}
                     </td>
                     <td class="align-middle text-end">
                         <a href="@Url.Page("Detail")/{{ x.userId }}" class="btn btn-circle" target="_blank">
@@ -117,7 +122,7 @@
                     <td>
                         <div class="text-light-gray">Showing {{ ((page - 1) * row) + 1 }} to {{ (page * row) > total ? total : page * row }} of {{ total }} employees</div>
                     </td>
-                    <td colspan="3">
+                    <td colspan="7">
                         <div class="d-flex">
                             <div class="flex-fill"></div>
                             <button class="btn btn-circle me-2" ng-click="LoadData(page - 1)" ng-disabled="page <= 1">

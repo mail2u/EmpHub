@@ -33,6 +33,15 @@
     input.form-input:read-only {
         background-color: var(--bs-gray-200);
     }
+
+    .btn-box-dash {
+        border: 2px dashed var(--bs-gray-300);
+    }
+
+    .btn-box-dash:hover {
+        border: 2px dashed var(--bs-blue);
+        color: var(--bs-blue) !important;
+    }
 </style>
 <div ng-controller="ServiceEducationCtrl" id="tab_education">
     @* Header *@
@@ -43,7 +52,7 @@
             <div class="list-group-item p-0" ng-repeat="x in lData | filter : {mode:'modify'}">
                 <div class="list-item-box p-4 mb-3 rounded-3">
                     <div class="fw-bolder">
-                        #{{ $index + 1 }}
+                        {{ indexDesc($index) }}
                     </div>
                     <div class="d-flex flex-fill mb-3">
                         <div class="flex-fill me-3">
@@ -101,11 +110,48 @@
                         </div>
                         <textarea ng-model="x.description" class="form-control form-input" rows="5" maxlength="4000"></textarea>
                     </div>
-                   @*  <div class="text-end">
-                        <div class="btn btn-warning-invert bg-white" ng-click="Delete(x)">
-                            <i class="far fa-trash-alt me-2"></i>ลบรายการ
+                    <div class="mb-3">
+                        <div class="text-gray">
+                            เอกสารหลักฐานวุฒิการศึกษา (ใบปริญญาบัตร / ใบรับรอง / ทรานสคริปต์)
+                            <span class="text-danger" ng-show="x.is_new">*</span>
                         </div>
-                    </div> *@
+                        <div class="text-gray small mb-2">
+                            แนบไฟล์ PDF, JPG หรือ PNG ขนาดไม่เกิน 10 MB ต่อไฟล์ เพื่อให้ผู้อนุมัติตรวจสอบ
+                            <span ng-show="x.is_new">(รายการที่เพิ่มใหม่ต้องแนบเอกสาร)</span>
+                        </div>
+                        <label for="edufile_{{$index}}" class="btn btn-box-dash select">
+                            <i class="fas fa-paperclip me-2"></i> เลือกไฟล์
+                        </label>
+                        <input class="d-none" base-sixty-four-input id="edufile_{{$index}}" type="file" accept=".pdf,.jpg,.jpeg,.png" ng-model="x.fileModel" ng-change="AddAttach(x)" />
+                        <div class="list-group list-group-flush mt-2">
+                            <div class="list-group-item bg-gray rounded-3 mb-1" ng-repeat="a in x.lAttachFile" title="{{ a.filename }}">
+                                <div class="d-flex align-items-center">
+                                    <div>
+                                        <i class="bi bi-file-earmark-check text-green"></i>
+                                    </div>
+                                    <div class="text-truncate mx-2 flex-fill" style="min-width: 0;">
+                                        {{ a.outputname || a.filename }}
+                                    </div>
+                                    <div class="text-gray small me-2 text-nowrap">
+                                        {{ FileSizeText(a.filesize) }}
+                                    </div>
+                                    <div>
+                                        <div class="btn btn-circle" ng-click="DeleteAttach(x, a)">
+                                            <i class="bi bi-trash"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-end">
+                        <div class="text-gray small" ng-show="!x.is_new">
+                            <i class="bi bi-lock-fill me-1"></i>ข้อมูลนี้บันทึกในระบบแล้ว จึงไม่สามารถลบได้
+                        </div>
+                        <div class="btn btn-warning-invert bg-white" ng-show="x.is_new" ng-click="Delete(x)">
+                            <i class="far fa-trash-alt me-2"></i>ยกเลิกรายการนี้
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -141,8 +187,12 @@
             });
         }
         
+        // iData ถูกเซ็ตโดย _PartialFormUpdate (api/Service/Detail) จึงต้องรอ FORM_LOAD ก่อนจะรู้ userId
         $scope.$on('FORM_LOAD', function (e) {
             $scope.LoadForm();
+
+            $scope.userId = $scope.iData.userId;
+            $scope.LoadData();
         });
 
         $scope.LoadMaster = function () {
@@ -217,7 +267,7 @@
                 }),
                 success: function (result) {
                     $timeout(async function () {
-                        $scope.iData = {id:''};
+                        // ห้าม reset iData ที่นี่ เพราะเป็นข้อมูลใบงานที่ ServiceRequest() ต้องใช้ตอนส่งกลับ
                         $scope.lData = result.data;
 
                         if(result.can_edit != 1){
@@ -231,57 +281,244 @@
                             }else{
                                 $scope.lData = $scope.lData.map(item=>{
                                     item.mode = "modify";
+                                    item.educationId = item.educationId || NewGuid();
+                                    item.lAttachFile = [];
+                                    item.is_new = false;
 
                                     return item;
                                 });
+
+                                $scope.LoadAttachFile();
                             }
                         }
                     }, 0);
                 }, error: AjaxError
             });
         }
-        $scope.LoadData();
 
         $scope.SelectInstitution = function(d, x){
             x.institution = d.code;
             x.institutionDesc = d.desc_th;
         }
 
+        // is_new = true คือรายการที่ยังไม่ถูกบันทึกในระบบ ต้องแนบเอกสาร และยกเลิกออกได้
         $scope.New = function(){
             $timeout(function () {
-                $scope.lData.splice($scope.lData.length, 0, { institution:'', grade: 0, mode: "modify" });
+                $scope.lData.splice($scope.lData.length, 0, { educationId: NewGuid(), institution:'', grade: 0, mode: "modify", lAttachFile: [], is_new: true });
             }, 0);
         }
 
+        $scope.MAX_FILE_SIZE = 10485760;
+        $scope.ALLOW_FILE_TYPE = ['pdf', 'jpg', 'jpeg', 'png'];
+
+        $scope.FileSizeText = function (size) {
+            size = size || 0;
+
+            if (size >= 1048576) {
+                return (size / 1048576).toFixed(2) + ' MB';
+            }
+
+            return Math.max(Math.round(size / 1024), 1) + ' KB';
+        }
+
+        // โหลดไฟล์ที่แนบไว้ตอนยื่นครั้งก่อน แล้วจับคู่กลับเข้ารายการวุฒิด้วย attachCode
+        $scope.LoadAttachFile = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/File/DataList',
+                headers: { 'authorization': 'Bearer @token' },
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                cache: false,
+                data: JSON.stringify({
+                    refId: $scope.id
+                }),
+                success: function (result) {
+                    $timeout(function () {
+                        var lFile = result || [];
+
+                        ($scope.lData || []).forEach(function (x) {
+                            x.lAttachFile = lFile.filter(function (a) {
+                                return a.attachCode && a.attachCode == x.educationId;
+                            });
+                        });
+                    }, 0);
+                }, error: function () {
+                    console.log('Load File Error');
+                }
+            });
+        }
+
+        $scope.AddAttach = function (x) {
+            var iFile = x.fileModel;
+            x.fileModel = null;
+
+            if (!iFile || !iFile.filename) {
+                return;
+            }
+
+            var ext = iFile.filename.split('.').pop().toLowerCase();
+
+            if ($scope.ALLOW_FILE_TYPE.indexOf(ext) < 0) {
+                alertWarning("ปัญหาการแนบไฟล์", "รองรับเฉพาะไฟล์ PDF, JPG และ PNG");
+                return;
+            }
+
+            if (iFile.filesize > $scope.MAX_FILE_SIZE) {
+                alertWarning("ปัญหาการแนบไฟล์", "ไฟล์ " + iFile.filename + " มีขนาดเกิน 10 MB");
+                return;
+            }
+
+            x.lAttachFile = x.lAttachFile || [];
+
+            if (x.lAttachFile.find(a => (a.outputname || a.filename) == iFile.filename)) {
+                alertWarning("ปัญหาการแนบไฟล์", "มีไฟล์ชื่อนี้แนบอยู่แล้ว");
+                return;
+            }
+
+            x.lAttachFile.splice(x.lAttachFile.length, 0, iFile);
+        }
+
+        // ไฟล์ที่มี id คือไฟล์ที่อยู่บนเซิร์ฟเวอร์แล้ว ต้องสั่งลบจริง ส่วนไฟล์ที่เพิ่งเลือกแค่เอาออกจากรายการ
+        $scope.DeleteAttach = function (x, a) {
+            var index = x.lAttachFile.indexOf(a);
+
+            if (index < 0) {
+                return;
+            }
+
+            if (!a.id) {
+                x.lAttachFile.splice(index, 1);
+                return;
+            }
+
+            alertConfirm("ยืนยันการลบเอกสาร", "ต้องการลบ " + (a.outputname || a.filename), async function () {
+                var flag = await $scope.DeleteFile(a);
+
+                if (flag) {
+                    $timeout(function () {
+                        x.lAttachFile.splice(index, 1);
+                    }, 0);
+                } else {
+                    alertWarning("ลบเอกสารไม่สำเร็จ", "กรุณาลองอีกครั้ง");
+                }
+            });
+        }
+
+        $scope.DeleteFile = function (a) {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/File/Delete',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    cache: false,
+                    data: JSON.stringify({
+                        id: a.id
+                        , refId: a.refId
+                    }),
+                    success: function () {
+                        resolve(true);
+                    },
+                    error: function () {
+                        resolve(false);
+                    }
+                });
+            });
+        }
+
+        // ลบได้เฉพาะรายการที่ยังไม่บันทึกในระบบ ข้อมูลที่บันทึกแล้วห้ามลบผ่านใบคำขอนี้
         $scope.Delete = function(x){
-            $timeout(function () {
-                x.mode = "delete";
-            }, 0);
+            if (!x.is_new) {
+                return;
+            }
+
+            var Remove = function () {
+                $timeout(function () {
+                    var index = $scope.lData.indexOf(x);
+
+                    if (index > -1) {
+                        $scope.lData.splice(index, 1);
+                    }
+                }, 0);
+            }
+
+            if ((x.lAttachFile || []).length > 0) {
+                alertConfirm("ยืนยันการยกเลิกรายการ", "เอกสารที่แนบไว้ในรายการนี้จะถูกนำออกด้วย", Remove);
+                return;
+            }
+
+            Remove();
         }
 
+        // ตรวจเข้มเฉพาะรายการที่เพิ่มใหม่ ข้อมูลเดิมในระบบที่ไม่สมบูรณ์จะไม่บล็อกการส่ง (EducationPayload คัดออกให้)
         $scope.Validate = function(){
-            var flag = true;
+            var lRow = $scope.lData.filter(item => item.mode == 'modify');
+            var lMissingData = [];
+            var lMissingFile = [];
 
-            $scope.lData = $scope.lData.filter(item => item.institution != '');
-            // JS_Reset($(".firstname_th"));
-            // JS_Reset($(".lastname_th"));
+            lRow.forEach(function (x, index) {
+                if (!x.is_new) {
+                    return;
+                }
 
-            // if($scope.iData.firstname_th == ''){
-            //     flag = false;
-            //     JS_Require($(".firstname_th"));
-            // }
-            // if($scope.iData.lastname_th == ''){
-            //     flag = false;
-            //     JS_Require($(".lastname_th"));
-            // }
+                var label = $scope.indexDesc(index);
 
-            return flag;
+                if (!x.institution) {
+                    lMissingData.push(label);
+                    return;
+                }
+
+                if ((x.lAttachFile || []).length == 0) {
+                    lMissingFile.push(label);
+                }
+            });
+
+            if (lMissingData.length > 0) {
+                alertWarning("ข้อมูลไม่ครบ", "กรุณาเลือกสถาบันการศึกษาของ " + lMissingData.join(', '));
+                return false;
+            }
+
+            if (lMissingFile.length > 0) {
+                alertWarning("ต้องแนบเอกสาร", "รายการที่เพิ่มใหม่ต้องแนบเอกสารหลักฐานวุฒิการศึกษา : " + lMissingFile.join(', '));
+                return false;
+            }
+
+            if (lRow.filter(item => item.institution).length == 0) {
+                alertWarning("แจ้งเตือน", "กรุณาเพิ่มข้อมูลการศึกษาอย่างน้อย 1 รายการ");
+                return false;
+            }
+
+            return true;
         }
+
+        
+        $scope.indexDesc = function (index) {
+            if (index == 0) {
+                return 'วุฒิการศึกษาสูงสุด';
+            } else if (index == 1) {
+                return 'วุฒิการศึกษารองลงมา';
+            } else {
+                return 'วุฒิการศึกษาลำดับที่ ' + (index + 1);
+            }
+        }
+
 
         $scope.Save = async function () {
             if ($scope.Validate()) {
                 alertConfirm("ยืนยันการทำรายการ", "ท่านต้องการส่งใบคำขอ", async function () {
+                    // ผูกทุกรายการกับใบงานใบนี้ ให้ ServiceEducation/Detail บนใบงานอ่านเจอ
+                    $scope.lData = $scope.lData.map(item => {
+                        item.refId = $scope.id;
+
+                        return item;
+                    });
+
                     var flag = await $scope.CreateForm();
+
+                    if (flag) {
+                        flag = await $scope.UploadAttachFile($scope.id);
+                    }
 
                     if (flag) {
                         var serviceNo = await $scope.ServiceRequest();
@@ -293,9 +530,84 @@
                         }
                     }
                 });
-            } else {
-                alertWarning("แจ้งเตือน", "กรุณากรอกข้อมูลให้ครบ");
             }
+        }
+
+        // ไฟล์แนบส่งแยกทาง api/File/Create จึงตัด lAttachFile/fileModel ออก ไม่ให้ base64 ติดไปกับ payload
+        $scope.EducationPayload = function () {
+            return $scope.lData.filter(item => item.institution).map(function (item) {
+                var iSave = {};
+
+                Object.keys(item).forEach(function (key) {
+                    if (key != 'lAttachFile' && key != 'fileModel' && key != 'is_new') {
+                        iSave[key] = item[key];
+                    }
+                });
+
+                return iSave;
+            });
+        }
+
+        // อัปโหลดเฉพาะไฟล์ที่เพิ่งเลือก (มี base64) ไฟล์เดิมที่มี id อยู่บนเซิร์ฟเวอร์แล้ว
+        $scope.UploadAttachFile = async function (refId) {
+            var flag = true;
+            var fileindex = 0;
+            var lRow = $scope.lData.filter(item => item.mode == 'modify' && item.institution && (item.lAttachFile || []).length > 0);
+
+            for (var i = 0; i < lRow.length; i++) {
+                var iRow = lRow[i];
+                var lNew = iRow.lAttachFile.filter(a => !a.id && a.base64);
+
+                for (var a = 0; a < lNew.length; a++) {
+                    var iFile = lNew[a];
+                    fileindex++;
+
+                    var upload = await $scope.UploadFile({
+                        refId: refId
+                        , attachCode: iRow.educationId
+                        , callerId: 'EDIT_EDUCATION'
+                        , filename: iFile.filename
+                        , filetype: iFile.filetype
+                        , filesize: iFile.filesize
+                        , base64: iFile.base64
+                        , fileindex: fileindex
+                        , userId: $scope.userId
+                        , create_by: '@User.UserId()'
+                    });
+
+                    flag = upload ? flag : false;
+                }
+            }
+
+            return flag;
+        }
+
+        $scope.UploadFile = function (x) {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '@webAPI.CurrentValue.APIEmpHub/api/File/Create',
+                    headers: { 'authorization': 'Bearer @token' },
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: false,
+                    data: JSON.stringify(x),
+                    success: function () {
+                        $timeout(function () {
+                            resolve(true);
+                        }, 0);
+                    },
+                    error: function (jqXHR) {
+                        resolve(false);
+                        Swal.fire({
+                            title: "แนบไฟล์ไม่สำเร็จ",
+                            text: x.filename + ' : ' + jqXHR.responseText,
+                            icon: "error",
+                            confirmButtonColor: '#1e3b92',
+                        });
+                    }
+                });
+            });
         }
 
         $scope.CreateForm = function () {
@@ -306,7 +618,7 @@
                     type: "POST",
                     contentType: 'application/json',
                     cache: false,
-                    data: JSON.stringify($scope.lData),
+                    data: JSON.stringify($scope.EducationPayload()),
                     success: function () {
                         $timeout(async function () {
                            resolve(true);

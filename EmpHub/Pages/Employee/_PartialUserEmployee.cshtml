@@ -31,14 +31,18 @@
         </div> *@
         <div class="col-sm-4 mb-3">
             <div class="text-dark fw-bolder">ด้าน</div>
+            <div>{{ iEmployee.functionDesc == '' ? '-' : iEmployee.functionDesc }}</div>
+        </div>
+        <div class="col-sm-4 mb-3">
+            <div class="text-dark fw-bolder">สาย</div>
             <div>{{ iEmployee.divisionDesc == '' ? '-' : iEmployee.divisionDesc }}</div>
         </div>
         <div class="col-sm-4 mb-3">
-            <div class="text-dark fw-bolder">สายงาน</div>
+            <div class="text-dark fw-bolder">ฝ่าย</div>
             <div>{{ iEmployee.departmentDesc == '' ? '-' : iEmployee.departmentDesc }}</div>
         </div>
         <div class="col-sm-4 mb-3">
-            <div class="text-dark fw-bolder">ฝ่าย</div>
+            <div class="text-dark fw-bolder">ส่วน</div>
             <div>{{ iEmployee.sectionDesc == '' ? '-' : iEmployee.sectionDesc }}</div>
         </div>
         <div class="col-sm-4 mb-3">

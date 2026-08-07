@@ -69,17 +69,30 @@
             <div class="text-dark fw-bolder">สถานที่</div>
             <div>{{ iData.location == '' ? '-' : iData.location }}</div>
             </div> *@
-            <div class="col-sm-4 mb-3">
-                <div class="text-dark fw-bolder">ฝ่าย</div>
-                <select ng-model="iData.sectionCode" class="form-select form-input sectionCode" ng-options="x.code as x.desc_th for x in lDepartment" ng-change="SelectDepartment()"></select>
-            </div>
-            <div class="col-sm-4 mb-3">
-                <div class="text-dark fw-bolder">สายงาน</div>
-                <div class="p-2">{{ iData.departmentDesc == '' ? '-' : iData.departmentDesc }}</div>
-            </div>
+            @* เลือกไล่ระดับ ด้าน > สาย > ฝ่าย > ส่วน แต่ละระดับกรองจากระดับบนที่เลือกไว้ ไม่บังคับเลือก *@
             <div class="col-sm-4 mb-3">
                 <div class="text-dark fw-bolder">ด้าน</div>
-                <div class="p-2">{{ iData.divisionDesc == '' ? '-' : iData.divisionDesc }}</div>
+                <select ng-model="iData.functionCode" class="form-select form-input functionCode" ng-options="x.code as x.desc_th for x in lFunction" ng-change="SelectFunction()">
+                    <option value="">-</option>
+                </select>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">สาย</div>
+                <select ng-model="iData.divisionCode" class="form-select form-input divisionCode" ng-options="x.code as x.desc_th for x in lDivision" ng-change="SelectDivision()" ng-disabled="lDivision.length == 0">
+                    <option value="">-</option>
+                </select>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">ฝ่าย</div>
+                <select ng-model="iData.departmentCode" class="form-select form-input departmentCode" ng-options="x.code as x.desc_th for x in lDepartment" ng-change="SelectDepartment()" ng-disabled="lDepartment.length == 0">
+                    <option value="">-</option>
+                </select>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">ส่วน</div>
+                <select ng-model="iData.sectionCode" class="form-select form-input sectionCode" ng-options="x.code as x.desc_th for x in lSection" ng-disabled="lSection.length == 0">
+                    <option value="">-</option>
+                </select>
             </div>
             <div class="col-sm-4 mb-3">
                 <div class="text-dark fw-bolder">ระดับพนักงาน</div>
@@ -202,9 +215,11 @@
                 })
                 , success: function (result) {
                     $timeout(function () {
-                        $scope.lDepartment = result.filter(item => item.condition_4 == 'Department');
-                        $scope.lGroup = result.filter(item => item.condition_4 == 'Group');
-                        $scope.lBusinessUnit = result.filter(item => item.condition_4 == 'Business Unit');
+                        $scope.lSectionAll = result.filter(item => item.condition_4 == 'Section');
+                        $scope.lDepartmentAll = result.filter(item => item.condition_4 == 'Department');
+                        $scope.lGroupAll = result.filter(item => item.condition_4 == 'Group');
+                        $scope.lBusinessUnitAll = result.filter(item => item.condition_4 == 'Business Unit');
+                        $scope.BuildOrgOption();
                     }, 0);
                 }
                 , error: AjaxError
@@ -300,27 +315,47 @@
             }
         }
 
-        $scope.SelectDepartment = function(){
-            $scope.iData.departmentDesc = '';
-            $scope.iData.divisionDesc = '';
+        // โครงสร้างหน่วยงาน: condition_4 = ระดับ, condition_3 = รหัสหน่วยงานแม่
+        //   Business Unit = ด้าน , Group = สาย , Department = ฝ่าย , Section = ส่วน
+        // กรองด้วยทั้งระดับและรหัสแม่ เพื่อให้ได้เฉพาะหน่วยงานที่อยู่ใต้ตัวที่เลือกไว้จริง
+        $scope.lFunction = [];
+        $scope.lDivision = [];
+        $scope.lDepartment = [];
+        $scope.lSection = [];
 
-            var find_department = $scope.lDepartment.find(item => item.code == $scope.iData.sectionCode);
-
-            if (find_department) {
-                var find_group = $scope.lGroup.find(item => item.code == find_department.condition_3);
-
-                if (find_group) {
-                    $scope.iData.departmentDesc = find_group.desc_th;
-                    $scope.iData.departmentCode = find_group.code;
-
-                    var find_business_unit = $scope.lBusinessUnit.find(item => item.code == find_group.condition_3);
-
-                    if (find_business_unit) {
-                        $scope.iData.divisionDesc = find_business_unit.desc_th;
-                        $scope.iData.divisionCode = find_business_unit.code;
-                    }
-                }
+        function OrgChildren(lTier, parentCode) {
+            if (!parentCode) {
+                return [];
             }
+
+            return (lTier || []).filter(function (x) { return x.condition_3 == parentCode; });
+        }
+
+        // สร้างเป็น array คงที่ ห้ามผูกฟังก์ชันกรองไว้ใน ng-options ตรง ๆ เพราะจะทำให้ digest วนไม่จบ
+        $scope.BuildOrgOption = function () {
+            $scope.lFunction = $scope.lBusinessUnitAll || [];
+            $scope.lDivision = OrgChildren($scope.lGroupAll, $scope.iData.functionCode);
+            $scope.lDepartment = OrgChildren($scope.lDepartmentAll, $scope.iData.divisionCode);
+            $scope.lSection = OrgChildren($scope.lSectionAll, $scope.iData.departmentCode);
+        }
+
+        // เปลี่ยนระดับบน ต้องล้างระดับล่างที่ไม่อยู่ใต้ตัวใหม่แล้ว
+        $scope.SelectFunction = function () {
+            $scope.iData.divisionCode = '';
+            $scope.iData.departmentCode = '';
+            $scope.iData.sectionCode = '';
+            $scope.BuildOrgOption();
+        }
+
+        $scope.SelectDivision = function () {
+            $scope.iData.departmentCode = '';
+            $scope.iData.sectionCode = '';
+            $scope.BuildOrgOption();
+        }
+
+        $scope.SelectDepartment = function () {
+            $scope.iData.sectionCode = '';
+            $scope.BuildOrgOption();
         }
 
         $scope.LoadData = function () {
@@ -352,6 +387,9 @@
                                 var date = ConvertToDate($scope.iData.join_date);
                                 $scope.iData.join_date_select = moment(date);
                             }
+
+                            // ข้อมูลเดิมโหลดมาแล้ว ต้องสร้างรายการลูกให้ตรงกับที่เลือกไว้
+                            $scope.BuildOrgOption();
                         }
                     }, 0);
                 }, error: AjaxError
@@ -395,10 +433,7 @@
                 flag = false;
                 JS_Require($(".positionCode"));
             }
-            if ($scope.iData.sectionCode == '') {
-                flag = false;
-                JS_Require($(".sectionCode"));
-            }
+            // หน่วยงานทั้ง 4 ระดับไม่บังคับเลือก ส่งใบคำขอได้แม้ยังไม่ระบุ
 
             return flag;
         }

@@ -7,11 +7,11 @@
     <div class="row">
         <div class="col-sm-4 mb-3">
             <div class="text-dark fw-bolder">ชื่อ-นามสกุล</div>
-            <div>{{ iPersonal.prefix_th }} {{ iPersonal.firstname_th }} {{ iPersonal.lastname_th }}</div>
+            <div>{{ iPersonal.prefix_th_desc || iPersonal.prefix_th }} {{ iPersonal.firstname_th }} {{ iPersonal.lastname_th }}</div>
         </div>
         <div class="col-sm-4 mb-3">
             <div class="text-dark fw-bolder">ชื่อ-นามสกุล (ภาษาอังกฤษ)</div>
-            <div>{{ iPersonal.prefix_en }} {{ iPersonal.firstname_en }} {{ iPersonal.lastname_en }}</div>
+            <div>{{ iPersonal.prefix_en_desc || iPersonal.prefix_en }} {{ iPersonal.firstname_en }} {{ iPersonal.lastname_en }}</div>
         </div>
         <div class="col-sm-4 mb-3">
             <div class="text-dark fw-bolder">ชื่อเล่น</div>
@@ -43,7 +43,7 @@
         </div>
         <div class="col-sm-4 mb-3">
             <div class="text-dark fw-bolder">สัญชาติ</div>
-            <div>{{ iPersonal.nationalityDesc == '' ? '-' : iPersonal.nationalityDesc }}</div>
+            <div>{{ (iPersonal.nationalityDesc || iPersonal.nationality) || '-' }}</div>
         </div>
         <div class="col-sm-4 mb-3">
             <div class="text-dark fw-bolder">เชื้อชาติ</div>
@@ -64,6 +64,10 @@
         <div class="col-sm-4 mb-3">
             <div class="text-dark fw-bolder">สถานะความพิการ</div>
             <div>{{ iPersonal.disabilityStatusDesc == '' ? '-' : iPersonal.disabilityStatusDesc }}</div>
+        </div>
+        <div class="col-sm-4 mb-3" ng-show="iPersonal.disabilityCardNo">
+            <div class="text-dark fw-bolder">เลขบัตรผู้พิการ</div>
+            <div>{{ iPersonal.disabilityCardNo }}</div>
         </div>
     </div>
     <hr class="my-3" />

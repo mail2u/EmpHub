@@ -62,6 +62,7 @@
                         <th>
                             Name (EN)
                         </th>
+                        <th class="text-nowrap">เป็นผู้พิการ</th>
                         <th width="50"></th>
                         <th width="50"></th>
                     </tr>
@@ -76,6 +77,10 @@
                         </td>
                         <td>
                             {{ x.desc_en }}
+                        </td>
+                        <td>
+                            <span class="badge bg-soft-primary text-primary" ng-show="IsFlagYes(x.condition_1)">ต้องกรอกเลขบัตร</span>
+                            <span class="text-gray" ng-show="!IsFlagYes(x.condition_1)">-</span>
                         </td>
                         <td class="p-0">
                             <button class="btn btn-circle" ng-click="ShowEdit(x)">
@@ -118,6 +123,13 @@
                         Name (EN)
                         <input ng-model="iData.desc_en" class="form-control" maxlength="50" />
                     </div>
+                    <div class="mb-3">
+                        สถานะนี้ถือว่าเป็นผู้พิการ
+                        <select ng-model="iData.condition_1" class="form-select" ng-options="x.value as x.key for x in lFlag"></select>
+                        <div class="small text-gray mt-1">
+                            ถ้าเลือก "ใช่" ระบบจะบังคับให้กรอกเลขบัตรผู้พิการเมื่อเลือกสถานะนี้
+                        </div>
+                    </div>
                     <div class="text-end">
                         <button class="btn btn-primary" ng-click="SaveChange()">
                             Save Change
@@ -134,6 +146,16 @@
         $scope.row = 10;
         $scope.search = '';
         $scope.groupName = 'Disability';
+
+        // condition_1 = 'Y' หมายถึงสถานะนี้ถือว่าเป็นผู้พิการ ต้องกรอกเลขบัตรผู้พิการ
+        $scope.lFlag = [
+            { key: 'ไม่ใช่', value: '' }
+            , { key: 'ใช่', value: DISABILITY_FLAG_YES }
+        ];
+
+        $scope.IsFlagYes = function (value) {
+            return (value || '').toUpperCase() == DISABILITY_FLAG_YES;
+        }
 
         $scope.LoadData = function (page = 1) {
             $scope.page = page;
@@ -164,6 +186,7 @@
                 , code: ''
                 , desc_th: ''
                 , desc_en: ''
+                , condition_1: ''
                 , groupName: $scope.groupName
                 , create_by: '@User.UserId()'
             };

@@ -20,6 +20,80 @@ function ConvertToDate(dt) {
     return new Date(parts[2], parts[1] - 1, parts[0]);
 }
 
+/* ตัวเลือก "อื่น ๆ" ที่ผู้ใช้พิมพ์ชื่อเอง แล้วเก็บชื่อลงคอลัมน์เดิมตรง ๆ
+   ทำให้ *Desc ที่ proc join มาจะว่าง จุดแสดงผลจึงต้อง fallback ไปอ่านคอลัมน์ค่า
+
+   sentinel มี 3 ตัวเพราะ select ในระบบเก็บค่าไม่เหมือนกัน
+   - เก็บ code    (เช่น สัญชาติ, คำนำหน้าใน Onboarding) ใช้ MASTER_OTHER
+   - เก็บ desc_th (เช่น คำนำหน้าในฟอร์ม Service)        ใช้ MASTER_OTHER_TH
+   - เก็บ desc_en                                        ใช้ MASTER_OTHER_EN */
+var MASTER_OTHER = 'OTHER';
+var MASTER_OTHER_TH = 'อื่น ๆ (ระบุ)';
+var MASTER_OTHER_EN = 'Other (specify)';
+
+function MasterOptionListWithOther(lMaster) {
+    var lData = (lMaster || []).slice();
+
+    if (!lData.find(function (x) { return x.code == MASTER_OTHER; })) {
+        lData.push({ code: MASTER_OTHER, desc_th: MASTER_OTHER_TH, desc_en: MASTER_OTHER_EN });
+    }
+
+    return lData;
+}
+
+// ค่าที่บันทึกไว้ไม่ตรงตัวเลือกใดในรายการ = เป็นชื่อที่ผู้ใช้พิมพ์เอง
+// field คือคอลัมน์ที่ select นั้นใช้เป็นค่า ('code' | 'desc_th' | 'desc_en')
+function MasterIsOther(lOption, value, field) {
+    if (!value) {
+        return false;
+    }
+
+    field = field || 'code';
+
+    return !(lOption || []).some(function (x) { return x[field] == value; });
+}
+
+/* ลำดับชั้นหน่วยงาน ด้าน > สาย > ฝ่าย > ส่วน
+   ระดับที่ไม่มีข้อมูลจะแสดง ... แทน เพื่อให้เห็นครบทุกกล่องว่าขาดระดับไหน */
+var ORG_CHAIN_EMPTY = '...';
+
+function OrgChainItems(iEmployee) {
+    iEmployee = iEmployee || {};
+
+    return [
+        { label: 'ด้าน', name: iEmployee.functionDesc || ORG_CHAIN_EMPTY }
+        , { label: 'สาย', name: iEmployee.divisionDesc || ORG_CHAIN_EMPTY }
+        , { label: 'ฝ่าย', name: iEmployee.departmentDesc || ORG_CHAIN_EMPTY }
+        , { label: 'ส่วน', name: iEmployee.sectionDesc || ORG_CHAIN_EMPTY }
+    ];
+}
+
+/* สถานะความพิการที่ถือว่า "เป็นผู้พิการ" จะถูกทำเครื่องหมายไว้ที่ condition_1 = 'Y'
+   ตั้งค่าได้เองที่หน้า Setting > Disability จึงเพิ่ม/แก้สถานะได้โดยไม่ต้องแก้โค้ด */
+var DISABILITY_FLAG_YES = 'Y';
+
+function IsDisabilityCardRequired(lDisability, value) {
+    if (!value) {
+        return false;
+    }
+
+    var find = (lDisability || []).find(function (x) { return x.code == value; });
+
+    return !!find && (find.condition_1 || '').toUpperCase() == DISABILITY_FLAG_YES;
+}
+
+function NewGuid() {
+    if (window.crypto && window.crypto.randomUUID) {
+        return window.crypto.randomUUID().toUpperCase();
+    }
+
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0;
+        var v = c == 'x' ? r : ((r & 0x3) | 0x8);
+        return v.toString(16);
+    }).toUpperCase();
+}
+
 function ConvertToDate103(dt) {
     var dd = dt.getDate();
     var mm = dt.getMonth() + 1;

@@ -1277,6 +1277,10 @@
                             <div class="text-truncate">{{ valueOrDash(iEmployee.email || iPersonal.email) }}</div>
                         </div>
                         <div class="profile-meta-row">
+                            <i class="bi bi-telephone-fill text-primary"></i>
+                            <div>{{ valueOrDash(iEmployee.ext) }}</div>
+                        </div>
+                        <div class="profile-meta-row">
                             <i class="bi bi-phone-fill text-primary"></i>
                             <div>{{ valueOrDash(iPersonal.phoneNo) }}</div>
                         </div>
@@ -1442,9 +1446,21 @@
             });
         }
 
+        
+        $scope.indexEducation = function (index) {
+            if (index == 0) {
+                return 'วุฒิการศึกษาสูงสุด';
+            } else if (index == 1) {
+                return 'วุฒิการศึกษารองลงมา';
+            } else {
+                return 'วุฒิการศึกษาลำดับที่ ' + (index + 1);
+            }
+        }
+
+
         $scope.displayName = function () {
-            var fullnameTh = [$scope.iPersonal.firstname_th, $scope.iPersonal.lastname_th].filter(Boolean).join(' ');
-            var fullnameEn = [$scope.iPersonal.firstname_en, $scope.iPersonal.lastname_en].filter(Boolean).join(' ');
+            var fullnameTh = [$scope.iPersonal.prefix_th_desc || $scope.iPersonal.prefix_th, $scope.iPersonal.firstname_th, $scope.iPersonal.lastname_th].filter(Boolean).join(' ');
+            var fullnameEn = [$scope.iPersonal.prefix_en_desc || $scope.iPersonal.prefix_en, $scope.iPersonal.firstname_en, $scope.iPersonal.lastname_en].filter(Boolean).join(' ');
             return fullnameTh || fullnameEn || $scope.iEmployee.fullname || 'โปรไฟล์พนักงาน';
         }
 

@@ -24,4 +24,11 @@
     <Folder Include="Pages\Service\Dashboard\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="_verify_obj\**" />
+    <Content Remove="_verify_obj\**" />
+    <EmbeddedResource Remove="_verify_obj\**" />
+    <None Remove="_verify_obj\**" />
+  </ItemGroup>
+
 </Project>

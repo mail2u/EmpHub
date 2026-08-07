@@ -25,6 +25,7 @@
                 <thead>
                     <tr>
                         <th class="bg-light ps-4">COURSE NAME</th>
+                        <th class="bg-light">CERTIFICATE NO.</th>
                         <th class="bg-light">PROVIDER</th>
                         <th class="bg-light">ISSUE</th>
                         <th class="bg-light">ACTION</th>
@@ -33,6 +34,7 @@
                 <tbody>
                     <tr ng-repeat="x in lTraining">
                         <td class="ps-4 text-{{ x.mode }}">{{ x.license }}</td>
+                        <td class="text-{{ x.mode }}">{{ x.certificateNo || '-' }}</td>
                         <td class="text-{{ x.mode }}">{{ x.organization }}</td>
                         <td class="text-{{ x.mode }}">{{ x.issueDate }}</td>
                         <td>

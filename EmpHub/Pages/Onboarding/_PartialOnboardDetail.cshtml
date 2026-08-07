@@ -38,32 +38,19 @@
 </div>
 <div class="rounded-4 border shadow-sm p-3 bg-white text-dark mb-3" ng-show="step_index == 0">
     <div class="fs-4 fw-bolder">
-        ข้อมูลการจ้างงาน
+        ข้อมูลส่วนบุคคล
     </div>
     <hr/>
-    <div class="row">
-        <div class="col-sm-3 mb-3">
-            <div>ประเภทการดำเนินการ</div>
-            <select ng-model="iEmployee.processType" class="form-select form-input processType" ng-options="x.value as x.key for x in lProcessType" ng-disabled="true"></select>
-        </div>
-        <div class="col-sm-9 mb-3">
-            <div>เหตุผลการดำเนินการ</div>
-            <input ng-model="iEmployee.processReason" class="form-control form-input processReason" maxlength="200" readonly />
-        </div>
-    </div>
-    @* Employee *@
-    <div class="row">
-        <div class="col-sm-3 mb-3">
-            <div>รหัสพนักงาน</div>
-            <input ng-model="iEmployee.employeeCode" class="form-control form-input employeeCode" placeholder="000000" maxlength="6" readonly />
-        </div>
+    <div class="fw-bolder fs-6 mb-2">ข้อมูลยืนยันตัวตน</div>
+    <div class="row g-3 mb-2">
         <div class="col-sm-3 mb-3">
             <div>เลขประจำตัวประชาชน</div>
             <input ng-model="iPersonal.idcard" class="form-control form-input idcard" placeholder="0000000000000" maxlength="13" readonly />
         </div>
         <div class="col-sm-3 mb-3">
             <div>สัญชาติ</div>
-            <input ng-model="iPersonal.nationalityDesc" class="form-control form-input nationality"  readonly></input>
+            @* สัญชาติ "อื่น ๆ" เก็บชื่อไว้ในคอลัมน์ nationality ทำให้ nationalityDesc ว่าง จึงต้อง fallback *@
+            <input value="{{ iPersonal.nationalityDesc || iPersonal.nationality }}" class="form-control form-input nationality" readonly />
         </div>
         <div class="col-sm-3 mb-3">
             <div>เชื้อชาติ</div>
@@ -74,14 +61,13 @@
             <input ng-model="iPersonal.religionDesc" class="form-control form-input religion" readonly></input>
         </div>
     </div>
-    @* Personal *@
-    <div class="fw-bolder fs-6">
-        ชื่อพนักงาน (ไทย)
-    </div>
-    <div class="row">
+
+    <div class="fw-bolder fs-6 mb-2">ชื่อภาษาไทย</div>
+    <div class="row g-3 mb-2">
         <div class="col-sm-3 mb-3">
             <div>คำนำหน้าชื่อ</div>
-            <input ng-model="iPersonal.prefix_th_desc" class="form-control form-input prefix_th" readonly />
+            @* คำนำหน้า "อื่น ๆ" เก็บชื่อไว้ในคอลัมน์ prefix_th ทำให้ prefix_th_desc ว่าง จึงต้อง fallback *@
+            <input value="{{ iPersonal.prefix_th_desc || iPersonal.prefix_th }}" class="form-control form-input prefix_th" readonly />
         </div>
         <div class="col-sm-3 mb-3">
             <div>ชื่อ</div>
@@ -92,13 +78,12 @@
             <input ng-model="iPersonal.lastname_th" class="form-control form-input lastname_th" readonly />
         </div>
     </div>
-    <div class="fw-bolder fs-6">
-        ชื่อพนักงาน (อังกฤษ)
-    </div>
-    <div class="row">
+
+    <div class="fw-bolder fs-6 mb-2">ชื่อภาษาอังกฤษ</div>
+    <div class="row g-3 mb-2">
         <div class="col-sm-3 mb-3">
             <div>คำนำหน้าชื่อ</div>
-            <input ng-model="iPersonal.prefix_en_desc" class="form-control form-input prefix_en" readonly />
+            <input value="{{ iPersonal.prefix_en_desc || iPersonal.prefix_en }}" class="form-control form-input prefix_en" readonly />
         </div>
         <div class="col-sm-3 mb-3">
             <div>ชื่อ</div>
@@ -109,7 +94,9 @@
             <input ng-model="iPersonal.lastname_en" class="form-control form-input lastname_en" readonly />
         </div>
     </div>
-    <div class="row">
+
+    <div class="fw-bolder fs-6 mb-2">ข้อมูลทั่วไป</div>
+    <div class="row g-3">
         <div class="col-sm-3 mb-3">
             <div>วันเกิด</div>
             <input ng-model="iPersonal.birth_date" class="form-control form-input" readonly />
@@ -134,11 +121,15 @@
             <div>สถานะความพิการ</div>
             <input ng-model="iPersonal.disabilityStatusDesc" class="form-control form-input disabilityStatus" readonly />
         </div>
+        <div class="col-sm-3 mb-3">
+            <div>เลขบัตรผู้พิการ</div>
+            <input ng-model="iPersonal.disabilityCardNo" class="form-control form-input disabilityCardNo" readonly />
+        </div>
     </div>
     <div class="d-flex">
         <div class="flex-fill"></div>
         <div>
-            <button class="btn btn-primary" ng-click="step_index = 1">Next</button>
+            <button class="btn btn-primary" ng-click="step_index = 1">ต่อไป</button>
         </div>
     </div>
 </div>
@@ -229,11 +220,11 @@
     <div class="d-flex">
         <div class="flex-fill">
             <div>
-                <button class="btn btn-light" ng-click="step_index = 0">Back</button>
+                <button class="btn btn-light" ng-click="step_index = 0">กลับ</button>
             </div>
         </div>
         <div>
-            <button class="btn btn-primary" ng-click="step_index = 2">Next</button>
+            <button class="btn btn-primary" ng-click="step_index = 2">ต่อไป</button>
         </div>
     </div>
 </div>
@@ -244,35 +235,22 @@
     </div>
     <div class="row">
         <div class="col-sm-3 mb-3">
-            <div>โทรศัพท์</div>
-            <input ng-model="iPersonal.phoneNo" class="form-control form-input phoneNo phone" maxlength="50" readonly placeholder="000-000-0000" />
-        </div>
-        <div class="col-sm-3 mb-3">
             <div>มือถือ</div>
             <input ng-model="iPersonal.mobile" class="form-control form-input mobile phone" maxlength="50" readonly placeholder="000-000-0000" />
         </div>
         <div class="col-sm-3 mb-3">
-            <div>อีเมล์ส่วนตัว</div>
-            <input ng-model="iPersonal.email" class="form-control form-input email" maxlength="50" readonly />
-        </div>
-        <div class="col-sm-3"></div>
-        <div class="col-sm-3 mb-3">
-            <div>เบอร์โทรศัพท์ที่ทำงาน</div>
-            <input ng-model="iEmployee.phone_office" class="form-control form-input phone_office phone" maxlength="50" readonly placeholder="000-000-0000" />
-        </div>
-        <div class="col-sm-3 mb-3">
-            <div>อีเมล์ที่ใช้ในบริษัท</div>
+            <div>อีเมลบริษัท</div>
             <input ng-model="iEmployee.email" class="form-control form-input email_office" maxlength="50" readonly />
         </div>
     </div>
     <div class="d-flex">
         <div class="flex-fill">
             <div>
-                <button class="btn btn-light" ng-click="step_index = 1">Back</button>
+                <button class="btn btn-light" ng-click="step_index = 1">กลับ</button>
             </div>
         </div>
         <div>
-            <button class="btn btn-primary" ng-click="step_index = 3">Next</button>
+            <button class="btn btn-primary" ng-click="step_index = 3">ต่อไป</button>
         </div>
     </div>
 </div>
@@ -281,6 +259,10 @@
         ข้อมูลพนักงาน
     </div>
     <div class="row">
+        <div class="col-sm-3 mb-3">
+            <div>รหัสพนักงาน</div>
+            <input ng-model="iEmployee.employeeCode" class="form-control form-input employeeCode" placeholder="000000" maxlength="6" readonly />
+        </div>
         <div class="col-sm-3 mb-3">
             <div>วันเข้างาน</div>
             <input ng-model="iEmployee.join_date" class="form-control form-input probation_day" maxlength="50" readonly />
@@ -296,12 +278,28 @@
     </div>
     <div class="row">
         <div class="col-sm-3 mb-3">
-            <div>หน่วยงานเชิงธุรกิจ</div>
+            <div>ด้าน</div>
+            <input ng-model="iEmployee.functionDesc" class="form-control form-input functionCode" readonly />
+        </div>
+        <div class="col-sm-3 mb-3">
+            <div>สาย</div>
+            <input ng-model="iEmployee.divisionDesc" class="form-control form-input divisionCode" readonly />
+        </div>
+        <div class="col-sm-3 mb-3">
+            <div>ฝ่าย</div>
+            <input ng-model="iEmployee.departmentDesc" class="form-control form-input departmentCode" readonly />
+        </div>
+        <div class="col-sm-3 mb-3">
+            <div>ส่วน</div>
             <input ng-model="iEmployee.sectionDesc" class="form-control form-input sectionCode" readonly />
         </div>
         <div class="col-sm-3 mb-3">
             <div>ตำแหน่งงาน</div>
             <input ng-model="iEmployee.positionDesc" class="form-control form-input positionCode" readonly />
+        </div>
+        <div class="col-sm-3 mb-3">
+            <div>เกรด</div>
+            <input ng-model="iEmployee.grade" class="form-control form-input grade" maxlength="50" readonly />
         </div>
         <div class="col-sm-3 mb-3">
             <div>ประเภทพนักงาน</div>
@@ -312,68 +310,14 @@
             <input ng-model="iEmployee.levelDesc" class="form-control form-input levelCode" readonly />
         </div>
         <div class="col-sm-3 mb-3">
-            <div>เกรด</div>
-            <input ng-model="iEmployee.grade" class="form-control form-input grade" maxlength="50" readonly />
-        </div>
-        <div class="col-sm-3 mb-3">
             <div>หัวหน้างาน</div>
             <input ng-model="iEmployee.supervisorName" class="form-control form-input supervisorName" maxlength="50" readonly />
         </div>
-        <div class="col-sm-3 mb-3">
-            <div>สถานที่</div>
-            <input ng-model="iEmployee.location" class="form-control form-input location" maxlength="50" readonly />
-        </div>
-        <div class="col-sm-3 mb-3">
-            <div>สาขาประกันสังคม</div>
-            <input ng-model="iEmployee.sso" class="form-control form-input sso" maxlength="50" readonly />
-        </div>
     </div>
-    <div class="fw-bolder">เงื่อนไขการทำงาน</div>
-    <div class="row">
-        <div class="col-sm-3 mb-3">
-            <div>รูปแบบการทำงาน</div>
-            <input ng-model="iEmployee.workMode" class="form-control form-input workMode" readonly />
-        </div>
-        <div class="col-sm-3 mb-3">
-            <div>บันทึกเวลาเข้าออก</div>
-            <input ng-model="iEmployee.workTime" class="form-control form-input workTime" maxlength="50" readonly />
-        </div>
-        <div class="col-sm-3 mb-3">
-            <div>ได้รับค่าล่วงเวลา</div>
-            <input ng-model="iEmployee.otMode" class="form-control form-input otMode" readonly />
-        </div>
-    </div>
-    @* <div class="fw-bolder">ข้อมูลการจ่ายเงิน</div>
-    <div class="row">
-        <div class="col-sm-3 mb-3">
-            <div>ประเภทการจ้างงาน</div>
-            <input ng-model="iEmployee.employeeMode" class="form-control form-input employeeMode" maxlength="50" readonly />
-        </div>
-        <div class="col-sm-3 mb-3">
-            <div>รหัสปฏิทิน</div>
-            <input ng-model="iEmployee.calendarCode" class="form-control form-input calendarCode" maxlength="50" readonly />
-        </div>
-        <div class="col-sm-3 mb-3">
-            <div>เงินเดือน</div>
-            <input ng-model="iEmployee.salary" class="form-control form-input salary" maxlength="50" readonly />
-        </div>
-        <div class="col-sm-3 mb-3">
-            <div>ตัวเลือกในการจ่าย</div>
-            <input ng-model="iEmployee.paymentChannel" class="form-control form-input paymentChannel" maxlength="50" readonly />
-        </div>
-        <div class="col-sm-3 mb-3">
-            <div>รหัสธนาคาร</div>
-            <input ng-model="iEmployee.bankCode" class="form-control form-input bankCode" maxlength="50" readonly />
-        </div>
-        <div class="col-sm-3 mb-3">
-            <div>เลขที่บัญชี</div>
-            <input ng-model="iEmployee.bookNo" class="form-control form-input bookNo" maxlength="50" readonly />
-        </div>
-    </div> *@
     <div class="d-flex">
         <div class="flex-fill">
             <div>
-                <button class="btn btn-light" ng-click="step_index = 2">Back</button>
+                <button class="btn btn-light" ng-click="step_index = 2">กลับ</button>
             </div>
         </div>
     </div>

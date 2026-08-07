@@ -294,13 +294,19 @@
                 </div>
                <div class="p-3 pb-1 mb-4 border rounded-3 position-relative {{ x.mode == 'delete' ? 'bg-light' : '' }}" ng-repeat="x in lTraining">
                     <div class="row">
-                        <div class="col-sm-5 mb-3">
+                        <div class="col-sm-4 mb-3">
                             <div class="text-gray">
                                 COURSE NAME
                             </div>
                             <input ng-model="x.license" class="form-control" ng-change="iTraining.is_change = 1; x.is_change = 1;" ng-disabled="x.mode == 'delete'" />
                         </div>
-                        <div class="col-sm-5 mb-3">
+                        <div class="col-sm-3 mb-3">
+                            <div class="text-gray">
+                                CERTIFICATE NO.
+                            </div>
+                            <input ng-model="x.certificateNo" class="form-control" maxlength="100" ng-change="iTraining.is_change = 1; x.is_change = 1;" ng-disabled="x.mode == 'delete'" />
+                        </div>
+                        <div class="col-sm-3 mb-3">
                             <div class="text-gray">
                                 PROVIDER
                             </div>

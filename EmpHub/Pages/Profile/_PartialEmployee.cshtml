@@ -15,19 +15,23 @@
     </div>
     <div class="info-field">
         <span class="info-icon"><i class="bi bi-calendar2-check"></i></span>
-        <div><div class="info-label">วันบรรจุงาน</div><div class="info-value">{{ valueOrDash(iEmployee.probation_end_date) }}</div></div>
+        <div><div class="info-label">วันที่ผ่านทดลองงาน</div><div class="info-value">{{ valueOrDash(iEmployee.probation_end_date) }}</div></div>
     </div>
     <div class="info-field">
         <span class="info-icon"><i class="bi bi-diagram-3"></i></span>
-        <div><div class="info-label">ด้าน</div><div class="info-value">{{ valueOrDash(iEmployee.divisionDesc) }}</div></div>
+        <div><div class="info-label">ด้าน</div><div class="info-value">{{ valueOrDash(iEmployee.functionDesc) }}</div></div>
     </div>
     <div class="info-field">
         <span class="info-icon"><i class="bi bi-bezier2"></i></span>
-        <div><div class="info-label">สายงาน</div><div class="info-value">{{ valueOrDash(iEmployee.departmentDesc) }}</div></div>
+        <div><div class="info-label">สาย</div><div class="info-value">{{ valueOrDash(iEmployee.divisionDesc) }}</div></div>
     </div>
     <div class="info-field">
         <span class="info-icon"><i class="bi bi-building"></i></span>
-        <div><div class="info-label">ฝ่าย</div><div class="info-value">{{ valueOrDash(iEmployee.sectionDesc) }}</div></div>
+        <div><div class="info-label">ฝ่าย</div><div class="info-value">{{ valueOrDash(iEmployee.departmentDesc) }}</div></div>
+    </div>
+    <div class="info-field">
+        <span class="info-icon"><i class="bi bi-building"></i></span>
+        <div><div class="info-label">ส่วน</div><div class="info-value">{{ valueOrDash(iEmployee.sectionDesc) }}</div></div>
     </div>
     <div class="info-field">
         <span class="info-icon"><i class="bi bi-person"></i></span>
@@ -35,12 +39,12 @@
     </div>
     <div class="info-field">
         <span class="info-icon"><i class="bi bi-award"></i></span>
-        <div><div class="info-label">ระดับพนักงาน</div><div class="info-value">{{ valueOrDash(iEmployee.levelDesc) }}</div></div>
+        <div><div class="info-label">ระดับพนักงาน</div><div class="info-value">{{ valueOrDash(iEmployee.levelDesc) }} (เกรด {{ valueOrDash(iEmployee.grade) }})</div></div>
     </div>
-    <div class="info-field">
+@*     <div class="info-field">
         <span class="info-icon"><i class="bi bi-patch-check"></i></span>
         <div><div class="info-label">เกรด</div><div class="info-value">{{ valueOrDash(iEmployee.grade) }}</div></div>
-    </div>
+    </div> *@
 </div>
 <div class="profile-person-card mb-3">
     <div class="profile-person-grid p-2">

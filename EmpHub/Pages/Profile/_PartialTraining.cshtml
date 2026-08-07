@@ -3,7 +3,11 @@
 *@
 @{
 }
-
+<style>
+    .training-layout{
+        grid-template-columns:none;
+    }
+</style>
 <div class="training-summary-grid">
     <div class="training-summary-card blue">
         <span class="training-icon blue"><i class="bi bi-clock"></i></span>
@@ -67,6 +71,7 @@
                             <div class="min-w-0">
                                 <div class="fw-bold text-dark">{{ valueOrDash(x.license) }}</div>
                                 <div class="small text-muted">{{ valueOrDash(x.organization || x.description) }}</div>
+                                <div class="small text-muted" ng-show="x.certificateNo">เลขที่ใบรับรอง {{ x.certificateNo }}</div>
                             </div>
                             <div class="text-end">
                                 <div class="fw-bold text-primary">{{ trainingHours(x) }} ชั่วโมง</div>
@@ -80,7 +85,7 @@
         </div>
     </div>
 
-    <div>
+    @* <div>
         <div class="training-panel">
             <div class="training-panel-header">
                 <span>ทักษะและความเชี่ยวชาญ (Skill Matrix)</span>
@@ -95,7 +100,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> *@
 </div>
 
 

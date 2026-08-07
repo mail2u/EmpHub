@@ -81,9 +81,12 @@
         <table class="table table-tip border shadow-sm">
             <thead>
                 <tr>
-                    <th>รหัสพนักงาน</th>
-                    <th>ชื่อ - สกุล</th>
-                    <th>ตำแหน่ง/ฝ่ายงาน</th>
+                    <th>ชื่อ-สกุล</th>
+                    <th>ชื่อเล่น</th>
+                    <th>สังกัด</th>
+                    <th>สาย</th>
+                    <th>ฝ่าย</th>
+                    <th>เมล</th>
                     <th>วันที่สร้าง</th>
                     <th class="text-center">สถานะ</th>
                     <th width="120"></th>
@@ -91,26 +94,26 @@
             </thead>
             <tbody>
                 <tr ng-repeat="x in lData">
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <div class="me-3 ms-2" style="width:35px;">
-                                <img src="~/Images/icon-user.png" class="rounded-circle" width="100%" />
-                            </div>
-                            <div>
-                                <div class="text-dark fw-bolder">{{ x.employeeCode }}</div>
-                            </div>
-                        </div>
+                    <td class="text-dark align-middle">
+                        {{ x.prefix_th + ' ' + x.firstname_th + ' ' + x.lastname_th }}
+                    </td>
+                    <td class="text-dark align-middle">
+                        {{ x.nickname }}
+                    </td>
+                    <td class="text-dark align-middle">
+                        {{ x.function }}
+                    </td>
+                    <td class="text-dark align-middle">
+                        {{ x.division }}
+                    </td>
+                    <td class="text-dark align-middle">
+                        {{ x.department }}
+                    </td>
+                    <td class="text-dark align-middle">
+                        {{ x.email }}
                     </td>
                     <td>
-                        <div class="text-dark">{{ x.prefix_th + ' ' + x.firstname_th + ' ' + x.lastname_th }}</div>
-                        <div class="text-gray">{{ x.prefix_en + ' ' + x.firstname_en + ' ' + x.lastname_en }}</div>
-                    </td>
-                    <td>
-                        <div class="text-dark">{{ x.position }}</div>
-                        <div class="text-gray">{{ x.department }}</div>
-                    </td>
-                    <td>
-                        <div class="fw-bolder text-dark">{{ x.create_by }}</div>
+                    @*     <div class="fw-bolder text-dark">{{ x.create_by }}</div> *@
                         <div class="text-dark">{{ x.create_date }}</div>
                     </td>
                     <td class="text-center align-middle">
@@ -138,7 +141,7 @@
                     <td>
                         <div class="text-light-gray">Showing {{ ((page - 1) * row) + 1 }} to {{ (page * row) > total ? total : page * row }} of {{ total }} employees</div>
                     </td>
-                    <td colspan="4">
+                    <td colspan="8">
                         <div class="d-flex">
                             <div class="flex-fill"></div>
                             <button class="btn btn-circle me-2" ng-click="LoadData(page - 1)" ng-disabled="page <= 1">
@@ -282,13 +285,13 @@
 
                         if (lData.length > 0) {
                             var JSData = [[
-                                { 'text': 'รหัสพนักงาน' }
-                                , { 'text': 'ชื่อ - สกุล (ไทย)' }
-                                , { 'text': 'ชื่อ - สกุล (eng)' }
-                                , { 'text': 'ตำแหน่ง' }
-                                , { 'text': 'ฝ่ายงาน' }
+                                { 'text': 'ชื่อ - สกุล' }
+                                , { 'text': 'ชื่อเล่น' }
+                                , { 'text': 'สังกัด' }
+                                , { 'text': 'สาย' }
+                                , { 'text': 'ฝ่าย' }
+                                , { 'text': 'เมล' }
                                 , { 'text': 'วันที่สร้าง' }
-                                , { 'text': 'สร้างโดย' }
                                 , { 'text': 'สถานะ' }
                             ]];
 
@@ -296,13 +299,13 @@
                                 var iData = lData[i];
 
                                 JSData.splice(JSData.length, 0, [
-                                    { 'text': iData.employeeCode }
-                                    , { 'text': iData.prefix_th + ' ' + iData.firstname_th + ' ' + iData.lastname_th }
-                                    , { 'text': iData.prefix_en + ' ' + iData.firstname_en + ' ' + iData.lastname_en }
-                                    , { 'text': iData.position }
+                                    { 'text': iData.prefix_th + ' ' + iData.firstname_th + ' ' + iData.lastname_th }
+                                    , { 'text': iData.nickname }
+                                    , { 'text': iData.function }
+                                    , { 'text': iData.division }
                                     , { 'text': iData.department }
+                                    , { 'text': iData.email }
                                     , { 'text': iData.create_date }
-                                    , { 'text': iData.create_by }
                                     , { 'text': iData.status }
                                 ]);
                             }

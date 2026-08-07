@@ -37,16 +37,20 @@
                 <div class="text-blue">{{ iForm.work_day == '' ? '-' : iForm.work_day }}</div>
             </div>
             <div class="col-sm-4 mb-3">
-                <div class="text-dark fw-bolder">ฝ่าย</div>
-                <div class="text-blue">{{ iForm.sectionCode == '' ? '-' : iForm.sectionCode }}</div>
-            </div>
-            <div class="col-sm-4 mb-3">
-                <div class="text-dark fw-bolder">สายงาน</div>
-                <div class="text-blue">{{ iForm.departmentCode == '' ? '-' : iForm.departmentCode }}</div>
-            </div>
-            <div class="col-sm-4 mb-3">
                 <div class="text-dark fw-bolder">ด้าน</div>
-                <div class="text-blue">{{ iForm.divisionCode == '' ? '-' : iForm.divisionCode }}</div>
+                <div class="text-blue">{{ OrgName(iForm.functionCode) }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">สาย</div>
+                <div class="text-blue">{{ OrgName(iForm.divisionCode) }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">ฝ่าย</div>
+                <div class="text-blue">{{ OrgName(iForm.departmentCode) }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+                <div class="text-dark fw-bolder">ส่วน</div>
+                <div class="text-blue">{{ OrgName(iForm.sectionCode) }}</div>
             </div>
             <div class="col-sm-4 mb-3">
                 <div class="text-dark fw-bolder">ระดับพนักงาน</div>
@@ -73,6 +77,43 @@
 </div>
 <script>
     app.controller('ServiceUpdateEmployeeCtrl', function ($scope, $http, $timeout, $filter) {
+
+        // ใบคำขอเก็บแต่รหัสหน่วยงาน จึงต้องโหลด master มาแปลงเป็นชื่อให้ผู้อนุมัติอ่านได้
+        $scope.lOrgMaster = [];
+
+        $scope.LoadOrgMaster = function () {
+            $.ajax({
+                url: '@webAPI.CurrentValue.APIEmpHub/api/MasterCode/DataList'
+                , headers: { 'authorization': 'Bearer @token' }
+                , type: 'post'
+                , contentType: 'application/json'
+                , dataType: 'json'
+                , cache: false
+                , data: JSON.stringify({
+                    groupName: 'departmentCode'
+                })
+                , success: function (result) {
+                    $timeout(function () {
+                        $scope.lOrgMaster = result || [];
+                    }, 0);
+                }
+                , error: function () {
+                    console.log('Load_OrgMaster : Error');
+                }
+            });
+        }
+        $scope.LoadOrgMaster();
+
+        $scope.OrgName = function (code) {
+            if (!code) {
+                return '-';
+            }
+
+            var find = ($scope.lOrgMaster || []).find(function (x) { return x.code == code; });
+
+            return find ? find.desc_th : code;
+        }
+
         $scope.LoadDetail = function () {
             return new Promise((resolve) => {
                 $.ajax({

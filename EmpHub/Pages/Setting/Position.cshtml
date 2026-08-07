@@ -74,6 +74,9 @@
                             Name (EN)
                         </th>
                         <th>
+                            Code
+                        </th>
+                        <th>
                             Level
                         </th>
                         <th width="50"></th>
@@ -92,7 +95,10 @@
                             {{ x.desc_en }}
                         </td>
                         <td>
-                            {{ x.levelName }}
+                            {{ x.condition_1 }}
+                        </td>
+                        <td>
+                            {{ x.condition_2 }}
                         </td>
                         <td>
                             <button class="btn btn-circle" ng-click="ShowEdit(x)">
@@ -136,8 +142,12 @@
                         <input ng-model="iData.desc_en" class="form-control" maxlength="200" />
                     </div>
                     <div class="mb-3">
+                        Code
+                        <input ng-model="iData.condition_1" class="form-control" maxlength="50" />
+                    </div>
+                    <div class="mb-3">
                         Level
-                        <select ng-model="iData.levelCode" class="form-select" ng-options="x.levelCode as x.levelName for x in lLevel | orderBy : 'levelCode'"></select>
+                        <input ng-model="iData.condition_2" class="form-control" maxlength="2" />
                     </div>
                     <div class="text-end">
                         <button class="btn btn-primary" ng-click="SaveChange()">
@@ -156,18 +166,18 @@
         $scope.search = '';
         $scope.groupName = 'positionCode';
 
-        $scope.lLevel = [
-            { shortCode: 'Director', levelCode: '00', levelName: 'Director' }
-            , { shortCode: 'CEO', levelCode: '01', levelName: 'Chief Executive Officer' }
-            , { shortCode: 'SEVP', levelCode: '02', levelName: 'Senior Executive Vice President' }
-            , { shortCode: 'EVP', levelCode: '03', levelName: 'Executive Vice President' }
-            , { shortCode: 'VP', levelCode: '04', levelName: 'Vice President' }
-            , { shortCode: 'AVP', levelCode: '05', levelName: 'Assistant Vice President' }
-            , { shortCode: 'MGR', levelCode: '06', levelName: 'Manager' }
-            , { shortCode: 'SUP', levelCode: '07', levelName: 'Supervisor' }
-            , { shortCode: 'OFF', levelCode: '08', levelName: 'Officer' }
-            , { shortCode: 'STAFF', levelCode: '09', levelName: 'Staff' }
-        ];
+        // $scope.lLevel = [
+        //     { shortCode: 'Director', levelCode: '00', levelName: 'Director' }
+        //     , { shortCode: 'CEO', levelCode: '01', levelName: 'Chief Executive Officer' }
+        //     , { shortCode: 'SEVP', levelCode: '02', levelName: 'Senior Executive Vice President' }
+        //     , { shortCode: 'EVP', levelCode: '03', levelName: 'Executive Vice President' }
+        //     , { shortCode: 'VP', levelCode: '04', levelName: 'Vice President' }
+        //     , { shortCode: 'AVP', levelCode: '05', levelName: 'Assistant Vice President' }
+        //     , { shortCode: 'MGR', levelCode: '06', levelName: 'Manager' }
+        //     , { shortCode: 'SUP', levelCode: '07', levelName: 'Supervisor' }
+        //     , { shortCode: 'OFF', levelCode: '08', levelName: 'Officer' }
+        //     , { shortCode: 'STAFF', levelCode: '09', levelName: 'Staff' }
+        // ];
 
         $scope.LoadData = function (page = 1) {
             $scope.page = page;
@@ -189,11 +199,11 @@
 
                         $scope.lData = $scope.lData.map(item => {
 
-                            var find = $scope.lLevel.find(d => d.levelCode == item.levelCode);
+                            // var find = $scope.lLevel.find(d => d.levelCode == item.levelCode);
 
-                            if (find) {
-                                item.levelName = find.levelName;
-                            }
+                            // if (find) {
+                            //     item.levelName = find.levelName;
+                            // }
 
                             return item;
                         });
@@ -228,13 +238,13 @@
 
             $("#CreateModal").modal('hide');
 
-            var find = $scope.lLevel.find(item => item.levelCode == $scope.iData.levelCode);
+            // var find = $scope.lLevel.find(item => item.levelCode == $scope.iData.levelCode);
 
-            $scope.iData.shortCode = '';
+            // $scope.iData.shortCode = '';
 
-            if (find) {
-                $scope.iData.shortCode = find.shortCode;
-            }
+            // if (find) {
+            //     $scope.iData.shortCode = find.shortCode;
+            // }
 
             $.ajax({
                 url: url
